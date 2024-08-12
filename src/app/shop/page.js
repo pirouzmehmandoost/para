@@ -1,31 +1,65 @@
-// "use client";
-import Link from 'next/link'
+"use client";
 
-import { ModelViewer } from "../components/ModelViewer";
+import Link from 'next/link'
+import ProductCard from "../components/ProductCard"
+
+const products = [
+    {
+        name: "Textured Mary Jane",
+        url: "/textured_mary_jane_3_4_view_1400x1400_px.png",
+        price: `$ ${450}`,
+        productType: "footwear",
+    },
+    {
+        name: "Rock Bag v2.0",
+        url: "/rock_bag_v2_white_1400x1400_px.png",
+        price: `$ ${100}`,
+        productType: "bag",
+    },
+    {
+        name: "Rock bag",
+        url: "/bag.png",
+        price: `$ ${100}`,
+        productType: "bag",
+    },
+    {
+        name: "Stiletto Heel",
+        url: "/stiletto.png",
+        price: `$ ${450}`,
+        productType: "footwear",
+    },
+    {
+        name: "Mary Jane",
+        url: "/maryJane.png",
+        price: `$ ${450}`,
+        productType: "footwear",
+    },
+    {
+        name: "Boot Harness",
+        url: "/boot_harness_top.png",
+        price: `$ ${100}`,
+        productType: "accessory",
+    },
+
+];
 
 export default function Shop() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24 bg-[radial-gradient(ellipse_at_50%_100%,var(--tw-gradient-stops))] from-clay_dark via-tahiti via-40% to-clay_dark to-100% backdrop-filter backdrop-contrast-125" >
-      
-      <div id="model_container" className="flex flex-col place-items-center justify-between mix-w-screen min-h-screen" >
-
-        <ModelViewer className="min-w-screen min-h-screen" />
-
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        
-        <Link
-        href="/"
-        className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        target="_blank"
-        rel="noopener noreferrer"
+    return (
+        <div 
+        className="flex flex-col w-full h-full place-items-center items-center justify-around text-center text-clay_dark"
         >
-          {/* <h1 className={`m-0 max-w-[30ch] text-sm opacity-50`}> */}
-            Return Home
-          {/* </h1> */}
-        </Link>
-      </div>
-    </div>
-  );
+            <p className="text-5xl mb-10">
+                Shop.
+            </p>
+
+            <div className="grid grid-cols-2 gap 2">
+                { 
+                    products.map((item, index) => {
+                        return <ProductCard 
+                            key={index} props={item} />
+                    })
+                }
+            </div>
+        </div>
+    );
 }

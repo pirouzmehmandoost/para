@@ -1,14 +1,25 @@
 "use client";
 
+import { UnifrakturCook } from "next/font/google"
+
 import * as THREE from "three";
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import React, { useLayoutEffect, useRef } from "react";
 import { dumpObject } from "../../lib/modeling";
 
-const url = "rock_bag_red.gltf";
+// const url = "bag_for_web_v2.gltf";
+// const url = "bag_for_web2.gltf";
+// const url = "rock_bag_red.gltf";
+const url = "rock_bag_v2_web_display_2.glb";
+let text = ""
 const loader = new GLTFLoader();
 const scene = new THREE.Scene();
+
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+const cook =  UnifrakturCook({ weight: '700', subsets: ["latin"], });
+
 
 export const frameArea = (sizeToFitOnScreen, boxSize, boxCenter, camera) => {
     const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
@@ -21,7 +32,6 @@ export const frameArea = (sizeToFitOnScreen, boxSize, boxCenter, camera) => {
     .subVectors(camera.position, boxCenter)
     .multiply(new THREE.Vector3(1, 0, 1))
     .normalize();
-
     // move the camera to a position distance units way from the center
     // in whatever direction the camera was from the center already
     camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
@@ -37,64 +47,133 @@ export const frameArea = (sizeToFitOnScreen, boxSize, boxCenter, camera) => {
 };
 
 export const ModelViewer = () => {
-    loader.load( url,(gltf) => {
-        const root = gltf.scene;
-        const light = new THREE.HemisphereLight(0xffffff, 0x080820, 5);
-        scene.add(light);
+    const containerRef = useRef(null);
 
-        const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1, 1000,);
-        
-        camera.position.set(-30, 0, 0.1);
-        camera.lookAt(new THREE.Vector3());
-        scene.add(camera);
+    useLayoutEffect(() => {
+        loader.load( url,(gltf) => {
+            gltf.scene.scale.set(0.00001, 0.00001, 0.00001)
+            const root = gltf.scene;
+            let requestId = null;
+            //warm white lighting
+            // const light = new THREE.HemisphereLight(0xF8F7F7, 0xF8F7F7, .1);
+            // scene.add(light);
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.outputColorSpace = THREE.SRGBColorSpace;
-        renderer.setAnimationLoop(() => {
-            renderer.render(scene, camera);
-        });
+            // top lighting
+            const pointLight1 = new THREE.PointLight(0xFFFFFF , 5);
+            pointLight1.position.x = -1;
+            pointLight1.position.y = 5;
+            pointLight1.position.z = 0;
+            pointLight1.intensity = 40;
+            scene.add(pointLight1);
 
-        document
-            .getElementById(`model_container`)
-            .appendChild(renderer.domElement);
+            //bottom lighting
+            const pointLight2 = new THREE.PointLight(0xFFFFFF , 15);
+            pointLight2.position.x = 1;
+            pointLight2.position.y = -5;
+            pointLight2.position.z = 0;
+            pointLight2.intensity = 40;
+            scene.add(pointLight2);
 
-        const box = new THREE.Box3().setFromObject(root);
-        const boxSize = box.getSize(new THREE.Vector3()).length();
-        const boxCenter = box.getCenter(new THREE.Vector3());
+            const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1, 1000);
+            
+            camera.position.set(-30, 0, 0.1);
+            camera.lookAt(new THREE.Vector3());
+            scene.add(camera);
 
-        frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.outputColorSpace = THREE.SRGBColorSpace;
+            renderer.setAnimationLoop(() => {
+                // renderer.render(scene, camera);
+                start
+            });
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-        controls.enableZoom = true;
-        controls.maxDistance = boxSize * 10;
-        controls.target.copy(boxCenter);
+            document
+                .getElementById(`model_viewer_container`)
+                .appendChild(renderer.domElement);
 
-        controls.update();
-        scene.add(root);
+            const box = new THREE.Box3().setFromObject(root);
+            const boxSize = box.getSize(new THREE.Vector3()).length();
+            const boxCenter = box.getCenter(new THREE.Vector3());
 
-        console.log(dumpObject(root).join("\n"));
+            frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
 
-        function animate() {
-            requestAnimationFrame(animate);
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.enableZoom = true;
+            controls.maxDistance = boxSize * 10;
+            controls.target.copy(boxCenter);
             controls.update();
-            renderer.render(scene, camera);
-        }
+            scene.add(root);
 
-        animate();
-    }, undefined, function (error) { console.error(error); });
+            console.log("ModelViewer -> dumpObject(): ", dumpObject(root).join("\n"))
+
+
+            // document.querySelectorAll(`#model_viewer_container`).forEach(elem => intersectionObserver.observe(renderer.domElement));
+
+            
+            function start() {
+                requestId = requestAnimationFrame(start);
+                console.log("start() invoked. requestID is: ", requestId )
+
+                controls.update();
+                renderer.render(scene, camera);
+            };
+
+            function stop() {
+                console.log("stop() invoked. requestID is: ", requestId )
+                cancelAnimationFrame(requestId);
+                console.log("stop() invoked. ")
+
+            };
+
+            start();
+
+            console.table("containerRef: ", containerRef) 
+
+            const onScreen = new Set();
+            const intersectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    console.log("intersection entry: ") 
+                    console.table(entry) 
+                    console.log("_________________") 
+
+                    if (entry.isIntersecting) {
+                        onScreen.add(entry.target);
+                        start();
+                    console.log('render has been started');
+                    } else {
+                        console("\n else statement: stop. isIntersecting is false. entry.target: ")
+
+                        console.table(entry.target)
+                        stop();
+                        onScreen.delete(entry.target);
+                        console.log('stop() innvoked and obScrene.delete() invoked');
+                        }     
+                });
+
+            // document.getElementById("").innerHTML = onScreen.size
+            //     ? `on screen: ${[...onScreen].map(e => e.innerHTML).join(', ')}`
+            //     : 'none';
+            });
+
+            // document.querySelectorAll(`#model_viewer_container`).forEach(elem => intersectionObserver.observe(elem));
+            document.querySelectorAll(`#model_viewer_container`).forEach(elem => intersectionObserver.observe(elem));
+            intersectionObserver.observe(renderer.domElement);
+
+        }, undefined, function (error) { console.error(error); });
+    }, []);
 
     return (
         <div
-        className=" flex-column items-center justify-center  text-center"
-        key="69"
-        >
-            <canvas className="items-center justify-center" key="3"></canvas>
-        </div>
+        ref={containerRef}
+        id="model_viewer_container"
+        className="flex align-center items-center justify-around text-center border border-color-black"
+        />
+       
     );
 };

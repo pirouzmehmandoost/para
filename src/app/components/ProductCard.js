@@ -1,35 +1,34 @@
 import Image from 'next/image'
  
-export default function ProductCard( props ) {
+export default function ProductCard( {props} ) {
 
-    console.log("these props are passed to ProductCard", props)
     const {
         url,
         name,
         price,
         productType,
-    } = props.data
+    } = props
 
     return (
-        <div className=" static flex flex-row justify-between items-center text-center">
-            <div className="relative">
-                <h2> name: {name}</h2>
-                <h2> price: {price}</h2>
-                <h2> url: {url} </h2>
-                
-
-                    <div className = "absolute">   
-                        <Image
-                        className="relative"
-                        src={url}
-                        width={500}
-                        height={500}
-                        alt="A Product"
-                        />
-                    </div>
+        <div 
+        id="product_card"
+        className="w-full flex flex-col relative  backdrop-blur-3xl  backdrop-brightness-100 justify-between items-center text-center"
+        >
+            <div>
+                <Image
+                className="bg-cover overflow-auto"
+                loading="lazy"
+                src={url}
+                width={400}
+                height={600}
+                alt={name}
+                />
             </div>
-
-           
+ 
+            <div className= "z-10 w-full" > 
+                <p> {name} </p>
+                <p> {price} </p>
+            </div>
         </div>
     )
 }

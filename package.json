@@ -9,7 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@mediapipe/hands": "^0.4.1675469240",
+    "@mui/icons-material": "^5.16.4",
+    "@mui/material": "^5.16.4",
     "@tensorflow-models/hand-pose-detection": "^2.0.1",
     "@tensorflow/tfjs-backend-wasm": "^4.20.0",
     "@tensorflow/tfjs-backend-webgl": "^4.20.0",

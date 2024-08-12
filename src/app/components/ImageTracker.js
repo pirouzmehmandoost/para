@@ -99,7 +99,7 @@ export const ImageTracker = () => {
   return (
     <div
       ref={containerRef}
-      className="flex-column items-center justify-center  text-center min-w-screen min-h-screen "
+      className="flex-column items-center justify-center text-center min-w-screen min-h-screen "
     >
       <canvas className=" flex-column min-w-screen min-h-screen items-center justify-center text-center" />
     </div>
