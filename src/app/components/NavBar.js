@@ -17,11 +17,6 @@ export default function NavBar() {
             <div id="nav_bar_header"
             className="flex flex-row text-center text-2xl text-clay_dark cursor-pointer"
             >
-
-                <div id="status">
-                    <p>status</p>
-                </div>
-
                 <Link
                 href="/"
                 className="border-transparent pl-5 pr-20 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
