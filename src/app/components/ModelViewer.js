@@ -1,24 +1,18 @@
 "use client";
 
-import { UnifrakturCook } from "next/font/google"
-
 import * as THREE from "three";
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import React, { useLayoutEffect, useRef } from "react";
 import { dumpObject } from "../../lib/modeling";
 
-// const url = "bag_for_web_v2.gltf";
-// const url = "bag_for_web2.gltf";
-// const url = "rock_bag_red.gltf";
 const url = "rock_bag_v2_web_display_2.glb";
-let text = ""
 const loader = new GLTFLoader();
 const scene = new THREE.Scene();
+const onScreen = new Set();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-const cook =  UnifrakturCook({ weight: '700', subsets: ["latin"], });
+let intersectionObserver;
 
 
 export const frameArea = (sizeToFitOnScreen, boxSize, boxCenter, camera) => {
@@ -50,13 +44,14 @@ export const ModelViewer = () => {
     const containerRef = useRef(null);
 
     useLayoutEffect(() => {
+
+        //Use later to dispose of unneeded geometry andfree GPU 
+        let glTFGeometry = new THREE.BufferGeometry();
+
         loader.load( url,(gltf) => {
             gltf.scene.scale.set(0.00001, 0.00001, 0.00001)
             const root = gltf.scene;
-            let requestId = null;
-            //warm white lighting
-            // const light = new THREE.HemisphereLight(0xF8F7F7, 0xF8F7F7, .1);
-            // scene.add(light);
+            let requestId = undefined;
 
             // top lighting
             const pointLight1 = new THREE.PointLight(0xFFFFFF , 5);
@@ -74,11 +69,11 @@ export const ModelViewer = () => {
             pointLight2.intensity = 40;
             scene.add(pointLight2);
 
+            //camera
             const camera = new THREE.PerspectiveCamera(
             75,
             window.innerWidth / window.innerHeight,
             0.1, 1000);
-            
             camera.position.set(-30, 0, 0.1);
             camera.lookAt(new THREE.Vector3());
             scene.add(camera);
@@ -86,21 +81,26 @@ export const ModelViewer = () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputColorSpace = THREE.SRGBColorSpace;
-            renderer.setAnimationLoop(() => {
-                // renderer.render(scene, camera);
-                start
-            });
+            // renderer.setAnimationLoop(() => {
+            //     // renderer.render(scene, camera);
+            //     start
+            // });
 
+
+            //add to DOM
             document
-                .getElementById(`model_viewer_container`)
-                .appendChild(renderer.domElement);
+            .getElementById(`model_viewer_container`)
+            .appendChild(renderer.domElement);
 
+
+            //dimensions
             const box = new THREE.Box3().setFromObject(root);
             const boxSize = box.getSize(new THREE.Vector3()).length();
             const boxCenter = box.getCenter(new THREE.Vector3());
 
             frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
 
+            //controls
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.25;
@@ -110,16 +110,33 @@ export const ModelViewer = () => {
             controls.update();
             scene.add(root);
 
-            console.log("ModelViewer -> dumpObject(): ", dumpObject(root).join("\n"))
+            // console.log("ModelViewer -> dumpObject(): \n", dumpObject(root).join("\n"))
 
 
-            // document.querySelectorAll(`#model_viewer_container`).forEach(elem => intersectionObserver.observe(renderer.domElement));
+            // gltf.parser.getDependencies( 'material' ).then( ( materials ) => {
+            // console.log( {materials} );
+            // console.log(materials[0].metalness)
+            // materials[0].metalness = 1
+            // console.log(materials[0].metalness)
+            // });
+
+            // console.log("root?", root)
+
+            // console.log("root children??", root?.children)
+
+            
+            // root.traverse( function ( child ) {
+            //     if ( child.isMesh ) {            
+            //         //Setting the buffer geometry
+            //         glTFGeometry = child.geometry;
+            //         console.log("buffered geometry: ", glTFGeometry)
+            //     }
+            // });
 
             
             function start() {
                 requestId = requestAnimationFrame(start);
                 console.log("start() invoked. requestID is: ", requestId )
-
                 controls.update();
                 renderer.render(scene, camera);
             };
@@ -127,53 +144,41 @@ export const ModelViewer = () => {
             function stop() {
                 console.log("stop() invoked. requestID is: ", requestId )
                 cancelAnimationFrame(requestId);
-                console.log("stop() invoked. ")
-
+                requestId = undefined;
+                renderer.setAnimationLoop(null);
+                
             };
+        
+            //start or stop render when not in viewport
+            intersectionObserver = new IntersectionObserver((entries) => {
 
-            start();
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    start();
+                    onScreen.add(entry.target);
 
-            console.table("containerRef: ", containerRef) 
-
-            const onScreen = new Set();
-            const intersectionObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    console.log("intersection entry: ") 
-                    console.table(entry) 
-                    console.log("_________________") 
-
-                    if (entry.isIntersecting) {
-                        onScreen.add(entry.target);
-                        start();
-                    console.log('render has been started');
-                    } else {
-                        console("\n else statement: stop. isIntersecting is false. entry.target: ")
-
-                        console.table(entry.target)
-                        stop();
-                        onScreen.delete(entry.target);
-                        console.log('stop() innvoked and obScrene.delete() invoked');
-                        }     
+                } else {
+                    stop();
+                    onScreen.delete(entry.target);
+                    }     
                 });
-
-            // document.getElementById("").innerHTML = onScreen.size
-            //     ? `on screen: ${[...onScreen].map(e => e.innerHTML).join(', ')}`
-            //     : 'none';
             });
-
             // document.querySelectorAll(`#model_viewer_container`).forEach(elem => intersectionObserver.observe(elem));
-            document.querySelectorAll(`#model_viewer_container`).forEach(elem => intersectionObserver.observe(elem));
             intersectionObserver.observe(renderer.domElement);
+
+            console.log( onScreen.size
+            ? `on screen: ${[...onScreen].map(e => e.textContent).join(', ')}`
+            : "off screen"
+            );
 
         }, undefined, function (error) { console.error(error); });
     }, []);
 
     return (
-        <div
-        ref={containerRef}
-        id="model_viewer_container"
-        className="flex align-center items-center justify-around text-center border border-color-black"
-        />
-       
+            <div
+            ref={containerRef}
+            id="model_viewer_container"
+            className="bg-black"
+            />
     );
 };

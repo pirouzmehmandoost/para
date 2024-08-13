@@ -10,7 +10,7 @@ import { dumpObject } from "../../lib/modeling";
 
 export const ImageTracker = () => {
   const containerRef = useRef(null);
-  const url = "rock_bag_red.gltf";
+  const url = "rock_bag_v2_web_display_2.glb";
 
     useLayoutEffect(() => {
         let root;
