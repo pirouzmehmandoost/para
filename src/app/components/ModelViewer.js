@@ -6,7 +6,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import React, { useLayoutEffect, useRef } from "react";
 import { dumpObject } from "../../lib/modeling";
 
-const url = "rock_bag_v2_web_display_2.glb";
+const url = "rocky_sandal_web.glb";
+
 const loader = new GLTFLoader();
 const scene = new THREE.Scene();
 const onScreen = new Set();
@@ -40,10 +41,14 @@ export const frameArea = (sizeToFitOnScreen, boxSize, boxCenter, camera) => {
     camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
 };
 
-export const ModelViewer = () => {
+export const ModelViewer = ({props}) => {
     const containerRef = useRef(null);
 
     useLayoutEffect(() => {
+
+        const { 
+            isClickable
+        } = props; 
 
         //Use later to dispose of unneeded geometry andfree GPU 
         let glTFGeometry = new THREE.BufferGeometry();
@@ -101,17 +106,19 @@ export const ModelViewer = () => {
             frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
 
             //controls
-            const controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.25;
-            controls.enableZoom = true;
-            controls.maxDistance = boxSize * 10;
-            controls.target.copy(boxCenter);
-            controls.update();
+            if (isClickable) {
+                const controls = new OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.25;
+                controls.enableZoom = true;
+                controls.maxDistance = boxSize * 10;
+                controls.target.copy(boxCenter);
+                controls.update();
+            }
+
             scene.add(root);
 
             // console.log("ModelViewer -> dumpObject(): \n", dumpObject(root).join("\n"))
-
 
             // gltf.parser.getDependencies( 'material' ).then( ( materials ) => {
             // console.log( {materials} );
