@@ -3,13 +3,16 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { TransformControls } from "three/addons/controls/TransformControls.js";
 import React, { useLayoutEffect, useRef } from "react";
 import { dumpObject } from "../../lib/modeling";
 
-const url = "rocky_sandal_web.glb";
+const url = "rock_tote_for_web.glb";
 
 const loader = new GLTFLoader();
 const scene = new THREE.Scene();
+const clock = new THREE.Clock();
+
 const onScreen = new Set();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -41,17 +44,18 @@ export const frameArea = (sizeToFitOnScreen, boxSize, boxCenter, camera) => {
     camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
 };
 
-export const ModelViewer = ({props}) => {
+export const ModelViewer = (props) => {
     const containerRef = useRef(null);
 
     useLayoutEffect(() => {
 
         const { 
-            isClickable
+            enableControls
         } = props; 
 
         //Use later to dispose of unneeded geometry andfree GPU 
-        let glTFGeometry = new THREE.BufferGeometry();
+        let bufferGeometry = null;
+        let mesh = null;
 
         loader.load( url,(gltf) => {
             gltf.scene.scale.set(0.00001, 0.00001, 0.00001)
@@ -83,14 +87,11 @@ export const ModelViewer = ({props}) => {
             camera.lookAt(new THREE.Vector3());
             scene.add(camera);
 
+            const controls = new OrbitControls(camera, renderer.domElement);
+
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputColorSpace = THREE.SRGBColorSpace;
-            // renderer.setAnimationLoop(() => {
-            //     // renderer.render(scene, camera);
-            //     start
-            // });
-
 
             //add to DOM
             document
@@ -106,8 +107,7 @@ export const ModelViewer = ({props}) => {
             frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
 
             //controls
-            if (isClickable) {
-                const controls = new OrbitControls(camera, renderer.domElement);
+            if (enableControls) {
                 controls.enableDamping = true;
                 controls.dampingFactor = 0.25;
                 controls.enableZoom = true;
@@ -127,33 +127,41 @@ export const ModelViewer = ({props}) => {
             // console.log(materials[0].metalness)
             // });
 
-            // console.log("root?", root)
 
-            // console.log("root children??", root?.children)
-
-            
-            // root.traverse( function ( child ) {
-            //     if ( child.isMesh ) {            
-            //         //Setting the buffer geometry
-            //         glTFGeometry = child.geometry;
-            //         console.log("buffered geometry: ", glTFGeometry)
-            //     }
-            // });
-
+            root.traverse( function ( child ) {
+                if ( child.isMesh ) {            
+                    console.log("child: ", child)
+                    mesh = child;
+                    bufferGeometry = child.geometry;
+                }
+            });
             
             function start() {
+
                 requestId = requestAnimationFrame(start);
                 console.log("start() invoked. requestID is: ", requestId )
-                controls.update();
+
+                renderer.setAnimationLoop(() => {
+
+                const delta = clock.getDelta();
+                let yRotation = root?.rotation.y + delta
+                mesh.rotation.set(0, yRotation, 0);
+
+                renderer.render(scene, camera);
+
+                });
+
+                if (enableControls) controls.update();
+
                 renderer.render(scene, camera);
             };
 
             function stop() {
                 console.log("stop() invoked. requestID is: ", requestId )
+
                 cancelAnimationFrame(requestId);
                 requestId = undefined;
                 renderer.setAnimationLoop(null);
-                
             };
         
             //start or stop render when not in viewport
@@ -185,7 +193,6 @@ export const ModelViewer = ({props}) => {
             <div
             ref={containerRef}
             id="model_viewer_container"
-            className="bg-black"
             />
     );
 };

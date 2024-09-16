@@ -107,7 +107,7 @@ export default function NavBar() {
 
 
     return (
-        <div className = "w-full justify-between content-center items-center text-center pb-32">
+        <div className = "w-full ml-12 mt-6 justify-between content-center items-center text-center ">
             <div
             id="nav_bar"
             className="fixed z-10 items-center text-center border-solid border-2 border-clay_dark text-2xl text-clay_dark"
