@@ -6,6 +6,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ClearIcon from "@mui/icons-material/Clear";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import SearchBar from "./SearchBar";
+import useSelection from "../store/selection";
 
 
 export default function NavBar() {
@@ -55,7 +56,7 @@ export default function NavBar() {
                 rel="noopener noreferrer"
                 onClick={onClick}
                 >
-                    <h2>Bags</h2>
+                    <h2>Projects</h2>
                 </Link>
 
                 <Link
@@ -64,7 +65,7 @@ export default function NavBar() {
                 rel="noopener noreferrer"
                 onClick={onClick}
                 >
-                    <h2 className="mb-3 text-2xl">Footwear </h2>
+                    <h2 className="mb-3 text-2xl">Shop</h2>
                 </Link>
             </div>
         );
@@ -72,8 +73,7 @@ export default function NavBar() {
 
 
     const NavContent = ({ header, content, expanded }) => {
-        // const [expanded, setExpanded] = useState(expand);
-        // const toggleExpanded = () => setExpanded((current) => !current);
+        const reset = useSelection((state)=> state.reset)
 
         return (
             <div
@@ -116,7 +116,9 @@ export default function NavBar() {
 
                     expanded={expanded}
                     header={NavBarHeader({
-                        onClickLogo:()=> setExpanded(false),
+
+                        // remind myself why I wrapped this func in curly brackets
+                        onClickLogo:()=> {setExpanded(false)},
                         onClickShop:()=> setExpanded(false)
                     })}
                     content={NavBarContent({

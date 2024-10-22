@@ -3,8 +3,7 @@
 import { useRef } from 'react';
 import * as THREE from "three";
 import { Canvas } from '@react-three/fiber';
-import { useGLTF, useAnimations, OrbitControls, Environment, ContactShadows } from '@react-three/drei';
-
+import { useGLTF, useAnimations, useFrame, OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 THREE.ColorManagement.enabled = true;
 
 export function Model(props) {
@@ -25,7 +24,7 @@ export default function ModelViewer(props) {
     const { modelUrl } = props
     const { scene, animations } = useGLTF(modelUrl);
 
-    return (
+    return (   
         <Canvas 
         fallback={<div>Sorry no WebGL supported!</div>}
         camera={{ fov: 50, near: 1, far: 1000, position: [0, 15, 100] }}

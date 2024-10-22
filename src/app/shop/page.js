@@ -6,39 +6,58 @@ import ProductCard from "../components/ProductCard"
 const products = [
     {
         name: "Textured Mary Jane",
-        url: "/textured_mary_jane_3_4_view_1400x1400_px.png",
+        imgUrl:[
+            '/poo.png',
+            '/textured_mary_jane_front_1400x1400_px.png',
+            '/textured_mary_jane_medial_1400x1400_px.png',
+            '/textured_mary_jane_top_1400x1400_px.png',
+        ],
         price: `$ ${450}`,
         productType: "footwear",
+        modelUrl: "/rocky_sandal_web.glb"
     },
     {
-        name: "Rock Bag v2.0",
-        url: "/rock_bag_v2_white_1400x1400_px.png",
+        name: "Rock Bag v3.0",
+        imgUrl: ["/rock_tote.png"],
         price: `$ ${100}`,
         productType: "bag",
+        modelUrl: '/rock_tote_for_web.glb',
+    },
+
+    {
+        name: "Rock Bag v2.0",
+        imgUrl: ['/rock_bag_v2_white_1400x1400_px.png'],
+        price: `$ ${100}`,
+        productType: "bag",
+        modelUrl: ""
     },
     {
         name: "Rock bag",
-        url: "/bag.png",
+        imgUrl: ['/bag.png'],
         price: `$ ${100}`,
         productType: "bag",
+        modelUrl: ""
     },
     {
         name: "Stiletto Heel",
-        url: "/stiletto.png",
+        imgUrl: ['/stiletto.png'],
         price: `$ ${450}`,
         productType: "footwear",
+        modelUrl: ""
     },
     {
         name: "Mary Jane",
-        url: "/maryJane.png",
+        imgUrl:[ "/maryJane.png"],
         price: `$ ${450}`,
         productType: "footwear",
+        modelUrl: "/rocky_sandal_web.glb"
     },
     {
         name: "Boot Harness",
-        url: "/boot_harness_top.png",
+        imgUrl: ["/boot_harness_top.png"],
         price: `$ ${100}`,
         productType: "accessory",
+        modelUrl: ""
     },
 
 ];
@@ -56,7 +75,7 @@ export default function Shop() {
                 { 
                     products.map((item, index) => {
                         return <ProductCard 
-                            key={index} props={item} />
+                            key={index} data={item} />
                     })
                 }
             </div>
