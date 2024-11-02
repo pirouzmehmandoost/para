@@ -21,6 +21,7 @@
     "@tensorflow/tfjs-backend-webgl": "^4.20.0",
     "@tensorflow/tfjs-converter": "^4.20.0",
     "@tensorflow/tfjs-core": "^4.20.0",
+    "@types/three": "^0.168.0",
     "aframe": "^1.6.0",
     "gltfjsx": "^6.5.2",
     "jimp": "^0.22.12",
@@ -30,7 +31,8 @@
     "react-dom": "^18",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.165.0",
-    "three-js": "^79.0.0"
+    "three-js": "^79.0.0",
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "eslint": "^8.52.0",

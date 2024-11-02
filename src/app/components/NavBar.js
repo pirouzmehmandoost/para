@@ -116,10 +116,8 @@ export default function NavBar() {
 
                     expanded={expanded}
                     header={NavBarHeader({
-
-                        // remind myself why I wrapped this func in curly brackets
-                        onClickLogo:()=> {setExpanded(false)},
-                        onClickShop:()=> setExpanded(false)
+                        onClickLogo:() => setExpanded(false),
+                        onClickShop:() => setExpanded(false)
                     })}
                     content={NavBarContent({
                         onClick:toggleExpanded
