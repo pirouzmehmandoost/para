@@ -5,58 +5,72 @@ import ProductCard from "../components/ProductCard"
 
 const products = [
     {
-        name: "Textured Mary Jane",
-        url: "/textured_mary_jane_3_4_view_1400x1400_px.png",
-        price: `$ ${450}`,
-        productType: "footwear",
-    },
-    {
-        name: "Rock Bag v2.0",
-        url: "/rock_bag_v2_white_1400x1400_px.png",
+        name: "oval bag",
+        imgUrl: ['/rock_bag_v2_white_1400x1400_px.png'],
         price: `$ ${100}`,
         productType: "bag",
+        styles: 'black',
+        modelUrl: "/oval_bag_glossy_black.glb"
     },
     {
-        name: "Rock bag",
-        url: "/bag.png",
+        name: "XL oval bag",
+        imgUrl: [
+            '/oval_bag_xl_blender_image_front.png',
+            'oval_bag_xl_blender_image_quarter.png',
+            '/oval_bag_xl_blender_image_side.png',
+            '/oval_bag_xl_blender_image_top.png'
+        ],
         price: `$ ${100}`,
         productType: "bag",
+        styles: 'black',
+        modelUrl: "/oval_bag_glossy_black.glb"
     },
     {
-        name: "Stiletto Heel",
-        url: "/stiletto.png",
+        name: "Blob Platform Mary Jane",
+        imgUrl: [
+            '/poo.png',
+            '/textured_mary_jane_front_1400x1400_px.png',
+            '/textured_mary_jane_medial_1400x1400_px.png',
+            '/textured_mary_jane_top_1400x1400_px.png',
+        ],
         price: `$ ${450}`,
         productType: "footwear",
+        styles: 'black',
+        modelUrl: "/rocky_sandal_web.glb"
     },
     {
         name: "Mary Jane",
-        url: "/maryJane.png",
+        imgUrl: ["/maryJane.png"],
         price: `$ ${450}`,
         productType: "footwear",
+        styles: 'black',
+        modelUrl: "/rocky_sandal_web.glb"
     },
     {
         name: "Boot Harness",
-        url: "/boot_harness_top.png",
+        imgUrl: ["/boot_harness_top.png"],
         price: `$ ${100}`,
         productType: "accessory",
+        styles: 'black',
+        modelUrl: ""
     },
 
 ];
 
 export default function Shop() {
     return (
-        <div 
-        className="flex flex-col w-full h-full place-items-center items-center justify-around text-center text-clay_dark"
+        <div
+            className="flex flex-col w-full h-full place-items-center items-center justify-around text-center text-clay_dark"
         >
             <p className="text-5xl mb-10">
                 Shop.
             </p>
 
             <div className="grid grid-cols-2 gap 2">
-                { 
+                {
                     products.map((item, index) => {
-                        return <ProductCard 
-                            key={index} props={item} />
+                        return <ProductCard
+                            key={index} data={item} />
                     })
                 }
             </div>
