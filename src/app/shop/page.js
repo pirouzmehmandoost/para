@@ -5,21 +5,28 @@ import ProductCard from "../components/ProductCard"
 
 const products = [
     {
-        name: "Mini oval bag",
+        name: "oval bag",
         imgUrl: ['/rock_bag_v2_white_1400x1400_px.png'],
         price: `$ ${100}`,
         productType: "bag",
+        styles: 'black',
         modelUrl: "/oval_bag_glossy_black.glb"
     },
     {
         name: "XL oval bag",
-        imgUrl: ['/bag.png'],
+        imgUrl: [
+            '/oval_bag_xl_blender_image_front.png',
+            'oval_bag_xl_blender_image_quarter.png',
+            '/oval_bag_xl_blender_image_side.png',
+            '/oval_bag_xl_blender_image_top.png'
+        ],
         price: `$ ${100}`,
         productType: "bag",
-        modelUrl: ""
+        styles: 'black',
+        modelUrl: "/oval_bag_glossy_black.glb"
     },
     {
-        name: "Textured Mary Jane",
+        name: "Blob Platform Mary Jane",
         imgUrl: [
             '/poo.png',
             '/textured_mary_jane_front_1400x1400_px.png',
@@ -28,6 +35,7 @@ const products = [
         ],
         price: `$ ${450}`,
         productType: "footwear",
+        styles: 'black',
         modelUrl: "/rocky_sandal_web.glb"
     },
     {
@@ -35,6 +43,7 @@ const products = [
         imgUrl: ["/maryJane.png"],
         price: `$ ${450}`,
         productType: "footwear",
+        styles: 'black',
         modelUrl: "/rocky_sandal_web.glb"
     },
     {
@@ -42,6 +51,7 @@ const products = [
         imgUrl: ["/boot_harness_top.png"],
         price: `$ ${100}`,
         productType: "accessory",
+        styles: 'black',
         modelUrl: ""
     },
 
