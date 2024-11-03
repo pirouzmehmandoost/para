@@ -7,23 +7,25 @@ const products = [
         name: "oval bag",
         imgUrl: [
             '/oval_bag_blender_matte_white_front.png',
-            '/oval_bag_blender_matte_white_quarter.png',
-            '/oval_bag_blender_matte_white_top.png',
-            '/oval_bag_blender_matte_white_side.png',
-            '/oval_bag_blender_glossy_white_front.png'
+            '/oval_bag_blender_glossy_white_front.png',
+            '/oval_bag_blender_matte_black_front.png',
+            '/oval_bag_blender_matte_black_quarter.png',
+            '/oval_bag_blender_matte_black_top.png',
+            '/oval_bag_blender_matte_black_side.png',
+
         ],
         price: `$ ${100}`,
         productType: "bag",
-        styles: ['matte white', 'glossy white', 'black'],
+        styles: ['Matte White', 'Glossy White', 'Matte Black'],
         modelUrl: "/oval_bag_glossy_black.glb"
     },
     {
         name: "XL oval bag",
         imgUrl: [
-            '/oval_bag_xl_blender_image_front.png',
-            '/oval_bag_xl_blender_image_quarter.png',
-            '/oval_bag_xl_blender_image_side.png',
-            '/oval_bag_xl_blender_image_top.png'
+            '/oval_bag_xl_blender_front.png',
+            '/oval_bag_xl_blender_quarter.png',
+            '/oval_bag_xl_blender_side.png',
+            '/oval_bag_xl_blender_top.png'
         ],
         price: `$ ${100}`,
         productType: "bag",
