@@ -7,13 +7,14 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import ThreeDRotationIcon from '@mui/icons-material/ThreeDRotation';
 import useSelection from '../../store/selection';
+import ShopFooter from "./../../components/ShopFooter"
 
-export default function ProductViewer(  ) {
+export default function ProductViewer() {
 
-    const selection = useSelection((state) => state.selection)
+    const selection = useSelection(state => state.selection)
 
-    const [ increment, setIncrement] = useState(0)
-    
+    const [increment, setIncrement] = useState(0)
+
     const {
         imgUrl,
         imgUrl: [mainImage, ...rest],
@@ -23,42 +24,47 @@ export default function ProductViewer(  ) {
     } = selection
 
     return (
-        <div 
-        id="product_viewer"
-        className="w-full h-full flex flex-col relative  backdrop-blur-3xl  backdrop-brightness-100 justify-between items-center text-center"
+        <div
+            id="product_viewer"
+            className="w-full h-full flex flex-col relative  bg-transparent justify-between items-center text-center"
         >
+
             <div>
                 <Image
-                className="bg-cover overflow-auto"
-                loading="lazy"
-                src={imgUrl[increment]}
-                // src={mainImage}
-                width={800}
-                height={800}
-                alt={name}
+                    className="bg-cover overflow-auto"
+                    loading="lazy"
+                    src={imgUrl[increment]}
+                    width={1920}
+                    height={1080}
+                    alt={name}
+                    quality={100}
+
                 // onClick={ () => { increment == imgUrl.length? setIncrement(0) : setIncrement(increment+1) }}
                 />
             </div>
 
-            <div className= "flex flex-row items-center text-center" > 
+            <div className="flex flex-row justify-between items-center text-center" >
                 <KeyboardArrowLeftIcon
-                onClick={ () => { increment <= 0 ? setIncrement(imgUrl.length-1) : setIncrement(increment-1) }}
+                    onClick={() => { increment <= 0 ? setIncrement(imgUrl.length - 1) : setIncrement(increment - 1) }}
                 />
 
-                <ThreeDRotationIcon/>
+                <ThreeDRotationIcon />
 
                 <KeyboardArrowRightIcon
-                onClick={ () => { increment < imgUrl.length-1? setIncrement(increment+1) : setIncrement(0) }}
+                    onClick={() => { increment < imgUrl.length - 1 ? setIncrement(increment + 1) : setIncrement(0) }}
                 />
             </div>
 
-            <div className= " flex flex-row justify-around items-center text-center" > 
-            <p> {increment} </p>
-                <p> {name} </p>
-                <p> {price} </p>
-                <p>Model Url: { modelUrl} </p>
-                <p> Description: This is where a descriptin will go. </p>
+            <div className=" flex flex-column justify-around items-center text-center" >
+                <ul>
+                    <li><p> Name: {name} </p></li>
+                    <li><p> Price: {price} </p></li>
+                    <li><p> Model Url: {modelUrl} </p></li>
+                    <li><p> Description: This is where a product description will go. </p></li>
+                </ul>
             </div>
+            <ShopFooter />
+
         </div>
     )
 }

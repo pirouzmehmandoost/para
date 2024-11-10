@@ -1,42 +1,42 @@
 import { create } from 'zustand'
 
 const initialSelection = {
-    name: "Rock Bag v3.0",
-    imgUrl: ["/rock_tote.png"],
-    price: `$ ${100}`,
-    productType: "bag",
-    modelUrl: '/oval_bag_glossy_black.glb',
+  name: "Rock Bag v3.0",
+  imgUrl: ["/rock_tote.png"],
+  price: `$ ${100}`,
+  productType: "bag",
+  modelUrl: '/oval_bag_1.glb',
 };
 
 
 const selectionStore = (set, get) => ({
-    selection: initialSelection,
+  selection: initialSelection,
 
-    getSelection: () => { 
-        const currentSelection = get().selection;
-        return currentSelection;
-    },
+  getSelection: () => {
+    const currentSelection = get().selection;
+    return currentSelection;
+  },
 
 
-    setSelection: (selected) => {
+  setSelection: (selected) => {
     set((state) => ({
-        ...state,
+      ...state,
       selection: selected,
     }));
   },
 
-    reset: () => {
-        set((state) => ({
-            ...state,
-          selection: initialSelection,
-        }));
-        return get().selection
-    },
+  reset: () => {
+    set((state) => ({
+      ...state,
+      selection: initialSelection,
+    }));
+    return get().selection
+  },
 
-  });
+});
 
 
 const useSelection = create(selectionStore);
 
-  export default useSelection;
+export default useSelection;
 
