@@ -8,9 +8,8 @@ import useSelection from '../store/selection';
 
 THREE.ColorManagement.enabled = true;
 
-export function Model(props) {
+const Model = (props) => {
 
-    const setSelection = useSelection((state) => state.setSelection);
     const { animations, scene, ...rest } = props;
     // const { actions } = useAnimations(animations, scene);
     const modelRef = useRef(null);
@@ -29,7 +28,7 @@ export function Model(props) {
 //     return null
 // };
 
-export default function ModelViewer(props) {
+export const ModelViewer = (props) => {
 
     const { modelUrl } = props
     const { scene, animations } = useGLTF(modelUrl);
@@ -59,3 +58,5 @@ export default function ModelViewer(props) {
         </Canvas>
     )
 };
+
+export default  ModelViewer;

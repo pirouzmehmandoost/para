@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from 'next/image'
 
 
-export default function ProductCard(props) {
+const ProductCard = (props) => {
 
     const {
         data,
@@ -57,5 +57,7 @@ export default function ProductCard(props) {
                 <p> {colors?.map((color, index) => `${color}${colors?.length > 0 && index !== colors.length - 1 ? ',' : ''} `)} </p>
             </div>
         </div>
-    )
-}
+    );
+};
+
+export default ProductCard;

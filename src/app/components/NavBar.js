@@ -5,16 +5,30 @@ import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClearIcon from "@mui/icons-material/Clear";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import SearchBar from "./SearchBar";
 // import useSelection from "../store/selection";
 
 
-export default function NavBar() {
+const NavBar = () => {
+
+    const [searchQuery, setsearchQuery] = useState("invisible");
+
+
+    const searchBar = (
+        <div className="flex flex-row flex-grow grid text-center text-2xl text-clay_dark mt-5 mb-0" >
+            <input 
+                type="text" 
+                id="search_input" 
+                className= "text-center bg-transparent border-b border-clay_dark focus:outline-none placeholder-clay_dark" 
+                placeholder="Search Products" 
+                required
+            />
+        </div>
+    );
+    
     const [expanded, setExpanded] = useState(false);
     const toggleExpanded = () => setExpanded(current => !current);
 
-    const LeftContent = () => {
-        return (
+    const leftContent = (
             <div className="flex flex-row cursor-pointer items-baseline">
                 <Link
                     href="/"
@@ -34,71 +48,67 @@ export default function NavBar() {
                     <ShoppingBagIcon className=" mx-5 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
                 </Link>
             </div >
-        )
-    };
+    );
 
-    const Menu = () => {
-        return (
-            <div className="flex flex-col flex-grow grid text-center" >
-                <div className="mt-5 mb-0">
-                    <SearchBar />
-                </div>
+    const menu = (
+        <div className="flex flex-col flex-grow grid text-center" >
+            {/* <div className="mt-5 mb-0"> */}
+                {searchBar}
+            {/* </div> */}
+        
+            <div
+                className="mb-3"
+                onClick={toggleExpanded}
+            >
+                <Link
+                    href="/shop"
+                    className="border border-transparent py-5 transition-colors hover:text-gray-500"
+                    rel="noopener noreferrer"
+                >
+                    <h2 >Projects</h2>
+                </Link>
+
+                <Link
+                    href="/shop"
+                    className="border border-transparent py-5 transition-colors hover:text-gray-500"
+                    rel="noopener noreferrer"
+                >
+                    <h2>Shop</h2>
+                </Link>
+            </div>
+        </div>
+    );
+
+
+    const wrapper = (
+        // const reset = useSelection((state) => state.reset)
+        <div
+            className={`${expanded ? "backdrop-blur-3xl  backdrop-brightness-150" : ""}`}
+        >
+            <div className={`flex flex-row justify-between items-center`}>
+
+                {leftContent}
+
                 <div
-                    className="mb-3"
+                    className="cursor-pointer"
                     onClick={toggleExpanded}
                 >
-                    <Link
-                        href="/shop"
-                        className="border border-transparent py-5 transition-colors hover:text-gray-500"
-                        rel="noopener noreferrer"
-                    >
-                        <h2 >Projects</h2>
-                    </Link>
-
-                    <Link
-                        href="/shop"
-                        className="border border-transparent py-5 transition-colors hover:text-gray-500"
-                        rel="noopener noreferrer"
-                    >
-                        <h2>Shop</h2>
-                    </Link>
+                    {
+                        expanded ?
+                            <ClearIcon className=" mx-5 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
+                            :
+                            <MenuIcon className="mx-5 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
+                    }
                 </div>
             </div>
-        );
-    };
 
-
-    const Wrapper = () => {
-        // const reset = useSelection((state) => state.reset)
-
-        return (
             <div
-                className={`${expanded ? "backdrop-blur-3xl  backdrop-brightness-150" : ""}`}
+                className={`flex flex-col px-6 pt-0 overflow-hidden transition-[max-height] duration-75 ease-in ${expanded ? "max-h-96" : "max-h-0"}`}
             >
-                <div className={`flex flex-row justify-between items-center`}>
-
-                    <LeftContent />
-                    <div
-                        className="cursor-pointer"
-                        onClick={toggleExpanded}
-                    >
-                        {
-                            expanded ?
-                                <ClearIcon className=" mx-5 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
-                                :
-                                <MenuIcon className="mx-5 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
-                        }
-                    </div>
-                </div>
-
-                <div
-                    className={`flex flex-col px-6 pt-0 overflow-hidden transition-[max-height] duration-75 ease-in ${expanded ? "max-h-96" : "max-h-0"}`}
-                >
-                    <Menu />
-                </div>
+                {menu}
             </div>
-        );
-    };
+        </div>
+    );
 
 
     return (
@@ -107,8 +117,10 @@ export default function NavBar() {
             className="w-full ml-12 mt-6 justify-between content-center items-center text-center text-2xl text-clay_dark "
         >
             <div className="fixed z-10 border-solid border-2 border-clay_dark">
-                <Wrapper />
+                {wrapper}
             </div>
         </div>
     );
 }
+
+export default NavBar;
