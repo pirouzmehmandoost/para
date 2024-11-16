@@ -1,22 +1,33 @@
 import { create } from 'zustand'
+import portfolio from "../../lib/globals"
 
-const initialSelection = {
-  name: "Rock Bag v3.0",
-  imgUrl: ["/rock_tote.png"],
-  price: `$ ${100}`,
-  productType: "bag",
-  modelUrl: '/oval_bag_1.glb',
-};
+
+// const initialState = {
+//   name: "Oval Bag",
+//   imgUrl: [
+//     '/oval_bag_blender_matte_white_front.png',
+//     '/oval_bag_blender_glossy_white_front.png',
+//     '/oval_bag_blender_matte_black_front.png',
+//     '/oval_bag_blender_matte_black_quarter.png',
+//     '/oval_bag_blender_matte_black_top.png',
+//     '/oval_bag_blender_matte_black_side.png',
+//   ],
+//   price: `$ ${100}`,
+//   productType: "bag",
+//   colors: [
+//     ['Matte White', '#ece8e2'],
+//     ["Glossy White", '#ece8e2'],
+//     ["Matte Black", '#fbda44'],
+//   ],
+//   modelUrl: "/oval_bag_1.glb"
+// };
+const initialState = portfolio.products[0]
 
 
 const selectionStore = (set, get) => ({
-  selection: initialSelection,
+  selection: initialState,
 
-  getSelection: () => {
-    const currentSelection = get().selection;
-    return currentSelection;
-  },
-
+  getSelection: () => get().selection,
 
   setSelection: (selected) => {
     set((state) => ({
@@ -28,7 +39,7 @@ const selectionStore = (set, get) => ({
   reset: () => {
     set((state) => ({
       ...state,
-      selection: initialSelection,
+      selection: initialState,
     }));
     return get().selection
   },
