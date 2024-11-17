@@ -12,8 +12,13 @@ const portfolio = {
             ],
             price: `$ ${100}`,
             productType: "bag",
-            colors: ['Matte White', 'Glossy White', 'Matte Black'],
-            modelUrl: "/oval_bag_1.glb"
+            colors: [
+                "Matte Black",
+                'Matte White',
+                "Glossy White",
+            ],
+            modelUrl: "/oval_bag_1.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
         {
             name: "XL Oval Bag",
@@ -25,8 +30,13 @@ const portfolio = {
             ],
             price: `$ ${100}`,
             productType: "bag",
-            colors: ['Matte Black'],
-            modelUrl: "/oval_bag_glossy_black.glb"
+            colors: [
+                "Matte Black",
+                'Matte White',
+                "Glossy White",
+            ],
+            modelUrl: "/oval_bag_xl_v2.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
     ],
 
@@ -43,8 +53,13 @@ const portfolio = {
             ],
             price: `$ ${100}`,
             productType: "bag",
-            colors: ['Matte White', 'Glossy White', 'Matte Black'],
-            modelUrl: "/oval_bag_glossy_black.glb"
+            colors: [
+                "Matte Black",
+                'Matte White',
+                "Glossy White",
+            ],
+            modelUrl: "/oval_bag_1.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
         {
             name: "XL Oval Bag",
@@ -56,11 +71,16 @@ const portfolio = {
             ],
             price: `$ ${100}`,
             productType: "bag",
-            colors: ['Matte Black'],
-            modelUrl: "/oval_bag_glossy_black.glb"
+            colors: [
+                "Matte Black",
+                'Matte White',
+                "Glossy White",
+            ],
+            modelUrl: "/oval_bag_xl.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
         {
-            name: "Blob Platform Mary Jane",
+            name: "Platform Mary Jane",
             imgUrl: [
                 '/poo.png',
                 '/textured_mary_jane_front_1400x1400_px.png',
@@ -70,7 +90,8 @@ const portfolio = {
             price: `$ ${450}`,
             productType: "footwear",
             colors: ['Glossy Black'],
-            modelUrl: "/rocky_sandal_web.glb"
+            modelUrl: "/rocky_sandal_web.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
         {
             name: "Mary Jane",
@@ -78,15 +99,18 @@ const portfolio = {
             price: `$ ${450}`,
             productType: "footwear",
             colors: ['Glossy Black'],
-            modelUrl: "/rocky_sandal_web.glb"
+            modelUrl: "/rocky_sandal_web.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
+
         },
         {
             name: "Boot Harness",
             imgUrl: ["/boot_harness_top.png"],
             price: `$ ${100}`,
             productType: "accessory",
-            colors: ['Glossy White'],
-            modelUrl: ""
+            colors: ["Glossy White"],
+            modelUrl: "",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
     ],
 };

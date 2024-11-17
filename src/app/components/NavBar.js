@@ -15,47 +15,47 @@ const NavBar = () => {
 
     const searchBar = (
         <div className="flex flex-row flex-grow grid text-center text-2xl text-clay_dark mt-5 mb-0" >
-            <input 
-                type="text" 
-                id="search_input" 
-                className= "text-center bg-transparent border-b border-clay_dark focus:outline-none placeholder-clay_dark" 
-                placeholder="Search Products" 
+            <input
+                type="text"
+                id="search_input"
+                className="text-center bg-transparent border-b border-clay_dark focus:outline-none placeholder-clay_dark"
+                placeholder="Search Products"
                 required
             />
         </div>
     );
-    
+
     const [expanded, setExpanded] = useState(false);
     const toggleExpanded = () => setExpanded(current => !current);
 
     const leftContent = (
-            <div className="flex flex-row cursor-pointer items-baseline">
-                <Link
-                    href="/"
-                    className="border-transparent pl-5 pr-20 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
-                    rel="noopener noreferrer"
-                    onClick={() => setExpanded(false)}
-                >
-                    <h2>Pirouz Mehmandoost</h2>
-                </Link>
+        <div className="flex flex-row">
+            <Link
+                className="cursor-pointer border-transparent pl-5 pr-20 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
+                href="/"
+                rel="noopener noreferrer"
+                onClick={() => setExpanded(false)}
+            >
+                <h2>Pirouz Mehmandoost</h2>
+            </Link>
 
-                <Link
-                    href="/shop"
-                    className="border-transparent transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
-                    rel="noopener noreferrer"
-                    onClick={() => setExpanded(false)}
-                >
-                    <ShoppingBagIcon className=" mx-5 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
-                </Link>
-            </div >
+            <Link
+                className=" self-center border-transparent transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
+                href="/shop"
+                rel="noopener noreferrer"
+                onClick={() => setExpanded(false)}
+            >
+                <ShoppingBagIcon className="cursor-pointer mx-5 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
+            </Link>
+        </div >
     );
 
     const menu = (
         <div className="flex flex-col flex-grow grid text-center" >
             {/* <div className="mt-5 mb-0"> */}
-                {searchBar}
+            {searchBar}
             {/* </div> */}
-        
+
             <div
                 className="mb-3"
                 onClick={toggleExpanded}
@@ -85,7 +85,7 @@ const NavBar = () => {
         <div
             className={`${expanded ? "backdrop-blur-3xl  backdrop-brightness-150" : ""}`}
         >
-            <div className={`flex flex-row justify-between items-center`}>
+            <div className={`flex flex-row justify-between`}>
 
                 {leftContent}
 
@@ -103,7 +103,7 @@ const NavBar = () => {
             </div>
 
             <div
-                className={`flex flex-col px-6 pt-0 overflow-hidden transition-[max-height] duration-75 ease-in ${expanded ? "max-h-96" : "max-h-0"}`}
+                className={`flex flex-col px-6 pt-0 overflow-hidden transition-[max-height] duration-0 ease-in ${expanded ? "max-h-96" : "max-h-0"}  self-center`}
             >
                 {menu}
             </div>
@@ -114,7 +114,7 @@ const NavBar = () => {
     return (
         <div
             id="nav_bar"
-            className="w-full ml-12 mt-6 justify-between content-center items-center text-center text-2xl text-clay_dark "
+            className="w-full ml-12 mt-6 justify-between content-center items-center text-center self-center text-2xl text-clay_dark "
         >
             <div className="fixed z-10 border-solid border-2 border-clay_dark">
                 {wrapper}

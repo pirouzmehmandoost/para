@@ -6,12 +6,14 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import ThreeDRotationIcon from '@mui/icons-material/ThreeDRotation';
 import useSelection from '../../store/selection';
-import ShopFooter from "./../../components/ShopFooter"
+import ShopMenu from "./../../components/ShopMenu"
 
 const ProductViewer = () => {
     const selection = useSelection(state => state.selection)
     const [increment, setIncrement] = useState(0)
     const { imgUrl, name } = selection;
+
+    const imageCount = imgUrl.length;
 
     return (
         <div
@@ -27,7 +29,6 @@ const ProductViewer = () => {
                     height={1080}
                     alt={name}
                     quality={100}
-
                 />
             </div>
             <div className="flex flex-row justify-between items-center text-center" >
@@ -35,7 +36,7 @@ const ProductViewer = () => {
                 <ThreeDRotationIcon />
                 <KeyboardArrowRightIcon onClick={() => { increment < imgUrl.length - 1 ? setIncrement(increment + 1) : setIncrement(0) }} />
             </div>
-            <ShopFooter />
+            <ShopMenu />
         </div>
     );
 };
