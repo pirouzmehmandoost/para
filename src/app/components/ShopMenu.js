@@ -50,9 +50,11 @@ const ShopMenu = () => {
         <div className=" flex flex-row" >
             <p>quantity:</p>
             {
-                colors.map(c => {
+                colors.map((c, index) => {
                     return (
-                        <div className={`${tailWindColor(c)} w-5 h-5  mx-5 border-solid border-4 rounded-full border-clay_dark`} >
+                        <div
+                            key={index}
+                            className={`${tailWindColor(c)} w-5 h-5  mx-5 border-solid border-4 rounded-full border-clay_dark`} >
                         </div>
                     )
                 })
@@ -90,7 +92,7 @@ const ShopMenu = () => {
 
     return (
         <div
-            id="shop_footer"
+            id="shop_menu"
             className="w-full ml-12 mt-6 justify-between content-center items-center text-center"
         >
             <div className=" fixed z-20  bottom-0 right-0 border-solid border-2 border-clay_dark" >

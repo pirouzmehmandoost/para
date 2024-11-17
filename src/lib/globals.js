@@ -3,12 +3,12 @@ const portfolio = {
         {
             name: "Oval Bag",
             imgUrl: [
-                '/oval_bag_blender_matte_white_front.png',
-                '/oval_bag_blender_glossy_white_front.png',
                 '/oval_bag_blender_matte_black_front.png',
                 '/oval_bag_blender_matte_black_quarter.png',
                 '/oval_bag_blender_matte_black_top.png',
                 '/oval_bag_blender_matte_black_side.png',
+                '/oval_bag_blender_matte_white_front.png',
+                '/oval_bag_blender_glossy_white_front.png',
             ],
             price: `$ ${100}`,
             productType: "bag",
