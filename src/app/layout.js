@@ -1,8 +1,6 @@
-// import { Nanum_Gothic_Coding, }from "next/font/google"
 import { UnifrakturCook } from "next/font/google"
 import "./globals.css";
 import NavBar from "./components/NavBar"
-// const nanum = Nanum_Gothic_Coding({ weight: '400', subsets: ["latin"] });
 const cook = UnifrakturCook({ weight: '700', subsets: ["latin"], });
 
 export const metadata = {
@@ -14,8 +12,11 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body
-                className={`flex flex-col items-center min-h-screen bg-[radial-gradient(ellipse_at_50%_100%,var(--tw-gradient-stops))] from-clay_dark via-tahiti via-40% to-clay_dark to-100% backdrop-filter backdrop-contrast-125"
-                ${cook.className}`}>
+                className={`flex flex-col items-center min-h-screen
+                    bg-[radial-gradient(ellipse_at_50%_100%,var(--tw-gradient-stops))]
+                    from-clay_dark via-tahiti via-40% to-clay_dark to-100% backdrop-filter backdrop-contrast-125"
+                    ${cook.className}`}
+            >
                 <NavBar />
                 {children}
             </body>
