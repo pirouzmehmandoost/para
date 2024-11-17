@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import portfolio from "../../lib/globals"
 
 //temporary
-const initialState = portfolio.products[0];
+const initialState = portfolio.products[1];
 
 const selectionStore = (set, get) => ({
   selection: initialState,

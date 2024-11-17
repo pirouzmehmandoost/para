@@ -21,12 +21,6 @@ const ProductCard = (props) => {
 
     const setSelection = useSelection((state) => state.setSelection);
 
-    const handleImageClick = (data) => {
-        console.log("handleClick() data is: ", data)
-        setSelection(data);
-    };
-
-
     return (
         <div
             // maybe make bg-transparent and remove backdrop styling.
@@ -35,7 +29,7 @@ const ProductCard = (props) => {
         >
             <div>
                 <Link
-                    onClick={() => handleImageClick(data)}
+                    onClick={() => setSelection(data)}
                     href="/shop/product"
                     rel="noopener noreferrer"
                 // className="border-transparent pl-5 pr-20 transition-colors hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
@@ -54,7 +48,8 @@ const ProductCard = (props) => {
 
             <div className="z-10 w-full" >
                 <p> {name} </p>
-                <p> {colors?.map((color, index) => `${color}${colors?.length > 0 && index !== colors.length - 1 ? ',' : ''} `)} </p>
+                <p> {price} </p>
+                {/* <p> {colors?.map((color, index) => `${color}${colors?.length > 0 && index !== colors.length - 1 ? ',' : ''} `)} </p> */}
             </div>
         </div>
     );
