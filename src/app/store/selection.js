@@ -1,42 +1,32 @@
 import { create } from 'zustand'
+import portfolio from "../../lib/globals"
 
-const initialSelection = {
-    name: "Rock Bag v3.0",
-    imgUrl: ["/rock_tote.png"],
-    price: `$ ${100}`,
-    productType: "bag",
-    modelUrl: '/oval_bag_glossy_black.glb',
-};
-
+//temporary
+const initialState = portfolio.products[1];
 
 const selectionStore = (set, get) => ({
-    selection: initialSelection,
+  selection: initialState,
 
-    getSelection: () => { 
-        const currentSelection = get().selection;
-        return currentSelection;
-    },
+  getSelection: () => get().selection,
 
-
-    setSelection: (selected) => {
+  setSelection: (selected) => {
     set((state) => ({
-        ...state,
+      ...state,
       selection: selected,
     }));
   },
 
-    reset: () => {
-        set((state) => ({
-            ...state,
-          selection: initialSelection,
-        }));
-        return get().selection
-    },
+  reset: () => {
+    set((state) => ({
+      ...state,
+      selection: initialState,
+    }));
+    return get().selection
+  },
 
-  });
-
+});
 
 const useSelection = create(selectionStore);
 
-  export default useSelection;
+export default useSelection;
 
