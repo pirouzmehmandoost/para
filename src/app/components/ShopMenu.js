@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import useSelection from "../store/selection";
-import useCartStore from "../store/cart";
+// import useCartStore from "../store/cart";
 
 const ShopMenu = () => {
 

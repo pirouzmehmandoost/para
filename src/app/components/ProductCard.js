@@ -17,7 +17,7 @@ const ProductCard = (props) => {
     } = props;
 
     const [increment, setIncrement] = useState(0);
-    const setSelection = useSelection((state) => state.selection);
+    const setSelection = useSelection((state) => state.setSelection);
 
     return (
         < div
