@@ -10,7 +10,7 @@ const portfolio = {
                 '/oval_bag_blender_matte_white_front.png',
                 '/oval_bag_blender_glossy_white_front.png',
             ],
-            price: `$ ${100}`,
+            price: `$${100}`,
             productType: "bag",
             colors: [
                 "Matte Black",
@@ -28,7 +28,7 @@ const portfolio = {
                 '/oval_bag_xl_blender_side.png',
                 '/oval_bag_xl_blender_top.png'
             ],
-            price: `$ ${100}`,
+            price: `$${100}`,
             productType: "bag",
             colors: [
                 "Matte Black",
@@ -51,7 +51,7 @@ const portfolio = {
                 '/oval_bag_blender_matte_black_top.png',
                 '/oval_bag_blender_matte_black_side.png',
             ],
-            price: `$ ${100}`,
+            price: `$${100}`,
             productType: "bag",
             colors: [
                 "Matte Black",
@@ -69,7 +69,7 @@ const portfolio = {
                 '/oval_bag_xl_blender_side.png',
                 '/oval_bag_xl_blender_top.png'
             ],
-            price: `$ ${100}`,
+            price: `$${100}`,
             productType: "bag",
             colors: [
                 "Matte Black",
@@ -87,7 +87,7 @@ const portfolio = {
                 '/textured_mary_jane_medial_1400x1400_px.png',
                 '/textured_mary_jane_top_1400x1400_px.png',
             ],
-            price: `$ ${450}`,
+            price: `$${450}`,
             productType: "footwear",
             colors: ['Glossy Black'],
             modelUrl: "/rocky_sandal_web.glb",
@@ -96,7 +96,7 @@ const portfolio = {
         {
             name: "Mary Jane",
             imgUrl: ["/maryJane.png"],
-            price: `$ ${450}`,
+            price: `$${450}`,
             productType: "footwear",
             colors: ['Glossy Black'],
             modelUrl: "/rocky_sandal_web.glb",
@@ -106,7 +106,7 @@ const portfolio = {
         {
             name: "Boot Harness",
             imgUrl: ["/boot_harness_top.png"],
-            price: `$ ${100}`,
+            price: `$${100}`,
             productType: "accessory",
             colors: ["Glossy White"],
             modelUrl: "",

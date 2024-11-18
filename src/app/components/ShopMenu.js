@@ -26,14 +26,13 @@ const ShopMenu = () => {
 
 
     const colorSelection = (
-        <div className=" flex flex-row" >
-            <p>quantity:</p>
+        <div className="flex flex-row">
             {
                 colors.map((c, index) => {
                     return (
                         <div
                             key={index}
-                            className={`${tailWindColor(c)} w-5 h-5  mx-5 border-solid border-4 rounded-full border-clay_dark`} >
+                            className={`${tailWindColor(c)} w-5 h-5 mx-3 border-solid border-4 rounded-full border-clay_dark`} >
                         </div>
                     )
                 })
