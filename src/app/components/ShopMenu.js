@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import useSelection from "../store/selection";
+import useCartStore from "../store/cart";
 
 const ShopMenu = () => {
 
     const [expanded, setExpanded] = useState(false);
     const selection = useSelection(state => state.selection);
+
     const toggleExpanded = () => setExpanded(current => !current);
 
     const {
@@ -28,11 +30,11 @@ const ShopMenu = () => {
     const colorSelection = (
         <div className="flex flex-row">
             {
-                colors.map((c, index) => {
+                colors.map((c) => {
                     return (
                         <div
-                            key={index}
-                            className={`${tailWindColor(c)} w-5 h-5 mx-3 border-solid border-4 rounded-full border-clay_dark`} >
+                            key={c}
+                            className={`${tailWindColor(c)} w-6 h-6 mx-3 border-solid border-4 rounded-full border-clay_dark cursor-pointer`} >
                         </div>
                     )
                 })
@@ -42,21 +44,21 @@ const ShopMenu = () => {
 
 
     const wrapper = (
-        <div className={` flex flex-col justify-between items-end text-clay_dark ${expanded ? "backdrop-blur-3xl  backdrop-brightness-150" : ""}`} >
-            <div className={`px-6 pt-0 overflow-hidden transition duration-100 ease-in-out ${expanded ? "max-h-full" : "max-h-0"}`} >
+        <div className={` flex flex-col text-clay_dark ${expanded ? "backdrop-blur-xl  backdrop-brightness-150 bg-slate-100" : ""}`} >
+            <div className={`px-6 pt-0 items-start overflow-hidden transition duration-100 ease-in-out ${expanded ? "max-h-full" : "max-h-0"}`} >
                 {description}
             </div>
 
-            <div className=" flex flex-row my-3 max-w-full place-content-evenly" >
+            <div className=" flex flex-row place-content-around my-3 max-w-full" >
                 <div
-                    className="cursor-pointer"
+                    className=" basis-1/4 cursor-pointer"
                     onClick={toggleExpanded}>
                     <p>{name}</p>
                 </div>
-                <div>
+                <div className="basis-1/4">
                     <p>{price}</p>
                 </div>
-                <div className="cursor-pointer">
+                <div className="basis-1/2">
                     {colorSelection}
                 </div>
             </div>
