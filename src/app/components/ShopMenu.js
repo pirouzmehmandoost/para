@@ -44,7 +44,7 @@ const ShopMenu = () => {
 
 
     const wrapper = (
-        <div className={` flex flex-col text-clay_dark ${expanded ? "backdrop-blur-xl  backdrop-brightness-150 bg-slate-100" : ""}`} >
+        <div className={` flex flex-col text-clay_dark backdrop-blur-xl backdrop-brightness-150 ${expanded ? "bg-slate-100" : ""}`} >
             <div className={`px-6 pt-0 items-start overflow-hidden transition duration-100 ease-in-out ${expanded ? "max-h-full" : "max-h-0"}`} >
                 {description}
             </div>
