@@ -7,7 +7,6 @@ import { useState } from "react";
 
 
 const ProductCard = (props) => {
-
     const {
         data,
         data: {
