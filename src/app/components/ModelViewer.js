@@ -60,18 +60,7 @@ const Model = ({ props }) => {
             ref={modelRef}
             position={[0, -20, 0]}
             scale={.3}
-        >
-            {/* <mesh
-                //modelRef is scene.children[0].geometry
-                geometry={scene.children[0].geometry}
-                material={newMaterial}
-                position={[0, -80, 0]}
-                scale={1}
-                name={"here"}
-                castShadow
-                receiveShadow
-            /> */}
-        </primitive >
+        />
     );
 };
 
@@ -92,29 +81,29 @@ const setMaterialColor = (col) => {
 };
 
 
-const Buttons = () => {
-    const selection = useSelection((state) => state.selection);
-    const [material, setMaterial] = useState();
-    const {
-        colors,
-    } = selection;
+// const Buttons = () => {
+//     const selection = useSelection((state) => state.selection);
+//     const [material, setMaterial] = useState();
+//     const {
+//         colors,
+//     } = selection;
 
-    return (
-        <div className="absolute w-full flex flex-row items-center justify-evenly items-end mb-3">
-            {
-                colors.map((c) => {
-                    return (
-                        <div
-                            onClick={() => { setMaterial(setMaterialColor(c)); }}
-                            key={c}
-                            className={`${tailWindColor(c)} w-3 h-3 border-solid border-clay_dark border-2 rounded-full cursor-pointer`} >
-                        </div>
-                    )
-                })
-            }
-        </div >
-    );
-};
+//     return (
+//         <div className="absolute w-full flex flex-row items-center justify-evenly items-end mb-3">
+//             {
+//                 colors.map((c) => {
+//                     return (
+//                         <div
+//                             onClick={() => { setMaterial(setMaterialColor(c)); }}
+//                             key={c}
+//                             className={`${tailWindColor(c)} w-3 h-3 border-solid border-clay_dark border-2 rounded-full cursor-pointer`} >
+//                         </div>
+//                     )
+//                 })
+//             }
+//         </div >
+//     );
+// };
 
 
 const ModelViewPort = (props) => {
