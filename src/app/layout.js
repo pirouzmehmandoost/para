@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body
-                className={`flex flex-col items-center min-h-screen
+                className={`min-h-screen min-w-screen max-w-screen max-h-screen
                     bg-[radial-gradient(ellipse_at_50%_100%,var(--tw-gradient-stops))]
                     from-clay_dark via-tahiti via-40% to-clay_dark to-100% backdrop-filter backdrop-contrast-125"
                     ${cook.className}`}

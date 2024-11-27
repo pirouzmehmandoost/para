@@ -2,38 +2,52 @@ const portfolio = {
     "products": [
         {
             name: "Oval Bag",
-            imgUrl: [
-                '/oval_bag_blender_matte_black_front.png',
-                '/oval_bag_blender_matte_black_quarter.png',
-                '/oval_bag_blender_matte_black_top.png',
-                '/oval_bag_blender_matte_black_side.png',
-                '/oval_bag_blender_matte_white_front.png',
-                '/oval_bag_blender_glossy_white_front.png',
-            ],
             price: `$${100}`,
             productType: "bag",
+            imgUrls: {
+                "matte_white": [
+                    "/oval_bag_matte_white_1.png",
+                    "/oval_bag_matte_white_2.png",
+                    "/oval_bag_matte_white_3.png",
+                    "/oval_bag_matte_white_4.png",
+                ],
+                "matte_black": [
+                    "/oval_bag_matte_black_1.png",
+                    "/oval_bag_matte_black_2.png",
+                    "/oval_bag_matte_black_3.png",
+                    "/oval_bag_matte_black_4.png",
+                ],
+            },
             colors: [
                 "Matte Black",
                 'Matte White',
-                "Glossy White",
             ],
             modelUrl: "/oval_bag_1.glb",
             description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
         {
             name: "XL Oval Bag",
-            imgUrl: [
-                '/oval_bag_xl_blender_front.png',
-                '/oval_bag_xl_blender_quarter.png',
-                '/oval_bag_xl_blender_side.png',
-                '/oval_bag_xl_blender_top.png'
-            ],
+            imgUrls: {
+                "matte_white": [
+                    "/oval_bag_v8.5_matte_white_1.png",
+                    "/oval_bag_v8.5_matte_white_2.png",
+                    "/oval_bag_v8.5_matte_white_3.png",
+                    "/oval_bag_v8.5_matte_white_4.png",
+                    "/oval_bag_v8.5_matte_white_5.png",
+
+                ],
+                "matte_black": [
+                    "/oval_bag_v8.5_matte_black_1.png",
+                    "/oval_bag_v8.5_matte_black_2.png",
+                    "/oval_bag_v8.5_matte_black_3.png",
+                    "/oval_bag_v8.5_matte_black_4.png",
+                ],
+            },
             price: `$${100}`,
             productType: "bag",
             colors: [
                 "Matte Black",
                 'Matte White',
-                "Glossy White",
             ],
             modelUrl: "/oval_bag_xl_v2.glb",
             description: "A bulgy 3d printed bag with a sleek sillhouette."
@@ -43,54 +57,52 @@ const portfolio = {
     "projects": [
         {
             name: "Oval Bag",
-            imgUrl: [
-                '/oval_bag_blender_matte_white_front.png',
-                '/oval_bag_blender_glossy_white_front.png',
-                '/oval_bag_blender_matte_black_front.png',
-                '/oval_bag_blender_matte_black_quarter.png',
-                '/oval_bag_blender_matte_black_top.png',
-                '/oval_bag_blender_matte_black_side.png',
-            ],
             price: `$${100}`,
             productType: "bag",
+            imgUrls: {
+                "matte_white": [
+                    "/oval_bag_matte-white_1.png",
+                    "/oval_bag_matte-white_2.png",
+                    "/oval_bag_matte-white_3.png",
+                    "/oval_bag_matte-white_4.png",
+                ],
+                "matte_black": [
+                    "/oval_bag_matte_black_1.png",
+                    "/oval_bag_matte_black_2.png",
+                    "/oval_bag_matte_black_3.png",
+                    "/oval_bag_matte_black_4.png",
+                ],
+            },
             colors: [
                 "Matte Black",
                 'Matte White',
-                "Glossy White",
             ],
             modelUrl: "/oval_bag_1.glb",
             description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
         {
             name: "XL Oval Bag",
-            imgUrl: [
-                '/oval_bag_xl_blender_front.png',
-                '/oval_bag_xl_blender_quarter.png',
-                '/oval_bag_xl_blender_side.png',
-                '/oval_bag_xl_blender_top.png'
-            ],
+            imgUrls: {
+                "matte_white": [
+                    "/oval_bag_v8.5_matte_white_1.png",
+                    "/oval_bag_v8.5_matte_white_2.png",
+                    "/oval_bag_v8.5_matte_white_3.png",
+                    "/oval_bag_v8.5_matte_white_4.png",
+                ],
+                "matte_black": [
+                    "/oval_bag_v8.5_matte_black_1.png",
+                    "/oval_bag_v8.5_matte_black_2.png",
+                    "/oval_bag_v8.5_matte_black_3.png",
+                    "/oval_bag_v8.5_matte_black_4.png",
+                ],
+            },
             price: `$${100}`,
             productType: "bag",
             colors: [
                 "Matte Black",
                 'Matte White',
-                "Glossy White",
             ],
-            modelUrl: "/oval_bag_xl.glb",
-            description: "A bulgy 3d printed bag with a sleek sillhouette."
-        },
-        {
-            name: "Platform Mary Jane",
-            imgUrl: [
-                '/poo.png',
-                '/textured_mary_jane_front_1400x1400_px.png',
-                '/textured_mary_jane_medial_1400x1400_px.png',
-                '/textured_mary_jane_top_1400x1400_px.png',
-            ],
-            price: `$${450}`,
-            productType: "footwear",
-            colors: ['Glossy Black'],
-            modelUrl: "/rocky_sandal_web.glb",
+            modelUrl: "/oval_bag_xl_v2.glb",
             description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
         {

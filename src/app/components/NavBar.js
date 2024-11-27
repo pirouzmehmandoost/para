@@ -102,9 +102,7 @@ const NavBar = () => {
                 </div>
             </div>
 
-            <div
-                className={`flex flex-col px-6 pt-0 overflow-hidden transition-[max-height] duration-0 ease-in ${expanded ? "max-h-96" : "max-h-0"}  self-center`}
-            >
+            <div className={`flex flex-col px-6 pt-0 overflow-hidden transition-[max-height] duration-0 ease-in ${expanded ? "max-h-96" : "max-h-0"}  self-center`}>
                 {menu}
             </div>
         </div>
@@ -114,9 +112,9 @@ const NavBar = () => {
     return (
         <div
             id="nav_bar"
-            className="w-full ml-12 mt-6 justify-between content-center items-center text-center self-center text-2xl text-clay_dark "
+            className="relative h-full w-full justify-between content-center items-center text-center self-center text-2xl text-clay_dark"
         >
-            <div className="fixed z-10 border-solid border-2 border-clay_dark">
+            <div className="fixed ml-5 my-5 z-10 border-solid border-2 border-clay_dark">
                 {wrapper}
             </div>
         </div>

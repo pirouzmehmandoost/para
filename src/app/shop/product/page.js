@@ -4,23 +4,40 @@ import useSelection from '../../store/selection';
 import ShopMenu from "./../../components/ShopMenu"
 
 const ProductViewer = () => {
-    const selection = useSelection(state => state.selection)
-    const { imgUrl, name } = selection;
-    let count = 0;
-    const imageGrid = [];
+    const selection = useSelection(state => state.selection);
 
-    while (count < imgUrl.length) {
+    const {
+        imgUrls = {},
+        name
+    } = selection;
+
+    let count = 0;
+    let numRows = 1;
+
+    const imageGrid = [];
+    const flattenedUrls = Object.values(imgUrls).flat();
+
+
+    while (count < flattenedUrls.length) {
         const subArr = [];
-        if (count % 2 === 1) {
-            subArr.push(imgUrl[count]);
+        if (numRows % 2 === 0 && flattenedUrls[count]) {
+            subArr.push(flattenedUrls[count]);
             count++;
+            numRows++;
+        }
+        else {
+            numRows--;
         };
-        if (imgUrl[count]) {
-            subArr.push(imgUrl[count]);
+
+        if (flattenedUrls[count]) {
+            subArr.push(flattenedUrls[count]);
             count++;
         };
         imageGrid.push(subArr);
+
     };
+
+    console.table(imageGrid)
 
     return (
         <div
