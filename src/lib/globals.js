@@ -52,6 +52,90 @@ const portfolio = {
             modelUrl: "/oval_bag_xl_v2.glb",
             description: "A bulgy 3d printed bag with a sleek sillhouette."
         },
+
+        {
+            name: "XL Oval Bag Copy 1",
+            imgUrls: {
+                "matte_white": [
+                    "/oval_bag_v8.5_matte_white_1.png",
+                    "/oval_bag_v8.5_matte_white_2.png",
+                    "/oval_bag_v8.5_matte_white_3.png",
+                    "/oval_bag_v8.5_matte_white_4.png",
+                    "/oval_bag_v8.5_matte_white_5.png",
+
+                ],
+                "matte_black": [
+                    "/oval_bag_v8.5_matte_black_1.png",
+                    "/oval_bag_v8.5_matte_black_2.png",
+                    "/oval_bag_v8.5_matte_black_3.png",
+                    "/oval_bag_v8.5_matte_black_4.png",
+                ],
+            },
+            price: `$${100}`,
+            productType: "bag",
+            colors: [
+                "Matte Black",
+                'Matte White',
+            ],
+            modelUrl: "/oval_bag_xl_v2.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
+        },
+
+        {
+            name: "XL Oval Bag copy 2",
+            imgUrls: {
+                "matte_white": [
+                    "/oval_bag_v8.5_matte_white_1.png",
+                    "/oval_bag_v8.5_matte_white_2.png",
+                    "/oval_bag_v8.5_matte_white_3.png",
+                    "/oval_bag_v8.5_matte_white_4.png",
+                    "/oval_bag_v8.5_matte_white_5.png",
+
+                ],
+                "matte_black": [
+                    "/oval_bag_v8.5_matte_black_1.png",
+                    "/oval_bag_v8.5_matte_black_2.png",
+                    "/oval_bag_v8.5_matte_black_3.png",
+                    "/oval_bag_v8.5_matte_black_4.png",
+                ],
+            },
+            price: `$${100}`,
+            productType: "bag",
+            colors: [
+                "Matte Black",
+                'Matte White',
+            ],
+            modelUrl: "/oval_bag_xl_v2.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
+        },
+
+        {
+            name: "XL Oval Bag copy 3",
+            imgUrls: {
+                "matte_white": [
+                    "/oval_bag_v8.5_matte_white_1.png",
+                    "/oval_bag_v8.5_matte_white_2.png",
+                    "/oval_bag_v8.5_matte_white_3.png",
+                    "/oval_bag_v8.5_matte_white_4.png",
+                    "/oval_bag_v8.5_matte_white_5.png",
+
+                ],
+                "matte_black": [
+                    "/oval_bag_v8.5_matte_black_1.png",
+                    "/oval_bag_v8.5_matte_black_2.png",
+                    "/oval_bag_v8.5_matte_black_3.png",
+                    "/oval_bag_v8.5_matte_black_4.png",
+                ],
+            },
+            price: `$${100}`,
+            productType: "bag",
+            colors: [
+                "Matte Black",
+                'Matte White',
+            ],
+            modelUrl: "/oval_bag_xl_v2.glb",
+            description: "A bulgy 3d printed bag with a sleek sillhouette."
+        },
     ],
 
     "projects": [

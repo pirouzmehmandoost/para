@@ -20,10 +20,6 @@ const ProductCard = (props) => {
     const [increment, setIncrement] = useState(0);
     const setSelection = useSelection((state) => state.setSelection);
     const flattenedUrls = Object.values(imgUrls).flat();
-    const imgColorKeys = Object.keys(imgUrls).flat();
-
-    // console.log("hoverImgUrls")
-    // console.table(colorKeys)
 
     const tailWindColor = (col) => {
         const cssColor = col.toLowerCase();
@@ -35,17 +31,16 @@ const ProductCard = (props) => {
 
     return (
         < div
-            // maybe make bg-transparent and remove backdrop styling.
             //1920x1080 images (16:9) aspect ratio. 1920/2.5=768
             className="w-full h-full flex flex-col backdrop-blur-3xl backdrop-brightness-100"
         >
             <div className="flex items-end">
 
                 <div className="relative flex flex-row justify-center items-center">
-                    <KeyboardArrowLeftIcon
+                    {/* <KeyboardArrowLeftIcon
                         className="absolute left-1 z-10 self-center"
                         onClick={() => { increment <= 0 ? setIncrement(flattenedUrls.length - 1) : setIncrement(increment - 1) }}
-                    />
+                    /> */}
                     <Link
                         onMouseEnter={() => setIncrement(1)}
                         onMouseLeave={() => setIncrement(0)}
@@ -56,8 +51,6 @@ const ProductCard = (props) => {
                         <Image
                             priority
                             className="bg-cover overflow-auto w-auto h-auto "
-                            // loading="lazy"
-                            // src={imgUrls[`${hoverImgUrls[increment % 2]}`][0]}
                             src={flattenedUrls[increment]}
                             width={768}
                             height={432}
@@ -65,13 +58,13 @@ const ProductCard = (props) => {
                             alt={name}
                         />
                     </Link>
-                    <KeyboardArrowRightIcon
+                    {/* <KeyboardArrowRightIcon
                         className="absolute right-1 z-10 self-center"
                         onClick={() => { increment < flattenedUrls.length - 1 ? setIncrement(increment + 1) : setIncrement(0) }}
-                    />
+                    /> */}
                 </div>
 
-                <div className="absolute w-full flex flex-row items-center justify-evenly items-end mb-3">
+                {/* <div className="absolute w-full flex flex-row items-center justify-evenly items-end mb-3">
                     {
                         colors.map((c) => {
                             return (
@@ -82,11 +75,11 @@ const ProductCard = (props) => {
                             )
                         })
                     }
-                </div>
+                </div> */}
 
             </div>
 
-            <div className="w-full text-center" >
+            <div className="w-full text-center text-clay_dark" >
                 <p> {name} </p>
                 <p> {price} </p>
             </div>

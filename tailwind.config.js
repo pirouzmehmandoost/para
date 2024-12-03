@@ -80,6 +80,13 @@ module.exports = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
+      transitionProperty: {
+        'height': 'height',
+        'width': 'width',
+        'spacing': 'margin, padding',
+        'opacity': 'opacity',
+      },
+
       variants: {
         extend: {
           backdropSaturate: ['hover', 'focus'],
