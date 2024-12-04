@@ -1,6 +1,6 @@
-import { UnifrakturCook } from "next/font/google"
+import { UnifrakturCook } from "next/font/google";
 import "./globals.css";
-import NavBar from "./components/NavBar"
+import NavBar from "./components/NavBar";
 const cook = UnifrakturCook({ weight: '700', subsets: ["latin"], });
 
 export const metadata = {
@@ -11,12 +11,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-            <body
-                className={`min-h-screen min-w-screen max-w-screen max-h-screen
-                    bg-[radial-gradient(ellipse_at_50%_100%,var(--tw-gradient-stops))]
-                    from-clay_dark via-tahiti via-40% to-clay_dark to-100% backdrop-filter backdrop-contrast-125"
-                    ${cook.className}`}
-            >
+            <body className ={`bg-neutral-200  ${cook.className}`}>
                 <NavBar />
                 {children}
             </body>
