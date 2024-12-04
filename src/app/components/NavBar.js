@@ -7,7 +7,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 // import useSelection from "../store/selection";
 
-
 const NavBar = () => {
 
     const [searchQuery, setsearchQuery] = useState("invisible");
@@ -88,7 +87,7 @@ const NavBar = () => {
                         }
                         </div>
                     </div>
-                    <div className={`flex flex-col self-center px-6 pt-0 overflow-hidden transition-all duration-700 ease-in-out ${expanded ? "max-h-96" : "max-h-0"}`} >
+                    <div className={`flex flex-col self-center px-6 pt-0 overflow-hidden transition-all duration-300 ease-in ${expanded ? "max-h-96" : "max-h-0"}`} >
                         {menu}
                     </div>
                 </div>

@@ -4,7 +4,6 @@ import portfolio from "../../lib/globals"
 import useSelection from '../store/selection';
 import ProductCard from "./ProductCard"
 
-
 const ProductCarousel = () => {
     const selection = useSelection(state => state.selection);
     const { products } = portfolio;
