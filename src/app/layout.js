@@ -11,7 +11,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-            <body className ={`bg-slate-50 ${cook.className}`}>
+            <body className ={`bg-neutral-200  ${cook.className}`}>
                 <NavBar />
                 {children}
             </body>

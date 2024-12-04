@@ -16,7 +16,7 @@ const ProductCarousel = () => {
     const relatedProducts = products.filter(el=> el.productType === productType && el.name !== name );
 
     return (
-        <div className="relative flex flex-col w-screen h-full bg-slate-100 justify-between place-items-center">
+        <div className="relative flex flex-col w-screen h-full bg-neutral-200 justify-between place-items-center">
             <p className="self-start ml-10 text-clay_dark text-3xl my-5"> 
                 Related
             </p>

@@ -70,7 +70,7 @@ const ProductViewer = () => {
         // product images
         <div
             id="product_viewer"
-            className={`relative flex flex-col w-full bg-slate-100 h-screen transition-all duration-1000 ease-in-out ${expanded? " translate-y-screen overflow-hidden ": "overflow-auto translate-y-0"}`}  
+            className={`relative flex flex-col w-full bg-neutral-200 h-screen transition-all duration-1000 ease-in-out ${expanded? " translate-y-screen overflow-hidden ": "overflow-auto translate-y-0"}`}  
         >
             <div className="place-self-center" >
             {
@@ -108,24 +108,24 @@ const ProductViewer = () => {
                 className="sticky bottom-0 right-0 w-1/2 place-self-end"
             >
                 <div className="flex w-full bottom-0 right-0" >
-                    <div className={`w-full z-20 bottom-0 right-0 border-solid border-2 border-clay_dark`}>
-                        <div className={`flex flex-col text-clay_dark backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out  ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`} >
-                            <div className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? "overflow-auto max-h-96" : " overflow-hidden max-h-0"}`} >
-                                <p  className={`transition-all duration-700 ease-in-out delay-75  ${expanded ? "opacity-100" : "opacity-0"}`} >
+                    <div className={`w-full z-20 bottom-0 right-0 border-solid border-2 border-clay_dark`} >
+                        <div className={`flex flex-col text-clay_dark backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`} >
+                            <div className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? "overflow-auto max-h-96" : "overflow-hidden max-h-0"}`} >
+                                <p  className={`transition-all duration-700 ease-in-out delay-75 ${expanded ? "opacity-100" : "opacity-0"}`} >
                                     {description}
                                     </p>
                             </div>
                             <div className="flex flex-row my-3 max-w-full" >
                                 <div
-                                    className="justify-items-center basis-1/4 cursor-pointer">
+                                    className="justify-items-center basis-1/4 cursor-pointer" >
                                     <p onClick={() => {setExpanded(current => !current)}} >
                                         {name}
                                     </p>
                                 </div>
-                                <div className=" justify-items-center basis-1/4">
+                                <div className=" justify-items-center basis-1/4" >
                                     <p>{price}</p>
                                 </div>
-                                <div className="justify-items-center basis-1/2">
+                                <div className="justify-items-center basis-1/2" >
                                     {colorSelectButtons}
                                 </div>
                             </div>
