@@ -57,7 +57,7 @@ const NavBar = () => {
             className="fixed ml-5 my-5 z-10 top-0 left-0 w-1/4 "
         >
             <div className= "flex min-w-fit flex-nowrap max-w-full justify-evenly items-center text-center text-xl text-clay_dark border-solid border-2 border-clay_dark" >
-                <div className={`flex flex-col w-full transition-all duration-3000 ease-in-out ${expanded ? "backdrop-blur-3xl  backdrop-brightness-150" : ""}`} >
+                <div className={`flex flex-col w-full transition-all duration-700 ease-in-out ${expanded ? "backdrop-blur-3xl  backdrop-brightness-150" : ""}`} >
                     <div className={`flex flex-nowrap flex-row justify-between`}>
                         <div className="self-center ml-5 mr-10">
                             <Link
@@ -76,11 +76,11 @@ const NavBar = () => {
                                 rel="noopener noreferrer"
                                 onClick={() => setExpanded(false)}
                             >
-                                <ShoppingBagIcon className=" self-center cursor-pointer mx-5 transition-colors duration-3000 ease-in-out hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
+                                <ShoppingBagIcon className=" self-center cursor-pointer mx-5 transition-colors duration-700 ease-in-out hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
                             </Link>
                         </div>
                         <div
-                            className="flex self-center mr-5 transition-colors duration-3000 ease-in-out hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
+                            className="flex self-center mr-5 transition-colors duration-700 ease-in-out hover:text-gray-200 hover:text-gray-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
                             onClick={toggleExpanded}
                         >
                         {
@@ -88,7 +88,7 @@ const NavBar = () => {
                         }
                         </div>
                     </div>
-                    <div className={`flex flex-col self-center px-6 pt-0 overflow-hidden transition-all duration-3000 ease-in-out ${expanded ? "max-h-96" : "max-h-0"}`} >
+                    <div className={`flex flex-col self-center px-6 pt-0 overflow-hidden transition-all duration-700 ease-in-out ${expanded ? "max-h-96" : "max-h-0"}`} >
                         {menu}
                     </div>
                 </div>

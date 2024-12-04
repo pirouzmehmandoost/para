@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { useState } from "react";
 import useSelection from '../../store/selection';
-// import ShopMenu from "./../../components/ShopMenu";
 import ProductCarousel from "../../components/ProductCarousel";
  
 const ProductViewer = () => {
@@ -51,7 +50,7 @@ const ProductViewer = () => {
     };
 
 
-    const colorSelection = (
+    const colorSelectButtons = (
         <div className="flex flex-row">
         {
             colors.map((c) => {
@@ -66,24 +65,12 @@ const ProductViewer = () => {
         </div>
     );
 
-    // const expandMenu = () => setExpanded(current => !current);
-
-    // const handleMenuClick = () => {
-    //     if (!expanded) {
-    //         setOverflow("overflow-hidden snap-y snap-mandatory");
-    //         setExpanded(!expanded);
-    //     }
-    //     else {
-    //         setOverflow("overflow-auto");
-    //         setExpanded(!expanded)
-    //     };
-    // };
 
     return (
         // product images
         <div
             id="product_viewer"
-            className={`relative flex flex-col w-full bg-slate-100 h-screen scroll-smooth transition-all duration-1000 ease-in-out ${expanded? "overflow-hidden snap-y snap-mandatory": "overflow-auto snap-none"}`}  
+            className={`relative flex flex-col w-full bg-slate-100 h-screen transition-all duration-1000 ease-in-out ${expanded? " translate-y-screen overflow-hidden ": "overflow-auto translate-y-0"}`}  
         >
             <div className="place-self-center" >
             {
@@ -91,7 +78,7 @@ const ProductViewer = () => {
                     return (
                         <div 
                             key={"image_row_" + index} 
-                            className="flex flex-row snap-normal snap-end"
+                            className="flex flex-row"
                         >
                         {
                             images.map((image, imageIndex) => {
@@ -115,16 +102,18 @@ const ProductViewer = () => {
             }
             </div>
 
-            {/* page menu */}
+            {/* product menu */}
             < div 
                 id="shop_menu"
                 className="sticky bottom-0 right-0 w-1/2 place-self-end"
             >
                 <div className="flex w-full bottom-0 right-0" >
                     <div className={`w-full z-20 bottom-0 right-0 border-solid border-2 border-clay_dark`}>
-                        <div className={`flex flex-col text-clay_dark backdrop-blur-xl backdrop-brightness-150 transition-all duration-3000 ease-in-out  ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`} >
-                            <div className={`px-6 pt-0 justify-items-center transition-all duration-3000 ease-in-out ${expanded ? "overflow-auto max-h-20" : " overflow-hidden max-h-0"}`} >
-                                <p>{description}</p>
+                        <div className={`flex flex-col text-clay_dark backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out  ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`} >
+                            <div className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? "overflow-auto max-h-96" : " overflow-hidden max-h-0"}`} >
+                                <p  className={`transition-all duration-700 ease-in-out delay-75  ${expanded ? "opacity-100" : "opacity-0"}`} >
+                                    {description}
+                                    </p>
                             </div>
                             <div className="flex flex-row my-3 max-w-full" >
                                 <div
@@ -133,12 +122,11 @@ const ProductViewer = () => {
                                         {name}
                                     </p>
                                 </div>
-
                                 <div className=" justify-items-center basis-1/4">
                                     <p>{price}</p>
                                 </div>
                                 <div className="justify-items-center basis-1/2">
-                                    {colorSelection}
+                                    {colorSelectButtons}
                                 </div>
                             </div>
                         </div>
