@@ -67,9 +67,8 @@ const Model = ({ props }) => {
 const tailWindColor = (col) => {
     const cssColor = col.toLowerCase();
 
-    if (cssColor.includes("white")) return "bg-slate-100";
-    if (cssColor.includes("black")) return "bg-slate-950";
-    else return "bg-lime-200"
+    if (cssColor.includes("white")) return "bg-slate-100"
+    else return "bg-slate-950";
 };
 
 
@@ -118,7 +117,6 @@ const ModelViewPort = (props) => {
                 <pointLight position={[-10, -10, -10]} />
                 <Model {...props} />
                 <ContactShadows position={[0, -1, 0]} scale={10} far={4} blur={1.75} />
-                {/* <Environment preset="city" /> */}
                 <Environment files="./studio_small_08_4k.exr" />
                 <OrbitControls autoRotate autoRotateSpeed={12.0} enableZoom={false} />
             </Canvas>
@@ -135,21 +133,21 @@ export const ModelViewer = () => {
     } = selection;
 
     return (
-        <div className="relative flex w-full h-full flex-column items-end justify-stretch content-stretch ">
+        <div className="relative flex w-full h-full flex-column items-end justify-stretch content-stretch" >
             <ModelViewPort props={{ color: material }} />
-            <div className="absolute w-full flex flex-row items-center justify-evenly items-end mb-3">
-                {
-                    colors.map((c) => {
-                        return (
-                            <div
-                                onClick={() => { setMaterial(setMaterialColor(c)); }}
-                                key={c}
-                                className={`${tailWindColor(c)} w-3 h-3 border-solid border-clay_dark border-2 rounded-full cursor-pointer`} >
-                            </div>
-                        )
-                    })
-                }
-            </div >
+            <div className="absolute w-full flex flex-row items-center justify-evenly items-end mb-3" >
+            {
+                colors.map((c) => {
+                    return (
+                        <div
+                            onClick={() => { setMaterial(setMaterialColor(c)) } }
+                            key={c}
+                            className={`${tailWindColor(c)} w-3 h-3 border-solid border-clay_dark border-2 rounded-full cursor-pointer`} >
+                        </div>
+                    )
+                })
+            }
+            </div>
             {/* <Buttons /> */}
         </div>
     )

@@ -1,3 +1,17 @@
+export const storePolicy = {
+    shipping: "UPS Express Saver delivery: 2-4 business days, 10 USD. When ordering outside US, taxes and duties are excluded in the product price and local custom fees may apply. Please contact your local customs office for further information.",
+    payment: "All major payment methods are supported. Card information is encrypted using SSL encryption, which prevents unauthorized access to card details.",
+    returns: "",
+    customerSupport: {
+        email: "pirouzmehmandoost@gmail.com",
+        FAQ: {
+
+        },
+
+    },
+};
+
+
 const portfolio = {
   products: [
     {
@@ -47,22 +61,40 @@ const portfolio = {
       description:
         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
     },
-
+    {
+        name: "Yoga Mat Strap",
+        imgUrls: {
+          matte_black: [
+            "/yoga_mat_strap_side.png",
+            "/yoga_mat_strap_side2.png",
+            "/yoga_mat_strap_quarter.png",
+            "/yoga_mat_strap_quarter2.png",
+            "/yoga_mat_strap_top.png",
+            "/yoga_mat_strap_front.png",
+          ],
+        },
+        price: `$${100}`,
+        productType: "fitness",
+        colors: ["Matte Black"],
+        modelUrl: "/yoga_mat_strap_for_web.glb",
+        description:
+          "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
+      },
     {
       name: "XL Oval Bag Copy 1",
       imgUrls: {
+        matte_black: [
+            "/oval_bag_v8.5_matte_black_1.png",
+            "/oval_bag_v8.5_matte_black_2.png",
+            "/oval_bag_v8.5_matte_black_3.png",
+            "/oval_bag_v8.5_matte_black_4.png",
+          ],
         matte_white: [
           "/oval_bag_v8.5_matte_white_1.png",
           "/oval_bag_v8.5_matte_white_2.png",
           "/oval_bag_v8.5_matte_white_3.png",
           "/oval_bag_v8.5_matte_white_4.png",
           "/oval_bag_v8.5_matte_white_5.png",
-        ],
-        matte_black: [
-          "/oval_bag_v8.5_matte_black_1.png",
-          "/oval_bag_v8.5_matte_black_2.png",
-          "/oval_bag_v8.5_matte_black_3.png",
-          "/oval_bag_v8.5_matte_black_4.png",
         ],
       },
       price: `$${100}`,
@@ -75,18 +107,18 @@ const portfolio = {
     {
       name: "XL Oval Bag copy 2",
       imgUrls: {
+        matte_black: [
+            "/oval_bag_v8.5_matte_black_1.png",
+            "/oval_bag_v8.5_matte_black_2.png",
+            "/oval_bag_v8.5_matte_black_3.png",
+            "/oval_bag_v8.5_matte_black_4.png",
+          ],
         matte_white: [
           "/oval_bag_v8.5_matte_white_1.png",
           "/oval_bag_v8.5_matte_white_2.png",
           "/oval_bag_v8.5_matte_white_3.png",
           "/oval_bag_v8.5_matte_white_4.png",
           "/oval_bag_v8.5_matte_white_5.png",
-        ],
-        matte_black: [
-          "/oval_bag_v8.5_matte_black_1.png",
-          "/oval_bag_v8.5_matte_black_2.png",
-          "/oval_bag_v8.5_matte_black_3.png",
-          "/oval_bag_v8.5_matte_black_4.png",
         ],
       },
       price: `$${100}`,
