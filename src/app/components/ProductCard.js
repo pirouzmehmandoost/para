@@ -20,10 +20,9 @@ const ProductCard = (props) => {
     const flattenedUrls = Object.values(imgUrls).flat();
 
     return (
-        //1920x1080 images (16:9) aspect ratio. 1920/2.5=768
-        <div className="w-full h-full flex flex-col backdrop-blur-3xl backdrop-brightness-100" >
+        //1920x1080 images (16:9)
+        <div className="w-full h-full flex flex-col" >
             <div className="flex items-end" >
-
                 <div className="relative flex flex-row justify-center items-center" >
                     <Link
                         onMouseEnter={() => setIncrement(1)}
@@ -34,7 +33,7 @@ const ProductCard = (props) => {
                     >
                         <Image
                             priority
-                            className="bg-cover overflow-auto w-auto h-auto "
+                            className="w-auto h-auto bg-cover overflow-auto"
                             src={flattenedUrls[increment]}
                             width={768}
                             height={432}
@@ -45,7 +44,7 @@ const ProductCard = (props) => {
                 </div>
             </div>
 
-            <div className="w-full text-center text-clay_dark" >
+            <div className="max-sm:hidden w-full text-center text-clay_dark " >
                 <p> {name} </p>
                 <p> {price} </p>
             </div>

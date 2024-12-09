@@ -9,13 +9,12 @@ import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 
 const NavBar = () => {
 
-    const [searchQuery, setsearchQuery] = useState("invisible");
+    // const [searchQuery, setsearchQuery] = useState("invisible");
     const [expanded, setExpanded] = useState(false);
     const toggleExpanded = () => setExpanded(current => !current);
 
-    const menu = (
+    const dropDown = (
         <div className="flex flex-col flex-grow" >
-
             <div className="self-center mt-6" >
                 <input
                     type="text"
@@ -26,18 +25,9 @@ const NavBar = () => {
                 />
             </div>
 
-            <div
-                className="mb-3"
+            <div className="mb-3"
                 onClick={toggleExpanded}
             >
-                <Link
-                    href="/shop"
-                    className="border border-transparent py-4 transition-colors hover:text-gray-500"
-                    rel="noopener noreferrer"
-                >
-                    <h2>Projects</h2>
-                </Link>
-
                 <Link
                     href="/shop"
                     className="border border-transparent py-4 transition-colors hover:text-gray-500"
@@ -53,10 +43,10 @@ const NavBar = () => {
     return (
         <div
             id="nav_bar"
-            className="fixed ml-5 my-5 z-10 top-0 left-0 w-1/4 "
+            className="fixed lg:ml-5 lg:my-5 z-10 top-0 left-0 w-screen sm:w-1/2 md:w-1/4 lg:w-1/4 "
         >
-            <div className= "flex min-w-fit flex-nowrap max-w-full justify-evenly items-center text-center text-xl text-clay_dark border-solid border-2 border-clay_dark" >
-                <div className={`flex flex-col w-full transition-all duration-700 ease-in-out ${expanded ? "backdrop-blur-3xl  backdrop-brightness-150" : ""}`} >
+            <div className= {`flex flex-nowrap min-w-fit max-w-full justify-evenly items-center text-center text-xl text-clay_dark border-solid border-2 border-clay_dark max-sm:bg-[url("/background.png")]`} >
+                <div className={`flex flex-col w-full transition-all duration-700 ease-in-out ${expanded ? `bg-[url("/background.png")]` : ""}`} >
                     <div className={`flex flex-nowrap flex-row justify-between`}>
                         <div className="self-center ml-5 mr-10">
                             <Link
@@ -88,7 +78,7 @@ const NavBar = () => {
                         </div>
                     </div>
                     <div className={`flex flex-col self-center px-6 pt-0 overflow-hidden transition-all duration-300 ease-in ${expanded ? "max-h-96" : "max-h-0"}`} >
-                        {menu}
+                        {dropDown}
                     </div>
                 </div>
             </div>

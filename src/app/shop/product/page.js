@@ -42,7 +42,8 @@ const ProductViewer = () => {
 // product images
         <div
             id="product_viewer"
-            className={`relative flex flex-col w-full bg-neutral-200 h-screen transition-all duration-1000 ease-in-out ${expanded? "overflow-hidden ": "overflow-auto"}`}  
+            className={`relative flex flex-col w-full h-screen transition-all duration-1000 ease-in-out ${expanded? "overflow-hidden ": "overflow-auto"}`}  
+            // className={`relative flex flex-col w-full bg-neutral-200 h-screen transition-all duration-1000 ease-in-out ${expanded? "overflow-hidden ": "overflow-auto"}`}  
         >
             <div className="place-self-center" >
             {

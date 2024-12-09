@@ -16,9 +16,9 @@ const Model = ({ props }) => {
     const { modelUrl } = selection;
     const { scene } = useGLTF(modelUrl)
 
-    console.log("modelRef should be the same as scene.children: ", modelRef)
+    // console.log("modelRef should be shallow copy of scene.children[0]: ", modelRef);
 
-    let newMaterial = new THREE.MeshPhysicalMaterial({
+    let matteMaterial = new THREE.MeshPhysicalMaterial({
         color: color,
         roughness: .7,
         metalness: 0,
@@ -34,25 +34,25 @@ const Model = ({ props }) => {
         specularColor: "#ffffff",
     });
 
-    // let whiteMaterial = new THREE.MeshPhysicalMaterial({
-    //     color: color,
-    //     roughness: 1,
-    //     metalness: 0.6,
-    //     ior: 1.5,
-    //     reflectivity: .1,
-    //     sheen: 1,
-    //     sheenColor: "#e2c7c0",
-    //     sheenRoughness: 1,
-    //     flatShading: false,
-    //     clearcoat: 1,
-    //     clearcoatRoughness: 1,
-    //     specularIntensity: 1,
-    //     specularColor: "#ffffff",
-    // });
+    let glossMaterial = new THREE.MeshPhysicalMaterial({
+        color: color,
+        roughness: 0,
+        metalness: 1,
+        ior: 3,
+        reflectivity: 1,
+        sheen: .3,
+        sheenColor: "#ffffff",
+        sheenRoughness: 0,
+        flatShading: false,
+        clearcoat: 1,
+        clearcoatRoughness: 0,
+        specularIntensity: 1,
+        specularColor: "#ffffff",
+    });
 
     if (scene?.children?.length) {
-        scene.children[0].material = newMaterial;
-    }
+        scene.children[0].material = glossMaterial;
+    };
 
     return (
         <primitive
@@ -129,6 +129,7 @@ export const ModelViewer = () => {
     const [material, setMaterial] = useState(null);
     const selection = useSelection((state) => state.selection);
     const {
+        name,
         colors,
     } = selection;
 
