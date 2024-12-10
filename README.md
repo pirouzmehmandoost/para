@@ -1,8 +1,9 @@
-#PARA
+# PARA
 
-I'm developing this app to explore web development with NextJS 14 and share my love for 3D modeling and interactive design. I share my to-do list here as well as light notes on personal goals:  
+I'm developing this app to explore web development with NextJS 14 and share my love for 3D modeling and interactive design. I share my to-do list here as well as light notes on tools and feedback.
 
 PARA is a work in progress portfolio site which showcases my 3D printed designs and enables interaction with the models.
+
 My goals while developing are to:
 - Clearly express the functionality of the site from the home page. 
 - Display a well-formatted resume. 
