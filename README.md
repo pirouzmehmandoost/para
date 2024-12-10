@@ -34,7 +34,7 @@ Other goals include:
 - get eslint set up (in terminal, vscode)
 
 Tools Used: 
-React Three Fiber (R3F)
+React Three Fiber
 https://github.com/pmndrs/react-three-fiber
 React renderer for Threejs. For building 3D scenes as JSX components, useful hooks, performance optimization- resources with the same URL (geometries, materials) that are loaded with useLoader are cached automatically.
 
@@ -43,5 +43,5 @@ https://r3f.docs.pmnd.rs/advanced/scaling-performance
 
 
 GLTFJSX
-CLI tool that turns GLTF assets into declarative, reusable (react-three-fiber) JSX components. Though I do 
+CLI tool that turns GLTF assets into declarative, reusable (react-three-fiber) JSX components. I relied on this tool more while learning the ropes with R3F. 
 https://github.com/pmndrs/gltfjsx
