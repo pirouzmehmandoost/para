@@ -52,7 +52,7 @@ export const colorCodes = {
   gloss_black: {
     label: "Gloss Black",
     hex: "#000000",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-500 to-slate-900`,
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-900`,
     isMatte: false,
     material: {
       color: "#000000",
@@ -68,17 +68,17 @@ const portfolio = {
       price: `$${100}`,
       productType: "bag",
       imgUrls: {
-        matte_white: [
-          "/oval_bag_matte_white_1.png",
-          "/oval_bag_matte_white_2.png",
-          "/oval_bag_matte_white_3.png",
-          "/oval_bag_matte_white_4.png",
-        ],
         matte_black: [
           "/oval_bag_matte_black_1.png",
           "/oval_bag_matte_black_2.png",
           "/oval_bag_matte_black_3.png",
           "/oval_bag_matte_black_4.png",
+        ],
+        matte_white: [
+          "/oval_bag_matte_white_1.png",
+          "/oval_bag_matte_white_2.png",
+          "/oval_bag_matte_white_3.png",
+          "/oval_bag_matte_white_4.png",
         ],
       },
       colorCodes: { ...colorCodes },
@@ -89,18 +89,18 @@ const portfolio = {
     {
       name: "XL Oval Bag",
       imgUrls: {
+        matte_black: [
+          "/oval_bag_v8.5_matte_black_1.png",
+          "/oval_bag_v8.5_matte_black_2.png",
+          "/oval_bag_v8.5_matte_black_3.png",
+          "/oval_bag_v8.5_matte_black_4.png",
+        ],
         matte_white: [
           "/oval_bag_v8.5_matte_white_1.png",
           "/oval_bag_v8.5_matte_white_2.png",
           "/oval_bag_v8.5_matte_white_3.png",
           "/oval_bag_v8.5_matte_white_4.png",
           "/oval_bag_v8.5_matte_white_5.png",
-        ],
-        matte_black: [
-          "/oval_bag_v8.5_matte_black_1.png",
-          "/oval_bag_v8.5_matte_black_2.png",
-          "/oval_bag_v8.5_matte_black_3.png",
-          "/oval_bag_v8.5_matte_black_4.png",
         ],
       },
       price: `$${100}`,
@@ -136,18 +136,18 @@ const portfolio = {
     {
       name: "Oval Bag Copy 1",
       imgUrls: {
-        matte_black: [
-          "/oval_bag_v8.5_matte_black_1.png",
-          "/oval_bag_v8.5_matte_black_2.png",
-          "/oval_bag_v8.5_matte_black_3.png",
-          "/oval_bag_v8.5_matte_black_4.png",
-        ],
         matte_white: [
           "/oval_bag_v8.5_matte_white_1.png",
           "/oval_bag_v8.5_matte_white_2.png",
           "/oval_bag_v8.5_matte_white_3.png",
           "/oval_bag_v8.5_matte_white_4.png",
           "/oval_bag_v8.5_matte_white_5.png",
+        ],
+        matte_black: [
+          "/oval_bag_v8.5_matte_black_1.png",
+          "/oval_bag_v8.5_matte_black_2.png",
+          "/oval_bag_v8.5_matte_black_3.png",
+          "/oval_bag_v8.5_matte_black_4.png",
         ],
       },
       price: `$${100}`,

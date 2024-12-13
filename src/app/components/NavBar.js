@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClearIcon from "@mui/icons-material/Clear";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
@@ -14,7 +14,7 @@ const NavBar = () => {
 
   const dropDown = (
     <div className="flex flex-col flex-grow">
-      <div className="self-center mt-6">
+      {/* <div className="self-center my-6">
         <input
           type="text"
           id="search_input"
@@ -22,12 +22,32 @@ const NavBar = () => {
           placeholder="Search Products"
           required
         />
+      </div> */}
+
+      <div onClick={toggleExpanded}>
+        <Link
+          href="/cv"
+          className="border border-transparent py-2 transition-colors hover:text-gray-500"
+          rel="noopener noreferrer"
+        >
+          <h2>CV</h2>
+        </Link>
+      </div>
+
+      <div onClick={toggleExpanded}>
+        <Link
+          href="/projects"
+          className="border border-transparent py-2 transition-colors hover:text-gray-500"
+          rel="noopener noreferrer"
+        >
+          <h2>Projects</h2>
+        </Link>
       </div>
 
       <div className="mb-3" onClick={toggleExpanded}>
         <Link
           href="/shop"
-          className="border border-transparent py-4 transition-colors hover:text-gray-500"
+          className="border border-transparent py-2 transition-colors hover:text-gray-500"
           rel="noopener noreferrer"
         >
           <h2>Shop</h2>
@@ -44,9 +64,7 @@ const NavBar = () => {
       <div
         className={`flex flex-nowrap min-w-fit max-w-full justify-evenly items-center text-center text-xl text-clay_dark border-solid border-2 border-clay_dark max-sm:bg-[url("/background.png")]`}
       >
-        <div
-          className={`flex flex-col w-full transition-all duration-700 ease-in-out ${expanded ? `bg-[url("/background.png")]` : ""}`}
-        >
+        <div className={`flex flex-col w-full  bg-[url("/background.png")]`}>
           <div className={`flex flex-nowrap flex-row justify-between`}>
             <div className="self-center ml-5 mr-10">
               <Link
