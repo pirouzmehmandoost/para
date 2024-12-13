@@ -9,7 +9,10 @@ module.exports = {
     extend: {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "default-background-image": "url('/background.png')",
+        "secondary-background-image": "url('/oval_bag_hero_1.png')",
       },
       colors: {
         clay_dark: "#3d3d3d",
@@ -78,19 +81,18 @@ module.exports = {
       //     "accordion-up": "accordion-up 0.2s ease-out",
       // },
       transitionProperty: {
-        'height': 'height',
-        'width': 'width',
-        'spacing': 'margin, padding',
-        'opacity': 'opacity',
+        height: "height",
+        width: "width",
+        spacing: "margin, padding",
+        opacity: "opacity",
       },
 
       variants: {
         extend: {
-          backdropSaturate: ['hover', 'focus'],
-        }
+          backdropSaturate: ["hover", "focus"],
+        },
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
 };
-
