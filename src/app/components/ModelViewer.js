@@ -16,20 +16,15 @@ import useSelection from "../store/selection";
 
 THREE.ColorManagement.enabled = true;
 
-const Model = (props) => {
+const Model = ({ material: materialProps }) => {
   const modelRef = useRef();
   const selection = useSelection((state) => state.selection);
   const { modelUrl } = selection;
   const { scene } = useGLTF(modelUrl);
-  const { material: materialProps } = props;
   const { viewport } = useThree();
   let width = viewport.width;
   let height = viewport.height;
-
-  console.log("props: ", props);
-  console.log("scene:", scene);
-
-  let material = new THREE.MeshPhysicalMaterial(props.material);
+  let material = new THREE.MeshPhysicalMaterial(materialProps);
   let scale = (height > width ? width : height) * 0.0034;
 
   if (scene?.children?.length) {
@@ -56,26 +51,14 @@ const ModelView = ({ material }) => {
       <Suspense fallback={<Loader />}>
         <Canvas
           fallback={<div>Sorry no WebGL supported!</div>}
-          // camera={{ fov: 50, near: 1, far: 1000, position: [0, 15, 100] }}
           camera={{ position: [0, 10, 100], near: 1, far: 500, fov: 50 }}
         >
-          {/* <ambientLight intensity={0.5} /> */}
-          {/* <spotLight
-            position={[0, 100, 0]}
-            angle={1}
-            penumbra={1}
-            intensity={900}
-            decay={2}
-            focus={1}
-            shadows
-          />
-          <hemisphereLight
-            position={[0, 100, 0]}
-            intensity={0.5}
-            groundColor={"#333333"}
-          /> */}
-
           <Model {...newProps} />
+          <hemisphereLight
+            position={[0, 60, -30]}
+            intensity={4}
+            groundColor={"#333333"}
+          />
           <AccumulativeShadows
             temporal
             frames={100}
@@ -93,7 +76,6 @@ const ModelView = ({ material }) => {
               bias={0.001}
             />
           </AccumulativeShadows>
-
           <OrbitControls
             enablePan={false}
             enableZoom={false}
@@ -120,9 +102,7 @@ export const ModelViewer = () => {
         className={`absolute w-full flex flex-row items-center justify-evenly items-end mb-3`}
       >
         {Object.entries(colorCodes).map((entry) => {
-          //   let key = entry[0];
           let value = entry[1];
-          //   if (colors.includes(key))
           return (
             <div
               onClick={() => {
