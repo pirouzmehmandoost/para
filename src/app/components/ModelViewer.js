@@ -8,8 +8,7 @@ import {
   OrbitControls,
   Environment,
   Loader,
-  AccumulativeShadows,
-  RandomizedLight,
+  CameraShake,
 } from "@react-three/drei";
 // import { LayerMaterial, Color, Depth } from "lamina";
 import useSelection from "../store/selection";
@@ -50,6 +49,7 @@ const ModelView = ({ material }) => {
     <div className="w-full h-full">
       <Suspense fallback={<Loader />}>
         <Canvas
+          shadows
           fallback={<div>Sorry no WebGL supported!</div>}
           camera={{ position: [0, 10, 100], near: 1, far: 500, fov: 50 }}
         >
@@ -59,30 +59,23 @@ const ModelView = ({ material }) => {
             intensity={4}
             groundColor={"#333333"}
           />
-          <AccumulativeShadows
-            temporal
-            frames={100}
-            alphaTest={0.9}
-            color="#3ead5d"
-            colorBlend={1}
-            opacity={0.8}
-            scale={20}
-          >
-            <RandomizedLight
-              radius={10}
-              ambient={0.5}
-              intensity={Math.PI}
-              position={[2.5, 8, -2.5]}
-              bias={0.001}
-            />
-          </AccumulativeShadows>
-          <OrbitControls
-            enablePan={false}
-            enableZoom={false}
-            autoRotate
-            autoRotateSpeed={11.0}
+          <CameraShake
+            maxYaw={0.1}
+            maxPitch={0.1}
+            yawFrequency={0.1}
+            pitchFrequency={0.1}
+            intensity={0.5}
+            decay
+            decayRate={0.65}
           />
-          <Environment shadows files="./studio_small_08_4k.exr" blur={100} />
+          <OrbitControls
+            makeDefault
+            autoRotate
+            enableZoom={false}
+            enablePan={false}
+            autoRotateSpeed={5.0}
+          />
+          <Environment shadows files="./studio_small_08_4k.exr" />
         </Canvas>
       </Suspense>
     </div>
