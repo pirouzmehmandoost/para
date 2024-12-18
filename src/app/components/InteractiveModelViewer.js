@@ -37,7 +37,7 @@ const Model = ({ material: materialProps }) => {
   return <primitive castShadow receiveShadow object={scene} ref={modelRef} />;
 };
 
-const ModelView = ({ material }) => {
+const Scene = ({ material }) => {
   const newProps = {
     position: [0, -20, 0],
     scale: 0.3,
@@ -82,14 +82,14 @@ const ModelView = ({ material }) => {
   );
 };
 
-export const ModelViewer = () => {
+export const InteractiveModelViewer = () => {
   const [material, setMaterial] = useState(null);
   const selection = useSelection((state) => state.selection);
   const { colorCodes } = selection;
 
   return (
     <div className="relative flex w-full h-full flex-column items-end justify-stretch content-stretch">
-      <ModelView material={material} />
+      <Scene material={material} />
 
       <div
         className={`absolute w-full flex flex-row items-center justify-evenly items-end mb-3`}
@@ -103,6 +103,7 @@ export const ModelViewer = () => {
               }}
               key={value.label}
               className={`${value.tailwindColor} w-3 h-3 border-solid border-clay_dark border-2 rounded-full cursor-pointer`}
+              style={{ backgroundColor: value.hex }}
             ></div>
           );
         })}
@@ -111,4 +112,4 @@ export const ModelViewer = () => {
   );
 };
 
-export default ModelViewer;
+export default InteractiveModelViewer;

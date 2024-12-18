@@ -2,6 +2,7 @@ import { UnifrakturCook, Noto_Sans } from "next/font/google";
 
 import "./globals.css";
 import NavBar from "./components/NavBar";
+import Header from "./components/Header";
 
 // const cook = UnifrakturCook({ weight: "700", subsets: ["latin"] });
 const noto = Noto_Sans({ weight: "400", subsets: ["latin"] });
@@ -19,6 +20,8 @@ export default function RootLayout({ children }) {
         // className={`${cook.className} bg-cover bg-default-background-image`}
       >
         <NavBar />
+        {/* <Header /> */}
+
         {children}
       </body>
     </html>

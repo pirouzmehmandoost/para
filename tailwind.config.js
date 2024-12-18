@@ -4,6 +4,7 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -15,6 +16,7 @@ module.exports = {
         "secondary-background-image": "url('/oval_bag_hero_1.png')",
       },
       colors: {
+        clay_light: "#bcbcbc",
         clay_dark: "#3d3d3d",
         rust: "#b7410e",
         rose_dark: "#ac6e6d",
@@ -80,6 +82,18 @@ module.exports = {
       //     "accordion-down": "accordion-down 0.2s ease-out",
       //     "accordion-up": "accordion-up 0.2s ease-out",
       // },
+
+      animation: {
+        tilt: "tilt 3s linear infinite",
+      },
+      keyframes: {
+        tilt: {
+          "0%, 50%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(0.5deg)" },
+          "75%": { transform: "rotate(-0.5deg)" },
+        },
+      },
+
       transitionProperty: {
         height: "height",
         width: "width",

@@ -42,8 +42,7 @@ export const colorCodes = {
   matte_black: {
     label: "Matte Black",
     hex: "#333333",
-    tailwindColor: "bg-slate-950",
-    isMatte: true,
+    tailwindColor: `bg-slate-900`,
     material: {
       color: "#333333",
       ...matteMaterial,
@@ -53,7 +52,6 @@ export const colorCodes = {
     label: "Gloss Black",
     hex: "#000000",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-900`,
-    isMatte: false,
     material: {
       color: "#000000",
       ...glossMaterial,
@@ -177,6 +175,55 @@ const portfolio = {
       productType: "bag",
       colorCodes: { ...colorCodes },
       modelUrl: "/oval_bag_xl_v2.glb",
+      description:
+        "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
+    },
+  ],
+  projects: [
+    {
+      name: "Gerd",
+      bannerUrl: "/oval_bag_v8.5_matte_white_5.png",
+      imgUrls: {
+        matte_black: [
+          "/oval_bag_matte_black_1.png",
+          "/oval_bag_matte_black_2.png",
+          "/oval_bag_matte_black_3.png",
+          "/oval_bag_matte_black_4.png",
+        ],
+        matte_white: [
+          "/oval_bag_matte_white_1.png",
+          "/oval_bag_matte_white_2.png",
+          "/oval_bag_matte_white_3.png",
+          "/oval_bag_matte_white_4.png",
+        ],
+      },
+      colorCodes: { ...colorCodes },
+      modelUrl: "/oval_bag_xl_v2.glb",
+      shortDescription: "A small collection of 3D printed handbags.",
+      description:
+        "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
+    },
+    {
+      name: "PÍ",
+      bannerUrl: "/yoga_mat_strap_metallic_perspective_quarter.png",
+      imgUrls: {
+        gloss_black: [
+          "/yoga_mat_strap_metallic_perspective_side.png",
+          "/yoga_mat_strap_metallic_perspective_top.png",
+          "/yoga_mat_strap_metallic_perspective_front.png",
+          "/yoga_mat_strap_metallic_perspective_quarter.png",
+        ],
+        matte_black: [
+          "/yoga_mat_strap_top.png",
+          "/yoga_mat_strap_front.png",
+          "/yoga_mat_strap_side.png",
+          "/yoga_mat_strap_quarter.png",
+        ],
+      },
+      colorCodes: { ...colorCodes },
+      modelUrl: "/yoga_mat_strap_for_web2.glb",
+      shortDescription:
+        "Connecting my experience teaching Yoga to a love for product design",
       description:
         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
     },

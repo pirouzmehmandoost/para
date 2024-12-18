@@ -74,7 +74,6 @@ const NavBar = () => {
                 onClick={() => setExpanded(false)}
               >
                 <h2 className="text-2xl text-nowrap cursor-pointer">
-                  {" "}
                   Pirouz Mehmandoost
                 </h2>
               </Link>
