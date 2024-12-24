@@ -15,12 +15,12 @@ const noto = Noto_Sans({
   display: "swap",
   subsets: ["latin", "latin-ext"],
 });
-const platypi = Platypi({
-  weight: "700",
-  display: "swap",
-  style: ["normal"],
-  subsets: ["latin"],
-});
+// const platypi = Platypi({
+//   weight: "700",
+//   display: "swap",
+//   style: ["normal"],
+//   subsets: ["latin"],
+// });
 
 const markazi = Markazi_Text({
   weight: "500",
