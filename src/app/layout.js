@@ -1,7 +1,7 @@
 import {
   UnifrakturCook,
   Noto_Sans,
-  Platypi,
+  //   Platypi,
   Markazi_Text,
 } from "next/font/google";
 
@@ -18,8 +18,8 @@ const noto = Noto_Sans({
 const platypi = Platypi({
   weight: "700",
   display: "swap",
-  style: ["normal", "italic"],
-  subsets: ["latin", "latin-ext"],
+  style: ["normal"],
+  subsets: ["latin"],
 });
 
 const markazi = Markazi_Text({
