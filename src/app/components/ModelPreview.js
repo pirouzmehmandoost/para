@@ -2,7 +2,7 @@
 
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
   useGLTF,
   OrbitControls,
@@ -10,8 +10,33 @@ import {
   Loader,
   CameraShake,
 } from "@react-three/drei";
+import { Color } from "three";
 
 THREE.ColorManagement.enabled = true;
+
+const MyComponent = () => {
+  const meshRef = useRef();
+
+  useFrame((state, delta) => {
+    const elapsedTime = state.clock.getElapsedTime();
+
+    // Calculate a color based on time
+    const color = new Color("red").lerp(
+      new Color("blue"),
+      Math.sin(elapsedTime) * 0.5 + 0.5,
+    );
+
+    // Update the material color
+    meshRef.current.material.color = color;
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial />
+    </mesh>
+  );
+};
 
 const Model = (data) => {
   const { material: materialProps, modelUrl } = data;
@@ -31,6 +56,21 @@ const Model = (data) => {
     scene.children[0].position.set(0, -25, 0);
     scene.children[0].scale.set(scale, scale, scale);
   }
+
+  useFrame((state, delta) => {
+    const elapsedTime = state.clock.getElapsedTime();
+
+    // Calculate color based on time
+    const color = new Color("white").lerp(
+      new Color("black"),
+      Math.sin(elapsedTime) * 0.5 + 0.5,
+    );
+
+    // Update material color and roughness
+    scene.children[0].material.color = color;
+    scene.children[0].material.roughness =
+      (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
+  });
 
   return <primitive castShadow receiveShadow object={scene} ref={modelRef} />;
 };
@@ -102,7 +142,7 @@ export const ModelPreview = ({ data }) => {
         <Model {...newProps} />
         <hemisphereLight
           position={[0, 60, -30]}
-          intensity={4}
+          intensity={6}
           groundColor={"#333333"}
         />
         <CameraShake

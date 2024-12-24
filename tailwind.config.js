@@ -94,11 +94,15 @@ module.exports = {
         },
       },
 
-      transitionProperty: {
-        height: "height",
-        width: "width",
-        spacing: "margin, padding",
-        opacity: "opacity",
+      //   transitionProperty: {
+      //     height: "height",s
+      //     width: "width",
+      //     spacing: "margin, padding",
+      //     opacity: "opacity",
+      //   },
+
+      translate: {
+        4.25: "17rem",
       },
 
       variants: {
