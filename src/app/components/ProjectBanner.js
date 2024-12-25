@@ -32,6 +32,7 @@ const ProjectBanner = (props) => {
   );
 };
 
+
 // const Banner = (props) => {
 //   const { bannerUrl, name, shortDescription, imgUrls = {} } = props;
 
