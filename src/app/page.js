@@ -28,9 +28,10 @@ export default function Home() {
           const props = { ...item, rotation };
           return (
             <div
+              key={index}
               className={`relative flex z-10 place-self-center place-items-center self-center my-36 w-4/5 h-5/6 transition-all rounded-2xl duration-500 ease-in-out drop-shadow bg-blue-100 hover:bg-blue-50 hover:drop-shadow-2xl`}
             >
-              <ProjectBanner key={index} data={props} />
+              <ProjectBanner data={props} />
             </div>
           );
         })}

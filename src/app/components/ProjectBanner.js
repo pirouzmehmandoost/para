@@ -54,9 +54,9 @@ const ProjectBanner = (props) => {
         rel="noopener noreferrer"
       >
         <div className="flex flex-row w-full absolute inset-0 place-self-center ">
-          {flattenedUrls.map((url) => {
+          {flattenedUrls.map((url, index) => {
             return (
-              <div>
+              <div key={index}>
                 <Image
                   priority
                   className="overflow-hidden "
