@@ -1,11 +1,21 @@
-import { UnifrakturCook, Noto_Sans } from "next/font/google";
-
+import { UnifrakturCook, Noto_Sans, Markazi_Text } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/NavBar";
-import Header from "./components/Header";
+// import Header from "./components/Header";
 
 // const cook = UnifrakturCook({ weight: "700", subsets: ["latin"] });
-const noto = Noto_Sans({ weight: "400", subsets: ["latin"] });
+const noto = Noto_Sans({
+  weight: "400",
+  display: "swap",
+  subsets: ["latin", "latin-ext"],
+});
+
+const markazi = Markazi_Text({
+  weight: "500",
+  display: "swap",
+  style: ["normal"],
+  subsets: ["latin"],
+});
 
 export const metadata = {
   title: "℘讠 ⍨",
@@ -16,8 +26,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${noto.className} bg-cover bg-default-background-image`}
-        // className={`${cook.className} bg-cover bg-default-background-image`}
+        className={`${markazi.className} bg-cover bg-default-background-image`}
       >
         <NavBar />
         {/* <Header /> */}
