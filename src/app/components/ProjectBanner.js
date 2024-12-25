@@ -9,7 +9,7 @@ const ProjectBanner = (props) => {
   const setSelection = useSelection((state) => state.setSelection);
 
   return (
-    <div className="relative flex flex-col items-start justify-stretch w-full h-full min-h-48 ">
+    <div className="relative flex flex-col items-center justify-stretch w-full h-full min-h-48 ">
       <Link
         className="relative w-4/5 h-2/5 overflow-visible bg-red-500"
         onClick={() => setSelection(data)}

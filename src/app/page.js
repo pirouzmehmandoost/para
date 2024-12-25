@@ -64,7 +64,7 @@ export default function Home() {
             <div
               key={index}
               className={`flex z-10 w-4/5 h-5/6 my-40 place-self-center place-items-center self-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}
-              //   className={`relative flex z-10 w-4/5 h-5/6 my-36 place-self-center place-items-center self-center border border-4 border-clay_light rounded-2xl drop-shadow bg-clay_light transition-all duration-500 ease-in-out hover:drop-shadow-2xl`}
+            //   className={`relative flex z-10 w-4/5 h-5/6 my-36 place-self-center place-items-center self-center border border-4 border-clay_light rounded-2xl drop-shadow bg-clay_light transition-all duration-500 ease-in-out hover:drop-shadow-2xl`}
             >
               <ProjectBanner key={index} data={props} />
             </div>
