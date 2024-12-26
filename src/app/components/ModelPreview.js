@@ -14,29 +14,29 @@ import { Color } from "three";
 
 THREE.ColorManagement.enabled = true;
 
-const MyComponent = () => {
-  const meshRef = useRef();
+// const Model = () => {
+//   const meshRef = useRef();
 
-  useFrame((state, delta) => {
-    const elapsedTime = state.clock.getElapsedTime();
+//   useFrame((state, delta) => {
+//     const elapsedTime = state.clock.getElapsedTime();
 
-    // Calculate a color based on time
-    const color = new Color("red").lerp(
-      new Color("blue"),
-      Math.sin(elapsedTime) * 0.5 + 0.5,
-    );
+//     // Calculate a color based on time
+//     const color = new Color("red").lerp(
+//       new Color("blue"),
+//       Math.sin(elapsedTime) * 0.5 + 0.5,
+//     );
 
-    // Update the material color
-    meshRef.current.material.color = color;
-  });
+//     // Update the material color
+//     meshRef.current.material.color = color;
+//   });
 
-  return (
-    <mesh ref={meshRef}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial />
-    </mesh>
-  );
-};
+//   return (
+//     <mesh ref={meshRef}>
+//       <boxGeometry args={[1, 1, 1]} />
+//       <meshStandardMaterial />
+//     </mesh>
+//   );
+// };
 
 const Model = (data) => {
   const { material: materialProps, modelUrl } = data;
@@ -75,69 +75,27 @@ const Model = (data) => {
   return <primitive castShadow receiveShadow object={scene} ref={modelRef} />;
 };
 
-// const PreviewCanvas = (data) => {
-//   const { colorCodes, modelUrl, rotation } = data;
-//   const newProps = {
-//     modelUrl,
-//     position: [0, -20, 0],
-//     scale: 0.3,
-//     rotation: [0, Math.PI / 1.5, 0],
-//     material: { ...colorCodes.gloss_black.material },
-//     rotation,
-//   };
-
-//   return (
-//     <Suspense fallback={<Loader />}>
-//       <Canvas
-//         shadows
-//         fallback={<div>Sorry no WebGL supported!</div>}
-//         camera={{ position: [0, 10, 100], near: 1, far: 500, fov: 50 }}
-//       >
-//         <Model {...newProps} />
-//         <hemisphereLight
-//           position={[0, 60, -30]}
-//           intensity={4}
-//           groundColor={"#333333"}
-//         />
-//         <CameraShake
-//           maxYaw={0.1}
-//           maxPitch={0.1}
-//           yawFrequency={0.1}
-//           pitchFrequency={0.1}
-//           intensity={0.5}
-//           decay
-//           decayRate={0.65}
-//         />
-//         <OrbitControls
-//           makeDefault
-//           autoRotate
-//           enableZoom={false}
-//           enablePan={false}
-//           autoRotateSpeed={rotation * 5.0}
-//         />
-//         <Environment shadows files="./studio_small_08_4k.exr" />
-//       </Canvas>
-//     </Suspense>
-//   );
-// };
-
 export const ModelPreview = ({ data }) => {
-  const { colorCodes, modelUrl, rotation } = data;
+  const { colorCodes, modelUrl, rotation = 1, rotate, enableControls = true, orthographic = false, position = [0, 10, 100] } = data;
   const newProps = {
+    material: { ...colorCodes.gloss_black.material },
     modelUrl,
     position: [0, -20, 0],
-    scale: 1.0,
-    rotation: [0, Math.PI / 1.5, 0],
-    material: { ...colorCodes.gloss_black.material },
     rotation,
+    // rotation: [0, Math.PI / 1.5, 0],
+    scale: 1.0,
   };
+  const near = orthographic ? -100 : 1
+  const fov = orthographic ? 500 : 50
 
   return (
     <Suspense fallback={<Loader />}>
       <Canvas
-        shadows
+        camera={{ position: position, near: near, far: 500, fov: fov }}
         fallback={<div>Sorry no WebGL supported!</div>}
-        camera={{ position: [0, 10, 100], near: 1, far: 500, fov: 50 }}
+        orthographic={orthographic}
+        shadows
+
       >
         <Model {...newProps} />
         <hemisphereLight
@@ -156,10 +114,12 @@ export const ModelPreview = ({ data }) => {
         />
         <OrbitControls
           makeDefault
-          autoRotate
-          enableZoom={false}
           enablePan={false}
+          enableZoom={false}
+          autoRotate={rotate}
           autoRotateSpeed={rotation * 5.0}
+          enableRotate={enableControls}
+          orthographic={true}
         />
         <Environment shadows files="./studio_small_08_4k.exr" />
       </Canvas>
