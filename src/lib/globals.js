@@ -29,13 +29,7 @@ const glossMaterial = {
   ior: 1.5,
   reflectivity: 0.5,
   sheen: 0.0,
-  //   sheenColor: "#ffffff",
-  //   sheenRoughness: 0,
   flatShading: false,
-  //   clearcoat: 0,
-  //   clearcoatRoughness: 0,
-  //   specularIntensity: 1,
-  //   specularColor: "#ffffff",
 };
 
 export const colorCodes = {
