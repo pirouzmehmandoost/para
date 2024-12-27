@@ -19,7 +19,7 @@ export default function Home() {
         className={`flex flex-col w-5/6 h-fit mt-36 self-center text-7xl sm:text-6xl md:text-6xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
-          <div className="fixed w-96 h-96 z-20 opacity-50">
+          {/* <div className="fixed w-96 h-96 z-20 opacity-50">
             <ModelPreview data={{
               colorCodes: { ...colorCodes },
               enableControls: false,
@@ -29,7 +29,7 @@ export default function Home() {
               rotate: false,
               rotation: 0,
             }} />
-          </div>
+          </div> */}
           <h1 className="inline">Hey There! I am a</h1>
           <h1 className="inline italic mr-4">
             {" "}
@@ -40,7 +40,8 @@ export default function Home() {
           <h1 className="inline">
             I specialize in frontend development with JavaScript Frameworks. I'm
             also a designer with passions for responsive design and 3D computer
-            graphics.
+            graphics. This site is a work in progress but poke around! At the moment clicking on
+            projects will direct you to a very barebones shop UI.
           </h1>
         </div>
       </div>

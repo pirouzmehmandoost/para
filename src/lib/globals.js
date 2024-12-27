@@ -217,7 +217,7 @@ const portfolio = {
       colorCodes: { ...colorCodes },
       modelUrl: "/yoga_mat_strap_for_web2.glb",
       shortDescription:
-        "Connecting my experience teaching Yoga to a love for product design",
+        "Connecting my experiences teaching Yoga to product design",
       description:
         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
     },
@@ -225,3 +225,7 @@ const portfolio = {
 };
 
 export default portfolio;
+
+
+const str =
+  "I began teaching Yoga at 19 years old. I quit a year and a half later to focus an internip with a master printmaker during college. I resumed teaching in 2023, 15 years since my last class. My passions tend to project onto one another, and with a growing interest in 3D printing I decided to design a line of fitness accessories beginnng with a strap for carrying my Yoga mat";
