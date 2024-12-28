@@ -1,49 +1,55 @@
 "use client";
 
 import Link from "next/link";
+import localFont from "next/font/local";
+
+const myFont = localFont({
+  src: "./../../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
+  display: "swap",
+});
 
 const Header = () => {
   return (
-    <div id="header" className="fixed inset-0 top-0 z-10 min-w-screen">
+    <div
+      id="header"
+      className={`fixed z-10 w-full min-w-screen h-fit min-h-fit inset-0 top-0 pt-4 bg-[url("/background.png")] text-3xl text-clay_dark uppercase ${myFont.className} `}
+    >
       <div
-        className={`flex flex-col flex-nowrap pt-5 min-w-fit max-w-full text-center text-nowrap text-clay_dark bg-[url("/background.png")]`}
+        className={`flex flex-col flex-nowrap`}
       >
-        <div className="self-center">
+        <div className="text-center mb-2">
           <Link
             className="transition-colors duration-200 ease-in-out hover:text-gray-500"
             href="/"
             rel="noopener noreferrer"
-            onClick={() => setExpanded(false)}
           >
-            <h2 className="text-3xl cursor-pointer">Pirouz Mehmandoost</h2>
+            <p className="cursor-pointer text-nowrap">Pirouz Mehmandoost</p>
+          </Link>
+        </div>
+
+        <div className={`flex flex-nowrap flex-row justify-evenly w-full text-xl`}>
+          <Link
+            className="border-transparent transition-colors hover:text-gray-500"
+            href="/about"
+            rel="noopener noreferrer"
+          >
+            <p className="text-nowrap cursor-pointer">Resume</p>
           </Link>
 
-          <div className={`flex flex-nowrap flex-row justify-evenly w-full`}>
-            <Link
-              className="border-transparent transition-colors hover:text-gray-500"
-              href="/resume"
-              rel="noopener noreferrer"
-              onClick={() => setExpanded(false)}
-            >
-              <h2 className="text-nowrap cursor-pointer">Resume</h2>
-            </Link>
+          <Link
+            href="https://github.com/pirouzmehmandoost/"
+            className=" border-transparent transition-colors hover:text-gray-500"
+          >
+            <p className="text-nowrap cursor-pointer">Github</p>
+          </Link>
 
-            <Link
-              href="https://github.com/pirouzmehmandoost/"
-              className=" border-transparent transition-colors hover:text-gray-500"
-              rel="noopener noreferrer"
-            >
-              <h2 className="text-nowrap cursor-pointer">Github</h2>
-            </Link>
-
-            <Link
-              href="/shop"
-              className="border-transparent transition-colors hover:text-gray-500"
-              rel="noopener noreferrer"
-            >
-              <h2 className="text-nowrap cursor-pointer">Shop</h2>
-            </Link>
-          </div>
+          <Link
+            href="/shop"
+            className="border-transparent transition-colors hover:text-gray-500"
+            rel="noopener noreferrer"
+          >
+            <p className="text-nowrap cursor-pointer">Shop</p>
+          </Link>
         </div>
       </div>
     </div>

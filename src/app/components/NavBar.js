@@ -26,11 +26,11 @@ const NavBar = () => {
 
       <div onClick={toggleExpanded}>
         <Link
-          href="/cv"
+          href="/about"
           className="border border-transparent py-2 transition-colors hover:text-gray-500"
           rel="noopener noreferrer"
         >
-          <h2>CV</h2>
+          <h2>About</h2>
         </Link>
       </div>
 

@@ -24,7 +24,7 @@ const ProjectBanner = (props) => {
             {shortDescription}
           </p>
         </div>
-        <div className=" absolute  w-96 h-96 -my-8 md:-my-10 sm:-my-10">
+        <div className="absolute w-96 h-96 -my-8 md:-my-10 sm:-my-10">
           <ModelPreview data={data} />
         </div>
       </Link>

@@ -3,8 +3,7 @@
 import ProjectBanner from "./components/ProjectBanner";
 import portfolio from "./../lib/globals";
 import localFont from "next/font/local";
-import ModelPreview from "./components/ModelPreview";
-import { colorCodes } from "./../lib/globals";
+
 const myFont = localFont({
   src: "../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
   display: "swap",
@@ -65,7 +64,7 @@ export default function Home() {
           return (
             <div
               key={index}
-              className={`flex z-10 w-4/5 h-5/6 my-40 place-self-center place-items-center self-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}
+              className={`flex w-4/5 h-5/6 my-40 place-self-center place-items-center self-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}
             >
               <ProjectBanner key={index} data={props} />
             </div>
