@@ -39,8 +39,9 @@ export default function Home() {
           <h1 className="inline">
             I specialize in frontend development with JavaScript Frameworks. I'm
             also a designer with passions for responsive design and 3D computer
-            graphics. This site is a work in progress but poke around! At the moment clicking on
-            projects will direct you to a very barebones shop UI.
+            graphics. This site is a work in progress- Next.js based using Zustand, React Three Fiber/three.js, and Tailwind CSS.
+            Poke around, check the github repo, and read my notes in the README. At the moment clicking on my
+            projects just directs to a barebones shop UI.
           </h1>
         </div>
       </div>
