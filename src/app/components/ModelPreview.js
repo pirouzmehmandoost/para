@@ -39,7 +39,7 @@ THREE.ColorManagement.enabled = true;
 // };
 
 const Model = (data) => {
-  const { material: materialProps, modelUrl } = data;
+  const { material: materialProps, modelUrl, autoUpdateMaterial } = data;
 
   const modelRef = useRef();
   const { scene } = useGLTF(modelUrl);
@@ -57,33 +57,41 @@ const Model = (data) => {
     scene.children[0].scale.set(scale, scale, scale);
   }
 
-  useFrame((state, delta) => {
-    const elapsedTime = state.clock.getElapsedTime();
+  if (autoUpdateMaterial) {
+    useFrame((state, delta) => {
+      const elapsedTime = state.clock.getElapsedTime();
 
-    // Calculate color based on time
-    const color = new Color("white").lerp(
-      new Color("black"),
-      Math.sin(elapsedTime) * 0.5 + 0.5,
-    );
+      // Calculate color based on time
+      const color = new Color("white").lerp(
+        new Color("black"),
+        Math.sin(elapsedTime) * 0.5 + 0.5,
+      );
 
-    // Update material color and roughness
-    scene.children[0].material.color = color;
-    scene.children[0].material.roughness =
-      (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
-  });
+      // Update material color and roughness
+      scene.children[0].material.color = color;
+      scene.children[0].material.roughness =
+        (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
+    });
+  } else {
+    scene.children[0].material.ior = 2.2;
+    scene.children[0].material.roughness = 0.2
+    scene.children[0].material.metalness = 0.65
+    scene.children[0].material.sheenRoughness = 1
+  }
 
   return <primitive castShadow receiveShadow object={scene} ref={modelRef} />;
 };
 
 export const ModelPreview = ({ data }) => {
-  const { colorCodes, modelUrl, rotation = 1, rotate, enableControls = true, orthographic = false, position = [0, 10, 100] } = data;
+  const { autoUpdateMaterial = true, colorCodes, modelUrl, rotation = 1, rotate, enableControls = true, orthographic = false, position = [0, 10, 100] } = data;
   const newProps = {
-    material: { ...colorCodes.gloss_black.material },
+    material: { ...colorCodes },
     modelUrl,
     position: [0, -20, 0],
     rotation,
     // rotation: [0, Math.PI / 1.5, 0],
     scale: 1.0,
+    autoUpdateMaterial
   };
   const near = orthographic ? -100 : 1
   const fov = orthographic ? 500 : 50
@@ -95,7 +103,6 @@ export const ModelPreview = ({ data }) => {
         fallback={<div>Sorry no WebGL supported!</div>}
         orthographic={orthographic}
         shadows
-
       >
         <Model {...newProps} />
         <hemisphereLight

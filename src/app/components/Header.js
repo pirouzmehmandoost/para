@@ -39,6 +39,8 @@ const Header = () => {
           <Link
             href="https://github.com/pirouzmehmandoost/"
             className=" border-transparent transition-colors hover:text-gray-500"
+            rel="noopener noreferrer"
+            target="blank"
           >
             <p className="text-nowrap cursor-pointer">Github</p>
           </Link>

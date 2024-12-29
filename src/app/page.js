@@ -3,7 +3,6 @@
 import ProjectBanner from "./components/ProjectBanner";
 import portfolio from "./../lib/globals";
 import localFont from "next/font/local";
-
 const myFont = localFont({
   src: "../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
   display: "swap",
@@ -18,11 +17,11 @@ export default function Home() {
         className={`flex flex-col w-5/6 h-fit mt-36 self-center text-7xl sm:text-6xl md:text-6xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
-          {/* <div className="fixed w-96 h-96 z-20 opacity-50">
+          {/* <div className="fixed w-96 h-96 z-20 ">
             <ModelPreview data={{
-              colorCodes: { ...colorCodes },
-              enableControls: false,
-              modelUrl: "/logo_for_web.glb",
+              colorCodes: { ...colorCodes.matte_black },
+              enableControls: true,
+              modelUrl: "/rock_bag_for_web.glb",
               orthographic: true,
               position: [0, 45, 100],
               rotate: false,
@@ -75,18 +74,3 @@ export default function Home() {
     </main>
   );
 };
-
-{/* <div
-  id="round_border_section"
-  className="relative w-full h-72 place-self-center overflow-auto"
->
-  <div className=" w-full h-full inset-0 border border-8 border-none rounded-[100%] bg-breadfruit bg-breadfruit">
-    <div className="absolute  w-full h-fit w-full h-fit -mt-6 inset-0 place-self-center place-items-center items-center ">
-      <p> Hey There!</p>
-      <div className=" flex flex-nowrap text-nowrap">
-        <p>My name is</p>
-        <p className="ml-3 inline">Pirouz</p>
-      </div>
-    </div>
-  </div>
-</div>  */}
