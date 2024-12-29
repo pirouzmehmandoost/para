@@ -17,31 +17,21 @@ export default function Home() {
         className={`flex flex-col w-5/6 h-fit mt-36 self-center text-7xl sm:text-6xl md:text-6xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
-          {/* <div className="fixed w-96 h-96 z-20 ">
-            <ModelPreview data={{
-              colorCodes: { ...colorCodes.matte_black },
-              enableControls: true,
-              modelUrl: "/rock_bag_for_web.glb",
-              orthographic: true,
-              position: [0, 45, 100],
-              rotate: false,
-              rotation: 0,
-            }} />
-          </div> */}
-          <h1 className="inline">Hey There! I am a</h1>
-          <h1 className="inline italic mr-4">
-            {" "}
+          <p className="inline  mr-4">Hey There! I'm a</p>
+          <p className="inline italic mr-4">
             software engineer and designer
-          </h1>
-          <h1 className="inline mr-4">based out of</h1>
-          <h1 className="inline italic mr-4">the San Francisco Bay Area.</h1>
-          <h1 className="inline">
+          </p>
+          <p className="inline mr-4">based out of</p>
+          <p className="inline italic mr-4">the San Francisco Bay Area.</p>
+          <p className="inline">
             I specialize in frontend development with JavaScript Frameworks. I'm
             also a designer with passions for responsive design and 3D computer
-            graphics. This site is a work in progress- Next.js based using Zustand, React Three Fiber/three.js, and Tailwind CSS.
-            Poke around, check the github repo, and read my notes in the README. At the moment clicking on my
-            projects just directs to a barebones shop UI.
-          </h1>
+            graphics.
+          </p>
+          <p className="inline mt-10">
+            This site is a work in progress. It's Next.js 14 based, using Zustand, React Three Fiber/three.js, and Tailwind CSS.
+            Poke around, check the github repo and read my notes in the README☺
+          </p>
         </div>
       </div>
       <h1

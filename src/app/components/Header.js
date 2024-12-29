@@ -12,7 +12,7 @@ const Header = () => {
   return (
     <div
       id="header"
-      className={`fixed z-10 w-full min-w-screen h-fit min-h-fit inset-0 top-0 pt-4 bg-[url("/background.png")] text-3xl text-clay_dark uppercase ${myFont.className} `}
+      className={`fixed z-10 w-full min-w-screen h-fit min-h-fit inset-0 top-0 pt-4 bg-[url("/background.png")] text-4xl text-clay_dark uppercase ${myFont.className} `}
     >
       <div
         className={`flex flex-col flex-nowrap`}
@@ -27,7 +27,7 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className={`flex flex-nowrap flex-row justify-evenly w-full text-xl`}>
+        <div className={`flex flex-nowrap flex-row justify-evenly w-full text-3xl`}>
           <Link
             className="border-transparent transition-colors hover:text-gray-500"
             href="/about"
@@ -50,7 +50,7 @@ const Header = () => {
             className="border-transparent transition-colors hover:text-gray-500"
             rel="noopener noreferrer"
           >
-            <p className="text-nowrap cursor-pointer">Shop</p>
+            <p className="text-nowrap cursor-pointer line-through	decoration-wavy decoration-red-500/90 decoration-2">Shop</p>
           </Link>
         </div>
       </div>
