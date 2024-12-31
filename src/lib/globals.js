@@ -13,12 +13,12 @@ export const storePolicy = {
 const matteMaterial = {
   roughness: 1,
   metalness: 0.2,
-  ior: 1,
+  ior: 1.5,
   reflectivity: 0.0,
   sheen: 0.7,
   sheenColor: "#333333",
   sheenRoughness: 1,
-  flatShading: false,
+  flatShading: true,
   specularIntensity: 1.5,
   specularColor: "#333333",
 };
@@ -51,15 +51,6 @@ export const colorCodes = {
       ...glossMaterial,
     },
   },
-  // sand: {
-  //   label: "Gloss Black",
-  //   hex: "#000000",
-  //   tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-900`,
-  //   material: {
-  //     color: "#000000",
-  //     ...glossMaterial,
-  //   },
-  // }
 };
 
 const portfolio = {
@@ -205,6 +196,7 @@ const portfolio = {
           "/oval_bag_matte_white_4.png",
         ],
       },
+      orthographic: false,
       autoUpdateMaterial: true,
       colorCodes: { ...colorCodes.gloss_black.material },
       modelUrl: "/oval_bag_xl_v2.glb",
@@ -230,8 +222,9 @@ const portfolio = {
         ],
       },
       autoUpdateMaterial: false,
+      orthographic: true,
       colorCodes: { ...colorCodes.matte_black.material },
-      modelUrl: "/rock_bag_for_web.glb",
+      modelUrl: "/rock_bag_for_web2.glb",
       shortDescription: "A small collection of 3D printed handbags.",
       description:
         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
@@ -253,6 +246,7 @@ const portfolio = {
           "/yoga_mat_strap_quarter.png",
         ],
       },
+      orthographic: false,
       autoUpdateMaterial: true,
       colorCodes: { ...colorCodes.gloss_black.material },
       modelUrl: "/yoga_mat_strap_for_web2.glb",

@@ -14,30 +14,6 @@ import { Color } from "three";
 
 THREE.ColorManagement.enabled = true;
 
-// const Model = () => {
-//   const meshRef = useRef();
-
-//   useFrame((state, delta) => {
-//     const elapsedTime = state.clock.getElapsedTime();
-
-//     // Calculate a color based on time
-//     const color = new Color("red").lerp(
-//       new Color("blue"),
-//       Math.sin(elapsedTime) * 0.5 + 0.5,
-//     );
-
-//     // Update the material color
-//     meshRef.current.material.color = color;
-//   });
-
-//   return (
-//     <mesh ref={meshRef}>
-//       <boxGeometry args={[1, 1, 1]} />
-//       <meshStandardMaterial />
-//     </mesh>
-//   );
-// };
-
 const Model = (data) => {
   const { material: materialProps, modelUrl, autoUpdateMaterial } = data;
 
@@ -73,17 +49,27 @@ const Model = (data) => {
         (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
     });
   } else {
-    scene.children[0].material.ior = 2.2;
-    scene.children[0].material.roughness = 0.2
-    scene.children[0].material.metalness = 0.65
-    scene.children[0].material.sheenRoughness = 1
+    const color = new Color("black")
+    scene.children[0].material.color = color;
+    scene.children[0].material.ior = 1.5;
+    scene.children[0].material.roughness = 0.0;
+    scene.children[0].material.reflectivity = 0.0;
+    scene.children[0].material.clearcoat = 0.5;
+    scene.children[0].material.clearcoatRoughness = 0.0;
+    scene.children[0].material.specularIntensity = 0.03
+    scene.children[0].material.specularColor = "#ffffff"
+    scene.children[0].material.transmission = 1;
+    scene.children[0].material.metalness = 0.0;
+    scene.children[0].material.flatShading = true;
+    scene.children[0].flatShading = true;
+    scene.flatShading = true;
   }
 
   return <primitive castShadow receiveShadow object={scene} ref={modelRef} />;
 };
 
 export const ModelPreview = ({ data }) => {
-  const { autoUpdateMaterial = true, colorCodes, modelUrl, rotation = 1, rotate, enableControls = true, orthographic = false, position = [0, 10, 100] } = data;
+  const { autoUpdateMaterial = true, colorCodes, modelUrl, rotation = 1, rotate, enableControls = true, orthographic = false, cameraPosition = [0, 10, 100] } = data;
   const newProps = {
     material: { ...colorCodes },
     modelUrl,
@@ -96,10 +82,11 @@ export const ModelPreview = ({ data }) => {
   const near = orthographic ? -100 : 1
   const fov = orthographic ? 500 : 50
 
+
   return (
     <Suspense fallback={<Loader />}>
       <Canvas
-        camera={{ position: position, near: near, far: 500, fov: fov }}
+        camera={{ position: cameraPosition, near: near, far: 500, fov: fov }}
         fallback={<div>Sorry no WebGL supported!</div>}
         orthographic={orthographic}
         shadows
@@ -107,9 +94,24 @@ export const ModelPreview = ({ data }) => {
         <Model {...newProps} />
         <hemisphereLight
           position={[0, 60, -30]}
-          intensity={6}
-          groundColor={"#333333"}
+          intensity={100}
+          groundColor={"#ffffff"}
         />
+
+        {orthographic &&
+          <>
+            <hemisphereLight
+              position={[-20, 20, 100]}
+              intensity={100}
+              groundColor={"#ffffff"}
+            />
+            <hemisphereLight
+              position={cameraPosition}
+              intensity={100}
+              groundColor={"#ffffff"}
+            />
+          </>
+        }
         <CameraShake
           maxYaw={0.1}
           maxPitch={0.1}
@@ -124,7 +126,7 @@ export const ModelPreview = ({ data }) => {
           enablePan={false}
           enableZoom={false}
           autoRotate={rotate}
-          autoRotateSpeed={rotation * 5.0}
+          autoRotateSpeed={rotation * 10.0}
           enableRotate={enableControls}
           orthographic={true}
         />

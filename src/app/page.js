@@ -46,8 +46,7 @@ export default function Home() {
           const props = {
             ...item,
             enableControls: false,
-            orthographic: false,
-            position: [0, 10, 100],
+            cameraPosition: [0, 10, 100],
             rotate: true,
             rotation,
           };
