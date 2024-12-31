@@ -28,7 +28,7 @@ export default function Home() {
             also a designer with passions for responsive design and 3D computer
             graphics.
           </p>
-          <p className="inline mt-10">
+          <p className="mt-10">
             This site is a work in progress. It's Next.js 14 based, using Zustand, React Three Fiber/three.js, and Tailwind CSS.
             Poke around, check the github repo and read my notes in the README☺
           </p>
