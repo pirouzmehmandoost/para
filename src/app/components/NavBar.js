@@ -8,13 +8,13 @@ import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 // import useSelection from "../store/selection";
 
 const NavBar = () => {
-  // const [searchQuery, setsearchQuery] = useState("invisible");
+  const [searchQuery, setsearchQuery] = useState("invisible");
   const [expanded, setExpanded] = useState(false);
   const toggleExpanded = () => setExpanded((current) => !current);
 
   const dropDown = (
     <div className="flex flex-col flex-grow">
-      {/* <div className="self-center my-6">
+      <div className="self-center my-6">
         <input
           type="text"
           id="search_input"
@@ -22,7 +22,7 @@ const NavBar = () => {
           placeholder="Search Products"
           required
         />
-      </div> */}
+      </div>
 
       <div onClick={toggleExpanded}>
         <Link
