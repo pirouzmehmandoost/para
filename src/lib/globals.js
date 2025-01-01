@@ -228,7 +228,11 @@ const portfolio = {
           ...colorCodes.gloss_black.material,
           colorWays: { ...colorCodes },
         },
-        modelUrls: ["/oval_bag_xl_v2.glb", "/oval_bag_1.glb"],
+        modelUrls: [
+          "/oval_bag_xl_v2.glb",
+          "/oval_bag_3.glb",
+          "/oval_bag_1.glb",
+        ],
       },
       shortDescription: "A small collection of 3D printed handbags.",
       description:
