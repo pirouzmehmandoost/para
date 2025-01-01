@@ -3,6 +3,7 @@
 import useSelection from "../store/selection";
 import Link from "next/link";
 import ModelPreview from "./ModelPreview";
+import SceneViewer from "./SceneViewer";
 
 const ProjectBanner = (props) => {
   const { data, data: { name, shortDescription } = {} } = props;
@@ -24,8 +25,9 @@ const ProjectBanner = (props) => {
             {shortDescription}
           </p>
         </div>
-        <div className="absolute w-96 h-96 -my-8 md:-my-10 sm:-my-10">
-          <ModelPreview data={data} />
+        <div className="absolute w-96 h-96 -my-8 md:-my-10 sm:-my-10 w-full">
+          {/* <ModelPreview data={data} /> */}
+          <SceneViewer data={data} />
         </div>
       </Link>
     </div>

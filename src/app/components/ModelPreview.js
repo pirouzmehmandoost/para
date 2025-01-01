@@ -60,9 +60,6 @@ const Model = (data) => {
     scene.children[0].material.specularColor = "#ffffff"
     scene.children[0].material.transmission = 1;
     scene.children[0].material.metalness = 0.0;
-    scene.children[0].material.flatShading = true;
-    scene.children[0].flatShading = true;
-    scene.flatShading = true;
   }
 
   return <primitive castShadow receiveShadow object={scene} ref={modelRef} />;
