@@ -23,7 +23,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col w-screesn min-w-screen h-screen min-h-screen text-center text-clay_dark">
+    <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
         className={`flex flex-col w-5/6 h-fit mt-36 self-center text-7xl sm:text-6xl md:text-6xl uppercase ${myFont.className}`}
