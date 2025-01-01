@@ -75,7 +75,10 @@ const portfolio = {
       },
       autoUpdateMaterial: false,
       sceneData: {
-        colorCodes: { ...colorCodes.gloss_black.material, colorWays: { ...colorCodes } },
+        colorCodes: {
+          ...colorCodes.gloss_black.material,
+          colorWays: { ...colorCodes },
+        },
       },
       modelUrl: "/oval_bag_1.glb",
       description:
@@ -102,7 +105,10 @@ const portfolio = {
       productType: "bag",
       autoUpdateMaterial: false,
       sceneData: {
-        colorCodes: { ...colorCodes.gloss_black.material, colorWays: { ...colorCodes } },
+        colorCodes: {
+          ...colorCodes.gloss_black.material,
+          colorWays: { ...colorCodes },
+        },
       },
       modelUrl: "/oval_bag_xl_v2.glb",
       description:
@@ -128,7 +134,10 @@ const portfolio = {
       productType: "fitness",
       autoUpdateMaterial: false,
       sceneData: {
-        colorCodes: { ...colorCodes.gloss_black.material, colorWays: { ...colorCodes } },
+        colorCodes: {
+          ...colorCodes.gloss_black.material,
+          colorWays: { ...colorCodes },
+        },
       },
       modelUrl: "/yoga_mat_strap_for_web2.glb",
       description:
@@ -155,7 +164,10 @@ const portfolio = {
       productType: "bag",
       autoUpdateMaterial: false,
       sceneData: {
-        colorCodes: { ...colorCodes.gloss_black.material, colorWays: { ...colorCodes } },
+        colorCodes: {
+          ...colorCodes.gloss_black.material,
+          colorWays: { ...colorCodes },
+        },
       },
       modelUrl: "/oval_bag_xl_v2.glb",
       description: "A SMALL BODY OF TEXT",
@@ -181,7 +193,10 @@ const portfolio = {
       productType: "bag",
       autoUpdateMaterial: false,
       sceneData: {
-        colorCodes: { ...colorCodes.gloss_black.material, colorWays: { ...colorCodes } },
+        colorCodes: {
+          ...colorCodes.gloss_black.material,
+          colorWays: { ...colorCodes },
+        },
       },
       modelUrl: "/oval_bag_xl_v2.glb",
       description:
@@ -209,8 +224,11 @@ const portfolio = {
       sceneData: {
         orthographic: false,
         autoUpdateMaterial: true,
-        colorCodes: { ...colorCodes.gloss_black.material, colorWays: { ...colorCodes } },
-        modelUrls: ["/oval_bag_xl_v2.glb", "/oval_bag_xl.glb"],
+        colorCodes: {
+          ...colorCodes.gloss_black.material,
+          colorWays: { ...colorCodes },
+        },
+        modelUrls: ["/oval_bag_xl_v2.glb", "/oval_bag_1.glb"],
       },
       shortDescription: "A small collection of 3D printed handbags.",
       description:
@@ -236,7 +254,10 @@ const portfolio = {
       sceneData: {
         orthographic: false,
         autoUpdateMaterial: true,
-        colorCodes: { ...colorCodes.gloss_black.material, colorWays: { ...colorCodes } },
+        colorCodes: {
+          ...colorCodes.gloss_black.material,
+          colorWays: { ...colorCodes },
+        },
         modelUrls: ["/yoga_mat_strap_for_web2.glb"],
       },
       shortDescription:
