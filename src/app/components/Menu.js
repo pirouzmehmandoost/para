@@ -4,9 +4,15 @@ import useSelection from "../store/selection";
 
 const Menu = ({ setExpanded, expanded }) => {
   const selection = useSelection((state) => state.selection);
-  const { sceneData: { colorCodes: { colorWays } }, description, name, price } = selection;
+  const {
+    sceneData: {
+      colorCodes: { colorWays },
+    },
+    description,
+    name,
+    price,
+  } = selection;
 
-  console.log(selection)
   const colorSelectButtons = (
     <div className="flex flex-row">
       {Object.entries(colorWays).map((entry) => {

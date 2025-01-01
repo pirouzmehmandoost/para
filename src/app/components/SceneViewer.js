@@ -97,7 +97,6 @@ const Group = (data) => {
 
   const { viewport, size } = useThree();
 
-  console.log(size.width / modelUrls.length);
   const { camera, get } = useThree();
   const groupRef = useRef();
 
