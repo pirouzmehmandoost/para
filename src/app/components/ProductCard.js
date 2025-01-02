@@ -1,9 +1,9 @@
 "use client";
 
-import useSelection from "../store/selection";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import useSelection from "../store/selection";
 
 const ProductCard = (props) => {
   const { data, data: { imgUrls = {}, name, price } = {} } = props;
