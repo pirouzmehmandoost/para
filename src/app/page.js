@@ -60,7 +60,7 @@ export default function Home() {
               <SplideSlide key={index}>
                 <div
                   key={index}
-                  className={`flex w-4/5 h-5/6 my-40 place-self-center place-items-center self-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}
+                  className={`flex w-5/6 h-5/6 my-40 place-self-center place-items-center self-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}
                 >
                   <ProjectBanner key={index} data={props} />
                 </div>
