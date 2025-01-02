@@ -268,20 +268,29 @@ const portfolio = {
         "An exploration of branding and product design as a Yoga instructor.",
       description: `I began teaching Yoga at 19, back in 2008. I had started taking classes shortly after graduating from high school, and like many of my interests it became a short lived obsession. 
         I quit a year and a half later after transferring colleges and leaving my hometown. I didn't return to practicing or teaching until 2023, some 15 years later. Ironically enough I got back into it much in the same way I began, while recovering from an injury.
-        I resumed teaching part-time in 2023, 15 years since my last class. About 8 months in I suffered a knee injury that I still have a hard time describing... one day my leg just shot out of its knee joint and nobody, no matter how many emergency room visits I made or MRI's that specialists ordered could tell me why...
-        The scans did reveal arthritis in my back and neck though, which doctors 15 years prior said would likely occur subsequent to a car accident that led to discovering Yoga in the first place. 
-        Anyway, two months afterward I was crossing a street in Oakland when my knee did it's thing again, except this time I heard a loud snap and fell to the ground. Cars waited for me to crawl out of the way, and I asked a stranger to helped me up. I was in shock, frankly I would't expect anyone to hoist a stranger upright and keep an eye on me until a friend got to the scene. In the past I could jerk my femur back in place and endure a day of pain, but dislocations were occuring more frequently and this time it was stuck. I put in my leave from work in July and was taken to an emergency room for the second time. 
-        X-rays in the didn't identify issues, but a third MRI revealed that my meniscus had snapped in multiple spots and flipped itself over. I spent the next month consulting with different surgeons and by great chance one performed a full repair. 
-        If you're unfamiliar with meniscus injuries, full repairs aren't common- roughly 3 in 4 meniscus surgeries involve removal of cartilage- the recovery time is longer than removal, and though not guaranteed the procedure does increase your chance of resuming a physically active lifestyle as before.
+        In May 2024, almost a year into teaching I suffered a knee injury that I still have a hard time describing... one day my leg just shot out of its knee joint and nobody, no matter how many emergency room visits I made or MRI's that specialists ordered could tell me why.
+        The scans did reveal arthritis in my back and neck though, which doctors in years prior said may develop subsequent to a car accident that inadvertently led to discovering Yoga. 
         
-        Anyway, while on leave from work I decided to focus on 3D modeling, printing, and learning about computer graphics by way of WebGL, three.js, and React Three Fiber. My passions tend to project onto one another, and with a growing interest in 3D printing
-        I started a designing a line of fitness accessories beginning with a strap for carrying my Yoga mat (I had originally started my project off with a simple handbag design, but decided they belong in their own collection ). While testing aesthetics and printability of various TPU's I started yieldign consistent quality prints with a foaming TPU. 
-        Given acceptable levels of hygroscopy, elasticity, abrasion resistance and skin-safeness a printable foam-like material would be perfect for prototyping fitness accessories. At the moment my prototypes are printed witth Colorfabb VarioShore TPU filament, which is intended for prototyping prothetics and orthotics.  
-        With the proper print settings the material can achieve the visual likeness and shore-hardness of EVA foam or cork like that of a Yoga support block. As the shore-harness can be controlled to yield prints varying from shore 92A to 82A, from hard plastic to a gel insert. 
-        Once I printed the second prototype of a handbag with a pleasing matte-black finish, I turned focus to the Yoga mat holder. 
+        Fast forward two months, and knee did it's thing again, except this time I heard a loud snap and I collapsed in the middle of a crosswalk. Cars waited for me to crawl out of the way. 
+        In the past I could jerk my femur back in place and endure a day of pain, but dislocations were occuring more frequently and this time I was reduced to crawling across the floot on my butt. 
+        I put in my leave from work in July and was taken to an emergency room for the second time. X-rays in the didn't identify issues, but a third MRI (my fourth that year) revealed that the meniscus snapped in multiple spots and a part had flipped over itself. 
+        By great chance a surgeon performed a full repair. If you're unfamiliar with meniscus injuries, full repairs aren't common- roughly 3 in 4 meniscus surgeries involve removal of cartilage and it does not grow back.
+        
+        Anyway, while on leave from work I decided to learn about computer graphics by way of WebGL, three.js, and React Three Fiber. My passions tend to project onto one another, and with a growing interest in 3D printing I decided to learn more about Blender software to materialize several designs.
+        I started a designing a line of fitness accessories beginning with a stylized strap for carrying my Yoga mat. I based the model on a typographic element, my first name initial (branding this is where my skills fall quite short). 
+        However my goal was to extend over the breadth of existing textile-based and pattern-reliant product designs without compromising utility. 
+        
+        While testing aesthetics and printability of various TPU's and TPE's (rubbers) I started yielding consistent quality benchmark test prints using a foaming TPU printed with a Prusa i3 Mk3s+. 
+        I am currently using Colorfabb VarioShore TPU filament, which is intended for developing prothetics and orthotics prototypes.  
+       
+        Given acceptable levels of hygroscopy, elasticity, abrasion resistance and skin-safeness a printable foam-like material would be perfect for prototyping fitness accessories. 
+        I spent 8 weeks perfoming mechanical upkeep, ordering and upgrading parts, calibrating print settings, and testing post-production methods (sourcing an air compressor, spray gun, 
+        air-cure ceramic automotive paints, bonding parts with solvents) to achieve results with acceptable levels of shore-hardness, hygroscopy, elasticity, abrasion resistance and finish. 
+        Uncoated prototypes made with Varioshore TPU achieve visual likeness and shore-hardness of EVA foam and cord commonly used to manifacture Yoga support blocks. They are also hypoallergenic. 
 
-        I've returned to teaching yoga in the meantime and intend to put this product to work once it's done. The shape is overt yet sleek, denoting my first name initials- branding this is where my skills fall very short. However I based the model on a typographic element in order to extend over the breadth of flat, utilitarian, and pattern-reliant product designs which most fitnesswear brands afford their consumers. 
-        Keep eyeing this project, and check out my instagram as I post updates on the design and prototyping process.`,
+        I queue my project stages to keep moving at all times, and printed the second prototype of a handbag with a matte-black finish as the most recent quality test. 
+        Keep eyeing this project on github, find me on LinkedIn, and check out my instagram as I post updates on the design and prototyping process. I've recently returned to teaching yoga and look forward to testing it!  
+`,
     },
   ],
 };
