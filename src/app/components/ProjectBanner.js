@@ -9,9 +9,9 @@ const ProjectBanner = (props) => {
   const setSelection = useSelection((state) => state.setSelection);
 
   return (
-    <div className="relative flex flex-col items-center justify-stretch w-full h-full min-h-48 ">
+    <div className="relative flex flex-col w-full h-full min-h-48 items-center justify-stretch">
       <Link
-        className="relative w-4/5 h-2/5 overflow-visible bg-red-500"
+        className="relative w-5/6 h-2/5 overflow-visible bg-red-500"
         onClick={() => setSelection(data)}
         href="/shop/productView"
         rel="noopener noreferrer"
@@ -24,7 +24,7 @@ const ProjectBanner = (props) => {
             {shortDescription}
           </p>
         </div>
-        <div className="absolute w-96 h-96 -my-8 md:-my-10 sm:-my-10 w-full">
+        <div className="absolute w-full h-96 -my-8 md:-my-10 sm:-my-10 w-full">
           <SceneViewer data={data} />
         </div>
       </Link>

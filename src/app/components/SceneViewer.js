@@ -89,15 +89,15 @@ const Group = (data) => {
     colorCodes,
     modelUrls,
     cameraPosition,
+    enablePan,
+    enableZoom,
     enableRotate,
     autoRotate,
     autoRotateSpeed,
     orthographic,
   } = data;
 
-  const { viewport, size } = useThree();
-
-  const { camera, get } = useThree();
+  const { viewport, size, camera, get } = useThree();
   const groupRef = useRef();
 
   // Update camera position and target whenever the group or viewport dimensions are updated
@@ -124,13 +124,15 @@ const Group = (data) => {
         {modelUrls.map((url, index) => {
           const newProps = {
             modelUrl: url,
-            material: { ...colorCodes }, // colorCodes are the material properties
+            material: { ...colorCodes }, // material properties
             scale: 0.9, // scale of the model is decreased by a small amount
             autoUpdateMaterial,
             position: [
-              parseInt((index * size.width) / (modelUrls.length * 2)), // position is the midpoints of viewport split by the number of models
-              -25, //positions are below from the camera by a small amount
-              -50, //and away from the camera away but a small amount
+              //x position is the midpoints of viewport's width divided by the number of models
+              //0.7 is a scaling factor to adjust the position of the models.
+              parseInt((index * size.width) / (modelUrls.length * 2)) * 0.7,
+              -25, //position the model below the camera by a small amount
+              -50, //and away from the camera away by a small amount
             ],
           };
           return <Model key={index} {...newProps} />;
@@ -139,8 +141,8 @@ const Group = (data) => {
       <OrbitControls
         target={groupRef}
         makeDefault
-        enablePan={false}
-        enableZoom={false}
+        enablePan={enablePan}
+        enableZoom={enableZoom}
         autoRotate={autoRotate}
         autoRotateSpeed={autoRotateSpeed}
         enableRotate={enableRotate}
@@ -157,9 +159,11 @@ export const SceneViewer = ({ data }) => {
       modelUrls,
       //default values for the scene
       autoUpdateMaterial = true,
-      autoRotate = false,
+      autoRotate = false, // disable camera auto rotate. Model rotation is calculated in Model component.
       autoRotateSpeed = 3,
-      enableRotate = true,
+      enableRotate = false,
+      enablePan = false,
+      enableZoom = false,
       orthographic = false,
       cameraPosition = [0, 10, 150],
     },
@@ -168,11 +172,13 @@ export const SceneViewer = ({ data }) => {
     material: { ...colorCodes },
     modelUrls,
     autoUpdateMaterial,
-    cameraPosition,
-    enableRotate,
     autoRotate,
     autoRotateSpeed,
+    enableRotate,
+    enablePan,
+    enableZoom,
     orthographic,
+    cameraPosition,
   };
   // near and fov differ for orthographic/perspective camera to show the models properly
   const near = orthographic ? -100 : 1;

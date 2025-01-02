@@ -22,14 +22,16 @@ My long term goals are to:
 
 # Current To Do's:
 
-- Add resume page and enable pdf downloads.
+- clamp scale of models in SceneViewer.js. Currently models scale relative to the parent canvas/viewport width which is fine,
+  but scenes with 3+ models get trimmmed when screen width >= 1130 px.
+  Maybe clamp max scale and at max width zoom camera in/out.
+- Add resume page and enable pdf views/downloads.
 - make a streamlined version of the app for interviews (different route)
 - Expand Menus/modals by default
 - Product menu should have a toggle expand/collapse icon that's easy to spot
 - product menu should be full width to divide the two full width elements above and below
 - images for products seem like they would be draggable, as some 3D models enable panning/orbit controls
 - make all text bigger
-- remove commented code
 - get eslint set up (in terminal, vscode).
 
 Tools Used:
