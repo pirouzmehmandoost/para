@@ -9,9 +9,9 @@ const ProjectBanner = (props) => {
   const setSelection = useSelection((state) => state.setSelection);
 
   return (
-    <div className="relative flex flex-col w-full h-full min-h-48 items-center justify-stretch">
+    <div className="relative flex flex-col w-full h-full min-h-48 items-center justify-stretch mb-14">
       <Link
-        className="relative w-5/6 h-2/5 overflow-visible bg-red-500"
+        className="relative w-5/6 h-2/5 overflow-visible"
         onClick={() => setSelection(data)}
         href="/shop/productView"
         rel="noopener noreferrer"

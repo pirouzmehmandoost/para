@@ -107,7 +107,9 @@ const Group = (data) => {
       const center = boundingBox.getCenter(new THREE.Vector3());
 
       camera.position.copy(center);
-      camera.position.y += cameraPosition[1];
+      //lift the camera up by a small amount if there are more than 2 models
+      camera.position.y +=
+        modelUrls.lengnth > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
       camera.position.z += cameraPosition[2];
       // update R3F OrbitControls target. OrbitControls' makeDefault flag automatically positions the camera to look at the target
       const controls = get().controls;
@@ -168,7 +170,7 @@ export const SceneViewer = ({ data }) => {
       enablePan = false,
       enableZoom = false,
       orthographic = false,
-      cameraPosition = [0, 20, 160],
+      cameraPosition = [0, 10, 160],
     },
   } = data;
   const sceneProps = {
