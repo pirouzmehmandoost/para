@@ -122,17 +122,20 @@ const Group = (data) => {
     <>
       <group castShadow receiveShadow ref={groupRef}>
         {modelUrls.map((url, index) => {
+          // stagger z-position of models if there are more than 2 models
+          const xOffset = modelUrls.length > 2 ? -50 : 0;
+
           const newProps = {
             modelUrl: url,
             material: { ...colorCodes }, // material properties
-            scale: 0.9, // scale of the model is decreased by a small amount
+            scale: modelUrls.length == 1 ? 1.0 : 0.9, // scale of the model is decreased by a small amount
             autoUpdateMaterial,
             position: [
-              //x position is the midpoints of viewport's width divided by the number of models
+              // x position is the midpoints of viewport's width divided by the number of models
               //0.7 is a scaling factor to adjust the position of the models.
               parseInt((index * size.width) / (modelUrls.length * 2)) * 0.7,
-              -25, //position the model below the camera by a small amount
-              -50, //and away from the camera away by a small amount
+              -25, // position the model below the camera by a small amount
+              index % 2 === 0 ? -40 + xOffset : -40, // and away from the camera away by a small amount
             ],
           };
           return <Model key={index} {...newProps} />;
@@ -165,7 +168,7 @@ export const SceneViewer = ({ data }) => {
       enablePan = false,
       enableZoom = false,
       orthographic = false,
-      cameraPosition = [0, 10, 150],
+      cameraPosition = [0, 20, 160],
     },
   } = data;
   const sceneProps = {
@@ -202,8 +205,8 @@ export const SceneViewer = ({ data }) => {
           decay
           decayRate={0.65}
         />
-        <Environment shadows files="./studio_small_08_4k.exr" />{" "}
         {/* background, shsdows, and studio lighting of the scene*/}
+        <Environment shadows files="./studio_small_08_4k.exr" />
       </Canvas>
     </Suspense>
   );
