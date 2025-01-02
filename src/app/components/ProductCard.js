@@ -14,32 +14,38 @@ const ProductCard = (props) => {
 
   return (
     //1920x1080 images (16:9)
-    <div className="w-full h-full flex flex-col">
-      <div className="flex items-end">
-        <div className="relative flex flex-row justify-center items-center">
-          <Link
-            onMouseEnter={() => setIncrement(1)}
-            onMouseLeave={() => setIncrement(0)}
-            onClick={() => setSelection(data)}
-            href="/shop/productView"
-            rel="noopener noreferrer"
-          >
-            <Image
-              priority
-              className="w-auto h-auto bg-cover overflow-auto"
-              src={flattenedUrls[increment]}
-              width={768}
-              height={432}
-              quality={100}
-              alt={name}
-            />
-          </Link>
-        </div>
-      </div>
-
-      <div className="max-sm:hidden w-full text-center text-clay_dark ">
-        <p> {name} </p>
-        <p> {price} </p>
+    <div className="relative flex flex-col w-full h-full justify-center items-center text-center text-clay_dark">
+      <div className="flex flex-col justify-center items-center">
+        <Link
+          onMouseEnter={() => setIncrement(1)}
+          onMouseLeave={() => setIncrement(0)}
+          onClick={() => setSelection(data)}
+          href="/shop/productView"
+          rel="noopener noreferrer"
+        >
+          <Image
+            priority
+            className="relative w-auto h-auto bg-cover overflow-auto"
+            src={flattenedUrls[0]}
+            width={768}
+            height={432}
+            quality={100}
+            alt={name}
+          />
+          <Image
+            priority
+            className={`absolute w-auto h-auto inset-0 bg-cover overflow-auto ${increment > 0 ? "opacity-1" : "opacity-0"} transition-all duration-700 ease-in-out hover:z-10 hover:opacity-100`}
+            src={flattenedUrls[1]}
+            width={768}
+            height={432}
+            quality={100}
+            alt={name}
+          />
+          <div className="max-sm:hidden w-full ">
+            <p> {name} </p>
+            <p> {price} </p>
+          </div>
+        </Link>
       </div>
     </div>
   );

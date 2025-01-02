@@ -3,9 +3,11 @@
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "@splidejs/react-splide/css/core";
-import ProjectBanner from "./components/ProjectBanner";
+import splideConfig from "./../lib/splideConfig";
 import portfolio from "./../lib/globals";
 import localFont from "next/font/local";
+import ProjectBanner from "./components/ProjectBanner";
+
 const myFont = localFont({
   src: "../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
   display: "swap",
@@ -13,14 +15,6 @@ const myFont = localFont({
 
 export default function Home() {
   const { projects } = portfolio;
-  const splideOptions = {
-    type: "loop", // Loop back to the beginning when reaching the end
-    perPage: 1, // Number of items visible per page
-    perMove: 1, // Move one item at a time
-    rewind: true, // Rewind to start when the end is reached
-    pagination: false, // Enable pagination dots
-    autoplay: true,
-  };
 
   return (
     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
@@ -52,7 +46,7 @@ export default function Home() {
       </h1>
 
       <div className="flex flex-col-reverse">
-        <Splide options={splideOptions} aria-label="Projects Carousel">
+        <Splide options={splideConfig} aria-label="Projects Carousel">
           {projects.map((item, index) => {
             const rotation = index % 2 === 0 ? -1.0 : 1.0;
             const props = {
