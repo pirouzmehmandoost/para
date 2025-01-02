@@ -15,7 +15,7 @@ const ProductCarousel = () => {
 
   const carouselConfig = {
     ...splideConfig,
-    perPage: 4, // Number of items visible per page
+    perPage: 4,
   };
 
   let relatedProducts = products.filter(
