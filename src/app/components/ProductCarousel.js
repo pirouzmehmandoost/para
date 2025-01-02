@@ -13,15 +13,6 @@ const ProductCarousel = () => {
   const { products } = portfolio;
   const { name, productType } = selection;
 
-  const splide = {
-    type: "loop", // Loop back to the beginning when reaching the end
-    perPage: 1, // Number of items visible per page
-    perMove: 1, // Move one item at a time
-    rewind: true, // Rewind to start when the end is reached
-    pagination: false, // Enable pagination dots
-    autoplays: true,
-  };
-
   const carouselConfig = {
     ...splideConfig,
     perPage: 4, // Number of items visible per page
@@ -44,7 +35,7 @@ const ProductCarousel = () => {
       </p>
       <div className="relative flex flex-row w-full h-full overflow-auto">
         <div className="flex flex-row flex-nowrap overflow-none">
-          <Splide options={carouselConfig} aria-label="Projects Carousel">
+          <Splide options={carouselConfig} aria-label="product carousel">
             {relatedProducts.map((item, index) => {
               return (
                 <SplideSlide key={index}>
