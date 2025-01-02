@@ -8,39 +8,6 @@ import portfolio from "../../lib/globals";
 import useSelection from "../store/selection";
 import ProductCard from "./ProductCard";
 
-// export function Carousel() {
-//   const { projects } = portfolio;
-
-//   return (
-//     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
-//       <div className="flex flex-col-reverse">
-//         <Splide options={splideConfig} aria-label="Projects Carousel">
-//           {projects.map((item, index) => {
-//             const rotation = index % 2 === 0 ? -1.0 : 1.0;
-//             const props = {
-//               ...item,
-//               enableControls: false,
-//               cameraPosition: [0, 10, 100],
-//               rotate: true,
-//               rotation,
-//             };
-//             return (
-//               <SplideSlide key={index}>
-//                 <div
-//                   key={index}
-//                   className={`flex w-4/5 h-5/6 my-40 place-self-center place-items-center self-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}
-//                 >
-//                   <ProjectBanner key={index} data={props} />
-//                 </div>
-//               </SplideSlide>
-//             );
-//           })}
-//         </Splide>
-//       </div>
-//     </main>
-//   );
-// }
-
 const ProductCarousel = () => {
   const selection = useSelection((state) => state.selection);
   const { products } = portfolio;
