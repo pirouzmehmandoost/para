@@ -159,7 +159,7 @@ export const SceneViewer = ({ data }) => {
       modelUrls,
       //default values for the scene
       autoUpdateMaterial = true,
-      autoRotate = false, // disable camera auto rotate. Model rotation is calculated in Model component.
+      autoRotate = false, // disable camera auto rotation. Model rotation is calculated in Model component.
       autoRotateSpeed = 3,
       enableRotate = false,
       enablePan = false,
