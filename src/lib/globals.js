@@ -285,8 +285,8 @@ const portfolio = {
        
         Given acceptable levels of hygroscopy, elasticity, abrasion resistance and skin-safeness a printable foam-like material would be perfect for prototyping fitness accessories. 
         I spent 8 weeks perfoming mechanical upkeep, ordering and upgrading parts, calibrating print settings, and testing post-production methods (sourcing an air compressor, spray gun, 
-        air-cure ceramic automotive paints, bonding parts with solvents) to achieve results with acceptable levels of shore-hardness, hygroscopy, elasticity, abrasion resistance and finish. 
-        Uncoated prototypes made with Varioshore TPU achieve visual likeness and shore-hardness of EVA foam and cord commonly used to manifacture Yoga support blocks. They are also hypoallergenic. 
+        air-cure ceramic automotive paints, testing solvents) to achieve results with acceptable levels abrasion resistance and durability. 
+        Uncoated prototypes made with Varioshore TPU achieve visual likeness and shore-hardness of EVA foam and cork commonly used to manifacture Yoga support blocks. They are also hypoallergenic. 
 
         I queue my project stages to keep moving at all times, and printed the second prototype of a handbag with a matte-black finish as the most recent quality test. 
         Keep eyeing this project on github, find me on LinkedIn, and check out my instagram as I post updates on the design and prototyping process. I've recently returned to teaching yoga and look forward to testing it!  
