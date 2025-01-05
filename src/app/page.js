@@ -43,7 +43,7 @@ export default function Home() {
         Recent Projects
       </h1>
 
-      <div className="flex flex-col-reverse">
+      <div className=" plsce-self-center flex flex-col-reverse">
         <Splide options={splideConfig} aria-label="Projects Carousel">
           {projects.map((item, index) => {
             const rotation = index % 2 === 0 ? -1.0 : 1.0;
