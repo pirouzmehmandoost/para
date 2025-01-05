@@ -40,13 +40,13 @@ const cartState = (set, get) => ({
     return get().cart;
   },
 
-  removeItem: (item) => {
-    const updatedCart = set((state) => ({
-      ...state,
-      cart: initialState,
-    }));
-    return get().cart;
-  },
+  // removeItem: (item) => {
+  //   const updatedCart = set((state) => ({
+  //     ...state,
+  //     cart: initialState,
+  //   }));
+  //   return get().cart;
+  // },
 });
 
 const useCartStore = create(cartState);
