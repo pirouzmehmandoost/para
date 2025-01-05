@@ -43,43 +43,44 @@ const Model = (data) => {
   }
 
   // if flag is true then on the material properties update based on time on each frame
-  if (autoUpdateMaterial) {
-    useFrame((state) => {
-      const elapsedTime = state.clock.getElapsedTime();
-
+  useFrame((state) => {
+    if (autoUpdateMaterial) {
       // Calculate color based on time
+      const elapsedTime = state.clock.getElapsedTime();
       const color = new Color("white").lerp(
         new Color("black"),
         Math.sin(elapsedTime) * 0.5 + 0.5,
       );
 
+      // Update material color, metalness and roughness
       scene.traverse((child) => {
         if (!!child?.material) {
-          // Update material color, metalness and roughness
           child.material.color = color;
           child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
           child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
           child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
         }
       });
-    });
-  } else {
-    const color = new Color("black");
-    scene.traverse((child) => {
-      if (!!child.isMesh) {
-        child.material.ior = 1.5;
-        child.material.color = color;
-        child.material.roughness = 0.0;
-        child.material.reflectivity = 0.0;
-        child.material.clearcoat = 0.5;
-        child.material.clearcoatRoughness = 0.0;
-        child.material.specularIntensity = 0.03;
-        child.material.specularColor = "#ffffff";
-        child.material.transmission = 1;
-        child.material.metalness = 0.0;
-      }
-    });
-  }
+    }
+    else {
+      const color = new Color("black");
+      scene.traverse((child) => {
+        if (!!child.isMesh) {
+          child.material.ior = 1.5;
+          child.material.color = color;
+          child.material.roughness = 0.0;
+          child.material.reflectivity = 0.0;
+          child.material.clearcoat = 0.5;
+          child.material.clearcoatRoughness = 0.0;
+          child.material.specularIntensity = 0.03;
+          child.material.specularColor = "#ffffff";
+          child.material.transmission = 1;
+          child.material.metalness = 0.0;
+        }
+      });
+    };
+  });
+
   return <primitive castShadow receiveShadow object={scene} />;
 };
 
