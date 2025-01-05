@@ -46,8 +46,10 @@ const Menu = ({ setExpanded, expanded }) => {
               </p>
             </div>
             <div className="flex flex-row my-3 max-w-full">
-              <div className="ml-5 justify-items-center basis-1/4 text-nowrap cursor-pointer">
-                <p onClick={setExpanded}>{name}</p>
+              <div className="ml-5 justify-items-center basis-1/4 text-nowrap">
+                <p className="cursor-pointer" onClick={setExpanded}>
+                  {name}
+                </p>
               </div>
               <div className="sm:ml-5s md:ml-5 lg:ml-5 justify-items-center basis-1/4">
                 <p>{price}</p>
