@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClearIcon from "@mui/icons-material/Clear";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 // import useSelection from "../store/selection";
 
 const NavBar = () => {
-  const [searchQuery, setsearchQuery] = useState("invisible");
+  // const [searchQuery, setsearchQuery] = useState("invisible");
   const [expanded, setExpanded] = useState(false);
   const toggleExpanded = () => setExpanded((current) => !current);
 
