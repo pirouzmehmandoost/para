@@ -23,17 +23,17 @@ export default function Home() {
         className={`flex flex-col w-5/6 h-fit mt-36 self-center text-7xl sm:text-6xl md:text-6xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
-          <p className="inline  mr-4">Hey There! I'm a</p>
+          <p className="inline  mr-4">Hey There! I&apos;m a</p>
           <p className="inline italic mr-4">software engineer and designer</p>
           <p className="inline mr-4">based out of</p>
           <p className="inline italic mr-4">the San Francisco Bay Area.</p>
           <p className="inline">
-            I specialize in frontend development with JavaScript Frameworks. I'm
+            I specialize in frontend development with JavaScript Frameworks. I&apos;m
             also a designer with passions for responsive design and 3D computer
             graphics.
           </p>
           <p className="mt-10">
-            This site is a work in progress. It's Next.js 14 based, using
+            This site is a work in progress. It&apos;s Next.js 14 based, using
             Zustand, React Three Fiber/three.js, and Tailwind CSS. Poke around,
             check the github repo and read my notes in the README☺
           </p>
