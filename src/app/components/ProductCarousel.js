@@ -29,7 +29,7 @@ const ProductCarousel = () => {
   }
 
   return (
-    <div className="flex flex-col w-screen h-full justify-between">
+    <div className="flex flex-col w-full h-full justify-between">
       <p className="ml-10 max-sm:ml-5  my-5 text-clay_dark max-sm:text-xl text-3xl">
         {headerText}
       </p>
