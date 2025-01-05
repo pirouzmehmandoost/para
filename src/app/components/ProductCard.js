@@ -41,7 +41,7 @@ const ProductCard = (props) => {
             quality={100}
             alt={name}
           />
-          <div className="w-full ">
+          <div className="w-full">
             <p> {name} </p>
             <p> {price} </p>
           </div>
