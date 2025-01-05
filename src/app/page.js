@@ -20,7 +20,7 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`flex flex-col w-5/6 h-fit mt-36 self-center text-7xl sm:text-6xl md:text-6xl uppercase ${myFont.className}`}
+        className={`flex flex-col w-5/6 h-fit mt-36 self-center sm:text-5xl md:text-6xl text-7xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
           <p className="inline  mr-4">Hey There! I&apos;m a</p>
@@ -40,7 +40,7 @@ export default function Home() {
         </div>
       </div>
       <h1
-        className={`my-5 text-5xl sm:text-6xl md:text-7xl italic ${myFont.className}`}
+        className={`my-5 sm:text-5xl md:text-6xl text-7xl italic ${myFont.className}`}
       >
         Recent Projects
       </h1>
