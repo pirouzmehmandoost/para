@@ -30,9 +30,10 @@ export default function Home() {
             graphics, responsive design, and additive manufacturing.
           </p>
           <p className="mt-10">
-            This site is a work in progress. It&apos;s Next.js 14 based, using
-            Zustand, three.js/React Three Fiber/drei, and Tailwind CSS. Poke around,
-            check the github repo and read my development notes in the README☺
+            Check the github repo and my development notes while I continue working on this app ☺
+          </p>
+          <p>
+            It&apos;s Next.js 14 based, using Zustand, three.js/React Three Fiber/drei, and Tailwind CSS.
           </p>
         </div>
       </div>
