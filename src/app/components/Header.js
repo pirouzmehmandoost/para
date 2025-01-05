@@ -30,12 +30,11 @@ const Header = () => {
         >
           <Link
             className="border-transparent transition-colors hover:text-gray-500"
-            href="/about"
+            href="/resume"
             rel="noopener noreferrer"
           >
             <p className="text-nowrap cursor-pointer">Resume</p>
           </Link>
-
           <Link
             href="https://github.com/pirouzmehmandoost/"
             className=" border-transparent transition-colors hover:text-gray-500"
@@ -44,7 +43,6 @@ const Header = () => {
           >
             <p className="text-nowrap cursor-pointer">Github</p>
           </Link>
-
           <Link
             href="/shop"
             className="border-transparent transition-colors hover:text-gray-500"
