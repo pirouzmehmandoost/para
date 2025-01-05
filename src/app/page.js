@@ -26,7 +26,7 @@ export default function Home() {
           <p>Hey There! I&apos;m a software engineer based out of the San Francisco Bay Area.</p>
           <p>
             I specialize in frontend development with JavaScript Frameworks. I&apos;m
-            also a designer with passions for responsive design and 3D computer
+            also a designer with passions for 3D computer
             graphics, responsive design, and additive manufacturing.
           </p>
           <p className="mt-10">
