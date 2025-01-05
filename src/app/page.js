@@ -20,27 +20,24 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`flex flex-col w-5/6 h-fit mt-36 self-center text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl uppercase ${myFont.className}`}
+        className={`flex flex-col w-5/6 h-fit mt-36 self-center text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
-          <p className="inline  mr-4">Hey There! I&apos;m a</p>
-          <p className="inline italic mr-4">software engineer and designer</p>
-          <p className="inline mr-4">based out of</p>
-          <p className="inline italic mr-4">the San Francisco Bay Area.</p>
-          <p className="inline">
+          <p>Hey There! I&apos;m a software engineer based out of the San Francisco Bay Area.</p>
+          <p>
             I specialize in frontend development with JavaScript Frameworks. I&apos;m
             also a designer with passions for responsive design and 3D computer
-            graphics.
+            graphics, responsive design, and additive manufacturing.
           </p>
           <p className="mt-10">
             This site is a work in progress. It&apos;s Next.js 14 based, using
-            Zustand, React Three Fiber/three.js, and Tailwind CSS. Poke around,
-            check the github repo and read my notes in the README☺
+            Zustand, three.js/React Three Fiber/drei, and Tailwind CSS. Poke around,
+            check the github repo and read my development notes in the README☺
           </p>
         </div>
       </div>
       <h1
-        className={`my-5 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
+        className={`my-5 text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
       >
         Recent Projects
       </h1>
