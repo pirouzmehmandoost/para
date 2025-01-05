@@ -119,7 +119,7 @@ const Group = (data) => {
         controls.update();
       }
     }
-  }, [groupRef, viewport, size, camera]);
+  }, [groupRef, viewport, size, camera, cameraPosition, modelUrls, get]);
 
   return (
     <>
