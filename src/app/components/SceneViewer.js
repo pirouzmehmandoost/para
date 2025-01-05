@@ -109,7 +109,7 @@ const Group = (data) => {
       camera.position.copy(center);
       //lift the camera up by a small amount if there are more than 2 models
       camera.position.y +=
-        modelUrls.lengnth > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
+        modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
       camera.position.z += cameraPosition[2];
       // update R3F OrbitControls target. OrbitControls' makeDefault flag automatically positions the camera to look at the target
       const controls = get().controls;
