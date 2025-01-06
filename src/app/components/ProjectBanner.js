@@ -16,15 +16,15 @@ const ProjectBanner = (props) => {
         href="/shop/productView"
         rel="noopener noreferrer"
       >
-        <div className="flex flex-col w-full text-center justify-center place-items-center place-self-center items-center">
-          <p className="w-full place-self-center text-4xl max-sm:text-3xl text-center bg-blue-200 ">
+        <div className="flex flex-col w-full text-center">
+          <p className="w-fit place-self-center text-4xl max-sm:text-3xl text-center">
             {name}
           </p>
           <p className="w-fit place-self-center text-2xl max-sm:text-2xl ">
             {shortDescription}
           </p>
         </div>
-        <div className="absolute w-full h-96 place-self-center -my-8 sm:-my-10 md:-my-10 lg:-my-10">
+        <div className="absolute w-full h-96 -my-8 sm:-my-10 md:-my-10 lg:-my-10">
           <SceneViewer data={data} />
         </div>
       </Link>
