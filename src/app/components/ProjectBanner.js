@@ -9,22 +9,22 @@ const ProjectBanner = (props) => {
   const setSelection = useSelection((state) => state.setSelection);
 
   return (
-    <div className="relative flex flex-col w-full h-full min-h-48 items-center justify-stretch mb-14">
+    <div className="relative flex flex-col w-full h-full min-h-48 items-center place-items-center place-self-center text-center justify-stretch mb-14">
       <Link
         className="relative w-5/6 h-2/5 overflow-visible"
         onClick={() => setSelection(data)}
         href="/shop/productView"
         rel="noopener noreferrer"
       >
-        <div className="flex flex-col w-full text-center">
-          <p className="w-fit place-self-center max-sm:text-3xl text-4xl ">
+        <div className="flex flex-col w-full text-center justify-center place-items-center place-self-center items-center">
+          <p className="w-full place-self-center text-4xl max-sm:text-3xl text-center bg-blue-200 ">
             {name}
           </p>
           <p className="w-fit place-self-center text-2xl max-sm:text-2xl ">
             {shortDescription}
           </p>
         </div>
-        <div className="absolute w-full h-96 -my-8 md:-my-10 sm:-my-10 w-full">
+        <div className="absolute w-full h-96 place-self-center -my-8 sm:-my-10 md:-my-10 lg:-my-10">
           <SceneViewer data={data} />
         </div>
       </Link>
