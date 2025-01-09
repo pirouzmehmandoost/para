@@ -39,7 +39,7 @@ export default function Home() {
       </div>
       <div className="flex flex-col basis-5/12">
         <h1
-          className={`mt-12 mb-10 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
+          className={`my-12 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
         >
           Recent Projects
         </h1>
