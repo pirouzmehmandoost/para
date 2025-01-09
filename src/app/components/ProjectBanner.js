@@ -11,7 +11,7 @@ const ProjectBanner = (props) => {
   return (
     <div className="flex flex-col w-full h-full min-h-48 place-self-center place-content-center place-items-center">
       <Link
-        className="w-4/5 h-full"
+        className="w-4/5 h-full place-self-center"
         onClick={() => setSelection(data)}
         href="/shop/productView"
         rel="noopener noreferrer"
@@ -20,11 +20,11 @@ const ProjectBanner = (props) => {
           <p className="w-fit text-4xl max-sm:text-3xl">
             {name}
           </p>
-          <p className="w-fit text-2xl max-sm:text-2xl ">
+          <p className="w-fit mt-2 text-2xl max-sm:text-2xl ">
             {shortDescription}
           </p>
         </div>
-        <div className="w-full h-96 place-self-center place-content-center mb-5">
+        <div className="w-full h-96 place-self-center place-content-center -mt-10 sm:-mt-10 md:-mt-5 lg:mt-5  mb-5">
           <SceneViewer data={data} className="place-self-center place-content-center w-96 h-full justify-around" />
         </div>
       </Link>
