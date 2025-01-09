@@ -9,23 +9,23 @@ const ProjectBanner = (props) => {
   const setSelection = useSelection((state) => state.setSelection);
 
   return (
-    <div className="relative flex flex-col w-full h-full min-h-48 items-center place-items-center place-self-center text-center justify-stretch mb-14">
+    <div className="flex flex-col w-full h-full min-h-48 place-self-center place-content-center place-items-center">
       <Link
-        className="relative w-5/6 h-2/5 overflow-visible"
+        className="w-4/5 h-full"
         onClick={() => setSelection(data)}
         href="/shop/productView"
         rel="noopener noreferrer"
       >
-        <div className="flex flex-col w-full text-center">
-          <p className="w-fit place-self-center text-4xl max-sm:text-3xl text-center">
+        <div className={`flex flex-col w-full text-center place-items-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}>
+          <p className="w-fit text-4xl max-sm:text-3xl">
             {name}
           </p>
-          <p className="w-fit place-self-center text-2xl max-sm:text-2xl ">
+          <p className="w-fit text-2xl max-sm:text-2xl ">
             {shortDescription}
           </p>
         </div>
-        <div className="absolute w-full h-96 -my-8 sm:-my-10 md:-my-10 lg:-my-10">
-          <SceneViewer data={data} />
+        <div className="w-full h-96 place-self-center place-content-center mb-5">
+          <SceneViewer data={data} className="place-self-center place-content-center w-96 h-full justify-around" />
         </div>
       </Link>
     </div>

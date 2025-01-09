@@ -8,64 +8,82 @@ import {
   OrbitControls,
   Environment,
   Loader,
-  CameraShake,
 } from "@react-three/drei";
-import { Color } from "three";
 
 THREE.ColorManagement.enabled = true;
+
+const scaleAtBreakpoint = (width) => {
+  if (width <= 360) {
+    return 0.4;
+  }
+  if (width <= 480) {
+    return 0.5;
+  }
+  if (width <= 768) {
+    return 0.8;
+  }
+  return 1;
+};
+
+const scaleX = (width) => {
+  if (width <= 360) {
+    return 1.5;
+  }
+  if (width <= 480) {
+    return 1.2;
+  }
+  if (width <= 768) {
+    return 1.0;
+  }
+  return 0.7;
+};
 
 const Model = (data) => {
   const {
     material: materialProps,
     modelUrl,
     autoUpdateMaterial,
-    position,
-    scale: scaleRatio,
+    scale,
+    position = [0, -25, 0],
   } = data;
   const { scene } = useGLTF(modelUrl);
-  const { viewport } = useThree();
-  let material = new THREE.MeshPhysicalMaterial(materialProps);
-  // scale is adjusted based on the aspect ratio of the viewport. 6 was chosen as a good divisor to get the right scale
-  let scale = scaleRatio * (viewport.getCurrentViewport().aspect / 6);
+  const material = new THREE.MeshPhysicalMaterial(materialProps);
+
   scene.traverse((child) => {
     if (!!child.isMesh) {
       child.material = material;
       child.castShadow = true;
       child.receiveShadow = true;
       child.scale.set(scale, scale, scale);
+      child.position.set(position[0], position[1], position[2]);
     }
   });
 
-  if (position) {
-    scene.position.set(position[0], position[1], position[2]);
-  } else {
-    scene.position.set(0, -25, 0);
-  }
+  //update material properties
+  useFrame(({ clock }) => {
+    // Calculate color based on time
+    const elapsedTime = clock.getElapsedTime();
+    const color = new THREE.Color("black").lerp(
+      new THREE.Color("white"),
+      Math.sin(elapsedTime) * 0.5 + 0.5,
+    );
 
-  // if flag is true then on the material properties update based on time on each frame
-  useFrame((state) => {
-    if (autoUpdateMaterial) {
-      // Calculate color based on time
-      const elapsedTime = state.clock.getElapsedTime();
-      const color = new Color("white").lerp(
-        new Color("black"),
-        Math.sin(elapsedTime) * 0.5 + 0.5,
-      );
+    scene.traverse((child) => {
+      if (!!child?.isMesh) {
+        const center = new THREE.Vector3();
+        child.geometry.boundingSphere.center = center;
+        child.geometry.boundingBox.center = center;
+        child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
+      };
 
-      // Update material color, metalness and roughness
-      scene.traverse((child) => {
-        if (!!child?.material) {
+      if (!!child?.material) {
+        if (autoUpdateMaterial) {
           child.material.color = color;
           child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
           child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
-          child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
         }
-      });
-    }
-    else {
-      const color = new Color("black");
-      scene.traverse((child) => {
-        if (!!child.isMesh) {
+        else {
+          const color = new THREE.Color("black");
           child.material.ior = 1.5;
           child.material.color = color;
           child.material.roughness = 0.0;
@@ -77,8 +95,8 @@ const Model = (data) => {
           child.material.transmission = 1;
           child.material.metalness = 0.0;
         }
-      });
-    };
+      };
+    });
   });
 
   return <primitive castShadow receiveShadow object={scene} />;
@@ -96,49 +114,50 @@ const Group = (data) => {
     autoRotate,
     autoRotateSpeed,
     orthographic,
+    scale,
   } = data;
 
-  const { viewport, size, camera, get } = useThree();
+  const { size, camera, get } = useThree();
   const groupRef = useRef();
-
-  // Update camera position and target whenever the group or viewport dimensions are updated
+  // Update camera position and orbit controls 
   useEffect(() => {
     if (groupRef.current) {
+      const groupScale = scaleAtBreakpoint(size.width);
+      groupRef.current.scale.set(groupScale, groupScale, groupScale);
+
       const boundingBox = new THREE.Box3().setFromObject(groupRef.current);
       const center = boundingBox.getCenter(new THREE.Vector3());
 
       camera.position.copy(center);
       //lift the camera up by a small amount if there are more than 2 models
-      camera.position.y +=
-        modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
+      camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
       camera.position.z += cameraPosition[2];
-      // update R3F OrbitControls target. OrbitControls' makeDefault flag automatically positions the camera to look at the target
+      camera.lookAt(center);
+      //  update OrbitControls target.
       const controls = get().controls;
       if (controls) {
         controls.target.copy(center);
         controls.update();
       }
     }
-  }, [groupRef, viewport, size, camera, cameraPosition, modelUrls, get]);
+  }, [groupRef, size, camera, cameraPosition, modelUrls, get]);
 
   return (
     <>
       <group castShadow receiveShadow ref={groupRef}>
         {modelUrls.map((url, index) => {
-          // stagger z-position of models if there are more than 2 models
-          const xOffset = modelUrls.length > 2 ? -50 : 0;
-
+          let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleAtBreakpoint(size.width) / modelUrls.length;
+          // stagger z-position of models if there are more than 2
+          const zOffset = modelUrls.length > 2 ? -50 : 0;
           const newProps = {
             modelUrl: url,
             material: { ...colorCodes }, // material properties
-            scale: modelUrls.length == 1 ? 1.0 : 0.9, // scale of the model is decreased by a small amount
+            scale: updateScale,
             autoUpdateMaterial,
             position: [
-              // x position is the midpoints of viewport's width divided by the number of models
-              //0.7 is a scaling factor to adjust the position of the models.
-              parseInt((index * size.width) / (modelUrls.length * 2)) * 0.7,
-              -25, // position the model below the camera by a small amount
-              index % 2 === 0 ? -40 + xOffset : -40, // and away from the camera away by a small amount
+              scaleX(size.width) * parseInt((index * size.width) / (modelUrls.length * 2)), //position x at midpoints of divided viewport
+              - 25, // position the model below the camera by a small amount
+              index % 2 === 0 ? -40 + zOffset : -40, // and away from the camera away by a small amount
             ],
           };
           return <Model key={index} {...newProps} />;
@@ -161,29 +180,30 @@ const Group = (data) => {
 export const SceneViewer = ({ data }) => {
   const {
     sceneData: {
+      scale,
       colorCodes,
       modelUrls,
-      //default values for the scene
+      orthographic,
       autoUpdateMaterial = true,
       autoRotate = false, // disable camera auto rotation. Model rotation is calculated in Model component.
       autoRotateSpeed = 3,
       enableRotate = false,
       enablePan = false,
       enableZoom = false,
-      orthographic = false,
       cameraPosition = [0, 10, 160],
     },
   } = data;
   const sceneProps = {
+    scale,
     material: { ...colorCodes },
     modelUrls,
+    orthographic,
     autoUpdateMaterial,
     autoRotate,
     autoRotateSpeed,
     enableRotate,
     enablePan,
     enableZoom,
-    orthographic,
     cameraPosition,
   };
   // near and fov differ for orthographic/perspective camera to show the models properly
@@ -199,16 +219,6 @@ export const SceneViewer = ({ data }) => {
         shadows
       >
         <Group {...sceneProps} />
-        <CameraShake
-          maxYaw={0.1}
-          maxPitch={0.1}
-          yawFrequency={0.1}
-          pitchFrequency={0.1}
-          intensity={0.5}
-          decay
-          decayRate={0.65}
-        />
-        {/* background, shsdows, and studio lighting of the scene*/}
         <Environment shadows files="./studio_small_08_4k.exr" />
       </Canvas>
     </Suspense>
