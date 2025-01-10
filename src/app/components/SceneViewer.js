@@ -14,10 +14,10 @@ THREE.ColorManagement.enabled = true;
 
 const scaleAtBreakpoint = (width) => {
   if (width <= 360) {
-    return 0.4;
+    return 0.6;
   }
   if (width <= 480) {
-    return 0.5;
+    return 0.7;
   }
   if (width <= 768) {
     return 0.8;
@@ -219,7 +219,7 @@ export const SceneViewer = ({ data }) => {
         shadows
       >
         <Group {...sceneProps} />
-        <Environment shadows files="./studio_small_08_4k.exr" />
+        <Environment shadows files="./studio_small_08_4k.exr" blur={0.6} />
       </Canvas>
     </Suspense>
   );

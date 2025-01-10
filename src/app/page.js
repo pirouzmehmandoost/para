@@ -20,7 +20,7 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl uppercase ${myFont.className}`}
+        className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
           <p>Hey There! I&apos;m a software engineer based out of the San Francisco Bay Area.</p>
@@ -32,9 +32,9 @@ export default function Home() {
           <p className="mt-10">
             Check the github repo and my development notes while I continue working on this app ☺
           </p>
-          <p>
+          {/* <p>
             It&apos;s Next.js 14 based, using Zustand, three.js/React Three Fiber/drei, and Tailwind CSS.
-          </p>
+          </p> */}
         </div>
       </div>
       <div
