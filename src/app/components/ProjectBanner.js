@@ -16,7 +16,7 @@ const ProjectBanner = (props) => {
         href="/shop/productView"
         rel="noopener noreferrer"
       >
-        <div className={`flex flex-col w-full text-center place-items-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}>
+        <div className={`flex flex-col w-full mb-0 py-0 text-center place-items-center drop-shadow transition-all duration-500 ease-in-out hover:drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]`}>
           <p className="w-fit text-4xl max-sm:text-3xl">
             {name}
           </p>
@@ -24,84 +24,12 @@ const ProjectBanner = (props) => {
             {shortDescription}
           </p>
         </div>
-        <div className="w-full h-96 place-self-center place-content-center -mt-10 sm:-mt-10 md:-mt-5 lg:mt-5  mb-5">
-          <SceneViewer data={data} className="place-self-center place-content-center w-96 h-full justify-around" />
+        <div className="flex flex-col w-full h-96 place-self-center place-content-center -mt-12 sm:-mt-12 md:mt-0 lg:mt-8 xl:mt-10 2xl:mt-10 mb-5">
+          <SceneViewer data={data} className="w-96 h-full place-self-center place-content-center justify-around" />
         </div>
       </Link>
     </div>
   );
 };
-
-// const Banner = (props) => {
-//   const { data, data: { name, shortDescription, imgUrls = {} } = {} } = props;
-//   const setSelection = useSelection((state) => state.setSelection);
-//   const flattenedUrls = Object.entries(imgUrls).map((entry, el) => {
-//     return entry[1].find((e) => e.includes("quarter") || e.includes("1"));
-//   });
-
-//   return (
-//     <div className=" flex flex-col justify-stretch w-full min-h-48 h-full ">
-//       <Link
-//         className="absolute w-full h-full overflow-hidden "
-//         onClick={() => setSelection(data)}
-//         href="/shop/productView"
-//         rel="noopener noreferrer"
-//       >
-//         <div className="flex flex-row w-full absolute inset-0 place-self-center ">
-//           {flattenedUrls.map((url) => {
-//             return (
-//               <div>
-//                 <Image
-//                   priority
-//                   className="overflow-hidden "
-//                   src={url}
-//                   width={768}
-//                   height={432}
-//                   quality={100}
-//                   alt={name}
-//                 />
-//               </div>
-//             );
-//           })}
-//         </div>
-//         <div className=" relative flex flex-col w-full text-center">
-//           <p className="w-fit place-self-center max-sm:text-xl text-3xl ">
-//             {name}
-//           </p>
-//           <p className="w-fit place-self-center max-sm:text-2xl ">
-//             {shortDescription}
-//           </p>
-//         </div>
-//       </Link>
-//     </div>
-//   );
-// };
-
-// const Banner = (props) => {
-//   const { bannerUrl, name, shortDescription, imgUrls = {} } = props;
-
-//   const setSelection = useSelection((state) => state.setSelection);
-//   const flattenedUrls = Object.values(imgUrls).flat();
-
-//   return (
-//     <div className=" relative flex flex-col w-full h-full my-10 place-self-center place-items-center">
-//       <Link
-//         onClick={() => setSelection(props)}
-//         href="/shop/productView"
-//         rel="noopener noreferrer"
-//       >
-//         <Image
-//           priority
-//           className="self-center w-full h-96 overflow-hidden bg-transparent transition-all duration-700 ease-in-out hover:skew-y-1 hover:skew-x-1"
-//           src={bannerUrl}
-//           width={768}
-//           height={432}
-//           quality={100}
-//           alt={name}
-//         />
-//       </Link>
-//     </div>
-//   );
-// };
 
 export default ProjectBanner;
