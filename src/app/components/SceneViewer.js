@@ -54,7 +54,7 @@ const cameraZPosition = (width, position) => {
   if (width <= 768) { //md
     return 1.0 * position;
   }
-  return 1.5 * position; //lg, xl, 2xl
+  return 1.0 * position; //lg, xl, 2xl
 };
 
 const Model = (data) => {
