@@ -44,18 +44,18 @@ const scaleXAtBreakPoint = (width) => {
   return 0.7; //lg, xl, 2xl
 };
 
-const cameraZPosition = (width, position) => {
-  if (width <= 360) {
-    return 1.0 * position;
-  }
-  if (width <= 480) {
-    return 1.0 * position;
-  }
-  if (width <= 768) { //md
-    return 1.0 * position;
-  }
-  return 1.0 * position; //lg, xl, 2xl
-};
+// const cameraZPosition = (width, position) => {
+//   if (width <= 360) {
+//     return 1.0 * position;
+//   }
+//   if (width <= 480) {
+//     return 1.0 * position;
+//   }
+//   if (width <= 768) { //md
+//     return 1.0 * position;
+//   }
+//   return 1.0 * position; //lg, xl, 2xl
+// };
 
 const Model = (data) => {
   const {
@@ -187,7 +187,7 @@ const Scene = (data) => {
       camera.position.copy(center);
       camera.position.x = 0
       camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
-      camera.position.z += modelUrls.length > 1 ? cameraZPosition(size.width, cameraPosition[2]) : cameraPosition[2]
+      camera.position.z += cameraPosition[2]
       camera.lookAt(center);
 
       const controls = get().controls;
