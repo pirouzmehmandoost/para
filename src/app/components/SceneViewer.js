@@ -99,8 +99,8 @@ const Scene = (data) => {
   const zOffset = -40;
   const boundingBox = new THREE.Box3();
   let groupScale = scaleMeshAtBreakpoint(size.width);
-  useEffect(() => {
 
+  useEffect(() => {
     groupScale = scaleMeshAtBreakpoint(size.width);
     if (modelUrls.length == 1) {
       xOffset.push(0)
@@ -140,7 +140,7 @@ const Scene = (data) => {
 
 
   // Update camera position and orbit controls 
-  useFrame((state, delta) => {
+  useFrame(() => {
     if (groupRef.current) {
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
       boundingBox.setFromObject(groupRef.current);
