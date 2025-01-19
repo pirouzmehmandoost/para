@@ -40,7 +40,6 @@ const glossMaterial = {
 export const colorCodes = {
   matte_black: {
     label: "Matte Black",
-    hex: "#333333",
     tailwindColor: `bg-slate-900`,
     material: {
       color: "#333333",
@@ -49,7 +48,6 @@ export const colorCodes = {
   },
   gloss_black: {
     label: "Gloss Black",
-    hex: "#000000",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-900`,
     material: {
       color: "#000000",
@@ -82,7 +80,7 @@ const portfolio = {
         orthographic: false,
         autoUpdateMaterial: true,
         colorCodes: {
-          ...colorCodes.gloss_black.material,
+          defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
         },
       },
@@ -113,7 +111,7 @@ const portfolio = {
         orthographic: false,
         autoUpdateMaterial: true,
         colorCodes: {
-          ...colorCodes.gloss_black.material,
+          defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
         },
       },
@@ -144,7 +142,7 @@ const portfolio = {
         orthographic: false,
         autoUpdateMaterial: true,
         colorCodes: {
-          ...colorCodes.gloss_black.material,
+          defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
         },
       },
@@ -172,16 +170,13 @@ const portfolio = {
         ],
       },
       sceneData: {
-        // orthographic: false,
-        // autoUpdateMaterial: true,
         colorCodes: {
-          ...colorCodes.gloss_black.material,
+          defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
         },
         modelUrls: [
           "/oval_bag_3.glb",
           "/oval_bag_xl_v2.glb",
-          // "/oval_bag_3.glb",
           "/oval_bag_1.glb",
         ],
         scale: 1.0,
@@ -208,10 +203,8 @@ const portfolio = {
         ],
       },
       sceneData: {
-        // orthographic: false,
-        // autoUpdateMaterial: true,
         colorCodes: {
-          ...colorCodes.gloss_black.material,
+          defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
         },
         modelUrls: ["/yoga_mat_strap_for_web2.glb"],

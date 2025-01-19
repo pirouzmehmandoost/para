@@ -7,17 +7,20 @@ import ModelViewer from "../components/ModelViewer";
 
 const ProjectViewer = () => {
   const [expanded, setExpanded] = useState(false);
-
   const selection = useSelection((state) => state.selection);
-  const [material, setMaterial] = useState(selection?.sceneData?.colorCodes ?? null);
 
   const {
     sceneData: {
-      colorCodes: { colorWays },
+      colorCodes: {
+        defaultColor,
+        colorWays,
+      } = {},
     },
     description,
     name,
   } = selection;
+
+  const [selectedMaterial, setMaterial] = useState(defaultColor ?? null);
 
   const data = {
     ...selection.sceneData,
@@ -30,37 +33,38 @@ const ProjectViewer = () => {
     orthographic: false,
     autoUpdateMaterial: false,
     scale: 1.0,
-    material: material
+    colorCodes: {
+      colorWays,
+      defaultColor: selectedMaterial
+    }
   };
 
   const colorSelectButtons = (
     <div className="flex flex-row">
-      <p>  Select a color </p>
-      {Object.entries(colorWays).map((entry) => {
-        return (
-          <div
-            key={entry[0]}
-            className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 border-solid border-4 rounded-full border-clay_dark cursor-pointer`}
-            onClick={() => { setMaterial(entry[1].material) }}
-          >
-          </div>
-        );
-      })}
+
+      <p className="text-nowrap">Select Color</p>
+
+      {
+        Object.entries(colorWays).map((entry) => {
+          return (
+            <div
+              key={entry[0]}
+              className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 border-solid border-2 rounded-full ${selectedMaterial.label !== entry[1].label ? 'border-clay_light' : 'border-clay_dark border-4'} cursor-pointer`}
+              onClick={() => { if (selectedMaterial.label !== entry[1].label) setMaterial(entry[1]) }}
+            >
+            </div>
+          );
+        })
+      }
     </div>
   );
-
-  // console.log("data in projectViewer:", data);
-  // console.log("materia;: ", material)
 
   return (
     <div
       id="project_viewer"
       className={"flex flex-col w-full h-full text-center text-clay_dark"}
     >
-      <p className="w-full mt-28 text-3xl">
-        {name}
-      </p>
-      <div className="w-full h-96 place-self-center place-content-center justify-stretch">
+      <div className="w-full h-96 mt-20 place-self-center place-content-center justify-stretch">
         <ModelViewer data={data} />
       </div>
 
@@ -82,10 +86,10 @@ const ProjectViewer = () => {
                   {description}
                 </p>
               </div>
-              <div className="flex flex-row my-3 max-w-full">
-                <div className="ml-5 justify-items-center basis-1/4 text-nowrap">
+              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch">
+                <div className="ml-5 justify-self-center align-items-center basis-1/3">
                   <div
-                    className="cursor-pointer"
+                    className="cursor-pointer self-center"
                     onClick={() => {
                       setExpanded((current) => !current);
                     }}
@@ -93,7 +97,12 @@ const ProjectViewer = () => {
                     {expanded ? <CloseFullscreenIcon /> : <MenuIcon />}
                   </div>
                 </div>
-                <div className="sm:mx-2 md:mx-2 justify-items-center basis-1/2">
+                <div className="justify-self-center basis-1/3">
+                  <p className="text-xl text-center justify-self-center ">
+                    {name}
+                  </p>
+                </div>
+                <div className="sm:mx-2 md:mx-2 justify-self-center self-center basis-1/3 ">
                   {colorSelectButtons}
                 </div>
               </div>

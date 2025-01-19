@@ -66,8 +66,7 @@ const Model = (data) => {
 const Scene = (data) => {
   const {
     autoUpdateMaterial,
-    // colorCodes,
-    material,
+    colorCodes,
     modelUrls,
     cameraPosition,
     enablePan,
@@ -76,13 +75,12 @@ const Scene = (data) => {
     autoRotate,
     autoRotateSpeed,
     orthographic,
-    scale,
+    // scale,
   } = data;
-  const [modelPosition, setModelPosition] = useState([]);
+  // const [modelPosition, setModelPosition] = useState([]);
   const { size, camera, get } = useThree();
   const groupRef = useRef();
   const boundingBox = new THREE.Box3();
-
 
   // useEffect(() => {
   //   const center = boundingBox.getCenter(new THREE.Vector3());
@@ -158,7 +156,7 @@ const Scene = (data) => {
 
   const newProps = {
     modelUrl: modelUrls[0],
-    material,
+    material: { ...colorCodes.defaultColor.material }, // material properties
     scale: 0.5,
     autoUpdateMaterial,
     autoRotate,
@@ -204,46 +202,9 @@ const Scene = (data) => {
 
 export const ModelViewer = ({ data }) => {
   const {
-    autoRotate, // if false disable camera auto rotation and calculate rotation in Model component.
-    autoRotateSpeed,
-    enableRotate,
-    enablePan,
-    enableZoom,
     orthographic,
-    autoUpdateMaterial,
-    scale,
     cameraPosition,
-    colorCodes,
-    modelUrls,
-    material,
-    // sceneData: {
-    // scale,
-    // colorCodes,
-    // modelUrls,
-    // orthographic,
-    // autoUpdateMaterial,
-    // autoRotate, // if false disable camera auto rotation and calculate rotation in Model component.
-    // autoRotateSpeed,
-    // enableRotate,
-    // enablePan,
-    // enableZoom,
-    // cameraPosition = [0, 10, 160],
-    // },
   } = data;
-  const sceneProps = {
-    scale,
-    // material: { ...colorCodes },
-    material,
-    modelUrls,
-    orthographic,
-    autoUpdateMaterial,
-    autoRotate,
-    autoRotateSpeed,
-    enableRotate,
-    enablePan,
-    enableZoom,
-    cameraPosition,
-  };
   const near = orthographic ? -100 : 1;
   const fov = orthographic ? 500 : 50;
 
@@ -256,7 +217,7 @@ export const ModelViewer = ({ data }) => {
         shadows
       >
         <Environment shadows files="./studio_small_08_4k.exr" />
-        <Scene {...sceneProps} />
+        <Scene {...data} />
       </Canvas>
     </Suspense>
   );

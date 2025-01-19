@@ -172,7 +172,7 @@ const Scene = (data) => {
 
             const newProps = {
               modelUrl: url,
-              material: { ...colorCodes }, // material properties
+              material: { ...colorCodes.defaultColor.material }, // material properties
               scale: updateScale,
               autoUpdateMaterial,
               autoRotate,
@@ -200,51 +200,11 @@ const Scene = (data) => {
 
 export const SceneViewer = ({ data }) => {
   const {
-    autoRotate, // if false disable camera auto rotation and calculate rotation in Model component.
-    autoRotateSpeed,
-    enableRotate,
-    enablePan,
-    enableZoom,
     orthographic,
-    autoUpdateMaterial,
-    scale,
-    colorCodes,
-    modelUrls,
     cameraPosition = [0, 10, 160],
-
-    // sceneData: {
-    // scale,
-    // colorCodes,
-    // modelUrls,
-    // orthographic,
-    // autoUpdateMaterial,
-    // autoRotate, // if false disable camera auto rotation and calculate rotation in Model component.
-    // autoRotateSpeed,
-    // enableRotate,
-    // enablePan,
-    // enableZoom,
-    // cameraPosition = [0, 10, 160],
-    // } = {},
   } = data;
-  const sceneProps = {
-    scale,
-    material: { ...colorCodes },
-    modelUrls,
-    orthographic,
-    autoUpdateMaterial,
-    autoRotate,
-    autoRotateSpeed,
-    enableRotate,
-    enablePan,
-    enableZoom,
-    cameraPosition,
-  };
   const near = orthographic ? -100 : 1;
   const fov = orthographic ? 500 : 50;
-
-  console.log("sceneViewer data:  ", data)
-  console.log("sceneViewer sceneProps:  ", sceneProps)
-
 
   return (
     <Suspense fallback={<Loader />}>
@@ -255,7 +215,7 @@ export const SceneViewer = ({ data }) => {
         shadows
       >
         <Environment shadows files="./studio_small_08_4k.exr" />
-        <Scene {...sceneProps} />
+        <Scene {...data} />
       </Canvas>
     </Suspense>
   );
