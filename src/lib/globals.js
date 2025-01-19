@@ -13,23 +13,28 @@ export const storePolicy = {
 const matteMaterial = {
   roughness: 1,
   metalness: 0.2,
-  ior: 1.5,
-  reflectivity: 0.0,
-  sheen: 0.7,
+  ior: 1.7,
+  reflectivity: 0.05,
+  sheen: 0.8,
   sheenColor: "#333333",
   sheenRoughness: 1,
-  flatShading: true,
+  flatShading: false,
   specularIntensity: 1.5,
   specularColor: "#333333",
+  // transmission: 1.0
 };
 
 const glossMaterial = {
   roughness: 0.25,
   metalness: 1,
-  ior: 1.5,
+  ior: 1.7,
   reflectivity: 0.5,
   sheen: 0.0,
   flatShading: false,
+  clearcoat: 0.3,
+  clearcoatRoughness: 0.0,
+  transmission: 1.0
+
 };
 
 export const colorCodes = {
@@ -73,8 +78,9 @@ const portfolio = {
           "/oval_bag_matte_white_4.png",
         ],
       },
-      autoUpdateMaterial: false,
       sceneData: {
+        orthographic: false,
+        autoUpdateMaterial: true,
         colorCodes: {
           ...colorCodes.gloss_black.material,
           colorWays: { ...colorCodes },
@@ -103,8 +109,9 @@ const portfolio = {
       },
       price: `$${100}`,
       productType: "bag",
-      autoUpdateMaterial: false,
       sceneData: {
+        orthographic: false,
+        autoUpdateMaterial: true,
         colorCodes: {
           ...colorCodes.gloss_black.material,
           colorWays: { ...colorCodes },
@@ -134,6 +141,8 @@ const portfolio = {
       productType: "fitness",
       autoUpdateMaterial: false,
       sceneData: {
+        orthographic: false,
+        autoUpdateMaterial: true,
         colorCodes: {
           ...colorCodes.gloss_black.material,
           colorWays: { ...colorCodes },
@@ -163,15 +172,16 @@ const portfolio = {
         ],
       },
       sceneData: {
-        orthographic: false,
-        autoUpdateMaterial: true,
+        // orthographic: false,
+        // autoUpdateMaterial: true,
         colorCodes: {
           ...colorCodes.gloss_black.material,
           colorWays: { ...colorCodes },
         },
         modelUrls: [
-          "/oval_bag_xl_v2.glb",
           "/oval_bag_3.glb",
+          "/oval_bag_xl_v2.glb",
+          // "/oval_bag_3.glb",
           "/oval_bag_1.glb",
         ],
         scale: 1.0,
@@ -198,8 +208,8 @@ const portfolio = {
         ],
       },
       sceneData: {
-        orthographic: false,
-        autoUpdateMaterial: true,
+        // orthographic: false,
+        // autoUpdateMaterial: true,
         colorCodes: {
           ...colorCodes.gloss_black.material,
           colorWays: { ...colorCodes },

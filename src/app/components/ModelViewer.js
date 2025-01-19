@@ -45,32 +45,19 @@ const Model = (data) => {
       Math.sin(elapsedTime) * 0.5 + 0.5,
     );
 
-    scene.traverse((child) => {
-      if (!!child?.isMesh && !autoRotate) {
-        child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
-      };
+    if (!autoRotate || autoUpdateMaterial) {
+      scene.traverse((child) => {
+        if (!!child?.isMesh && !autoRotate) {
+          child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
+        };
 
-      if (!!child?.material) {
-        if (autoUpdateMaterial) {
+        if (!!child?.material && autoUpdateMaterial) {
           child.material.color = color;
           child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
           child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
-        }
-        else {
-          const color = new THREE.Color("black");
-          child.material.ior = 1.5;
-          child.material.color = color;
-          child.material.roughness = 0.0;
-          child.material.reflectivity = 0.0;
-          child.material.clearcoat = 0.5;
-          child.material.clearcoatRoughness = 0.0;
-          child.material.specularIntensity = 0.03;
-          child.material.specularColor = "#ffffff";
-          child.material.transmission = 1;
-          child.material.metalness = 0.0;
-        }
-      };
-    });
+        };
+      });
+    };
   });
 
   return <primitive castShadow receiveShadow object={scene} />;
@@ -79,7 +66,8 @@ const Model = (data) => {
 const Scene = (data) => {
   const {
     autoUpdateMaterial,
-    colorCodes,
+    // colorCodes,
+    material,
     modelUrls,
     cameraPosition,
     enablePan,
@@ -93,63 +81,70 @@ const Scene = (data) => {
   const [modelPosition, setModelPosition] = useState([]);
   const { size, camera, get } = useThree();
   const groupRef = useRef();
-  const positions = [];
-  const xOffset = [];
-  const yOffset = modelUrls.length >= 2 ? -25 : -30;
-  const zOffset = -40;
   const boundingBox = new THREE.Box3();
-  let groupScale = scaleMeshAtBreakpoint(size.width);
-  useEffect(() => {
 
-    groupScale = scaleMeshAtBreakpoint(size.width);
-    if (modelUrls.length == 1) {
-      xOffset.push(0)
-    }
-    else {
-      if (modelUrls.length % 2 == 1) {
-        xOffset.push(0)
-      };
 
-      for (let i = 1; i < modelUrls.length; i++) {
-        // x position based on rule of thirds.
-        let offset = parseInt((scaleXAtBreakPoint(size.width) * parseInt(i * size.width)) / (modelUrls.length * 2)) * (i % 2 === 0 ? 1 : -1);
-        xOffset.push(offset);
-        xOffset.push(-1 * offset);
-      };
-    };
+  // useEffect(() => {
+  //   const center = boundingBox.getCenter(new THREE.Vector3());
 
-    for (let i = 0; i < modelUrls.length; i++) {
-      let arr = [];
-      arr.push(xOffset[i]);
-      arr.push(yOffset);
-      arr.push(zOffset)
-      positions.push(arr);
-    };
-
-    positions.sort((a, b) => a[0] - b[0]);
-
-    if (modelUrls.length > 2) {
-      positions.forEach((arr, i) => {
-        arr[2] += (i % 2 === 0) ? -50 : 0
-      })
-    };
-
-    setModelPosition([...positions]);
-
-  }, [modelUrls]); //three.js state is not included in dependency array
+  //   const controls = get().controls;
+  //   if (controls) {
+  //     controls.target.copy(center);
+  //     controls.update();
+  //   };
+  // }, [get]);
 
 
   // Update camera position and orbit controls 
-  useFrame((state, delta) => {
+  useEffect(() => {
     if (groupRef.current) {
+      const groupScale = scaleMeshAtBreakpoint(size.width);
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
+      // const positions = [];
+      // const xOffset = [];
+      // const yOffset = modelUrls.length >= 2 ? -25 : -30;
+      // const zOffset = -40;
+
+      // if (modelUrls.length == 1) {
+      //   xOffset.push(0)
+      // }
+      // else {
+      //   if (modelUrls.length % 2 == 1) {
+      //     xOffset.push(0)
+      //   };
+
+      //   for (let i = 1; i < modelUrls.length; i++) {
+      //     // x position based on rule of thirds.
+      //     let offset = parseInt((scaleXAtBreakPoint(size.width) * parseInt(i * size.width)) / (modelUrls.length * 2)) * (i % 2 === 0 ? 1 : -1);
+      //     xOffset.push(offset);
+      //     xOffset.push(-1 * offset);
+      //   };
+      // };
+
+      // for (let i = 0; i < modelUrls.length; i++) {
+      //   let arr = [];
+      //   arr.push(xOffset[i]);
+      //   arr.push(yOffset);
+      //   arr.push(zOffset)
+      //   positions.push(arr);
+      // };
+
+      // positions.sort((a, b) => a[0] - b[0]);
+
+      // if (modelUrls.length > 2) {
+      //   positions.forEach((arr, i) => {
+      //     arr[2] += (i % 2 === 0) ? -50 : 0
+      //   })
+      // };
+
+      // setModelPosition([...positions]);
 
       boundingBox.setFromObject(groupRef.current);
       const center = boundingBox.getCenter(new THREE.Vector3());
 
       camera.position.copy(center);
       camera.position.x = 0
-      camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
+      // camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
       camera.position.z += cameraPosition[2]
       camera.lookAt(center);
 
@@ -159,19 +154,28 @@ const Scene = (data) => {
         controls.update();
       };
     };
-  });
+  }, [groupRef]); //three.js state is not included in dependency array
 
+  const newProps = {
+    modelUrl: modelUrls[0],
+    material,
+    scale: 0.5,
+    autoUpdateMaterial,
+    autoRotate,
+  }
   return (
     <>
       <group ref={groupRef}>
-        {
+        <Model {...newProps} />
+
+        {/* {
           modelUrls.map((url, index) => {
 
             let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
 
             const newProps = {
               modelUrl: url,
-              material: { ...colorCodes }, // material properties
+              material,
               scale: updateScale,
               autoUpdateMaterial,
               autoRotate,
@@ -180,24 +184,25 @@ const Scene = (data) => {
 
             return <Model key={index} {...newProps} />;
 
-          })
-        }
+          }) 
+        }*/}
+        <OrbitControls
+          target={groupRef}
+          makeDefault
+          enablePan={enablePan}
+          enableZoom={enableZoom}
+          autoRotate={autoRotate}
+          autoRotateSpeed={autoRotateSpeed}
+          enableRotate={enableRotate}
+          orthographic={orthographic}
+          autoUpdateMaterial={false}
+        />
       </group>
-      <OrbitControls
-        target={groupRef}
-        makeDefault
-        enablePan={enablePan}
-        enableZoom={enableZoom}
-        autoRotate={autoRotate}
-        autoRotateSpeed={autoRotateSpeed}
-        enableRotate={enableRotate}
-        orthographic={orthographic}
-      />
     </>
   );
 };
 
-export const SceneViewer = ({ data }) => {
+export const ModelViewer = ({ data }) => {
   const {
     autoRotate, // if false disable camera auto rotation and calculate rotation in Model component.
     autoRotateSpeed,
@@ -207,10 +212,10 @@ export const SceneViewer = ({ data }) => {
     orthographic,
     autoUpdateMaterial,
     scale,
+    cameraPosition,
     colorCodes,
     modelUrls,
-    cameraPosition = [0, 10, 160],
-
+    material,
     // sceneData: {
     // scale,
     // colorCodes,
@@ -223,11 +228,12 @@ export const SceneViewer = ({ data }) => {
     // enablePan,
     // enableZoom,
     // cameraPosition = [0, 10, 160],
-    // } = {},
+    // },
   } = data;
   const sceneProps = {
     scale,
-    material: { ...colorCodes },
+    // material: { ...colorCodes },
+    material,
     modelUrls,
     orthographic,
     autoUpdateMaterial,
@@ -240,10 +246,6 @@ export const SceneViewer = ({ data }) => {
   };
   const near = orthographic ? -100 : 1;
   const fov = orthographic ? 500 : 50;
-
-  console.log("sceneViewer data:  ", data)
-  console.log("sceneViewer sceneProps:  ", sceneProps)
-
 
   return (
     <Suspense fallback={<Loader />}>
@@ -260,4 +262,4 @@ export const SceneViewer = ({ data }) => {
   );
 };
 
-export default SceneViewer;
+export default ModelViewer;
