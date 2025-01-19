@@ -1,5 +1,6 @@
 "use client";
-
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import { useState } from "react";
 import useSelection from "../store/selection";
 import ModelViewer from "../components/ModelViewer";
@@ -39,7 +40,7 @@ const ProjectViewer = () => {
         return (
           <div
             key={entry[0]}
-            className={`flex ${entry[1].tailwindColor} min-w-6 min-h-6 mx-3 border-solid border-4 rounded-full border-clay_dark cursor-pointer`}
+            className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 border-solid border-4 rounded-full border-clay_dark cursor-pointer`}
             onClick={() => { setMaterial(entry[1].material) }}
           >
           </div>
@@ -48,9 +49,8 @@ const ProjectViewer = () => {
     </div>
   );
 
-
-  console.log("data in projectViewer:", data);
-  console.log("materia;: ", material)
+  // console.log("data in projectViewer:", data);
+  // console.log("materia;: ", material)
 
   return (
     <div
@@ -84,13 +84,14 @@ const ProjectViewer = () => {
               </div>
               <div className="flex flex-row my-3 max-w-full">
                 <div className="ml-5 justify-items-center basis-1/4 text-nowrap">
-                  <p
+                  <div
                     className="cursor-pointer"
                     onClick={() => {
                       setExpanded((current) => !current);
-                    }}>
-                    {name}
-                  </p>
+                    }}
+                  >
+                    {expanded ? <CloseFullscreenIcon /> : <MenuIcon />}
+                  </div>
                 </div>
                 <div className="sm:mx-2 md:mx-2 justify-items-center basis-1/2">
                   {colorSelectButtons}

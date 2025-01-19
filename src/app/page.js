@@ -22,16 +22,15 @@ export default function Home() {
         id="top_section"
         className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl uppercase ${myFont.className}`}
       >
-        <div className="w-full my-5">
+        <div className="w-full my-4">
           <p>Hey There! I&apos;m a software engineer based out of the San Francisco Bay Area.</p>
           <p>
             I specialize in frontend development with JavaScript Frameworks. I&apos;m
-            also a designer with passions for 3D computer
-            graphics, responsive design, and additive manufacturing.
+            also a designer with passions for 3D computer graphics and additive manufacturing.
           </p>
-          <p className="mt-10">
+          {/* <p className="mt-10">
             Check the github repo and my development notes while I continue working on this app ☺
-          </p>
+          </p> */}
         </div>
       </div>
       <div
