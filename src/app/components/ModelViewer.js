@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useRef, useEffect, useState } from "react";
+import { Suspense, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
@@ -9,7 +9,7 @@ import {
   Environment,
   Loader,
 } from "@react-three/drei";
-import { scaleMeshAtBreakpoint, scaleXAtBreakPoint } from "../../lib/utils"
+import { scaleMeshAtBreakpoint } from "../../lib/utils"
 
 THREE.ColorManagement.enabled = true;
 
