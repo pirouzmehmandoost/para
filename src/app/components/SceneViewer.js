@@ -143,8 +143,8 @@ const Scene = (data) => {
   useFrame((state, delta) => {
     if (groupRef.current) {
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
-
       boundingBox.setFromObject(groupRef.current);
+
       const center = boundingBox.getCenter(new THREE.Vector3());
 
       camera.position.copy(center);
@@ -154,6 +154,7 @@ const Scene = (data) => {
       camera.lookAt(center);
 
       const controls = get().controls;
+
       if (controls) {
         controls.target.copy(center);
         controls.update();

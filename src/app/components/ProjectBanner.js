@@ -11,33 +11,6 @@ const ProjectBanner = (props) => {
   const { data: { name, autoRotateSpeed } = {} } = props;
   const selectedProject = projects.find(x => x.name === name)
   const { shortDescription } = selectedProject;
-
-  // const sceneConfigs = {
-  //   ...selectedProject,
-  //   sceneData: {
-  //     ...item.sceneData,
-  //     enablePan: false,
-  //     enableZoom: false,
-  //     enableRotate: false,
-  //     autoRotate: false,
-  //     enableRotate: false,
-  //     cameraPosition: [0, 10, 100],
-  //     rotation,
-  //   }
-
-  // const sceneConfigs = {
-  //   ...selectedProject,
-  //   enablePan: false,
-  //   enableZoom: false,
-  //   enableRotate: false,
-  //   autoRotate: false,
-  //   enableRotate: false,
-  //   cameraPosition: [0, 10, 100],
-  //   autoRotateSpeed: index % 2 === 0 ? -1.0 : 1.0,
-  //   orthographic: false,
-  //   autoUpdateMaterial: true,
-  // };
-
   const sceneConfigs = {
     ...selectedProject.sceneData,
     enablePan: false,

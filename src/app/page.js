@@ -20,7 +20,7 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl uppercase ${myFont.className}`}
+        className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl uppercase ${myFont.className}`}
       >
         <div className="w-full my-5">
           <p>Hey There! I&apos;m a software engineer based out of the San Francisco Bay Area.</p>
@@ -47,7 +47,6 @@ export default function Home() {
           <div className="flex flex-col-reverse w-full h-full place-self-center">
             <Splide options={splideConfig} aria-label="Projects Carousel">
               {projects.map((item, index) => {
-                const rotation = index % 2 === 0 ? -1.0 : 1.0;
                 const props = {
                   name: item.name,
                   autoRotateSpeed: index % 2 === 0 ? -1.0 : 1.0
