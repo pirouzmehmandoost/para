@@ -1,4 +1,5 @@
 "use client";
+
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import { useState } from "react";
@@ -29,7 +30,7 @@ const ProjectViewer = () => {
     enableRotate: true,
     autoRotate: false,
     autoRotateSpeed: 2,
-    cameraPosition: [0, 10, 160],
+    cameraPosition: [0, 10, 180],
     orthographic: false,
     autoUpdateMaterial: false,
     scale: 1.0,
@@ -62,15 +63,15 @@ const ProjectViewer = () => {
   return (
     <div
       id="project_viewer"
-      className={"flex flex-col w-full h-full text-center text-clay_dark"}
+      className="flex flex-col w-full h-screen text-clay_dark"
     >
-      <div className="w-full h-96 mt-20 place-self-center place-content-center justify-stretch">
-        <ModelViewer data={data} />
+      <div className="flex flex-col w-full h-full my-28 place-self-center place-content-center">
+        <ModelViewer data={data} className="w-full h-full py-14 self-center place-self-center place-content-center items-center" />
       </div>
 
       <div
         id="project_menu"
-        className={`fixed bottom-0 z-20 right-0 sm:w-full md:w-full lg:w-1/2 place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
+        className={`fixed bottom-0 z-20 right-0 w-full sm:w-full md:w-full lg:w-1/2 place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
       >
         <div className="flex z-20 w-full h-full bottom-0 right-0">
           <div className={`w-full h-full border-solid border-2 border-clay_dark`}>
@@ -81,7 +82,7 @@ const ProjectViewer = () => {
                 className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? "overflow-auto max-h-96" : "overflow-hidden max-h-0"}`}
               >
                 <p
-                  className={` mt-5 transition-all duration-700 ease-in-out delay-75 ${expanded ? "opacity-100" : "opacity-0"}`}
+                  className={`mt-5 transition-all duration-700 ease-in-out delay-75 ${expanded ? "opacity-100" : "opacity-0"}`}
                 >
                   {description}
                 </p>
