@@ -55,7 +55,7 @@ export const colorCodes = {
     label: "Silver",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-500`,
     material: {
-      color: "#e3e3e3",
+      color: "white",
       ...glossMaterial,
     },
   },

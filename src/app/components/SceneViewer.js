@@ -181,7 +181,7 @@ const Scene = (data) => {
               scale: updateScale,
               autoUpdateMaterial: {
                 updateMaterial: update,
-                colors: index % 2 == 0 ? ["black", "e3e3e3"] : ["e3e3e3", "black"]
+                colors: index % 2 == 0 ? ["black", "white"] : ["white", "black"]
               },
               autoRotate,
               position: modelPosition[index],
