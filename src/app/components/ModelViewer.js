@@ -36,9 +36,9 @@ const Model = (data) => {
     }
   });
 
-  //update material properties
+  //update rotation and material properties
   useFrame(({ clock }) => {
-    // Calculate color based on time
+    //material and rotation calculations are based on time
     const elapsedTime = clock.getElapsedTime();
     const color = new THREE.Color("black").lerp(
       new THREE.Color("white"),

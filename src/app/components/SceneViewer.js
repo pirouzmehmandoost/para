@@ -39,11 +39,12 @@ const Model = (data) => {
     }
   });
 
-  //update material properties
+  //update rotation and material properties
   useFrame(({ clock }) => {
-    scene.traverse((child) => {
-      const elapsedTime = clock.getElapsedTime();
+    //material and rotation calculations are based on time
+    const elapsedTime = clock.getElapsedTime();
 
+    scene.traverse((child) => {
       if (!!child?.isMesh && !autoRotate) {
         child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
       };
