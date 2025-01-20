@@ -17,7 +17,10 @@ const Model = (data) => {
   const {
     material: materialProps,
     modelUrl,
-    autoUpdateMaterial,
+    autoUpdateMaterial: {
+      updateMaterial,
+      colors,
+    },
     autoRotate,
     scale,
     position = [0, -25, 0],
@@ -38,20 +41,22 @@ const Model = (data) => {
 
   //update material properties
   useFrame(({ clock }) => {
-    // Calculate color based on time
-    const elapsedTime = clock.getElapsedTime();
-    const color = new THREE.Color("black").lerp(
-      new THREE.Color("white"),
-      Math.sin(elapsedTime) * 0.5 + 0.5,
-    );
-
     scene.traverse((child) => {
+      const elapsedTime = clock.getElapsedTime();
+
       if (!!child?.isMesh && !autoRotate) {
         child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
       };
 
       if (!!child?.material) {
-        if (autoUpdateMaterial) {
+        if (updateMaterial) {
+          // Calculate color based on time
+          const color = new THREE.Color(colors[0]).lerp(
+            new THREE.Color(colors[1]),
+            Math.sin(elapsedTime) * 0.5 + 0.5,
+          );
+
+          child.material.reflectivity = (Math.sin(elapsedTime * 0.5) + 1);
           child.material.color = color;
           child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
           child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
@@ -78,7 +83,7 @@ const Model = (data) => {
 
 const Scene = (data) => {
   const {
-    autoUpdateMaterial,
+    autoUpdateMaterial: update,
     colorCodes,
     modelUrls,
     cameraPosition,
@@ -174,7 +179,10 @@ const Scene = (data) => {
               modelUrl: url,
               material: { ...colorCodes.defaultColor.material }, // material properties
               scale: updateScale,
-              autoUpdateMaterial,
+              autoUpdateMaterial: {
+                updateMaterial: update,
+                colors: index % 2 == 0 ? ["black", "e3e3e3"] : ["e3e3e3", "black"]
+              },
               autoRotate,
               position: modelPosition[index],
             };

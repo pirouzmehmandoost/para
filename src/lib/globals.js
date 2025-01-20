@@ -58,7 +58,6 @@ export const colorCodes = {
       color: "#e3e3e3",
       ...glossMaterial,
     },
-
   },
 };
 
