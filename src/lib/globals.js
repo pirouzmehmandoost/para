@@ -21,20 +21,17 @@ const matteMaterial = {
   flatShading: false,
   specularIntensity: 1.5,
   specularColor: "#333333",
-  // transmission: 1.0
 };
 
 const glossMaterial = {
-  roughness: 0.25,
+  roughness: 0,
   metalness: 1,
-  ior: 1.7,
-  reflectivity: 0.5,
+  ior: 1.5,
+  reflectivity: 1,
   sheen: 0.0,
   flatShading: false,
-  clearcoat: 0.3,
+  clearcoat: 0.4,
   clearcoatRoughness: 0.0,
-  transmission: 1.0
-
 };
 
 export const colorCodes = {
@@ -48,11 +45,20 @@ export const colorCodes = {
   },
   gloss_black: {
     label: "Gloss Black",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-900`,
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-400 to-black`,
     material: {
       color: "#000000",
       ...glossMaterial,
     },
+  },
+  silver: {
+    label: "Silver",
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-500`,
+    material: {
+      color: "#e3e3e3",
+      ...glossMaterial,
+    },
+
   },
 };
 
