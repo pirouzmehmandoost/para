@@ -20,20 +20,14 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl uppercase ${myFont.className}`}
+        className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl uppercase ${myFont.className}`}
       >
-        <div className="w-full my-5">
-          <p>Hey There! I&apos;m a software engineer based out of the San Francisco Bay Area.</p>
-          <p>
-            I specialize in frontend development with JavaScript Frameworks. I&apos;m
-            also a designer with passions for 3D computer
-            graphics, responsive design, and additive manufacturing.
+        <div className="w-full my-4">
+          <p>Hey There! I&apos;m a software engineer based in the San Francisco Bay Area. I specialize in frontend development with JavaScript Frameworks.
+            I&apos;m also a designer with passions for 3D computer graphics and additive manufacturing.
           </p>
-          <p className="mt-10">
+          {/* <p className="mt-10">
             Check the github repo and my development notes while I continue working on this app ☺
-          </p>
-          {/* <p>
-            It&apos;s Next.js 14 based, using Zustand, three.js/React Three Fiber/drei, and Tailwind CSS.
           </p> */}
         </div>
       </div>
@@ -42,7 +36,7 @@ export default function Home() {
         className="flex flex-col basis-5/12"
       >
         <h1
-          className={`my-12 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
+          className={`mt-12 mb-16 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
         >
           Recent Projects
         </h1>
@@ -50,14 +44,11 @@ export default function Home() {
           <div className="flex flex-col-reverse w-full h-full place-self-center">
             <Splide options={splideConfig} aria-label="Projects Carousel">
               {projects.map((item, index) => {
-                const rotation = index % 2 === 0 ? -1.0 : 1.0;
                 const props = {
-                  ...item,
-                  enableControls: false,
-                  cameraPosition: [0, 10, 100],
-                  rotate: true,
-                  rotation,
+                  name: item.name,
+                  autoRotateSpeed: index % 2 === 0 ? -1.0 : 1.0
                 };
+
                 return (
                   <SplideSlide key={index} data-splide-interval="10000"
                   >

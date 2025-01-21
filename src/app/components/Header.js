@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import localFont from "next/font/local";
+import { usePathname } from 'next/navigation';
+
 
 const myFont = localFont({
   src: "./../../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
@@ -9,10 +11,12 @@ const myFont = localFont({
 });
 
 const Header = () => {
+  const pathname = usePathname();
+
   return (
     <div
       id="header"
-      className={`fixed z-50 w-full min-w-screen h-fit min-h-fit inset-0 top-0 pt-4 bg-[url("/background.png")] text-4xl text-clay_dark uppercase ${myFont.className} `}
+      className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? 'text-2xl' : 'text-4xl'} text-clay_dark uppercase ${myFont.className}  bg-[url("/background.png")]`}
     >
       <div className={`flex flex-col flex-nowrap`}>
         <div className="text-center mb-2">
@@ -26,7 +30,7 @@ const Header = () => {
         </div>
 
         <div
-          className={`flex flex-nowrap flex-row justify-evenly w-full text-3xl`}
+          className={`flex flex-nowrap flex-row justify-evenly w-full ${pathname.length > 1 ? 'text-xl' : 'text-2xl'}`}
         >
           <Link
             className="border-transparent transition-colors hover:text-gray-500"
@@ -48,7 +52,7 @@ const Header = () => {
             className="border-transparent transition-colors hover:text-gray-500"
             rel="noopener noreferrer"
           >
-            <p className="text-nowrap cursor-pointer line-through	decoration-wavy decoration-red-500/90 decoration-2">
+            <p className="text-nowrap cursor-pointer line-through	decoration-wavy decoration-red-600/90 decoration-2">
               Shop
             </p>
           </Link>

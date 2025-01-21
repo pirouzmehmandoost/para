@@ -37,7 +37,6 @@ export function flattenAttributes(data) {
     return flattened;
 };
 
-
 export const scaleMeshAtBreakpoint = (width) => {
     if (width <= 360) {
         return 0.6;
@@ -45,15 +44,14 @@ export const scaleMeshAtBreakpoint = (width) => {
     if (width <= 480) {
         return 0.7;
     }
-    if (width <= 640) { //sm tailwind breakpoint
+    if (width <= 640) { //sm
         return 0.8;
     }
-    if (width <= 768) { //md  tailwind breakpoint
+    if (width <= 768) { //md
         return 0.9;
     }
-    return 1;   //lg, xl, 2xl tailwind breakpoints 
+    return 1;   //lg, xl, 2xl
 };
-
 
 export const scaleXAtBreakPoint = (width) => {
     if (width <= 360) {
@@ -62,11 +60,11 @@ export const scaleXAtBreakPoint = (width) => {
     if (width <= 480) {
         return 1.2;
     }
-    if (width <= 640) { //sm tailwind breakpoint
+    if (width <= 640) { //sm
         return 1.0;
     }
-    if (width <= 768) { //md tailwind breakpoint
+    if (width <= 768) { //md
         return 0.9;
     }
-    return 0.7; //lg, xl, 2xl tailwind breakpoints
+    return 0.7; //lg, xl, 2xl
 };
