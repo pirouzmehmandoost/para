@@ -15,7 +15,9 @@ const ProductCarousel = () => {
 
   const carouselConfig = {
     ...splideConfig,
-    perPage: 4,
+    perPage: 3,
+    autoplay: false,
+    type: "slide"
   };
 
   let relatedProducts = products.filter(
