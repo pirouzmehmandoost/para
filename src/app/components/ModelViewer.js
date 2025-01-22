@@ -133,11 +133,9 @@ const Scene = (data) => {
     autoRotate,
   }
   return (
-    <>
-      <group castShadow receiveShadow ref={groupRef}>
-        <Model {...newProps} />
-      </group>
-    </>
+    <group castShadow receiveShadow ref={groupRef}>
+      <Model {...newProps} />
+    </group>
   );
 };
 
