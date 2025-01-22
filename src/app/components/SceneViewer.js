@@ -9,7 +9,7 @@ import {
   Environment,
   Loader,
 } from "@react-three/drei";
-import { scaleMeshAtBreakpoint, scaleXAtBreakPoint } from "../../lib/utils"
+import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../lib/utils"
 
 THREE.ColorManagement.enabled = true;
 
@@ -118,7 +118,7 @@ const Scene = (data) => {
 
       for (let i = 1; i < modelUrls.length; i++) {
         // x position based on rule of thirds.
-        let offset = parseInt((scaleXAtBreakPoint(size.width) * parseInt(i * size.width)) / (modelUrls.length * 2)) * (i % 2 === 0 ? 1 : -1);
+        let offset = parseInt((scalePositionAtBreakPoint(size.width) * parseInt(i * size.width)) / (modelUrls.length * 2)) * (i % 2 === 0 ? 1 : -1);
         xOffset.push(offset);
         xOffset.push(-1 * offset);
       };
