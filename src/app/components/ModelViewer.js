@@ -5,14 +5,43 @@ import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
   useGLTF,
-  OrbitControls,
+  // OrbitControls,
   Environment,
   Loader,
   Plane,
+  CameraControls,
+  SoftShadows,
 } from "@react-three/drei";
 import { scaleMeshAtBreakpoint } from "../../lib/utils"
 
 THREE.ColorManagement.enabled = true;
+
+// const CameraRig = (data, { v = new THREE.Vector3() }) => {
+
+//   const { cameraPosition } = data;
+//   // const { size, camera, get } = useThree();
+
+//   // camera.position.copy(center);
+//   // camera.position.x = 0
+//   // // camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
+//   // camera.position.z += cameraPosition[2]
+//   // camera.lookAt(center);
+
+//   return useFrame((state) => {
+//     const t = state.clock.elapsedTime
+//     state.camera.position.lerp(
+//       v.set(
+//         0,
+//         (Math.tan(t * -0.5) + 1) * 50,
+//         -1 * Math.log(t) + cameraPosition[2],
+//         // (cameraPosition[2]) * (Math.cos(t / 2) + 1)
+//         // (cameraPosition[2]) * (Math.cos(t / 2) + 1)
+//       ),
+//       0.06
+//     )
+//     state.camera.lookAt(0, 0, 0)
+//   })
+// }
 
 const Model = (data) => {
   const {
@@ -138,20 +167,20 @@ const Scene = (data) => {
 
       // setModelPosition([...positions]);
 
-      boundingBox.setFromObject(groupRef.current);
-      const center = boundingBox.getCenter(new THREE.Vector3());
+      // boundingBox.setFromObject(groupRef.current);
+      // const center = boundingBox.getCenter(new THREE.Vector3());
 
-      camera.position.copy(center);
-      camera.position.x = 0
-      // camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
-      camera.position.z += cameraPosition[2]
-      camera.lookAt(center);
+      // camera.position.copy(center);
+      // camera.position.x = 0
+      // // camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
+      // camera.position.z += cameraPosition[2]
+      // camera.lookAt(center);
 
-      const controls = get().controls;
-      if (controls) {
-        controls.target.copy(center);
-        controls.update();
-      };
+      // const controls = get().controls;
+      // if (controls) {
+      //   controls.target.copy(center);
+      //   controls.update();
+      // };
     };
   }, [groupRef]); //three.js state is not included in dependency array
 
@@ -164,7 +193,7 @@ const Scene = (data) => {
   }
   return (
     <>
-      <group ref={groupRef}>
+      <group castShadow receiveShadow ref={groupRef}>
         <Model {...newProps} />
 
         {/* {
@@ -182,7 +211,7 @@ const Scene = (data) => {
             return <Model key={index} {...newProps} />;
           }) 
         }*/}
-        <OrbitControls
+        {/* <OrbitControls
           target={groupRef}
           makeDefault
           enablePan={enablePan}
@@ -192,7 +221,7 @@ const Scene = (data) => {
           enableRotate={enableRotate}
           orthographic={orthographic}
           autoUpdateMaterial={false}
-        />
+        /> */}
       </group>
     </>
   );
@@ -202,10 +231,31 @@ export const ModelViewer = ({ data }) => {
   const {
     orthographic,
     cameraPosition,
+    enablePan,
+    enableZoom
   } = data;
   const near = orthographic ? -100 : 1;
   const fov = orthographic ? 500 : 50;
 
+  const ACTION = {
+    NONE: 0,
+    ROTATE: 1,
+    TRUCK: 2,
+    OFFSET: 4,
+    DOLLY: 8,
+    ZOOM: 16,
+    TOUCH_ROTATE: 32,
+    TOUCH_TRUCK: 64,
+    TOUCH_OFFSET: 128,
+    TOUCH_DOLLY: 256,
+    TOUCH_ZOOM: 512,
+    TOUCH_DOLLY_TRUCK: 1024,
+    TOUCH_DOLLY_OFFSET: 2048,
+    TOUCH_DOLLY_ROTATE: 4096,
+    TOUCH_ZOOM_TRUCK: 8192,
+    TOUCH_ZOOM_OFFSET: 16384,
+    TOUCH_ZOOM_ROTATE: 32768
+  }
   return (
     <Suspense fallback={<Loader />}>
       <Canvas
@@ -215,26 +265,39 @@ export const ModelViewer = ({ data }) => {
         shadows
       >
         <Environment shadows files="./studio_small_08_4k.exr" />
+        {/* <CameraRig {...data} /> */}
+        <CameraControls
+          minPolarAngle={0}
+          maxPolarAngle={Math.PI / 2}
+          minAzimuthAngle={-Math.PI / 2}
+          maxAzimuthAngle={Math.PI / 2}
+          mouseButtons={{ left: ACTION.ROTATE, middle: ACTION.NONE, right: ACTION.NONE, wheel: ACTION.NONE }}
+          touches={{ one: ACTION.TOUCH_ROTATE, two: ACTION.NONE, three: ACTION.NONE }}
+        />
 
-        <fog attach="fog" density={0.004} color="#bcbcbc" near={30} far={480} />
+        <fog attach="fog" density={0.004} color="#bcbcbc" near={50} far={450} />
+        {/* <spotLight angle={0.5} penumbra={0.5} ref={light} castShadow intensity={10} shadow-mapSize={1024} shadow-bias={-0.001}>
+          <orthographicCamera attach="shadow-camera" args={[-10, 10, -10, 10, 0.1, 50]} />
+        </spotLight> */}
 
         <directionalLight
           castShadow={true}
-          position={[0, 50, 10]}
+          position={[0, 60, 10]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          intensity={1}
+          intensity={1.5}
           angle={0.45}
           shadow-camera-near={0.5}
           shadow-camera-far={500}
-          shadow-bias={-0.002}
-          shadow-camera-top={500}
-          shadow-camera-bottom={-500}
-          shadow-camera-left={-500}
-          shadow-camera-right={500}
+          shadow-bias={-0.001}
+          shadow-camera-top={800}
+          shadow-camera-bottom={-800}
+          shadow-camera-left={-800}
+          shadow-camera-right={800}
         />
 
-        <Scene {...data} />
+        <Scene castShadow receiveShadow {...data} />
+        <SoftShadows samples={15} size={10} />
 
         <Plane receiveShadow args={[1500, 1500]} position={[0, -53, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <meshStandardMaterial color="#3d3d3d" />

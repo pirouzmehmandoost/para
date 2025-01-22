@@ -12,15 +12,15 @@ export const storePolicy = {
 
 const matteMaterial = {
   roughness: 1,
-  metalness: 0.2,
-  ior: 1.7,
+  metalness: 0.1,
+  ior: 1.8,
   reflectivity: 0.05,
-  sheen: 0.8,
-  sheenColor: "#333333",
-  sheenRoughness: 1,
+  sheen: 0.5,
+  sheenColor: "#707070",
+  sheenRoughness: 0.9,
   flatShading: false,
-  specularIntensity: 1.5,
-  specularColor: "#333333",
+  // specularIntensity: 1.8,
+  // specularColor: "#ffffff",
 };
 
 const glossMaterial = {
@@ -39,7 +39,7 @@ export const colorCodes = {
     label: "Matte Black",
     tailwindColor: `bg-zinc-900`,
     material: {
-      color: "#18181b",
+      color: "black",
       ...matteMaterial,
     },
   },
