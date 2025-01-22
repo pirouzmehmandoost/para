@@ -50,7 +50,7 @@ const ProjectViewer = () => {
           return (
             <div
               key={entry[0]}
-              className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 border-solid border-2 rounded-full ${selectedMaterial.label !== entry[1].label ? 'border-clay_light' : 'border-clay_dark border-4'} cursor-pointer`}
+              className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial.label !== entry[1].label ? 'outline-none' : 'outline-zinc-900 outline-2'}`}
               onClick={() => { if (selectedMaterial.label !== entry[1].label) setMaterial(entry[1]) }}
             >
             </div>
@@ -63,10 +63,16 @@ const ProjectViewer = () => {
   return (
     <div
       id="project_viewer"
-      className="flex flex-col w-full h-screen text-clay_dark"
+      className="flex flex-col w-full h-screen"
     >
-      <div className="flex flex-col w-full h-full my-28 place-self-center place-content-center">
-        <ModelViewer data={data} className="w-full h-full py-14 self-center place-self-center place-content-center items-center" />
+      <div
+        id="model_viewer_container"
+        className="flex flex-col w-full h-full place-self-center place-content-center"
+      >
+        <ModelViewer
+          className="w-full h-full self-center place-self-center place-content-center items-center"
+          data={data}
+        />
       </div>
 
       <div
@@ -74,20 +80,22 @@ const ProjectViewer = () => {
         className={`fixed bottom-0 z-20 right-0 w-full sm:w-full md:w-full lg:w-1/2 place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
       >
         <div className="flex z-20 w-full h-full bottom-0 right-0">
-          <div className={`w-full h-full border-solid border-2 border-clay_dark`}>
+          <div className="w-full h-full border-solid border-2 border-zinc-900">
             <div
-              className={`flex flex-col text-clay_dark backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`}
+              className={`flex flex-col backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`}
             >
+              {/* collapsible menu items */}
               <div
                 className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? "overflow-auto max-h-96" : "overflow-hidden max-h-0"}`}
               >
                 <p
-                  className={`mt-5 transition-all duration-700 ease-in-out delay-75 ${expanded ? "opacity-100" : "opacity-0"}`}
+                  className={`mt-5 text-zinc-900 transition-all duration-700 ease-in-out delay-75 ${expanded ? "opacity-100" : "opacity-0"}`}
                 >
                   {description}
                 </p>
               </div>
-              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch">
+              {/* permanently visible menu items */}
+              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch text-zinc-900">
                 <div className="ml-5 justify-self-center align-items-center basis-1/3">
                   <div
                     className="cursor-pointer self-center"
@@ -103,7 +111,7 @@ const ProjectViewer = () => {
                     {name}
                   </p>
                 </div>
-                <div className="sm:mx-2 md:mx-2 justify-self-center self-center basis-1/3 ">
+                <div className="sm:mx-2 md:mx-2 justify-self-center self-center basis-1/3">
                   {colorSelectButtons}
                 </div>
               </div>

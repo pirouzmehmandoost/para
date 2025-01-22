@@ -8,6 +8,7 @@ import {
   OrbitControls,
   Environment,
   Loader,
+  Plane,
 } from "@react-three/drei";
 import { scaleMeshAtBreakpoint } from "../../lib/utils"
 
@@ -36,9 +37,9 @@ const Model = (data) => {
     }
   });
 
-  //update rotation and material properties
+  // update rotation and material properties
   useFrame(({ clock }) => {
-    //material and rotation calculations are based on time
+    // material and rotation calculations are based on time
     const elapsedTime = clock.getElapsedTime();
     const color = new THREE.Color("black").lerp(
       new THREE.Color("white"),
@@ -84,8 +85,8 @@ const Scene = (data) => {
 
   // useEffect(() => {
   //   const center = boundingBox.getCenter(new THREE.Vector3());
-
   //   const controls = get().controls;
+  //
   //   if (controls) {
   //     controls.target.copy(center);
   //     controls.update();
@@ -157,7 +158,7 @@ const Scene = (data) => {
   const newProps = {
     modelUrl: modelUrls[0],
     material: { ...colorCodes.defaultColor.material }, // material properties
-    scale: 0.5,
+    scale: 0.45,
     autoUpdateMaterial,
     autoRotate,
   }
@@ -168,9 +169,7 @@ const Scene = (data) => {
 
         {/* {
           modelUrls.map((url, index) => {
-
             let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
-
             const newProps = {
               modelUrl: url,
               material,
@@ -181,7 +180,6 @@ const Scene = (data) => {
             };
 
             return <Model key={index} {...newProps} />;
-
           }) 
         }*/}
         <OrbitControls
@@ -217,7 +215,31 @@ export const ModelViewer = ({ data }) => {
         shadows
       >
         <Environment shadows files="./studio_small_08_4k.exr" />
+
+        <fog attach="fog" density={0.004} color="#bcbcbc" near={30} far={480} />
+
+        <directionalLight
+          castShadow={true}
+          position={[0, 50, 10]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={1}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={500}
+          shadow-bias={-0.002}
+          shadow-camera-top={500}
+          shadow-camera-bottom={-500}
+          shadow-camera-left={-500}
+          shadow-camera-right={500}
+        />
+
         <Scene {...data} />
+
+        <Plane receiveShadow args={[1500, 1500]} position={[0, -50, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <meshStandardMaterial color="#3d3d3d" />
+        </Plane>
+
       </Canvas>
     </Suspense>
   );

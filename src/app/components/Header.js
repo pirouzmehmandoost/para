@@ -16,10 +16,10 @@ const Header = () => {
   return (
     <div
       id="header"
-      className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? 'text-2xl' : 'text-4xl'} text-clay_dark uppercase ${myFont.className}  bg-[url("/background.png")]`}
+      className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? 'text-2xl pb-1 ' : 'text-4xl pb-3'} text-clay_dark uppercase ${myFont.className}  bg-gradient-to-b from-[#bcbcbc] from-85% to-transparent`}
     >
       <div className={`flex flex-col flex-nowrap`}>
-        <div className="text-center mb-2">
+        <div className={`text-center mb-2 ${pathname.length > 1 ? 'mb-1' : 'mb-2'}`}>
           <Link
             className="transition-colors duration-200 ease-in-out hover:text-gray-500"
             href="/"
@@ -30,10 +30,10 @@ const Header = () => {
         </div>
 
         <div
-          className={`flex flex-nowrap flex-row justify-evenly w-full ${pathname.length > 1 ? 'text-xl' : 'text-2xl'}`}
+          className={`flex flex-nowrap flex-row justify-evenly w-full ${pathname.length > 1 ? 'text-lg' : 'text-2xl'}`}
         >
           <Link
-            className="border-transparent transition-colors hover:text-gray-500"
+            className="border-transparent transition-colors hover:text-zinc-500"
             href="/resume"
             rel="noopener noreferrer"
           >
@@ -41,7 +41,7 @@ const Header = () => {
           </Link>
           <Link
             href="https://github.com/pirouzmehmandoost/"
-            className=" border-transparent transition-colors hover:text-gray-500"
+            className=" border-transparent transition-colors hover:text-zinc-500"
             rel="noopener noreferrer"
             target="blank"
           >
@@ -49,7 +49,7 @@ const Header = () => {
           </Link>
           <Link
             href="/shop"
-            className="border-transparent transition-colors hover:text-gray-500"
+            className="border-transparent transition-colors hover:text-zinc-500"
             rel="noopener noreferrer"
           >
             <p className="text-nowrap cursor-pointer line-through	decoration-wavy decoration-red-600/90 decoration-2">

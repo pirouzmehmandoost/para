@@ -37,23 +37,23 @@ const glossMaterial = {
 export const colorCodes = {
   matte_black: {
     label: "Matte Black",
-    tailwindColor: `bg-slate-900`,
+    tailwindColor: `bg-zinc-900`,
     material: {
-      color: "#333333",
+      color: "#18181b",
       ...matteMaterial,
     },
   },
   gloss_black: {
     label: "Gloss Black",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-400 to-black`,
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-400 to-black`,
     material: {
-      color: "#000000",
+      color: "black",
       ...glossMaterial,
     },
   },
   silver: {
     label: "Silver",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-100 to-slate-500`,
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-700`,
     material: {
       color: "white",
       ...glossMaterial,
