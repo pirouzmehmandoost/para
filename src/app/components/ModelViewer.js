@@ -236,7 +236,7 @@ export const ModelViewer = ({ data }) => {
 
         <Scene {...data} />
 
-        <Plane receiveShadow args={[1500, 1500]} position={[0, -50, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <Plane receiveShadow args={[1500, 1500]} position={[0, -53, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <meshStandardMaterial color="#3d3d3d" />
         </Plane>
 
