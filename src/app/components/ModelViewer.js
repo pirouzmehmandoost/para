@@ -10,37 +10,27 @@ import {
   Plane,
   CameraControls,
   SoftShadows,
+  useTexture,
 } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, ACTION } from "../../lib/utils"
 
 THREE.ColorManagement.enabled = true;
 
-// const CameraRig = (data, { v = new THREE.Vector3() }) => {
-
-//   const { cameraPosition } = data;
-//   // const { size, camera, get } = useThree();
-
-//   // camera.position.copy(center);
-//   // camera.position.x = 0
-//   // // camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
-//   // camera.position.z += cameraPosition[2]
-//   // camera.lookAt(center);
-
-//   return useFrame((state) => {
-//     const t = state.clock.elapsedTime
-//     state.camera.position.lerp(
-//       v.set(
-//         0,
-//         (Math.tan(t * -0.5) + 1) * 50,
-//         -1 * Math.log(t) + cameraPosition[2],
-//         // (cameraPosition[2]) * (Math.cos(t / 2) + 1)
-//         // (cameraPosition[2]) * (Math.cos(t / 2) + 1)
-//       ),
-//       0.06
-//     )
-//     state.camera.lookAt(0, 0, 0)
-//   })
-// }
+const CameraRig = (data, { v = new THREE.Vector3() }) => {
+  const { cameraPosition } = data;
+  return useFrame((state) => {
+    const t = state.clock.elapsedTime
+    state.camera.position.lerp(
+      v.set(
+        0,
+        Math.cos(t / 2) * 100,
+        (Math.sin(t / 2) + 1) * cameraPosition[2],
+      ),
+      0.06
+    )
+    state.camera.lookAt(0, 0, 0)
+  })
+}
 
 const Model = (data) => {
   const {
@@ -139,6 +129,34 @@ const Scene = (data) => {
   );
 };
 
+const Floor = () => {
+  const textureProps = useTexture({
+    displacementMap: './rock_boulder_dry_disp_4k.png',
+    normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
+    map: './rock_boulder_dry_diff_4k.jpg',
+    aoMap: './rock_boulder_dry_ao_4k.png',
+    bumpMap: './rock_boulder_dry_disp_4k.png',
+  })
+
+  const props = {
+    ...textureProps,
+    metalness: 1,
+    roughness: 1,
+    ior: 1.8,
+    reflectivity: 1,
+    sheen: 0,
+    color: "#3d3d3d",
+    bumpScale: 30,
+    displacementScale: 30
+  }
+
+  return (
+    <Plane args={[1500, 1500, 400, 400]} position={[0, -60, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
+      <meshStandardMaterial {...props} />
+    </Plane>
+  )
+}
+
 export const ModelViewer = ({ data }) => {
   const {
     orthographic,
@@ -156,7 +174,6 @@ export const ModelViewer = ({ data }) => {
         shadows
       >
         <Environment shadows files="./studio_small_08_4k.exr" />
-        {/* <CameraRig {...data} /> */}
         <CameraControls
           minPolarAngle={0}
           maxPolarAngle={Math.PI / 2}
@@ -165,32 +182,26 @@ export const ModelViewer = ({ data }) => {
           mouseButtons={{ left: ACTION.ROTATE, middle: ACTION.NONE, right: ACTION.NONE, wheel: ACTION.NONE }}
           touches={{ one: ACTION.TOUCH_ROTATE, two: ACTION.NONE, three: ACTION.NONE }}
         />
-
-        <fog attach="fog" density={0.004} color="#bcbcbc" near={50} far={450} />
-
+        <CameraRig {...data} />
+        <fog attach="fog" density={0.005} color="#bcbcbc" near={50} far={400} />
         <directionalLight
           castShadow={true}
-          position={[0, 60, 10]}
+          position={[-12, 55, -40]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          intensity={1.5}
+          intensity={5}
           angle={0.45}
           shadow-camera-near={0.5}
           shadow-camera-far={500}
           shadow-bias={-0.001}
-          shadow-camera-top={800}
-          shadow-camera-bottom={-800}
-          shadow-camera-left={-800}
-          shadow-camera-right={800}
+          shadow-camera-top={1000}
+          shadow-camera-bottom={-1000}
+          shadow-camera-left={-1000}
+          shadow-camera-right={1000}
         />
-
         <Scene castShadow receiveShadow {...data} />
-        <SoftShadows samples={15} size={10} />
-
-        <Plane receiveShadow args={[1500, 1500]} position={[0, -53, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <meshStandardMaterial color="#3d3d3d" />
-        </Plane>
-
+        <SoftShadows samples={10} size={4} />
+        <Floor />
       </Canvas>
     </Suspense>
   );

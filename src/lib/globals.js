@@ -19,19 +19,28 @@ const matteMaterial = {
   sheenColor: "#707070",
   sheenRoughness: 0.9,
   flatShading: false,
-  // specularIntensity: 1.8,
-  // specularColor: "#ffffff",
 };
 
-const glossMaterial = {
+const metallicMaterial = {
   roughness: 0,
   metalness: 1,
   ior: 1.5,
-  reflectivity: 1,
+  reflectivity: 10.8,
   sheen: 0.0,
   flatShading: false,
-  clearcoat: 0.4,
-  clearcoatRoughness: 0.0,
+  clearcoat: 1,
+  clearcoatRoughness: 1,
+};
+
+const glossMaterial = {
+  roughness: 0.4,
+  metalness: 0,
+  ior: 1.4,
+  reflectivity: 0,
+  sheen: 0,
+  flatShading: false,
+  clearcoat: 0.3,
+  clearcoatRoughness: 0.9,
 };
 
 export const colorCodes = {
@@ -45,7 +54,7 @@ export const colorCodes = {
   },
   gloss_black: {
     label: "Gloss Black",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-400 to-black`,
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
     material: {
       color: "black",
       ...glossMaterial,
@@ -53,10 +62,10 @@ export const colorCodes = {
   },
   silver: {
     label: "Silver",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-700`,
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
     material: {
       color: "white",
-      ...glossMaterial,
+      ...metallicMaterial,
     },
   },
 };

@@ -4,7 +4,6 @@ import Link from "next/link";
 import localFont from "next/font/local";
 import { usePathname } from 'next/navigation';
 
-
 const myFont = localFont({
   src: "./../../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
   display: "swap",
@@ -19,7 +18,7 @@ const Header = () => {
       className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? 'text-2xl pb-1 ' : 'text-4xl pb-3'} text-clay_dark uppercase ${myFont.className}  bg-gradient-to-b from-[#bcbcbc] from-85% to-transparent`}
     >
       <div className={`flex flex-col flex-nowrap`}>
-        <div className={`text-center mb-2 ${pathname.length > 1 ? 'mb-1' : 'mb-2'}`}>
+        <div className={`text-center ${pathname.length > 1 ? 'mb-1' : 'mb-2'}`}>
           <Link
             className="transition-colors duration-200 ease-in-out hover:text-gray-500"
             href="/"
