@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useRef, useEffect } from "react";
+import { Suspense, useRef } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
