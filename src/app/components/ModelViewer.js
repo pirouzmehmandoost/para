@@ -34,7 +34,11 @@ const CameraRig = (data, { v = new THREE.Vector3() }) => {
 
 const Model = (data) => {
   const {
-    material: materialProps,
+    colorCodes: {
+      defaultColor: {
+        material: materialProps,
+      }
+    },
     modelUrl,
     autoUpdateMaterial,
     autoRotate,
@@ -42,15 +46,18 @@ const Model = (data) => {
     position = [0, -25, 0],
   } = data;
 
+  const { size } = useThree();
+  const groupRef = useRef();
   const { scene } = useGLTF(modelUrl);
   const material = new THREE.MeshPhysicalMaterial(materialProps);
+  const groupScale = scaleMeshAtBreakpoint(size.width) * scale;
 
   scene.traverse((child) => {
     if (!!child.isMesh) {
       child.material = material;
       child.castShadow = true;
       child.receiveShadow = true;
-      child.scale.set(scale, scale, scale);
+      child.scale.set(groupScale, groupScale, groupScale);
       child.position.set(position[0], position[1], position[2]);
     }
   });
@@ -59,18 +66,18 @@ const Model = (data) => {
   useFrame(({ clock }) => {
     // material and rotation calculations are based on time
     const elapsedTime = clock.getElapsedTime();
-    const color = new THREE.Color("black").lerp(
-      new THREE.Color("white"),
-      Math.sin(elapsedTime) * 0.5 + 0.5,
-    );
 
-    if (!autoRotate || autoUpdateMaterial) {
+    if (autoRotate || autoUpdateMaterial) {
       scene.traverse((child) => {
-        if (!!child?.isMesh && !autoRotate) {
+        if (!!child?.isMesh && autoRotate) {
           child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
         };
 
         if (!!child?.material && autoUpdateMaterial) {
+          const color = new THREE.Color("black").lerp(
+            new THREE.Color("white"),
+            Math.sin(elapsedTime) * 0.5 + 0.5,
+          );
           child.material.color = color;
           child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
           child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
@@ -79,54 +86,7 @@ const Model = (data) => {
     };
   });
 
-  return <primitive castShadow receiveShadow object={scene} />;
-};
-
-const Scene = (data) => {
-  const {
-    autoUpdateMaterial,
-    colorCodes,
-    modelUrls,
-    // cameraPosition,
-    autoRotate,
-  } = data;
-  // const { size, camera, get } = useThree();
-  const { size } = useThree();
-
-  const groupRef = useRef();
-  // const boundingBox = new THREE.Box3();
-  useEffect(() => {
-    if (groupRef.current) {
-      const groupScale = scaleMeshAtBreakpoint(size.width);
-      groupRef.current.scale.set(groupScale, groupScale, groupScale);
-      // boundingBox.setFromObject(groupRef.current);
-      // const center = boundingBox.getCenter(new THREE.Vector3());
-
-      // camera.position.copy(center);
-      // camera.position.x = 0
-      // camera.position.z += cameraPosition[2]
-      // camera.lookAt(center);
-
-      // const controls = get().controls;
-      // if (controls) {
-      //   controls.target.copy(center);
-      //   controls.update();
-      // };
-    };
-  }, [groupRef]); //three.js state is not included in dependency array
-
-  const newProps = {
-    modelUrl: modelUrls[0],
-    material: { ...colorCodes.defaultColor.material },
-    scale: 0.45,
-    autoUpdateMaterial,
-    autoRotate,
-  }
-  return (
-    <group castShadow receiveShadow ref={groupRef}>
-      <Model {...newProps} />
-    </group>
-  );
+  return <primitive castShadow receiveShadow ref={groupRef} object={scene} />;
 };
 
 const Floor = () => {
@@ -137,7 +97,6 @@ const Floor = () => {
     aoMap: './rock_boulder_dry_ao_4k.png',
     bumpMap: './rock_boulder_dry_disp_4k.png',
   })
-
   const props = {
     ...textureProps,
     metalness: 1,
@@ -199,7 +158,7 @@ export const ModelViewer = ({ data }) => {
           shadow-camera-left={-1000}
           shadow-camera-right={1000}
         />
-        <Scene castShadow receiveShadow {...data} />
+        <Model {...data} />
         <SoftShadows samples={10} size={4} />
         <Floor />
       </Canvas>

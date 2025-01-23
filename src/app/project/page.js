@@ -12,6 +12,7 @@ const ProjectViewer = () => {
 
   const {
     sceneData: {
+      modelUrls,
       colorCodes: {
         defaultColor,
         colorWays,
@@ -24,16 +25,17 @@ const ProjectViewer = () => {
   const [selectedMaterial, setMaterial] = useState(defaultColor ?? null);
 
   const data = {
+    modelUrl: modelUrls[0],
     ...selection.sceneData,
     enablePan: true,
     enableZoom: false,
     enableRotate: true,
-    autoRotate: false,
+    autoRotate: true,
     autoRotateSpeed: 2,
     cameraPosition: [0, 10, 180],
     orthographic: false,
     autoUpdateMaterial: false,
-    scale: 1.0,
+    scale: 0.45,
     colorCodes: {
       colorWays,
       defaultColor: selectedMaterial

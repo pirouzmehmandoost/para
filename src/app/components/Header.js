@@ -51,7 +51,7 @@ const Header = () => {
             className="border-transparent transition-colors hover:text-zinc-500"
             rel="noopener noreferrer"
           >
-            <p className="text-nowrap cursor-pointer line-through	decoration-wavy decoration-red-600/90 decoration-2">
+            <p className="text-nowrap cursor-pointer line-through	decoration-wavy decoration-stone-700/80 decoration-4">
               Shop
             </p>
           </Link>
