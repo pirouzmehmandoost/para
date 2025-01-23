@@ -20,7 +20,7 @@ const Header = () => {
       <div className={`flex flex-col flex-nowrap`}>
         <div className={`text-center ${pathname.length > 1 ? 'mb-1' : 'mb-2'}`}>
           <Link
-            className="transition-colors duration-200 ease-in-out hover:text-gray-500"
+            className="transition-colors duration-200 ease-in-out hover:text-zinc-500"
             href="/"
             rel="noopener noreferrer"
           >

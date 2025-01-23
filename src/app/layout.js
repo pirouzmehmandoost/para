@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${myFont.className} bg-cover bg-default-background-image`}
+        className={`${myFont.className} bg-cover bg-[#bcbcbc]`}
       >
         <Header />
         {children}
