@@ -8,8 +8,11 @@ import {
   OrbitControls,
   Environment,
   Loader,
+  Circle,
 } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../lib/utils"
+import portfolio from "../../lib/globals"
+
 
 THREE.ColorManagement.enabled = true;
 
@@ -83,6 +86,8 @@ const Model = (data) => {
 };
 
 const Scene = (data) => {
+  // const { projects } = portfolio;
+
   const {
     autoUpdateMaterial: update,
     colorCodes,
@@ -97,7 +102,7 @@ const Scene = (data) => {
     scale,
   } = data;
   const [modelPosition, setModelPosition] = useState([]);
-  const { size, camera, get } = useThree();
+  const { scene, size, camera, get } = useThree();
   const groupRef = useRef();
   const positions = [];
   const xOffset = [];
@@ -105,8 +110,18 @@ const Scene = (data) => {
   const zOffset = -40;
   const boundingBox = new THREE.Box3();
   let groupScale = scaleMeshAtBreakpoint(size.width);
-
+  const circleGeometry = new THREE.CircleGeometry(50, 6)
+  const material = new THREE.MeshPhysicalMaterial({ ...colorCodes.defaultColor.material })
+  material.wireframe = true
+  material.vertexColors = true
+  const circle = new THREE.Mesh(circleGeometry, material);
   useEffect(() => {
+
+    circle.name = "Circle"
+    circle.rotateX(-Math.PI / 2)
+    scene.add(circle);
+    // console.log(scene);
+
     groupScale = scaleMeshAtBreakpoint(size.width);
     if (modelUrls.length == 1) {
       xOffset.push(0)
@@ -144,7 +159,6 @@ const Scene = (data) => {
 
   }, [modelUrls]); //three.js state is not included in dependency array
 
-
   // Update camera position and orbit controls 
   useFrame(() => {
     if (groupRef.current) {
@@ -152,7 +166,6 @@ const Scene = (data) => {
       boundingBox.setFromObject(groupRef.current);
 
       const center = boundingBox.getCenter(new THREE.Vector3());
-
       camera.position.copy(center);
       camera.position.x = 0
       camera.position.y += modelUrls.length > 2 ? cameraPosition[1] + 10 : cameraPosition[1];
@@ -167,6 +180,27 @@ const Scene = (data) => {
       };
     };
   });
+
+  circle.position.copy(boundingBox.getCenter(new THREE.Vector3()))
+  circle.position.setY(-20)
+  const vertex = new THREE.Vector3();
+
+  //         absarc(x, y, radius, startAngle, endAngle, clockwise)  x : Float, y : Float, radius : Float, startAngle : Float, endAngle : Float, clockwise : Boolean
+
+  let pts = new THREE.Path().absarc(0, 0, 50, 0, Math.PI * 2).getPoints(3);
+  console.log(pts)
+
+  const positionAttribute = circle.geometry.getAttribute('position');
+
+
+  // for (let i = 0; i < positionAttribute.count; i++) {
+
+  //   vertex.fromBufferAttribute(positionAttribute, i);
+
+  //   console.log("i: ", vertexIndex, ": ", vertex.fromBufferAttribute(positionAttribute, i))
+
+  // }
+
 
   return (
     <>
@@ -189,7 +223,6 @@ const Scene = (data) => {
             };
 
             return <Model key={index} {...newProps} />;
-
           })
         }
       </group>
@@ -208,6 +241,8 @@ const Scene = (data) => {
 };
 
 export const SceneViewer = ({ data }) => {
+  const { projects } = portfolio;
+
   const {
     orthographic,
     cameraPosition = [0, 10, 160],
