@@ -2,7 +2,7 @@
 
 import useSelection from "../store/selection";
 import Link from "next/link";
-import SceneViewer from "./SceneViewer";
+import Scene from "./Scene";
 import portfolio from "../../lib/globals";
 
 const ProjectBanner = (props) => {
@@ -16,7 +16,7 @@ const ProjectBanner = (props) => {
     enablePan: false,
     enableZoom: false,
     enableRotate: false,
-    autoRotate: false,
+    // autoRotate: false,
     autoRotateSpeed,
     cameraPosition: [0, 10, 160],
     orthographic: false,
@@ -41,7 +41,7 @@ const ProjectBanner = (props) => {
           </p>
         </div>
         <div className="flex flex-col w-full h-96 place-self-center place-content-center -mt-12 sm:-mt-12 md:mt-0 lg:mt-8 xl:mt-10 2xl:mt-10 mb-5">
-          <SceneViewer data={sceneConfigs} className="w-96 h-full place-self-center place-content-center justify-around" />
+          <Scene data={sceneConfigs} className="w-96 h-full place-self-center place-content-center justify-around" />
         </div>
       </Link>
     </div>
