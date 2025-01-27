@@ -16,11 +16,9 @@ const ProjectBanner = (props) => {
     enablePan: false,
     enableZoom: false,
     enableRotate: false,
-    // autoRotate: false,
     autoRotateSpeed,
     cameraPosition: [0, 10, 180],
     orthographic: false,
-    autoUpdateMaterial: true,
     scale: 1.0
   };
 

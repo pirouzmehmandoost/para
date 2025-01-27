@@ -1,13 +1,12 @@
 "use client";
 
-import { Suspense, useRef, useEffect, useState, useMemo } from "react";
+import { Suspense, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
   useGLTF,
   Environment,
   Loader,
-  // SoftShadows,
   useTexture,
   Plane
 } from "@react-three/drei";
@@ -52,35 +51,34 @@ const Model = (data) => {
 
     scene.traverse((child) => {
       if (!!child?.isMesh && autoRotate) {
-        child.rotation.set(0, Math.sin(Math.PI / 3) * elapsedTime * 0.3, 0);
+        child.rotation.set(0, Math.sin(Math.PI / 2) * elapsedTime * 0.3, 0);
       };
 
-      if (!!child?.material) {
-        if (updateMaterial) {
-          // Calculate color based on time
-          const color = new THREE.Color(colors[0]).lerp(
-            new THREE.Color(colors[1]),
-            Math.sin(elapsedTime) * 0.5 + 0.5,
-          );
+      if (!!child?.material && updateMaterial) {
+        // Calculate color based on time
+        const color = new THREE.Color(colors[0]).lerp(
+          new THREE.Color(colors[1]),
+          Math.sin(elapsedTime) * 0.5 + 0.5,
+        );
 
-          child.material.reflectivity = (Math.sin(elapsedTime * 0.5) + 1);
-          child.material.color = color;
-          child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
-          child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
-        }
-        else {
-          // const color = new THREE.Color("black");
-          child.material.ior = 1.5;
-          // child.material.color = color;
-          // child.material.roughness = 0.0;
-          // child.material.reflectivity = 0.0;
-          // child.material.clearcoat = 0.5;
-          // child.material.clearcoatRoughness = 0.0;
-          child.material.specularIntensity = 0.03;
-          child.material.specularColor = "#ffffff";
-          child.material.transmission = 1;
-          // child.material.metalness = 0.0;
-        }
+        child.material.reflectivity = (Math.sin(elapsedTime * 0.5) + 1);
+        child.material.color = color;
+        child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
+        child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
+        // }
+        // else {
+        // const color = new THREE.Color("black");
+        // child.material.ior = 1.5;
+        // child.material.color = color;
+        // child.material.roughness = 0.0;
+        // child.material.reflectivity = 0.0;
+        // child.material.clearcoat = 0.5;
+        // child.material.clearcoatRoughness = 0.0;
+        // child.material.specularIntensity = 0.03;
+        // child.material.specularColor = "#ffffff";
+        // child.material.transmission = 1;
+        // child.material.metalness = 0.0;
+        // }
       };
     });
   });
@@ -101,11 +99,9 @@ const Group = (data) => {
   const { size, camera, } = useThree();
   const groupRef = useRef();
   const positions = [];
-  // const boundingBox = new THREE.Box3();
   let groupScale = scaleMeshAtBreakpoint(size.width);
-
-  const curveHandles = [];
-  const curve2 = new THREE.EllipseCurve(
+  const handles = [];
+  const bezierCurve = new THREE.EllipseCurve(
     0,
     0,
     50,
@@ -115,22 +111,23 @@ const Group = (data) => {
     false,
     0
   );
-  curve2.closed = true;
+  bezierCurve.closed = true;
 
-  const points2 = curve2.getPoints(modelUrls.length);
-  points2.shift() //remove a duplicate point
+  const bezierCurvePoints = bezierCurve.getPoints(modelUrls.length);
+  bezierCurvePoints.shift(); //remove an overlapping point
 
-  const geometry2 = new THREE.BufferGeometry().setFromPoints(points2);
+  const bezierGeometry = new THREE.BufferGeometry().setFromPoints(bezierCurvePoints);
 
-  const ellipse = new THREE.Line(geometry2, new THREE.MeshBasicMaterial());
+  const ellipse = new THREE.Line(bezierGeometry, new THREE.MeshBasicMaterial());
   ellipse.rotation.x = Math.PI * 0.5;
 
   const vertex = new THREE.Vector3();
   const positionAttribute = ellipse.geometry.getAttribute('position');
 
   const handlePositions = [];
+
   for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
-    const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex)
+    const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
 
     handlePositions.push({
       x: pt.x,
@@ -139,13 +136,12 @@ const Group = (data) => {
     });
   }
 
-  const boxGeometry = new THREE.BoxGeometry(2, 2, 2);
+  const boxGeometry = new THREE.BoxGeometry(2, 2, 2); // to visualize handle positions
   // const boxMaterial = new THREE.MeshBasicMaterial();
-
   for (const handlePosition of handlePositions) {
     const handle = new THREE.Mesh(boxGeometry);//, boxMaterial);
     handle.position.copy(handlePosition);
-    curveHandles.push(handle);
+    handles.push(handle);
     // scene.add(handle);
   }
   // scene.add(ellipse)
@@ -153,11 +149,11 @@ const Group = (data) => {
   // material.wireframe = true
   // material.vertexColors = true
 
-  const curve = new THREE.CatmullRomCurve3(curveHandles.map((handle) => handle.position));
-  curve.curveType = 'centripetal';
-  curve.closed = true;
+  const cameraPathCurve = new THREE.CatmullRomCurve3(handles.map((handle) => handle.position));
+  cameraPathCurve.curveType = 'centripetal';
+  cameraPathCurve.closed = true;
 
-  // const points = curve.getPoints(modelUrls.length);
+  // const points = cameraPathCurve.getPoints(modelUrls.length);
   // const line = new THREE.LineLoop(
   //   new THREE.BufferGeometry().setFromPoints(points),
   //   new THREE.LineBasicMaterial({ color: 0x00ff00 })
@@ -185,14 +181,14 @@ const Group = (data) => {
     let s = (clock.getElapsedTime() * 0.1) % 1;
 
     if (groupRef.current) {
-      const position = curve.getPoint(s);
+      const position = cameraPathCurve.getPoint(s);
       // groupRef.current.position.copy(position);
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
 
       if (modelUrls.length > 1) {
         camera.position.x = position.x;
         camera.position.y = modelUrls.length > 2 ? cameraPosition[1] + 27 : cameraPosition[1];
-        camera.position.z = position.z + 120;
+        camera.position.z = position.z + cameraPosition[2];
         camera.lookAt(position);
       } else {
         camera.position.x = 0
@@ -207,27 +203,28 @@ const Group = (data) => {
     <group ref={groupRef}>
       {
         modelUrls.map((url, index) => {
-          //   const fuck = { ...modelPosition[index] }
-          //   const shit = []
-          //   for (const f in fuck) {
-          //     if (f == 1) {
-          //       shit.push(fuck[f] + 20)
-          //     }
-          //     else {
-          //       shit.push(fuck[f])
-          //     }
+          // const fuck = { ...modelPosition[index] }
+          // const shit = []
+          // for (const f in fuck) {
+          //   if (f == 1) {
+          //     shit.push(fuck[f] + 20)
           //   }
+          //   else {
+          //     shit.push(fuck[f])
+          //   }
+          // }
+          // console.log(shit)
 
           const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
           const newProps = {
             modelUrl: url,
-            material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays).reverse()[index].material, // material properties
+            material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays)[index].material, // material properties
             scale: updateScale,
             autoUpdateMaterial: {
-              updateMaterial: false,
+              updateMaterial: update,
               colors: index % 2 == 0 ? ["black", "white"] : ["white", "black"]
             },
-            autoRotate: autoRotate,
+            autoRotate: modelUrls.length === 1 || index > 0 ? autoRotate : false,
             position: modelPosition[index]
           };
 
@@ -262,7 +259,7 @@ const Floor = (data) => {
   }
 
   return (
-    <Plane args={[1500, 1500, 50, 50]} position={[0, modelUrls.length > 1 ? -35 : -60, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
+    <Plane args={[1500, 1500, 40, 40]} position={[0, modelUrls.length > 1 ? -35 : -60, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
       <meshPhysicalMaterial {...props} />
     </Plane>
   )
@@ -284,8 +281,86 @@ export const Scene = ({ data }) => {
         orthographic={orthographic}
         shadows
       >
-        <Environment shadows files="./studio_small_08_4k.exr" />
-        <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={300} />
+        <Environment shadows files="./kloofendal_misty_morning_puresky_4k.exr" />
+        <directionalLight
+          castShadow={true}
+          position={[-10, 100, 194]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={7}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+        <directionalLight
+          castShadow={true}
+          position={[-10, 100, -210]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={8}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+        <directionalLight
+          castShadow={true}
+          position={[-10, 100, -193]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={10}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+
+        <directionalLight
+          castShadow={true}
+          position={[0, 100, 20]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={7}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+
+        <directionalLight
+          castShadow={true}
+          position={[10, 100, -6]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={7}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+
+        <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
         <Group {...data} />
         <Floor {...data} />
       </Canvas>

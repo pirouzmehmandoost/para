@@ -24,12 +24,14 @@ const matteMaterial = {
 const metallicMaterial = {
   roughness: 0,
   metalness: 1,
-  ior: 1.5,
-  reflectivity: 10.8,
+  ior: 1.8,
+  reflectivity: 10,
   sheen: 0.0,
   flatShading: false,
+  sheen: 0,
+  sheenRoughness: 0,
   clearcoat: 1,
-  clearcoatRoughness: 1,
+  clearcoatRoughness: 0,
 };
 
 const glossMaterial = {
@@ -44,20 +46,20 @@ const glossMaterial = {
 };
 
 export const colorCodes = {
-  matte_black: {
-    label: "Matte Black",
-    tailwindColor: `bg-zinc-900`,
-    material: {
-      color: "black",
-      ...matteMaterial,
-    },
-  },
   gloss_black: {
     label: "Gloss Black",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
     material: {
       color: "black",
       ...glossMaterial,
+    },
+  },
+  matte_black: {
+    label: "Matte Black",
+    tailwindColor: `bg-zinc-900`,
+    material: {
+      color: "black",
+      ...matteMaterial,
     },
   },
   silver: {
@@ -151,7 +153,6 @@ const portfolio = {
       },
       price: `$${100}`,
       productType: "fitness",
-      autoUpdateMaterial: false,
       sceneData: {
         orthographic: false,
         autoUpdateMaterial: true,
@@ -184,6 +185,7 @@ const portfolio = {
         ],
       },
       sceneData: {
+        autoUpdateMaterial: false,
         colorCodes: {
           defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
@@ -225,6 +227,8 @@ const portfolio = {
         modelUrls: ["/yoga_mat_strap_for_web2.glb"],
         scale: 1.0,
         autoRotate: true,
+        autoUpdateMaterial: false,
+
       },
       shortDescription:
         "An exploration of branding and product design as a Yoga instructor.",
