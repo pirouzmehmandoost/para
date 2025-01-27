@@ -194,6 +194,7 @@ const portfolio = {
           "/oval_bag_1.glb",
         ],
         scale: 1.0,
+        autoRotate: false,
       },
       shortDescription: "A small collection of 3D printed handbags.",
       description:
@@ -223,6 +224,7 @@ const portfolio = {
         },
         modelUrls: ["/yoga_mat_strap_for_web2.glb"],
         scale: 1.0,
+        autoRotate: true,
       },
       shortDescription:
         "An exploration of branding and product design as a Yoga instructor.",
