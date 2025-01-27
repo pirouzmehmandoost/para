@@ -5,13 +5,11 @@ import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
   useGLTF,
-  OrbitControls,
+  // OrbitControls,
   Environment,
   Loader,
-  Circle,
 } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../lib/utils"
-import portfolio from "../../lib/globals"
 
 
 THREE.ColorManagement.enabled = true;
@@ -48,7 +46,7 @@ const Model = (data) => {
     const elapsedTime = clock.getElapsedTime();
 
     scene.traverse((child) => {
-      if (!!child?.isMesh && !autoRotate) {
+      if (!!child?.isMesh && autoRotate) {
         child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
       };
 
@@ -86,8 +84,6 @@ const Model = (data) => {
 };
 
 const Scene = (data) => {
-  // const { projects } = portfolio;
-
   const {
     autoUpdateMaterial: update,
     colorCodes,
@@ -102,7 +98,7 @@ const Scene = (data) => {
     scale,
   } = data;
   const [modelPosition, setModelPosition] = useState([]);
-  const { scene, size, camera, get } = useThree();
+  const { size, camera, get } = useThree();
   const groupRef = useRef();
   const positions = [];
   const xOffset = [];
@@ -110,18 +106,8 @@ const Scene = (data) => {
   const zOffset = -40;
   const boundingBox = new THREE.Box3();
   let groupScale = scaleMeshAtBreakpoint(size.width);
-  const circleGeometry = new THREE.CircleGeometry(50, 6)
-  const material = new THREE.MeshPhysicalMaterial({ ...colorCodes.defaultColor.material })
-  material.wireframe = true
-  material.vertexColors = true
-  const circle = new THREE.Mesh(circleGeometry, material);
+
   useEffect(() => {
-
-    circle.name = "Circle"
-    circle.rotateX(-Math.PI / 2)
-    scene.add(circle);
-    // console.log(scene);
-
     groupScale = scaleMeshAtBreakpoint(size.width);
     if (modelUrls.length == 1) {
       xOffset.push(0)
@@ -181,68 +167,43 @@ const Scene = (data) => {
     };
   });
 
-  circle.position.copy(boundingBox.getCenter(new THREE.Vector3()))
-  circle.position.setY(-20)
-  const vertex = new THREE.Vector3();
-
-  //         absarc(x, y, radius, startAngle, endAngle, clockwise)  x : Float, y : Float, radius : Float, startAngle : Float, endAngle : Float, clockwise : Boolean
-
-  let pts = new THREE.Path().absarc(0, 0, 50, 0, Math.PI * 2).getPoints(3);
-  console.log(pts)
-
-  const positionAttribute = circle.geometry.getAttribute('position');
-
-
-  // for (let i = 0; i < positionAttribute.count; i++) {
-
-  //   vertex.fromBufferAttribute(positionAttribute, i);
-
-  //   console.log("i: ", vertexIndex, ": ", vertex.fromBufferAttribute(positionAttribute, i))
-
-  // }
-
-
   return (
-    <>
-      <group ref={groupRef}>
-        {
-          modelUrls.map((url, index) => {
+    <group ref={groupRef}>
+      {
+        modelUrls.map((url, index) => {
 
-            let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
+          let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
 
-            const newProps = {
-              modelUrl: url,
-              material: { ...colorCodes.defaultColor.material }, // material properties
-              scale: updateScale,
-              autoUpdateMaterial: {
-                updateMaterial: update,
-                colors: index % 2 == 0 ? ["black", "white"] : ["white", "black"]
-              },
-              autoRotate,
-              position: modelPosition[index],
-            };
+          const newProps = {
+            modelUrl: url,
+            material: { ...colorCodes.defaultColor.material }, // material properties
+            scale: updateScale,
+            autoUpdateMaterial: {
+              updateMaterial: update,
+              colors: index % 2 == 0 ? ["black", "white"] : ["white", "black"]
+            },
+            autoRotate,
+            position: modelPosition[index],
+          };
 
-            return <Model key={index} {...newProps} />;
-          })
-        }
-      </group>
-      <OrbitControls
-        target={groupRef}
-        makeDefault
-        enablePan={enablePan}
-        enableZoom={enableZoom}
-        autoRotate={autoRotate}
-        autoRotateSpeed={autoRotateSpeed}
-        enableRotate={enableRotate}
-        orthographic={orthographic}
-      />
-    </>
+          return <Model key={index} {...newProps} />;
+        })
+      }
+    </group>
+    // <OrbitControls
+    //   target={groupRef}
+    //   makeDefault
+    //   enablePan={enablePan}
+    //   enableZoom={enableZoom}
+    //   autoRotate={autoRotate}
+    //   autoRotateSpeed={autoRotateSpeed}
+    //   enableRotate={enableRotate}
+    //   orthographic={orthographic}
+    // />
   );
 };
 
 export const SceneViewer = ({ data }) => {
-  const { projects } = portfolio;
-
   const {
     orthographic,
     cameraPosition = [0, 10, 160],
