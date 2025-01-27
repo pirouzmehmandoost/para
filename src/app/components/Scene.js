@@ -32,8 +32,8 @@ const Model = (data) => {
 
   const { scene } = useGLTF(modelUrl);
 
-  const material = useMemo(() => new THREE.MeshPhysicalMaterial(materialProps), [materialProps]);
-  // const material = new THREE.MeshPhysicalMaterial(materialProps);
+  // const material = useMemo(() => new THREE.MeshPhysicalMaterial(materialProps), [materialProps]);
+  const material = new THREE.MeshPhysicalMaterial(materialProps);
 
   scene.traverse((child) => {
     if (!!child.isMesh) {
@@ -69,17 +69,17 @@ const Model = (data) => {
           child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
         }
         else {
-          const color = new THREE.Color("black");
+          // const color = new THREE.Color("black");
           child.material.ior = 1.5;
-          child.material.color = color;
-          child.material.roughness = 0.0;
-          child.material.reflectivity = 0.0;
-          child.material.clearcoat = 0.5;
-          child.material.clearcoatRoughness = 0.0;
+          // child.material.color = color;
+          // child.material.roughness = 0.0;
+          // child.material.reflectivity = 0.0;
+          // child.material.clearcoat = 0.5;
+          // child.material.clearcoatRoughness = 0.0;
           child.material.specularIntensity = 0.03;
           child.material.specularColor = "#ffffff";
           child.material.transmission = 1;
-          child.material.metalness = 0.0;
+          // child.material.metalness = 0.0;
         }
       };
     });
@@ -109,7 +109,7 @@ const Group = (data) => {
     0,
     0,
     50,
-    120,
+    150,
     0,
     2 * Math.PI,
     false,
@@ -170,7 +170,7 @@ const Group = (data) => {
       for (const handlePosition of handlePositions) {
         const p = [
           handlePosition.x * 1.6,
-          handlePosition.y * 0.98,
+          handlePosition.y,
           handlePosition.z * 1.5,
         ]
         positions.push(p);
@@ -191,8 +191,8 @@ const Group = (data) => {
 
       if (modelUrls.length > 1) {
         camera.position.x = position.x;
-        camera.position.y = modelUrls.length > 2 ? cameraPosition[1] + 25 : cameraPosition[1];
-        camera.position.z = position.z + 110;
+        camera.position.y = modelUrls.length > 2 ? cameraPosition[1] + 27 : cameraPosition[1];
+        camera.position.z = position.z + 120;
         camera.lookAt(position);
       } else {
         camera.position.x = 0
@@ -207,21 +207,21 @@ const Group = (data) => {
     <group ref={groupRef}>
       {
         modelUrls.map((url, index) => {
-          const fuck = { ...modelPosition[index] }
-          const shit = []
-          for (const f in fuck) {
-            if (f == 1) {
-              shit.push(fuck[f] + 20)
-            }
-            else {
-              shit.push(fuck[f])
-            }
-          }
+          //   const fuck = { ...modelPosition[index] }
+          //   const shit = []
+          //   for (const f in fuck) {
+          //     if (f == 1) {
+          //       shit.push(fuck[f] + 20)
+          //     }
+          //     else {
+          //       shit.push(fuck[f])
+          //     }
+          //   }
 
-          let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
+          const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
           const newProps = {
             modelUrl: url,
-            material: { ...colorCodes.defaultColor.material }, // material properties
+            material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays).reverse()[index].material, // material properties
             scale: updateScale,
             autoUpdateMaterial: {
               updateMaterial: false,
@@ -262,7 +262,7 @@ const Floor = (data) => {
   }
 
   return (
-    <Plane args={[1500, 1500, 50, 50]} position={[0, modelUrls.length > 1 ? -35 : -55, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
+    <Plane args={[1500, 1500, 50, 50]} position={[0, modelUrls.length > 1 ? -35 : -60, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
       <meshPhysicalMaterial {...props} />
     </Plane>
   )
@@ -271,7 +271,7 @@ const Floor = (data) => {
 export const Scene = ({ data }) => {
   const {
     orthographic,
-    cameraPosition = [0, 10, 180],
+    cameraPosition,
   } = data;
   const near = orthographic ? -100 : 1;
   const fov = orthographic ? 500 : 50;

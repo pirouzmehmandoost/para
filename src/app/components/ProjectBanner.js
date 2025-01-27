@@ -18,7 +18,7 @@ const ProjectBanner = (props) => {
     enableRotate: false,
     // autoRotate: false,
     autoRotateSpeed,
-    cameraPosition: [0, 10, 160],
+    cameraPosition: [0, 10, 180],
     orthographic: false,
     autoUpdateMaterial: true,
     scale: 1.0
@@ -27,7 +27,7 @@ const ProjectBanner = (props) => {
   return (
     <div className="flex flex-col w-full h-full min-h-48 place-self-center place-content-center place-items-center">
       <Link
-        className="w-4/5 h-full place-self-center"
+        className="w-full h-full place-self-center"
         onClick={() => setSelection(selectedProject)}
         href="/project"
         rel="noopener noreferrer"
@@ -41,7 +41,7 @@ const ProjectBanner = (props) => {
           </p>
         </div>
         <div className="flex flex-col w-full h-96 place-self-center place-content-center -mt-12 sm:-mt-12 md:mt-0 lg:mt-8 xl:mt-10 2xl:mt-10 mb-5">
-          <Scene data={sceneConfigs} className="w-96 h-full place-self-center place-content-center justify-around" />
+          <Scene data={sceneConfigs} className="w-full h-full place-self-center place-content-center justify-around" />
         </div>
       </Link>
     </div>
