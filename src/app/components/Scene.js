@@ -267,7 +267,7 @@ export const Scene = ({ data }) => {
         orthographic={orthographic}
         shadows
       >
-        <Environment shadows files="./kloofendal_misty_morning_puresky.jpg" />
+        <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" />
         <directionalLight
           castShadow={true}
           position={[-10, 100, 194]}

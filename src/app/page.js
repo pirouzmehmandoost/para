@@ -42,6 +42,7 @@ export default function Home() {
         </h1>
         <div className="mb-20">
           <div className="flex flex-col-reverse w-full h-full place-self-center">
+            {/* <ProjectBanner /> */}
             <Splide options={splideConfig} aria-label="Projects Carousel">
               {projects.map((item, index) => {
                 const props = {
