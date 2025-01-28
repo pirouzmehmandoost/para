@@ -163,10 +163,10 @@ const Group = (data) => {
   }, [modelUrls]); //three.js state is not included in dependency array
 
   // Update camera position and orbit controls 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     let s = (clock.getElapsedTime() * 0.1) % 1;
 
-    if (groupRef.current) {
+    if (groupRef.current && (delta > (1 / 60))) {
       const position = cameraPathCurve.getPoint(s);
       // groupRef.current.position.copy(position);
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
@@ -245,7 +245,7 @@ const Floor = (data) => {
   }
 
   return (
-    <Plane args={[1500, 1500, 40, 40]} position={[0, modelUrls.length > 1 ? -35 : -60, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
+    <Plane args={[1500, 1500, 30, 30]} position={[0, modelUrls.length > 1 ? -35 : -60, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
       <meshPhysicalMaterial {...props} />
     </Plane>
   )
