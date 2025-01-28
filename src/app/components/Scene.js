@@ -65,20 +65,6 @@ const Model = (data) => {
         child.material.color = color;
         child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
         child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
-        // }
-        // else {
-        // const color = new THREE.Color("black");
-        // child.material.ior = 1.5;
-        // child.material.color = color;
-        // child.material.roughness = 0.0;
-        // child.material.reflectivity = 0.0;
-        // child.material.clearcoat = 0.5;
-        // child.material.clearcoatRoughness = 0.0;
-        // child.material.specularIntensity = 0.03;
-        // child.material.specularColor = "#ffffff";
-        // child.material.transmission = 1;
-        // child.material.metalness = 0.0;
-        // }
       };
     });
   });
