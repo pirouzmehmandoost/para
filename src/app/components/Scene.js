@@ -31,7 +31,6 @@ const Model = (data) => {
     }
   });
 
-  //update rotation and material properties
   useFrame(({ clock }) => {
     const elapsedTime = clock.getElapsedTime();
 
@@ -46,6 +45,10 @@ const Model = (data) => {
 };
 
 const Group = (data) => {
+  const [modelPosition, setModelPosition] = useState([]);
+  const { size, camera, } = useThree();
+  const groupRef = useRef();
+
   const {
     autoUpdateMaterial: update,
     colorCodes,
@@ -54,11 +57,7 @@ const Group = (data) => {
     autoRotate,
     scale,
   } = data;
-  const [modelPosition, setModelPosition] = useState([]);
-  const { size, camera, } = useThree();
-  const groupRef = useRef();
   const positions = [];
-  let groupScale = 1;
   const handles = [];
   const bezierCurve = new THREE.EllipseCurve(
     0,
@@ -70,6 +69,8 @@ const Group = (data) => {
     false,
     0
   );
+  let groupScale = 1;
+
   bezierCurve.closed = true;
 
   const bezierCurvePoints = bezierCurve.getPoints(modelUrls.length);
@@ -103,10 +104,11 @@ const Group = (data) => {
     handles.push(handle);
     // scene.add(handle);
   }
-  // scene.add(ellipse)
-  // const material = new THREE.MeshPhysicalMaterial({ ...colorCodes.defaultColor.material })
-  // material.wireframe = true
-  // material.vertexColors = true
+
+  //   scene.add(ellipse)
+  //   const material = new THREE.MeshPhysicalMaterial({ color: 0xFF0000 })
+  //   material.wireframe = true
+  //   material.vertexColors = true
 
   const cameraPathCurve = new THREE.CatmullRomCurve3(handles.map((handle) => handle.position));
   cameraPathCurve.curveType = 'centripetal';
