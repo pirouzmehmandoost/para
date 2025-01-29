@@ -22,27 +22,25 @@ const matteMaterial = {
 };
 
 const metallicMaterial = {
-  roughness: 0,
+  roughness: 0.2,
   metalness: 1,
   ior: 1.8,
-  reflectivity: 10,
-  sheen: 0.0,
+  sheen: 0.15,
+  sheenColor: "#707070",
+  sheenRoughness: 1,
   flatShading: false,
-  sheen: 0,
-  sheenRoughness: 0,
-  clearcoat: 1,
-  clearcoatRoughness: 0,
 };
 
 const glossMaterial = {
   roughness: 0.4,
   metalness: 0,
-  ior: 1.4,
+  ior: 1.5,
   reflectivity: 0,
   sheen: 0,
-  flatShading: false,
+  sheenRoughness: 0,
   clearcoat: 0.3,
   clearcoatRoughness: 0.9,
+  flatShading: false,
 };
 
 export const colorCodes = {
@@ -66,7 +64,7 @@ export const colorCodes = {
     label: "Silver",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
     material: {
-      color: "white",
+      color: "#444444",
       ...metallicMaterial,
     },
   },
