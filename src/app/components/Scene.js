@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Loader, useTexture, Plane } from "@react-three/drei";
 import { scaleMeshAtBreakpoint } from "../../lib/utils"
+// import CameraRig from "./CameraRig";
 
 THREE.ColorManagement.enabled = true;
 
@@ -145,6 +146,16 @@ const Group = (data) => {
       const position = cameraPathCurve.getPoint(s);
 
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
+
+
+      // state.camera.position.lerp(
+      //   v.set(
+      //     0,
+      //     Math.cos(t / 2) * 100,
+      //     (Math.sin(t / 2) + 1) * cameraPosition[2],
+      //   ),
+      //   0.06
+      // );
 
       if (modelUrls.length > 1) {
         camera.position.x = position.x;
