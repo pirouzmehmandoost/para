@@ -226,18 +226,17 @@ const Group = (data) => {
 const Floor = (data) => {
   const { modelUrls } = data
   const textureProps = useTexture({
-    displacementMap: './rock_boulder_dry_disp_4k.png',
+    displacementMap: './rock_boulder_dry_disp_4k.jpg',
     normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
     map: './rock_boulder_dry_diff_4k.jpg',
-    aoMap: './rock_boulder_dry_ao_4k.png',
-    bumpMap: './rock_boulder_dry_disp_4k.png',
+    aoMap: './rock_boulder_dry_ao_4k.jpg',
+    bumpMap: './rock_boulder_dry_disp_4k.jpg',
   })
   const props = {
     ...textureProps,
     metalness: 1,
     roughness: 1,
     ior: 1.8,
-    reflectivity: 1,
     sheen: 0,
     color: "#3d3d3d",
     bumpScale: 30,
@@ -268,23 +267,11 @@ export const Scene = ({ data }) => {
         shadows
       >
         {/* <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" /> */}
-        <Environment shadows files="./studio_small_08_4k.exr" />
-        <directionalLight
-          castShadow={true}
-          position={[-10, 100, 194]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={7}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
+        <Environment
+          shadows
+          files="./studio_small_08_4k.exr"
         />
-        <directionalLight
+        {/* <directionalLight
           castShadow={true}
           position={[-10, 100, -210]}
           shadow-mapSize-width={2048}
@@ -298,8 +285,8 @@ export const Scene = ({ data }) => {
           shadow-camera-bottom={-1500}
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
-        />
-        <directionalLight
+        /> */}
+        {/* <directionalLight
           castShadow={true}
           position={[-10, 100, -193]}
           shadow-mapSize-width={2048}
@@ -313,9 +300,23 @@ export const Scene = ({ data }) => {
           shadow-camera-bottom={-1500}
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
-        />
-
+        /> */}
         <directionalLight
+          castShadow={true}
+          position={[0, 100, 0]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={7}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+        {/* <directionalLight
           castShadow={true}
           position={[0, 100, 20]}
           shadow-mapSize-width={2048}
@@ -329,11 +330,10 @@ export const Scene = ({ data }) => {
           shadow-camera-bottom={-1500}
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
-        />
-
-        <directionalLight
+        /> */}
+        {/* <directionalLight
           castShadow={true}
-          position={[10, 100, -6]}
+          position={[-10, 100, 194]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
           intensity={7}
@@ -345,8 +345,7 @@ export const Scene = ({ data }) => {
           shadow-camera-bottom={-1500}
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
-        />
-
+        /> */}
         <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
         <Group {...data} />
         <Floor {...data} />
