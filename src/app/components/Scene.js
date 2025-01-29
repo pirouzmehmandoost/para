@@ -228,7 +228,7 @@ const Floor = () => {
   return (
     <Plane
       args={[1500, 1500, 45, 45]}
-      position={[0, -65, 0]}
+      position={[0, -63, 0]}
       rotation={[-Math.PI / 2, 0, Math.PI / 2]}
       receiveShadow
       castShadow
