@@ -3,16 +3,8 @@
 import { Suspense, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import {
-  useGLTF,
-  Environment,
-  Loader,
-  useTexture,
-  Plane
-} from "@react-three/drei";
-import {
-  scaleMeshAtBreakpoint,
-} from "../../lib/utils"
+import { useGLTF, Environment, Loader, useTexture, Plane } from "@react-three/drei";
+import { scaleMeshAtBreakpoint } from "../../lib/utils"
 
 THREE.ColorManagement.enabled = true;
 
@@ -30,7 +22,6 @@ const Model = (data) => {
   } = data;
 
   const { scene } = useGLTF(modelUrl);
-
   // const material = useMemo(() => new THREE.MeshPhysicalMaterial(materialProps), [materialProps]);
   const material = new THREE.MeshPhysicalMaterial(materialProps);
 
@@ -46,7 +37,6 @@ const Model = (data) => {
 
   //update rotation and material properties
   useFrame(({ clock }) => {
-    //material and rotation calculations are based on time
     const elapsedTime = clock.getElapsedTime();
 
     scene.traverse((child) => {
@@ -55,7 +45,6 @@ const Model = (data) => {
       };
 
       if (!!child?.material && updateMaterial) {
-        // Calculate color based on time
         const color = new THREE.Color(colors[0]).lerp(
           new THREE.Color(colors[1]),
           Math.sin(elapsedTime) * 0.5 + 0.5,
@@ -160,15 +149,15 @@ const Group = (data) => {
       setModelPosition(positions);
     };
 
-  }, [modelUrls]); //three.js state is not included in dependency array
+  }, [modelUrls]);
 
-  // Update camera position and orbit controls 
+  // Update camera position
   useFrame(({ clock }, delta) => {
     let s = (clock.getElapsedTime() * 0.1) % 1;
 
     if (groupRef.current && (delta > (1 / 60))) {
       const position = cameraPathCurve.getPoint(s);
-      // groupRef.current.position.copy(position);
+
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
 
       if (modelUrls.length > 1) {
@@ -189,17 +178,17 @@ const Group = (data) => {
     <group ref={groupRef}>
       {
         modelUrls.map((url, index) => {
-          // const fuck = { ...modelPosition[index] }
-          // const shit = []
-          // for (const f in fuck) {
-          //   if (f == 1) {
-          //     shit.push(fuck[f] + 20)
+          // const pos = { ...modelPosition[index] }
+          // const newPositions = []
+          // for (const p in pos) {
+          //   if (p == 1) {
+          //     newPositions.push(pos[f] + 20)
           //   }
           //   else {
-          //     shit.push(fuck[f])
+          //     newPositions.push(pos[f])
           //   }
           // }
-          // console.log(shit)
+          // console.log(newPositions)
 
           const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
           const newProps = {
@@ -266,41 +255,7 @@ export const Scene = ({ data }) => {
         orthographic={orthographic}
         shadows
       >
-        {/* <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" /> */}
-        <Environment
-          shadows
-          files="./studio_small_08_4k.exr"
-        />
-        {/* <directionalLight
-          castShadow={true}
-          position={[-10, 100, -210]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={8}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        /> */}
-        {/* <directionalLight
-          castShadow={true}
-          position={[-10, 100, -193]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={10}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        /> */}
+        <Environment shadows files="./studio_small_08_4k.exr" />
         <directionalLight
           castShadow={true}
           position={[0, 100, 0]}
@@ -316,36 +271,6 @@ export const Scene = ({ data }) => {
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
         />
-        {/* <directionalLight
-          castShadow={true}
-          position={[0, 100, 20]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={7}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        /> */}
-        {/* <directionalLight
-          castShadow={true}
-          position={[-10, 100, 194]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={7}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        /> */}
         <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
         <Group {...data} />
         <Floor {...data} />

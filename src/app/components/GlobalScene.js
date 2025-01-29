@@ -355,11 +355,11 @@
 
 // const Floor = () => {
 //   const textureProps = useTexture({
-//     displacementMap: './rock_boulder_dry_disp_4k.png',
+//     displacementMap: './rock_boulder_dry_disp_4k.jpg',
 //     normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
 //     map: './rock_boulder_dry_diff_4k.jpg',
-//     aoMap: './rock_boulder_dry_ao_4k.png',
-//     bumpMap: './rock_boulder_dry_disp_4k.png',
+//     aoMap: './rock_boulder_dry_ao_4k.jpg',
+//     bumpMap: './rock_boulder_dry_disp_4k.jpg',
 //   })
 //   const materialProps = {
 //     ...textureProps,
