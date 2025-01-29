@@ -12,10 +12,6 @@ const Model = (data) => {
   const {
     material: materialProps,
     modelUrl,
-    autoUpdateMaterial: {
-      updateMaterial,
-      colors,
-    },
     autoRotate,
     scale,
     position = [0, -25, 0],
@@ -44,17 +40,17 @@ const Model = (data) => {
         child.rotation.set(0, Math.sin(Math.PI / 2) * elapsedTime * 0.3, 0);
       };
 
-      if (!!child?.material && updateMaterial) {
-        const color = new THREE.Color(colors[0]).lerp(
-          new THREE.Color(colors[1]),
-          Math.sin(elapsedTime) * 0.5 + 0.5,
-        );
+      // if (!!child?.material && updateMaterial) {
+      //   const color = new THREE.Color(colors[0]).lerp(
+      //     new THREE.Color(colors[1]),
+      //     Math.sin(elapsedTime) * 0.5 + 0.5,
+      //   );
 
-        child.material.reflectivity = (Math.sin(elapsedTime * 0.5) + 1);
-        child.material.color = color;
-        child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
-        child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
-      };
+      //   child.material.reflectivity = (Math.sin(elapsedTime * 0.5) + 1);
+      //   child.material.color = color;
+      //   child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
+      //   child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
+      // };
     });
   });
 
@@ -74,7 +70,7 @@ const Group = (data) => {
   const { size, camera, } = useThree();
   const groupRef = useRef();
   const positions = [];
-  let groupScale = scaleMeshAtBreakpoint(size.width);
+  let groupScale = 1;
   const handles = [];
   const bezierCurve = new THREE.EllipseCurve(
     0,
@@ -212,31 +208,45 @@ const Group = (data) => {
   );
 };
 
-const Floor = (data) => {
-  const { modelUrls } = data
+const Floor = () => {
   const textureProps = useTexture({
     displacementMap: './rock_boulder_dry_disp_4k.jpg',
     normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
     map: './rock_boulder_dry_diff_4k.jpg',
-    aoMap: './rock_boulder_dry_ao_4k.jpg',
-    bumpMap: './rock_boulder_dry_disp_4k.jpg',
-  })
+  });
+
   const props = {
     ...textureProps,
     metalness: 1,
     roughness: 1,
-    ior: 1.8,
+    ior: 1.5,
     sheen: 0,
     color: "#3d3d3d",
-    bumpScale: 30,
-    displacementScale: 30
-  }
+    displacementScale: 45
+  };
 
   return (
-    <Plane args={[1500, 1500, 30, 30]} position={[0, modelUrls.length > 1 ? -35 : -60, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} receiveShadow castShadow >
+    <Plane
+      args={[1500, 1500, 45, 45]}
+      position={[0, -65, 0]}
+      rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+      receiveShadow
+      castShadow
+    >
       <meshPhysicalMaterial {...props} />
     </Plane>
   )
+}
+
+const AdaptivePixelRatio = () => {
+  const current = useThree((state) => state.performance.current);
+  const setPixelRatio = useThree((state) => state.setDpr);
+
+  useEffect(() => {
+    setPixelRatio(window.devicePixelRatio * current)
+  }, [current]);
+
+  return null;
 }
 
 export const Scene = ({ data }) => {
@@ -255,6 +265,7 @@ export const Scene = ({ data }) => {
         orthographic={orthographic}
         shadows
       >
+        <AdaptivePixelRatio />
         <Environment shadows files="./studio_small_08_4k.exr" />
         <directionalLight
           castShadow={true}
@@ -273,7 +284,7 @@ export const Scene = ({ data }) => {
         />
         <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
         <Group {...data} />
-        <Floor {...data} />
+        <Floor />
       </Canvas>
     </Suspense>
   );
