@@ -18,8 +18,10 @@ THREE.ColorManagement.enabled = true;
 
 const CameraRig = (data, { v = new THREE.Vector3() }) => {
   const { cameraPosition } = data;
+
   return useFrame((state) => {
-    const t = state.clock.elapsedTime
+    const t = state.clock.elapsedTime;
+
     state.camera.position.lerp(
       v.set(
         0,
@@ -27,10 +29,10 @@ const CameraRig = (data, { v = new THREE.Vector3() }) => {
         (Math.sin(t / 2) + 1) * cameraPosition[2],
       ),
       0.06
-    )
-    state.camera.lookAt(0, 0, 0)
-  })
-}
+    );
+    state.camera.lookAt(0, 0, 0);
+  });
+};
 
 const Model = (data) => {
   const {
