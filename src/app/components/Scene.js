@@ -39,18 +39,6 @@ const Model = (data) => {
       if (!!child?.isMesh && autoRotate) {
         child.rotation.set(0, Math.sin(Math.PI / 2) * elapsedTime * 0.3, 0);
       };
-
-      // if (!!child?.material && updateMaterial) {
-      //   const color = new THREE.Color(colors[0]).lerp(
-      //     new THREE.Color(colors[1]),
-      //     Math.sin(elapsedTime) * 0.5 + 0.5,
-      //   );
-
-      //   child.material.reflectivity = (Math.sin(elapsedTime * 0.5) + 1);
-      //   child.material.color = color;
-      //   child.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
-      //   child.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
-      // };
     });
   });
 
