@@ -309,7 +309,7 @@ export const Scene = ({ data }) => {
         <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
         <Group {...data} />
         {/* <Floor /> */}
-        <Ground position={[0, -80, 20]} />
+        <Ground position={[0, -75, 20]} />
       </Canvas>
     </Suspense>
   );

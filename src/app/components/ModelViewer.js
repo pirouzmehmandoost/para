@@ -13,6 +13,7 @@ import {
   useTexture,
 } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, ACTION } from "../../lib/utils"
+import { Model as Ground } from "./../../../public/Env_ground_3"
 
 THREE.ColorManagement.enabled = true;
 
@@ -90,37 +91,37 @@ const Model = (data) => {
   return <primitive castShadow receiveShadow ref={groupRef} object={scene} />;
 };
 
-const Floor = () => {
-  const textureProps = useTexture({
-    displacementMap: './rock_boulder_dry_disp_4k.jpg',
-    normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
-    map: './rock_boulder_dry_diff_4k.jpg',
-    // aoMap: './rock_boulder_dry_ao_4k.jpg',
-    bumpMap: './rock_boulder_dry_disp_4k.jpg',
-  })
-  const props = {
-    ...textureProps,
-    metalness: 1,
-    roughness: 1,
-    ior: 1.8,
-    sheen: 0,
-    color: "#3d3d3d",
-    bumpScale: 30,
-    displacementScale: 30
-  }
+// const Floor = () => {
+//   const textureProps = useTexture({
+//     displacementMap: './rock_boulder_dry_disp_4k.jpg',
+//     normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
+//     map: './rock_boulder_dry_diff_4k.jpg',
+//     // aoMap: './rock_boulder_dry_ao_4k.jpg',
+//     bumpMap: './rock_boulder_dry_disp_4k.jpg',
+//   })
+//   const props = {
+//     ...textureProps,
+//     metalness: 1,
+//     roughness: 1,
+//     ior: 1.8,
+//     sheen: 0,
+//     color: "#3d3d3d",
+//     bumpScale: 30,
+//     displacementScale: 30
+//   }
 
-  return (
-    <Plane
-      args={[1500, 1500, 300, 300]}
-      position={[0, -60, 0]}
-      rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-      receiveShadow
-      castShadow
-    >
-      <meshPhysicalMaterial {...props} />
-    </Plane>
-  )
-}
+//   return (
+//     <Plane
+//       args={[1500, 1500, 300, 300]}
+//       position={[0, -60, 0]}
+//       rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+//       receiveShadow
+//       castShadow
+//     >
+//       <meshPhysicalMaterial {...props} />
+//     </Plane>
+//   )
+// }
 
 export const ModelViewer = ({ data }) => {
   const {
@@ -166,7 +167,8 @@ export const ModelViewer = ({ data }) => {
         />
         <Model {...data} />
         <SoftShadows samples={10} size={4} />
-        <Floor />
+        {/* <Floor /> */}
+        <Ground position={[0, -55, 30]} scale={0.8} />
       </Canvas>
     </Suspense>
   );

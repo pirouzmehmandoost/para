@@ -8,19 +8,19 @@ import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {
-  const { position } = props;
+  const { position, scale = 1 } = props;
 
   const { nodes } = useGLTF('/env_ground_3-transformed.glb')
   const materialProps = {
-    metalness: 1,
+    metalness: 0.8,
     roughness: 1,
     ior: 1.5,
     color: "#202020",
     flatShading: false,
   }
   return (
-    <group position={position} dispose={null}>
-      <mesh castShadow receiveShadow geometry={nodes.Plane.geometry}>
+    <group scale={scale} position={position} dispose={null}>
+      <mesh castShadow receiveShadow geometry={nodes.Plane.geometry} >
         <meshPhysicalMaterial {...materialProps} />
       </mesh>
     </group>
