@@ -7,10 +7,10 @@ import {
   useGLTF,
   Environment,
   Loader,
-  Plane,
+  // Plane,
   CameraControls,
   SoftShadows,
-  useTexture,
+  // useTexture,
 } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, ACTION } from "../../lib/utils"
 import { Model as Ground } from "./../../../public/Env_ground_3"
