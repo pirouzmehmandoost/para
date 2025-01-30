@@ -1,10 +1,5 @@
 "use client";
 
-// import { Splide, SplideSlide } from "@splidejs/react-splide";
-import "@splidejs/react-splide/css";
-import "@splidejs/react-splide/css/core";
-// import splideConfig from "./../lib/splideConfig";
-import portfolio from "./../lib/globals";
 import localFont from "next/font/local";
 import ProjectBanner from "./components/ProjectBanner";
 
@@ -14,8 +9,6 @@ const myFont = localFont({
 });
 
 export default function Home() {
-  const { projects } = portfolio;
-
   return (
     <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
       <div
@@ -40,26 +33,7 @@ export default function Home() {
         <div className="mb-20">
           <div className="flex flex-col-reverse w-full h-full place-self-center">
             <ProjectBanner />
-            {/* <Splide options={splideConfig} aria-label="Projects Carousel">
-              {projects.map((item, index) => {
-                const props = {
-                  name: item.name,
-                  autoRotateSpeed: index % 2 === 0 ? -1.0 : 1.0
-                };
-
-                return (
-                  <SplideSlide key={index} data-splide-interval="10000"
-                  >
-                    <div
-                      key={index}
-                      className="relative flex w-full h-full place-self-center "
-                    >
-                      <ProjectBanner key={index} data={props} />
-                    </div>
-                  </SplideSlide>
-                );
-              })}
-            </Splide> */}
+            {/* className="relative flex w-full h-full place-self-center " */}
           </div>
         </div>
       </div>
