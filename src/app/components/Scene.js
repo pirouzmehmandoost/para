@@ -3,9 +3,15 @@
 import { Suspense, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Loader, useTexture, Plane } from "@react-three/drei";
+import {
+  useGLTF,
+  Environment,
+  Loader,
+  // useTexture,
+  // Plane 
+} from "@react-three/drei";
 import { scaleMeshAtBreakpoint } from "../../lib/utils"
-// import CameraRig from "./CameraRig";
+import { Model as Ground } from "./../../../public/Env_ground_3"
 
 THREE.ColorManagement.enabled = true;
 
@@ -148,7 +154,7 @@ const Group = (data) => {
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
 
 
-      // state.camera.position.lerp(
+      // camera.position.lerp(
       //   v.set(
       //     0,
       //     Math.cos(t / 2) * 100,
@@ -209,35 +215,35 @@ const Group = (data) => {
   );
 };
 
-const Floor = () => {
-  const textureProps = useTexture({
-    displacementMap: './rock_boulder_dry_disp_4k.jpg',
-    normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
-    map: './rock_boulder_dry_diff_4k.jpg',
-  });
+// const Floor = () => {
+//   const textureProps = useTexture({
+//     displacementMap: './rock_boulder_dry_disp_4k.jpg',
+//     normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
+//     map: './rock_boulder_dry_diff_4k.jpg',
+//   });
 
-  const props = {
-    ...textureProps,
-    metalness: 1,
-    roughness: 1,
-    ior: 1.5,
-    sheen: 0,
-    color: "#3d3d3d",
-    displacementScale: 45
-  };
+//   const props = {
+//     ...textureProps,
+//     metalness: 1,
+//     roughness: 1,
+//     ior: 1.5,
+//     sheen: 0,
+//     color: "#3d3d3d",
+//     displacementScale: 45
+//   };
 
-  return (
-    <Plane
-      args={[1500, 1500, 45, 45]}
-      position={[0, -63, 0]}
-      rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-      receiveShadow
-      castShadow
-    >
-      <meshPhysicalMaterial {...props} />
-    </Plane>
-  )
-}
+//   return (
+//     <Plane
+//       args={[1500, 1500, 45, 45]}
+//       position={[0, -63, 0]}
+//       rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+//       receiveShadow
+//       castShadow
+//     >
+//       <meshPhysicalMaterial {...props} />
+//     </Plane>
+//   )
+// }
 
 const AdaptivePixelRatio = () => {
   const current = useThree((state) => state.performance.current);
@@ -261,12 +267,14 @@ export const Scene = ({ data }) => {
   return (
     <Suspense fallback={<Loader />}>
       <Canvas
+        performance={{ min: 0.1 }}
+        // gl={{ antialias: false }}
         camera={{ position: cameraPosition, near: near, far: 500, fov: fov }}
         fallback={<div>Sorry no WebGL supported!</div>}
         orthographic={orthographic}
         shadows
       >
-        <AdaptivePixelRatio />
+        <AdaptivePixelRatio pixelated />
         <Environment shadows files="./studio_small_08_4k.exr" />
         <directionalLight
           castShadow={true}
@@ -283,9 +291,25 @@ export const Scene = ({ data }) => {
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
         />
+        <directionalLight
+          castShadow={true}
+          position={[0, 200, 0]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={5}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
         <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
         <Group {...data} />
-        <Floor />
+        {/* <Floor /> */}
+        <Ground position={[0, -80, 20]} />
       </Canvas>
     </Suspense>
   );
