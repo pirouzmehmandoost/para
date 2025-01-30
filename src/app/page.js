@@ -1,9 +1,9 @@
 "use client";
 
-import { Splide, SplideSlide } from "@splidejs/react-splide";
+// import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "@splidejs/react-splide/css/core";
-import splideConfig from "./../lib/splideConfig";
+// import splideConfig from "./../lib/splideConfig";
 import portfolio from "./../lib/globals";
 import localFont from "next/font/local";
 import ProjectBanner from "./components/ProjectBanner";
@@ -39,8 +39,8 @@ export default function Home() {
         </h1>
         <div className="mb-20">
           <div className="flex flex-col-reverse w-full h-full place-self-center">
-            {/* <ProjectBanner /> */}
-            <Splide options={splideConfig} aria-label="Projects Carousel">
+            <ProjectBanner />
+            {/* <Splide options={splideConfig} aria-label="Projects Carousel">
               {projects.map((item, index) => {
                 const props = {
                   name: item.name,
@@ -59,7 +59,7 @@ export default function Home() {
                   </SplideSlide>
                 );
               })}
-            </Splide>
+            </Splide> */}
           </div>
         </div>
       </div>
