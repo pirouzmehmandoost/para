@@ -24,11 +24,8 @@ export default function Home() {
       >
         <div className="w-full my-4">
           <p>Hey There! I&apos;m a software engineer based in the San Francisco Bay Area. I specialize in frontend development with JavaScript Frameworks.
-            I&apos;m also a designer with passions for 3D computer graphics and additive manufacturing.
+            I&apos;m also a designer with passions for interactive design, 3D computer graphics and 3D printing.
           </p>
-          {/* <p className="mt-10">
-            Check the github repo and my development notes while I continue working on this app ☺
-          </p> */}
         </div>
       </div>
       <div
@@ -42,6 +39,7 @@ export default function Home() {
         </h1>
         <div className="mb-20">
           <div className="flex flex-col-reverse w-full h-full place-self-center">
+            {/* <ProjectBanner /> */}
             <Splide options={splideConfig} aria-label="Projects Carousel">
               {projects.map((item, index) => {
                 const props = {

@@ -22,36 +22,28 @@ const matteMaterial = {
 };
 
 const metallicMaterial = {
-  roughness: 0,
+  roughness: 0.2,
   metalness: 1,
-  ior: 1.5,
-  reflectivity: 10.8,
-  sheen: 0.0,
+  ior: 1.8,
+  sheen: 0.15,
+  sheenColor: "#707070",
+  sheenRoughness: 1,
   flatShading: false,
-  clearcoat: 1,
-  clearcoatRoughness: 1,
 };
 
 const glossMaterial = {
   roughness: 0.4,
   metalness: 0,
-  ior: 1.4,
+  ior: 1.5,
   reflectivity: 0,
   sheen: 0,
-  flatShading: false,
+  sheenRoughness: 0,
   clearcoat: 0.3,
   clearcoatRoughness: 0.9,
+  flatShading: false,
 };
 
 export const colorCodes = {
-  matte_black: {
-    label: "Matte Black",
-    tailwindColor: `bg-zinc-900`,
-    material: {
-      color: "black",
-      ...matteMaterial,
-    },
-  },
   gloss_black: {
     label: "Gloss Black",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
@@ -60,11 +52,19 @@ export const colorCodes = {
       ...glossMaterial,
     },
   },
+  matte_black: {
+    label: "Matte Black",
+    tailwindColor: `bg-zinc-900`,
+    material: {
+      color: "black",
+      ...matteMaterial,
+    },
+  },
   silver: {
     label: "Silver",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
     material: {
-      color: "white",
+      color: "#444444",
       ...metallicMaterial,
     },
   },
@@ -151,7 +151,6 @@ const portfolio = {
       },
       price: `$${100}`,
       productType: "fitness",
-      autoUpdateMaterial: false,
       sceneData: {
         orthographic: false,
         autoUpdateMaterial: true,
@@ -184,6 +183,7 @@ const portfolio = {
         ],
       },
       sceneData: {
+        autoUpdateMaterial: false,
         colorCodes: {
           defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
@@ -194,6 +194,7 @@ const portfolio = {
           "/oval_bag_1.glb",
         ],
         scale: 1.0,
+        autoRotate: false,
       },
       shortDescription: "A small collection of 3D printed handbags.",
       description:
@@ -223,6 +224,9 @@ const portfolio = {
         },
         modelUrls: ["/yoga_mat_strap_for_web2.glb"],
         scale: 1.0,
+        autoRotate: true,
+        autoUpdateMaterial: false,
+
       },
       shortDescription:
         "An exploration of branding and product design as a Yoga instructor.",
