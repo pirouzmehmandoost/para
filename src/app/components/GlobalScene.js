@@ -1,5 +1,5 @@
 "use client";
-
+// import Link from "next/link";
 import { Suspense, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
@@ -7,12 +7,14 @@ import {
   useGLTF,
   Environment,
   Loader,
+  Html,
 } from "@react-three/drei";
 import {
   scaleMeshAtBreakpoint,
 } from "../../lib/utils"
 import portfolio from "../../lib/globals"
 import { Model as Ground } from "./../../../public/Env_ground_3"
+import useSelection from "../store/selection";
 
 THREE.ColorManagement.enabled = true;
 
@@ -59,6 +61,7 @@ const Scene = (data) => {
     scene,
   } = useThree();
   const groupRef = useRef();
+  const setSelection = useSelection((state) => state.setSelection);
 
 
   console.log("Scene data: ", data)
@@ -69,6 +72,7 @@ const Scene = (data) => {
     autoRotate,
     scale,
     position: groupPosition,
+    data: selectedProject,
   } = data;
 
   const positions = [];
@@ -177,6 +181,28 @@ const Scene = (data) => {
 
   return (
     <group ref={groupRef} position={groupPosition}>
+
+      <Html
+        position={groupPosition}
+        className="bg-red-500 opacity-50 w-60 h-64"
+        key={selectedProject.name}
+        onClick={() => setSelection(selectedProject)}
+
+      >
+        {/* <Link
+          className="w-full h-full place-self-center cursor-pointer"
+          onClick={() => setSelection(selectedProject)}
+          href="/project"
+          rel="noopener noreferrer"
+        /> */}
+        <a
+          // rel="noopener noreferrer"
+          href="/project"
+          className="w-full flex bg-yellow-400 items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white hover:bg-indigo-700"
+        >
+          {selectedProject.name}
+        </a>
+      </Html>
       {
         modelUrls.map((url, index) => {
           const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
@@ -309,6 +335,7 @@ const SceneBuilder = (data) => {
       {
         projects.map((data, index) => {
           const newProps = {
+            data,
             ...data.sceneData,
             position: scenePosition[index]
           };
