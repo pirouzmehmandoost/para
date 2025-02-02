@@ -7,7 +7,7 @@ import {
   useGLTF,
   Environment,
   Loader,
-  Html,
+  // Html,
 } from "@react-three/drei";
 import {
   scaleMeshAtBreakpoint,
