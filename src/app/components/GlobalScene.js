@@ -1,5 +1,5 @@
 "use client";
-// import Link from "next/link";
+import { useRouter } from 'next/navigation'
 import { Suspense, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
@@ -55,10 +55,11 @@ const Model = (data) => {
 };
 
 const Scene = (data) => {
+  const router = useRouter()
   const [modelPosition, setModelPosition] = useState([]);
   const {
     size,
-    scene,
+    // scene,
   } = useThree();
   const groupRef = useRef();
   const setSelection = useSelection((state) => state.setSelection);
@@ -180,29 +181,15 @@ const Scene = (data) => {
   // });
 
   return (
-    <group ref={groupRef} position={groupPosition}>
-
-      <Html
-        position={groupPosition}
-        className="bg-red-500 opacity-50 w-60 h-64"
-        key={selectedProject.name}
-        onClick={() => setSelection(selectedProject)}
-
-      >
-        {/* <Link
-          className="w-full h-full place-self-center cursor-pointer"
-          onClick={() => setSelection(selectedProject)}
-          href="/project"
-          rel="noopener noreferrer"
-        /> */}
-        <a
-          // rel="noopener noreferrer"
-          href="/project"
-          className="w-full flex bg-yellow-400 items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white hover:bg-indigo-700"
-        >
-          {selectedProject.name}
-        </a>
-      </Html>
+    <group
+      ref={groupRef}
+      position={groupPosition}
+      onClick={() => {
+        console.log("clicked!", selectedProject.name);
+        setSelection(selectedProject);
+        router.push('/project');
+      }}
+    >
       {
         modelUrls.map((url, index) => {
           const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
