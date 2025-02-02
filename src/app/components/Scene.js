@@ -244,6 +244,7 @@ const Group = (data) => {
 // }
 
 const AdaptivePixelRatio = () => {
+  // const { performance, setDpr } = useThree();
   const current = useThree((state) => state.performance.current);
   const setPixelRatio = useThree((state) => state.setDpr);
 

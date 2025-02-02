@@ -20,10 +20,6 @@ const Model = (data) => {
   const {
     material: materialProps,
     modelUrl,
-    autoUpdateMaterial: {
-      updateMaterial,
-      colors,
-    },
     autoRotate,
     scale,
     position = [0, -25, 0],
@@ -31,7 +27,6 @@ const Model = (data) => {
 
   const { scene } = useGLTF(modelUrl);
 
-  // const material = useMemo(() => new THREE.MeshPhysicalMaterial(materialProps), [materialProps]);
   const material = new THREE.MeshPhysicalMaterial(materialProps);
 
   scene.traverse((child) => {
@@ -58,31 +53,32 @@ const Model = (data) => {
 };
 
 const Scene = (data) => {
+  const [modelPosition, setModelPosition] = useState([]);
+  const {
+    size,
+    scene,
+  } = useThree();
+  const groupRef = useRef();
+
 
   console.log("Scene data: ", data)
   const {
     autoUpdateMaterial: update,
     colorCodes,
     modelUrls,
-    // cameraPosition,
     autoRotate,
     scale,
     position: groupPosition,
   } = data;
-  const [modelPosition, setModelPosition] = useState([]);
-  const {
-    size,
-    // camera, 
-  } = useThree();
-  const groupRef = useRef();
+
   const positions = [];
   let groupScale = scaleMeshAtBreakpoint(size.width);
   const handles = [];
   const bezierCurve = new THREE.EllipseCurve(
     0,
     0,
-    50,
-    50,
+    40,
+    30,
     0,
     2 * Math.PI,
     false,
@@ -111,12 +107,12 @@ const Scene = (data) => {
       y: 0,
       z: pt.y
     });
-  }
+  };
 
   const boxGeometry = new THREE.BoxGeometry(2, 2, 2); // to visualize handle positions
-  // const boxMaterial = new THREE.MeshBasicMaterial();
+  // const boxMaterial = new THREE.MeshBasicMaterial({ color: "red" });
   for (const handlePosition of handlePositions) {
-    const handle = new THREE.Mesh(boxGeometry);//, boxMaterial);
+    const handle = new THREE.Mesh(boxGeometry)//, boxMaterial);
     handle.position.copy(handlePosition);
     handles.push(handle);
     // scene.add(handle);
@@ -183,18 +179,6 @@ const Scene = (data) => {
     <group ref={groupRef} position={groupPosition}>
       {
         modelUrls.map((url, index) => {
-          // const fuck = { ...modelPosition[index] }
-          // const shit = []
-          // for (const f in fuck) {
-          //   if (f == 1) {
-          //     shit.push(fuck[f] + 20)
-          //   }
-          //   else {
-          //     shit.push(fuck[f])
-          //   }
-          // }
-          // console.log(shit)
-
           const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
           const newProps = {
             modelUrl: url,
@@ -260,10 +244,10 @@ const SceneBuilder = (data) => {
       y: 0,
       z: pt.y
     });
-  }
+  };
 
   const boxGeometry = new THREE.BoxGeometry(5, 5, 5); // to visualize handle positions
-  const boxMaterial = new THREE.MeshBasicMaterial();
+  const boxMaterial = new THREE.MeshBasicMaterial({ color: "blue" });
   for (const handlePosition of handlePositions) {
     const handle = new THREE.Mesh(boxGeometry, boxMaterial);
     handle.position.copy(handlePosition);
@@ -304,15 +288,18 @@ const SceneBuilder = (data) => {
 
   // Update camera position and orbit controls 
   useFrame(({ clock }) => {
-    let s = (clock.getElapsedTime() * 0.1) % 1;
+    let s = (clock.getElapsedTime() * 0.05) % 1;
+    let t = Math.sin(clock.getElapsedTime() * 0.1) + 1
 
     if (groupRef.current) {
-      const position = cameraPathCurve.getPoint(s);
       groupRef.current.scale.set(groupScale, groupScale, groupScale);
 
-      camera.position.x = position.x;
-      camera.position.y = cameraPosition[1] + 27;
-      camera.position.z = position.z + cameraPosition[2];
+      const position = cameraPathCurve.getPoint(s);
+
+      camera.position.x = position.x * t * 1.12;
+      // camera.position.x = position.x;
+      camera.position.y = cameraPosition[1] * t * 2.2 + 27;
+      camera.position.z = position.z + (Math.cos(clock.getElapsedTime() * 0.5) + 1) + cameraPosition[2];
       camera.lookAt(position);
     };
   });
@@ -360,7 +347,7 @@ export const GlobalScene = () => {
         shadows
       >
         <AdaptivePixelRatio pixelated />
-        <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" />
+        <Environment shadows files="./studio_small_08_4k.exr" />
         <directionalLight
           castShadow={true}
           position={[0, 100, 0]}
