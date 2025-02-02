@@ -77,7 +77,7 @@ const Scene = (data) => {
   } = data;
 
   const positions = [];
-  let groupScale = scaleMeshAtBreakpoint(size.width);
+  // let groupScale = scaleMeshAtBreakpoint(size.width);
   const handles = [];
   const bezierCurve = new THREE.EllipseCurve(
     0,
@@ -139,7 +139,7 @@ const Scene = (data) => {
   // scene.add(line);
 
   useEffect(() => {
-    groupScale = scaleMeshAtBreakpoint(size.width);
+    // groupScale = scaleMeshAtBreakpoint(size.width);
     if (modelUrls.length > 1) {
       for (const handlePosition of handlePositions) {
         const p = [
