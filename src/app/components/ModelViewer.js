@@ -3,15 +3,7 @@
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import {
-  useGLTF,
-  Environment,
-  Loader,
-  // Plane,
-  CameraControls,
-  SoftShadows,
-  // useTexture,
-} from "@react-three/drei";
+import { useGLTF, Environment, Loader, CameraControls, SoftShadows } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, ACTION } from "../../lib/utils"
 import { Model as Ground } from "./../../../public/Env_ground_3"
 
@@ -135,7 +127,6 @@ export const ModelViewer = ({ data }) => {
         />
         <Model {...data} />
         <SoftShadows samples={10} size={4} />
-        {/* <Floor /> */}
         <Ground position={[0, -55, 30]} scale={0.8} />
       </Canvas>
     </Suspense>
