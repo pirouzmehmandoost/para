@@ -1,73 +1,32 @@
 "use client";
+
 import { useRouter } from 'next/navigation'
 import { Suspense, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
-  useGLTF,
   Environment,
   Loader,
-  // Html,
 } from "@react-three/drei";
 import {
   scaleMeshAtBreakpoint,
-} from "../../lib/utils"
-import portfolio from "../../lib/globals"
-import { Model as Ground } from "./../../../public/Env_ground_3"
-import useSelection from "../store/selection";
+} from "../../../lib/utils"
+import portfolio from "../../../lib/globals"
+import { Model as Ground } from "../../../../public/Env_ground_3"
+import useSelection from "../../store/selection";
+import Model from "./Model";
 
 THREE.ColorManagement.enabled = true;
-
-const Model = (data) => {
-  const {
-    material: materialProps,
-    modelUrl,
-    autoRotate,
-    scale,
-    position = [0, -25, 0],
-  } = data;
-
-  const { scene } = useGLTF(modelUrl);
-
-  const material = new THREE.MeshPhysicalMaterial(materialProps);
-
-  scene.traverse((child) => {
-    if (!!child.isMesh) {
-      child.material = material;
-      child.castShadow = true;
-      child.receiveShadow = true;
-      child.scale.set(scale, scale, scale);
-      child.position.set(position[0], position[1], position[2]);
-    }
-  });
-
-  useFrame(({ clock }) => {
-    const elapsedTime = clock.getElapsedTime();
-
-    scene.traverse((child) => {
-      if (!!child?.isMesh && autoRotate) {
-        child.rotation.set(0, Math.sin(Math.PI / 2) * elapsedTime * 0.3, 0);
-      };
-    });
-  });
-
-  return <primitive castShadow receiveShadow object={scene} />;
-};
 
 const Scene = (data) => {
   const router = useRouter()
   const [modelPosition, setModelPosition] = useState([]);
-  const {
-    size,
-    // scene,
-  } = useThree();
+  const { size } = useThree();
   const groupRef = useRef();
   const setSelection = useSelection((state) => state.setSelection);
 
-
   console.log("Scene data: ", data)
   const {
-    autoUpdateMaterial: update,
     colorCodes,
     modelUrls,
     autoRotate,
@@ -197,10 +156,6 @@ const Scene = (data) => {
             modelUrl: url,
             material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays)[index].material, // material properties
             scale: updateScale,
-            autoUpdateMaterial: {
-              updateMaterial: update,
-              colors: index % 2 == 0 ? ["black", "white"] : ["white", "black"]
-            },
             autoRotate: modelUrls.length === 1 || index > 0 ? autoRotate : false,
             position: modelPosition[index]
           };

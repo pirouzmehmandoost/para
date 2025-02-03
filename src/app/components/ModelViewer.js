@@ -91,38 +91,6 @@ const Model = (data) => {
   return <primitive castShadow receiveShadow ref={groupRef} object={scene} />;
 };
 
-// const Floor = () => {
-//   const textureProps = useTexture({
-//     displacementMap: './rock_boulder_dry_disp_4k.jpg',
-//     normalMap: './rock_boulder_dry_nor_gl_4k.jpg',
-//     map: './rock_boulder_dry_diff_4k.jpg',
-//     // aoMap: './rock_boulder_dry_ao_4k.jpg',
-//     bumpMap: './rock_boulder_dry_disp_4k.jpg',
-//   })
-//   const props = {
-//     ...textureProps,
-//     metalness: 1,
-//     roughness: 1,
-//     ior: 1.8,
-//     sheen: 0,
-//     color: "#3d3d3d",
-//     bumpScale: 30,
-//     displacementScale: 30
-//   }
-
-//   return (
-//     <Plane
-//       args={[1500, 1500, 300, 300]}
-//       position={[0, -60, 0]}
-//       rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-//       receiveShadow
-//       castShadow
-//     >
-//       <meshPhysicalMaterial {...props} />
-//     </Plane>
-//   )
-// }
-
 export const ModelViewer = ({ data }) => {
   const {
     orthographic,

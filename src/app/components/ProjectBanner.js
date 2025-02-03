@@ -1,6 +1,6 @@
 "use client";
 
-import GlobalScene from "./GlobalScene";
+import GlobalScene from "./Experience/GlobalScene";
 
 const ProjectBanner = () => {
   return (
