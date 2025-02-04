@@ -3,16 +3,160 @@
 import { Suspense, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import {
-  Environment,
-  Loader,
-} from "@react-three/drei";
+import { Environment, Loader } from "@react-three/drei";
 import portfolio from "../../../lib/globals"
 import { Model as Ground } from "../../../../public/Env_ground_3"
 import Group from "./Group";
 
 THREE.ColorManagement.enabled = true;
 const cameraPosition = [0, 10, 180];
+
+const SceneBuilder = () => {
+  const groupRef = useRef();
+  const { camera } = useThree();
+
+  const { projects } = portfolio;
+  const handleBoxes = []; //to see positions developing
+  const handlePositions = [];
+
+  const bezierCurve = new THREE.EllipseCurve(0, 0, 280, 20, 0, (2 * Math.PI), false, 0);
+  bezierCurve.closed = true;
+
+  const bezierCurvePoints = bezierCurve.getPoints(projects.length);
+  bezierCurvePoints.shift(); //remove an overlapping point
+
+  const bezierGeometry = new THREE.BufferGeometry().setFromPoints(bezierCurvePoints);
+
+  const ellipse = new THREE.Line(bezierGeometry, new THREE.LineBasicMaterial({ color: "red" }));
+  ellipse.position.set(0, 0, 0);
+  ellipse.rotation.x = Math.PI * 0.5;
+
+  const positionAttribute = ellipse.geometry.getAttribute('position');
+  const vertex = new THREE.Vector3();
+
+  for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
+    const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
+    handlePositions.push(new THREE.Vector3(pt.x, 0, pt.y));
+  };
+
+  const boxGeometry = new THREE.BoxGeometry(5, 5, 5); // to visualize handle positions
+  const boxMaterial = new THREE.MeshBasicMaterial({ color: "blue" });
+  for (const handlePosition of handlePositions) {
+    const handle = new THREE.Mesh(boxGeometry, boxMaterial);
+    handle.position.copy(handlePosition);
+    handleBoxes.push(handle);
+  };
+
+  const cameraPoints = [];
+  handleBoxes.forEach(box => {
+    cameraPoints.push(box.position)
+    cameraPoints.push(new THREE.Vector3(box.position.x * 1.1, box.position.y + 5, box.position.z - 20))
+    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y - 5, box.position.z - 30))
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y + 5, box.position.z - 25))
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0.95, box.position.y + 8, box.position.z + -20))
+    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y + 10, box.position.z - 15))
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y, box.position.z - 20))
+    cameraPoints.push(new THREE.Vector3(box.position.x * 1.02, box.position.y - 5, box.position.z - 25))
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0, box.position.y, box.position.z))
+  });
+
+  const cameraPathCurve = new THREE.CatmullRomCurve3(cameraPoints.map((handle) => handle));
+  cameraPathCurve.curveType = 'centripetal';
+  cameraPathCurve.closed = true;
+
+  useFrame(({ clock }) => {
+    let s = (clock.getElapsedTime() * 0.03) % 1;
+    const position = cameraPathCurve.getPoint(s);
+
+    camera.position.x = position.x
+    camera.position.y = cameraPosition[1] + 27
+    camera.position.z = position.z + cameraPosition[2];
+
+    camera.lookAt(position.x, position.y, position.z);
+  });
+
+  return (
+    <group ref={groupRef}>
+      {
+        projects.map((data, index) => {
+          const newProps = {
+            data,
+            ...data.sceneData,
+            position: handlePositions[index]
+          };
+
+          return <Group key={index} {...newProps} />
+        })
+      }
+    </group>
+  );
+};
+
+const AdaptivePixelRatio = () => {
+  const current = useThree((state) => state.performance.current);
+  const setPixelRatio = useThree((state) => state.setDpr);
+
+  useEffect(() => {
+    setPixelRatio(window.devicePixelRatio * current)
+  }, [current]);
+
+  return null;
+};
+
+export const GlobalScene = () => {
+  const orthographic = false;
+  const near = orthographic ? -100 : 1;
+  const fov = orthographic ? 500 : 50;
+  return (
+    <Suspense fallback={<Loader />}>
+      <Canvas
+        camera={{ position: cameraPosition, near: near, far: 500, fov: fov }}
+        fallback={<div>Sorry no WebGL supported!</div>}
+        orthographic={orthographic}
+        shadows
+      >
+        <AdaptivePixelRatio pixelated />
+        <Environment shadows files="./studio_small_08_4k.exr" />
+        <directionalLight
+          castShadow={true}
+          position={[0, 100, 0]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={7}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+        <directionalLight
+          castShadow={true}
+          position={[0, 200, 0]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={5}
+          angle={0.45}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+        <fog attach="fog" density={0.006} color="#bcbcbc" near={50} far={310} />
+        <SceneBuilder />
+        <Ground position={[0, -85, 20]} scale={1.6} />
+      </Canvas>
+    </Suspense>
+  );
+};
+
+export default GlobalScene;
+
 
 // const Scene = (data) => {
 //   const router = useRouter()
@@ -165,193 +309,3 @@ const cameraPosition = [0, 10, 180];
 //   );
 // };
 
-
-// const CameraAnimation = (positions) => {
-//   const cameraRef = useRef();
-//   const [targetPosition, setTargetPosition] = useState(new THREE.Vector3(0, 0, 5));
-//   const [isMoving, setIsMoving] = useState(false);
-
-//   // const positions = [
-//   //   new THREE.Vector3(0, 0, 5),
-//   //   new THREE.Vector3(5, 0, 0),
-//   //   new THREE.Vector3(0, 0, -5),
-//   //   new THREE.Vector3(-5, 0, 0),
-//   // ];
-//   let currentPositionIndex = 0;
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       if (!isMoving) {
-//         currentPositionIndex = (currentPositionIndex + 1) % positions.length;
-//         setTargetPosition(positions[currentPositionIndex]);
-//         setIsMoving(true);
-//       }
-//     }, 2000); // Change position every 2 seconds
-
-//     return () => clearInterval(interval);
-//   }, [isMoving]);
-
-//   useFrame(({ camera }) => {
-//     if (isMoving) {
-//       camera.position.lerp(targetPosition, 0.1);
-
-//       if (camera.position.distanceTo(targetPosition) < 0.01) {
-//         setIsMoving(false);
-//       }
-//     }
-//   });
-
-//   return <perspectiveCamera ref={cameraRef} position={targetPosition} />;
-// };
-
-
-const SceneBuilder = () => {
-  const groupRef = useRef();
-  const { camera } = useThree();
-
-  const { projects } = portfolio;
-  const handleBoxes = []; //to see positions developing
-  const handlePositions = [];
-
-  const bezierCurve = new THREE.EllipseCurve(0, 0, 150, 20, 0, (2 * Math.PI), false, 0);
-  bezierCurve.closed = true;
-
-  const bezierCurvePoints = bezierCurve.getPoints(projects.length);
-  bezierCurvePoints.shift(); //remove an overlapping point
-
-  const bezierGeometry = new THREE.BufferGeometry().setFromPoints(bezierCurvePoints);
-
-  const ellipse = new THREE.Line(bezierGeometry, new THREE.LineBasicMaterial({ color: "red" }));
-  ellipse.position.set(0, 0, 0);
-  ellipse.rotation.x = Math.PI * 0.5;
-  // scene.add(ellipse);
-
-  const positionAttribute = ellipse.geometry.getAttribute('position');
-  const vertex = new THREE.Vector3();
-
-  for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
-    const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
-    handlePositions.push(new THREE.Vector3(pt.x, 0, pt.y));
-  };
-
-  const boxGeometry = new THREE.BoxGeometry(5, 5, 5); // to visualize handle positions
-  const boxMaterial = new THREE.MeshBasicMaterial({ color: "blue" });
-  for (const handlePosition of handlePositions) {
-    const handle = new THREE.Mesh(boxGeometry, boxMaterial);
-    handle.position.copy(handlePosition);
-    // if (groupRef?.current) {
-    //   groupRef?.current?.position?.copy(handlePosition)
-    // }
-    handleBoxes.push(handle);
-    // scene.add(handle);
-  };
-
-  const cameraPathCurve = new THREE.CatmullRomCurve3(handleBoxes.map((handle) => handle.position));
-  cameraPathCurve.curveType = 'centripetal';
-  cameraPathCurve.closed = true;
-
-  // const points = cameraPathCurve.getPoints(projects.length);
-  // const line = new THREE.LineLoop(
-  //   new THREE.BufferGeometry().setFromPoints(points),
-  //   new THREE.LineBasicMaterial({ color: "red" })
-  // );
-  // scene.add(line);
-
-  useFrame(({ clock }) => {
-    let s = (clock.getElapsedTime() * 0.05) % 1;
-    // let t = Math.cos(clock.getElapsedTime() * 0.1) + 1
-    // let x1 = 1 / Math.cos(2 * Math.PI * clock.getElapsedTime());
-    // const groupScale = scaleMeshAtBreakpoint(size.width);
-    // if (groupRef.current) {
-    //   groupRef.current.scale.set(groupScale, groupScale, groupScale);
-    // }
-    const position = cameraPathCurve.getPoint(s);
-    camera.position.x = position.x
-    camera.position.y = cameraPosition[1] + 27
-    camera.position.z = position.z + cameraPosition[2];
-    // camera.lookAt(camera.position.x, position.y, position.z);
-    camera.lookAt(position);
-
-  });
-
-  return (
-    <group ref={groupRef}>
-      {
-        projects.map((data, index) => {
-          const newProps = {
-            data,
-            ...data.sceneData,
-            position: handlePositions[index]
-          };
-
-          return <Group key={index} {...newProps} />
-        })
-      }
-    </group>
-  );
-};
-
-const AdaptivePixelRatio = () => {
-  const current = useThree((state) => state.performance.current);
-  const setPixelRatio = useThree((state) => state.setDpr);
-
-  useEffect(() => {
-    setPixelRatio(window.devicePixelRatio * current)
-  }, [current]);
-
-  return null;
-};
-
-export const GlobalScene = () => {
-  const orthographic = false;
-  const near = orthographic ? -100 : 1;
-  const fov = orthographic ? 500 : 50;
-  return (
-    <Suspense fallback={<Loader />}>
-      <Canvas
-        camera={{ position: cameraPosition, near: near, far: 500, fov: fov }}
-        fallback={<div>Sorry no WebGL supported!</div>}
-        orthographic={orthographic}
-        shadows
-      >
-        <AdaptivePixelRatio pixelated />
-        <Environment shadows files="./studio_small_08_4k.exr" />
-        <directionalLight
-          castShadow={true}
-          position={[0, 100, 0]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={7}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        />
-        <directionalLight
-          castShadow={true}
-          position={[0, 200, 0]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={5}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        />
-        <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
-        <SceneBuilder />
-        <Ground position={[0, -75, 20]} scale={1.3} />
-      </Canvas>
-    </Suspense>
-  );
-};
-
-export default GlobalScene;
