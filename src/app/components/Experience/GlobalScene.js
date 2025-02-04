@@ -1,194 +1,219 @@
 "use client";
 
-import { useRouter } from 'next/navigation'
-import { Suspense, useRef, useEffect, useState } from "react";
+import { Suspense, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import {
   Environment,
   Loader,
 } from "@react-three/drei";
-import {
-  scaleMeshAtBreakpoint,
-} from "../../../lib/utils"
 import portfolio from "../../../lib/globals"
 import { Model as Ground } from "../../../../public/Env_ground_3"
-import useSelection from "../../store/selection";
-import Model from "./Model";
+import Group from "./Group";
 
 THREE.ColorManagement.enabled = true;
+const cameraPosition = [0, 10, 180];
 
-const Scene = (data) => {
-  const router = useRouter()
-  const [modelPosition, setModelPosition] = useState([]);
-  const { size } = useThree();
+// const Scene = (data) => {
+//   const router = useRouter()
+//   const [modelPosition, setModelPosition] = useState([]);
+//   const { size } = useThree();
+//   const groupRef = useRef();
+//   const setSelection = useSelection((state) => state.setSelection);
+
+//   console.log("Scene data: ", data)
+//   const {
+//     colorCodes,
+//     modelUrls,
+//     autoRotate,
+//     scale,
+//     position: groupPosition,
+//     data: selectedProject,
+//   } = data;
+
+//   const positions = [];
+//   // let groupScale = scaleMeshAtBreakpoint(size.width);
+//   const handles = [];
+//   const bezierCurve = new THREE.EllipseCurve(
+//     0,
+//     0,
+//     40,
+//     30,
+//     0,
+//     2 * Math.PI,
+//     false,
+//     0
+//   );
+//   bezierCurve.closed = true;
+
+//   const bezierCurvePoints = bezierCurve.getPoints(modelUrls.length);
+//   bezierCurvePoints.shift(); //remove an overlapping point
+
+//   const bezierGeometry = new THREE.BufferGeometry().setFromPoints(bezierCurvePoints);
+
+//   const ellipse = new THREE.Line(bezierGeometry, new THREE.MeshBasicMaterial());
+//   ellipse.rotation.x = Math.PI * 0.5;
+
+//   const vertex = new THREE.Vector3();
+//   const positionAttribute = ellipse.geometry.getAttribute('position');
+
+//   const handlePositions = [];
+
+//   for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
+//     const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
+
+//     handlePositions.push({
+//       x: pt.x,
+//       y: 0,
+//       z: pt.y
+//     });
+//   };
+
+//   const boxGeometry = new THREE.BoxGeometry(2, 2, 2); // to visualize handle positions
+//   // const boxMaterial = new THREE.MeshBasicMaterial({ color: "red" });
+//   for (const handlePosition of handlePositions) {
+//     const handle = new THREE.Mesh(boxGeometry)//, boxMaterial);
+//     handle.position.copy(handlePosition);
+//     handles.push(handle);
+//     // scene.add(handle);
+//   }
+//   // scene.add(ellipse)
+//   // const material = new THREE.MeshPhysicalMaterial({ ...colorCodes.defaultColor.material })
+//   // material.wireframe = true
+//   // material.vertexColors = true
+
+//   // const cameraPathCurve = new THREE.CatmullRomCurve3(handles.map((handle) => handle.position));
+//   // cameraPathCurve.curveType = 'centripetal';
+//   // cameraPathCurve.closed = true;
+
+//   // const points = cameraPathCurve.getPoints(modelUrls.length);
+//   // const line = new THREE.LineLoop(
+//   //   new THREE.BufferGeometry().setFromPoints(points),
+//   //   new THREE.LineBasicMaterial({ color: 0x00ff00 })
+//   // );
+//   // scene.add(line);
+
+//   useEffect(() => {
+//     // groupScale = scaleMeshAtBreakpoint(size.width);
+//     if (modelUrls.length > 1) {
+//       for (const handlePosition of handlePositions) {
+//         const p = [
+//           handlePosition.x * 1.6,
+//           handlePosition.y,
+//           handlePosition.z * 1.5,
+//         ]
+//         positions.push(p);
+//       }
+//       setModelPosition(positions);
+//       // if (groupRef.current) {
+//       //  groupRef.current.scale.set(groupScale, groupScale, groupScale);
+//       // }
+//     };
+
+//   }, [modelUrls]); //three.js state is not included in dependency array
+
+//   // Update camera position and orbit controls 
+//   // useFrame(({ clock }) => {
+//   // let s = (clock.getElapsedTime() * 0.1) % 1;
+
+//   // if (groupRef.current) {
+//   // const position = cameraPathCurve.getPoint(s);
+//   // groupRef.current.position.copy(position);
+//   // groupRef.current.scale.set(groupScale, groupScale, groupScale);
+
+//   // if (modelUrls.length > 1) {
+//   //   camera.position.x = position.x;
+//   //   camera.position.y = modelUrls.length > 2 ? cameraPosition[1] + 27 : cameraPosition[1];
+//   //   camera.position.z = position.z + cameraPosition[2];
+//   //   camera.lookAt(position);
+//   // } else {
+//   //   camera.position.x = 0
+//   //   camera.position.y = cameraPosition[1];
+//   //   camera.position.z = cameraPosition[2]
+//   //   camera.lookAt(0, 0, 0);
+//   // }
+//   // };
+//   // });
+
+//   return (
+//     <group
+//       ref={groupRef}
+//       position={groupPosition}
+//       onClick={() => {
+//         console.log("clicked!", selectedProject.name);
+//         setSelection(selectedProject);
+//         router.push('/project');
+//       }}
+//     >
+//       {
+//         modelUrls.map((url, index) => {
+//           const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
+//           const newProps = {
+//             modelUrl: url,
+//             material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays)[index].material, // material properties
+//             scale: updateScale,
+//             autoRotate: modelUrls.length === 1 || index > 0 ? autoRotate : false,
+//             position: modelPosition[index]
+//           };
+
+//           return (
+//             <Model key={index} {...newProps} />
+//           );
+//         })
+//       }
+//     </group>
+//   );
+// };
+
+
+// const CameraAnimation = (positions) => {
+//   const cameraRef = useRef();
+//   const [targetPosition, setTargetPosition] = useState(new THREE.Vector3(0, 0, 5));
+//   const [isMoving, setIsMoving] = useState(false);
+
+//   // const positions = [
+//   //   new THREE.Vector3(0, 0, 5),
+//   //   new THREE.Vector3(5, 0, 0),
+//   //   new THREE.Vector3(0, 0, -5),
+//   //   new THREE.Vector3(-5, 0, 0),
+//   // ];
+//   let currentPositionIndex = 0;
+
+//   useEffect(() => {
+//     const interval = setInterval(() => {
+//       if (!isMoving) {
+//         currentPositionIndex = (currentPositionIndex + 1) % positions.length;
+//         setTargetPosition(positions[currentPositionIndex]);
+//         setIsMoving(true);
+//       }
+//     }, 2000); // Change position every 2 seconds
+
+//     return () => clearInterval(interval);
+//   }, [isMoving]);
+
+//   useFrame(({ camera }) => {
+//     if (isMoving) {
+//       camera.position.lerp(targetPosition, 0.1);
+
+//       if (camera.position.distanceTo(targetPosition) < 0.01) {
+//         setIsMoving(false);
+//       }
+//     }
+//   });
+
+//   return <perspectiveCamera ref={cameraRef} position={targetPosition} />;
+// };
+
+
+const SceneBuilder = () => {
   const groupRef = useRef();
-  const setSelection = useSelection((state) => state.setSelection);
+  const { camera } = useThree();
 
-  console.log("Scene data: ", data)
-  const {
-    colorCodes,
-    modelUrls,
-    autoRotate,
-    scale,
-    position: groupPosition,
-    data: selectedProject,
-  } = data;
-
-  const positions = [];
-  // let groupScale = scaleMeshAtBreakpoint(size.width);
-  const handles = [];
-  const bezierCurve = new THREE.EllipseCurve(
-    0,
-    0,
-    40,
-    30,
-    0,
-    2 * Math.PI,
-    false,
-    0
-  );
-  bezierCurve.closed = true;
-
-  const bezierCurvePoints = bezierCurve.getPoints(modelUrls.length);
-  bezierCurvePoints.shift(); //remove an overlapping point
-
-  const bezierGeometry = new THREE.BufferGeometry().setFromPoints(bezierCurvePoints);
-
-  const ellipse = new THREE.Line(bezierGeometry, new THREE.MeshBasicMaterial());
-  ellipse.rotation.x = Math.PI * 0.5;
-
-  const vertex = new THREE.Vector3();
-  const positionAttribute = ellipse.geometry.getAttribute('position');
-
+  const { projects } = portfolio;
+  const handleBoxes = []; //to see positions developing
   const handlePositions = [];
 
-  for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
-    const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
-
-    handlePositions.push({
-      x: pt.x,
-      y: 0,
-      z: pt.y
-    });
-  };
-
-  const boxGeometry = new THREE.BoxGeometry(2, 2, 2); // to visualize handle positions
-  // const boxMaterial = new THREE.MeshBasicMaterial({ color: "red" });
-  for (const handlePosition of handlePositions) {
-    const handle = new THREE.Mesh(boxGeometry)//, boxMaterial);
-    handle.position.copy(handlePosition);
-    handles.push(handle);
-    // scene.add(handle);
-  }
-  // scene.add(ellipse)
-  // const material = new THREE.MeshPhysicalMaterial({ ...colorCodes.defaultColor.material })
-  // material.wireframe = true
-  // material.vertexColors = true
-
-  // const cameraPathCurve = new THREE.CatmullRomCurve3(handles.map((handle) => handle.position));
-  // cameraPathCurve.curveType = 'centripetal';
-  // cameraPathCurve.closed = true;
-
-  // const points = cameraPathCurve.getPoints(modelUrls.length);
-  // const line = new THREE.LineLoop(
-  //   new THREE.BufferGeometry().setFromPoints(points),
-  //   new THREE.LineBasicMaterial({ color: 0x00ff00 })
-  // );
-  // scene.add(line);
-
-  useEffect(() => {
-    // groupScale = scaleMeshAtBreakpoint(size.width);
-    if (modelUrls.length > 1) {
-      for (const handlePosition of handlePositions) {
-        const p = [
-          handlePosition.x * 1.6,
-          handlePosition.y,
-          handlePosition.z * 1.5,
-        ]
-        positions.push(p);
-      }
-      setModelPosition(positions);
-      // if (groupRef.current) {
-      //  groupRef.current.scale.set(groupScale, groupScale, groupScale);
-      // }
-    };
-
-  }, [modelUrls]); //three.js state is not included in dependency array
-
-  // Update camera position and orbit controls 
-  // useFrame(({ clock }) => {
-  // let s = (clock.getElapsedTime() * 0.1) % 1;
-
-  // if (groupRef.current) {
-  // const position = cameraPathCurve.getPoint(s);
-  // groupRef.current.position.copy(position);
-  // groupRef.current.scale.set(groupScale, groupScale, groupScale);
-
-  // if (modelUrls.length > 1) {
-  //   camera.position.x = position.x;
-  //   camera.position.y = modelUrls.length > 2 ? cameraPosition[1] + 27 : cameraPosition[1];
-  //   camera.position.z = position.z + cameraPosition[2];
-  //   camera.lookAt(position);
-  // } else {
-  //   camera.position.x = 0
-  //   camera.position.y = cameraPosition[1];
-  //   camera.position.z = cameraPosition[2]
-  //   camera.lookAt(0, 0, 0);
-  // }
-  // };
-  // });
-
-  return (
-    <group
-      ref={groupRef}
-      position={groupPosition}
-      onClick={() => {
-        console.log("clicked!", selectedProject.name);
-        setSelection(selectedProject);
-        router.push('/project');
-      }}
-    >
-      {
-        modelUrls.map((url, index) => {
-          const updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
-          const newProps = {
-            modelUrl: url,
-            material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays)[index].material, // material properties
-            scale: updateScale,
-            autoRotate: modelUrls.length === 1 || index > 0 ? autoRotate : false,
-            position: modelPosition[index]
-          };
-
-          return (
-            <Model key={index} {...newProps} />
-          );
-        })
-      }
-    </group>
-  );
-};
-
-
-const SceneBuilder = (data) => {
-  const { cameraPosition } = data;
-  const { projects } = portfolio;
-  const [scenePosition, setScenePosition] = useState([]);
-  const { scene, size, camera, } = useThree();
-  const groupRef = useRef();
-  const positions = [];
-  let groupScale = scaleMeshAtBreakpoint(size.width);
-  const handles = [];
-  const bezierCurve = new THREE.EllipseCurve(
-    0,
-    0,
-    150,
-    10,
-    0,
-    2 * Math.PI,
-    false,
-    0
-  );
+  const bezierCurve = new THREE.EllipseCurve(0, 0, 150, 20, 0, (2 * Math.PI), false, 0);
   bezierCurve.closed = true;
 
   const bezierCurvePoints = bezierCurve.getPoints(projects.length);
@@ -196,22 +221,17 @@ const SceneBuilder = (data) => {
 
   const bezierGeometry = new THREE.BufferGeometry().setFromPoints(bezierCurvePoints);
 
-  const ellipse = new THREE.Line(bezierGeometry, new THREE.MeshBasicMaterial());
+  const ellipse = new THREE.Line(bezierGeometry, new THREE.LineBasicMaterial({ color: "red" }));
+  ellipse.position.set(0, 0, 0);
   ellipse.rotation.x = Math.PI * 0.5;
+  // scene.add(ellipse);
 
-  const vertex = new THREE.Vector3();
   const positionAttribute = ellipse.geometry.getAttribute('position');
-
-  const handlePositions = [];
+  const vertex = new THREE.Vector3();
 
   for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
     const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
-
-    handlePositions.push({
-      x: pt.x,
-      y: 0,
-      z: pt.y
-    });
+    handlePositions.push(new THREE.Vector3(pt.x, 0, pt.y));
   };
 
   const boxGeometry = new THREE.BoxGeometry(5, 5, 5); // to visualize handle positions
@@ -219,57 +239,39 @@ const SceneBuilder = (data) => {
   for (const handlePosition of handlePositions) {
     const handle = new THREE.Mesh(boxGeometry, boxMaterial);
     handle.position.copy(handlePosition);
-    handles.push(handle);
-    scene.add(handle);
-  }
-  scene.add(ellipse)
-  const material = new THREE.MeshPhysicalMaterial({ color: 0xFF0000 })
-  material.wireframe = true
-  material.vertexColors = true
+    // if (groupRef?.current) {
+    //   groupRef?.current?.position?.copy(handlePosition)
+    // }
+    handleBoxes.push(handle);
+    // scene.add(handle);
+  };
 
-  const cameraPathCurve = new THREE.CatmullRomCurve3(handles.map((handle) => handle.position));
+  const cameraPathCurve = new THREE.CatmullRomCurve3(handleBoxes.map((handle) => handle.position));
   cameraPathCurve.curveType = 'centripetal';
   cameraPathCurve.closed = true;
 
-  const points = cameraPathCurve.getPoints(projects.length);
-  const line = new THREE.LineLoop(
-    new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: 0x00ff00 })
-  );
-  scene.add(line);
+  // const points = cameraPathCurve.getPoints(projects.length);
+  // const line = new THREE.LineLoop(
+  //   new THREE.BufferGeometry().setFromPoints(points),
+  //   new THREE.LineBasicMaterial({ color: "red" })
+  // );
+  // scene.add(line);
 
-  useEffect(() => {
-    groupScale = scaleMeshAtBreakpoint(size.width);
-    if (projects.length > 1) {
-      for (const handlePosition of handlePositions) {
-        const p = [
-          handlePosition.x * 1.6,
-          handlePosition.y,
-          handlePosition.z * 1.5,
-        ]
-        positions.push(p);
-      }
-      setScenePosition(positions);
-    };
-
-  }, [projects]); //three.js state is not included in dependency array
-
-  // Update camera position and orbit controls 
   useFrame(({ clock }) => {
     let s = (clock.getElapsedTime() * 0.05) % 1;
-    let t = Math.sin(clock.getElapsedTime() * 0.1) + 1
+    // let t = Math.cos(clock.getElapsedTime() * 0.1) + 1
+    // let x1 = 1 / Math.cos(2 * Math.PI * clock.getElapsedTime());
+    // const groupScale = scaleMeshAtBreakpoint(size.width);
+    // if (groupRef.current) {
+    //   groupRef.current.scale.set(groupScale, groupScale, groupScale);
+    // }
+    const position = cameraPathCurve.getPoint(s);
+    camera.position.x = position.x
+    camera.position.y = cameraPosition[1] + 27
+    camera.position.z = position.z + cameraPosition[2];
+    // camera.lookAt(camera.position.x, position.y, position.z);
+    camera.lookAt(position);
 
-    if (groupRef.current) {
-      groupRef.current.scale.set(groupScale, groupScale, groupScale);
-
-      const position = cameraPathCurve.getPoint(s);
-
-      camera.position.x = position.x * t * 1.12;
-      // camera.position.x = position.x;
-      camera.position.y = cameraPosition[1] * t * 2.2 + 27;
-      camera.position.z = position.z + (Math.cos(clock.getElapsedTime() * 0.5) + 1) + cameraPosition[2];
-      camera.lookAt(position);
-    };
   });
 
   return (
@@ -279,12 +281,10 @@ const SceneBuilder = (data) => {
           const newProps = {
             data,
             ...data.sceneData,
-            position: scenePosition[index]
+            position: handlePositions[index]
           };
 
-          return (
-            <Scene key={index} {...newProps} />
-          );
+          return <Group key={index} {...newProps} />
         })
       }
     </group>
@@ -303,7 +303,6 @@ const AdaptivePixelRatio = () => {
 };
 
 export const GlobalScene = () => {
-  const cameraPosition = [0, 10, 180];
   const orthographic = false;
   const near = orthographic ? -100 : 1;
   const fov = orthographic ? 500 : 50;
@@ -348,7 +347,7 @@ export const GlobalScene = () => {
           shadow-camera-right={1500}
         />
         <fog attach="fog" density={0.0055} color="#bcbcbc" near={50} far={320} />
-        <SceneBuilder cameraPosition={cameraPosition} />
+        <SceneBuilder />
         <Ground position={[0, -75, 20]} scale={1.3} />
       </Canvas>
     </Suspense>

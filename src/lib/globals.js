@@ -194,7 +194,7 @@ const portfolio = {
           "/oval_bag_1.glb",
         ],
         scale: 1.0,
-        autoRotate: false,
+        autoRotate: true,
       },
       shortDescription: "A small collection of 3D printed handbags.",
       description:

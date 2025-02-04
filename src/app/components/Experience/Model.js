@@ -2,7 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import { ColorManagement, MeshPhysicalMaterial } from "three";
+import { ColorManagement, MeshPhysicalMaterial, Vector3 } from "three";
 
 ColorManagement.enabled = true;
 
@@ -12,20 +12,21 @@ const Model = (data) => {
     modelUrl,
     autoRotate,
     scale,
-    position = [0, -25, 0],
+    position = new Vector3(0, -25, 0)
   } = data;
 
   const { scene } = useGLTF(modelUrl);
 
-  const material = new MeshPhysicalMaterial(materialProps);
-
   scene.traverse((child) => {
     if (!!child.isMesh) {
-      child.material = material;
+
+      console.log(child)
+      child.material = new MeshPhysicalMaterial(materialProps);;
       child.castShadow = true;
       child.receiveShadow = true;
+      child.position.copy(position);
       child.scale.set(scale, scale, scale);
-      child.position.set(position[0], position[1], position[2]);
+
     }
   });
 
