@@ -11,6 +11,7 @@ const Model = (data) => {
     material: materialProps,
     modelUrl,
     autoRotate,
+    autoRotateSpeed,
     scale,
     position = new Vector3(0, -25, 0)
   } = data;
@@ -35,7 +36,7 @@ const Model = (data) => {
 
     scene.traverse((child) => {
       if (!!child?.isMesh && autoRotate) {
-        child.rotation.set(0, Math.sin(Math.PI / 2) * elapsedTime * 0.3, 0);
+        child.rotation.set(0, Math.sin(Math.PI / 2) * elapsedTime * 0.3 * autoRotateSpeed, 0);
       };
     });
   });

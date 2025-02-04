@@ -52,6 +52,7 @@ const Group = (data) => {
     modelUrls,
     autoRotate,
     scale,
+    autoRotateSpeed,
     position: groupPosition,
     // data: selectedProject,
   } = data;
@@ -76,6 +77,7 @@ const Group = (data) => {
             material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays)[index].material,
             scale: updateScale,
             autoRotate: modelUrls.length === 1 || index > -20 ? autoRotate : false,
+            autoRotateSpeed: autoRotateSpeed,
             position: positions[index]
           };
 

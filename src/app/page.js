@@ -30,11 +30,8 @@ export default function Home() {
         >
           Recent Projects
         </h1>
-        {/* <div className="mb-20"> */}
-        <div className="mb-20 w-full h-full ">
+        <div className="mb-30 w-full h-full ">
           <ProjectBanner />
-          {/* className="relative flex w-full h-full place-self-center " */}
-          {/* </div> */}
         </div>
       </div>
     </main>

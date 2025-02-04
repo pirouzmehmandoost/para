@@ -82,7 +82,8 @@ const SceneBuilder = () => {
           const newProps = {
             data,
             ...data.sceneData,
-            position: handlePositions[index]
+            position: handlePositions[index],
+            autoRotateSpeed: index % 2 == 0 ? -1 : 1
           };
 
           return <Group key={index} {...newProps} />
