@@ -30,7 +30,7 @@ export default function Home() {
         >
           Recent Projects
         </h1>
-        <div className="mb-30 w-full h-full ">
+        <div className="my-10 w-full h-full ">
           <ProjectBanner />
         </div>
       </div>
