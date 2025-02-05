@@ -1,11 +1,11 @@
 "use client";
 
-// import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 // import { useEffect, useState, useRef } from "react";
 import { ColorManagement, Vector3 } from 'three';
 import { useThree, } from "@react-three/fiber";
 import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../../lib/utils"
-// import useSelection from "../../store/selection";
+import useSelection from "../../store/selection";
 import Model from "./Model";
 
 ColorManagement.enabled = true;
@@ -54,21 +54,21 @@ const Group = (data) => {
     scale,
     autoRotateSpeed,
     position: groupPosition,
-    // data: selectedProject,
+    data: selectedProject,
   } = data;
 
+  const router = useRouter()
   const { size } = useThree();
-  // const groupRef = useRef();
-  let positions = calculatePositions(size.width, modelUrls.length, groupPosition)
-
-  // const box = new BoxGeometry(5, 15, 5); // to visualize handle positions
-  // const boxMaterial = new MeshBasicMaterial({ color: "yellow" });
-  // const boxGeometry = new Mesh(box, boxMaterial);
-  // boxGeometry.position.copy(groupPosition)
-  // scene.add(boxGeometry)
+  let positions = calculatePositions(size.width, modelUrls.length, groupPosition);
+  const setSelection = useSelection((state) => state.setSelection);
 
   return (
-    <>
+    <group
+      onClick={() => {
+        setSelection(selectedProject);
+        router.push('/project');
+      }}
+    >
       {
         modelUrls.map((url, index) => {
           let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
@@ -84,7 +84,7 @@ const Group = (data) => {
           return <Model key={index} {...newProps} />;
         })
       }
-    </>
+    </group>
   );
 };
 

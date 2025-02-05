@@ -1,10 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
-import { useState } from "react";
 import useSelection from "../store/selection";
-import ModelViewer from "../components/ModelViewer";
+import ModelViewer from "../components/Experience/ModelViewer";
 
 const ProjectViewer = () => {
   const [expanded, setExpanded] = useState(false);
