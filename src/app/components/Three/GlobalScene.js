@@ -2,11 +2,12 @@
 
 import { Suspense, useEffect, useState } from "react";
 import * as THREE from "three";
+import { DoubleSide } from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Environment, Loader, Bounds } from "@react-three/drei";
-import { EffectComposer, N8AO, SMAA, Selection, Outline } from "@react-three/postprocessing"
-import { cameraPosition, portfolio } from "../../../lib/globals"
-import { Model as Ground } from "../../../../public/Env_ground_3"
+import { Environment, Loader, Bounds, Outlines, Plane } from "@react-three/drei";
+import { EffectComposer, N8AO, SMAA, Selection, Outline } from "@react-three/postprocessing";
+import { cameraPosition, portfolio, glossMaterial } from "../../../lib/globals";
+import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
 
 THREE.ColorManagement.enabled = true;
@@ -74,8 +75,8 @@ const SceneBuilder = () => {
   return (
     <Selection>
       <EffectComposer multisampling={0} autoClear={false}>
-        < N8AO radius={0.05} intensity={100} luminanceInfluence={0.5} color="white" />
-        <Outline visibleEdgeColor="white" hiddenEdgeColor="white" width={1000} edgeStrength={1} blur={true} pulseSpeed={0.5}// whether the outline should be blurred
+        < N8AO radius={0.05} intensity={100} xray={true} luminanceInfluence={0.5} color="white" />
+        <Outline visibleEdgeColor="white" hiddenEdgeColor="white" width={1000} edgeStrength={100} blur={true} pulseSpeed={0.5}// whether the outline should be blurred
         />
         <SMAA />
       </EffectComposer>
@@ -138,17 +139,20 @@ export const GlobalScene = () => {
         orthographic={orthographic}
         shadows
       >
-        <Environment shadows files="./studio_small_08_4k.exr" />
+        {/* /Users/Pirouz/github/para/public/kloofendal_misty_morning_puresky_4k.hdr */}
+        {/* <Environment shadows files="./studio_small_08_4k.exr" /> */}
+
+        <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" />
         <color args={["#bcbcbc"]} attach="background" />
-        <fog attach="fog" density={0.002} color="#bcbcbc" near={60} far={350} />
+        <fog attach="fog" density={0.004} color="#bcbcbc" near={160} far={290} />
         <AdaptivePixelRatio pixelated />
 
         <directionalLight
           castShadow={true}
-          position={[0, 200, 0]}
+          position={[0, 100, 0]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          intensity={16}
+          intensity={4}
           shadow-camera-near={0.5}
           shadow-camera-far={1000}
           shadow-bias={-0.001}
@@ -158,7 +162,9 @@ export const GlobalScene = () => {
           shadow-camera-right={1500}
         />
         <SceneBuilder />
-        <Ground position={[0, -70, 20]} scale={[1.8, 1, 1]} />
+        <Ground position={[0, -75, 20]} scale={[1.6, 1.1, 1]} rotation={Math.PI / 20} />
+        <Plane castShadow args={[5000, 5000, 1, 1]} position={[-600, 0, 0]} side={DoubleSide} rotation={[-Math.PI / 1.4, Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
+        <Plane castShadow args={[5000, 5000, 1, 1]} position={[600, 0, 0]} side={DoubleSide} rotation={[-Math.PI / 1.4, -Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
       </Canvas>
     </Suspense>
   );
