@@ -11,7 +11,6 @@
 // } from "@react-three/drei";
 // import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../lib/utils"
 
-
 // THREE.ColorManagement.enabled = true;
 
 // const Model = (data) => {
