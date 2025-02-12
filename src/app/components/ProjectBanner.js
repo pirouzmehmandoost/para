@@ -4,8 +4,10 @@ import GlobalScene from "./Three/GlobalScene";
 
 const ProjectBanner = () => {
   return (
-    <div className="flex flex-col w-full h-full min-h-48 place-self-center place-content-center place-items-center">
-      <div className="flex flex-col w-full h-96 place-self-center place-content-center -mt-12 sm:-mt-12 md:mt-0 lg:mt-8 xl:mt-10 2xl:mt-10 mb-5">
+    <div className="flex flex-col w-full min-h-96 place-self-center place-content-center place-items-center">
+      {/* <div className="flex flex-col w-full h-96 place-self-center place-content-center -mt-12 sm:-mt-12 md:mt-0 lg:mt-8 xl:mt-10 2xl:mt-10 mb-5"> */}
+      <div className="flex flex-col w-full h-96 place-self-center place-content-center">
+
         <GlobalScene className="w-full h-full place-self-center place-content-center justify-around" />
       </div>
     </div>
