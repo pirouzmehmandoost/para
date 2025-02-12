@@ -4,7 +4,7 @@ import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import useSelection from "../store/selection";
-import ModelViewer from "../components/Experience/ModelViewer";
+import ModelViewer from "../components/Three/ModelViewer";
 
 const ProjectViewer = () => {
   const [expanded, setExpanded] = useState(false);

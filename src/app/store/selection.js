@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import portfolio from "../../lib/globals"
+import { portfolio } from "../../lib/globals"
 
 //temporary
 const initialState = portfolio.projects[1];
@@ -21,7 +21,7 @@ const selectionStore = (set, get) => ({
       ...state,
       selection: initialState,
     }));
-    return get().selection
+    return get().selection;
   },
 
 });

@@ -4,7 +4,7 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "@splidejs/react-splide/css/core";
 import splideConfig from "../../lib/splideConfig";
-import portfolio from "../../lib/globals";
+import { portfolio } from "../../lib/globals";
 import useSelection from "../store/selection";
 import ProductCard from "./ProductCard";
 
