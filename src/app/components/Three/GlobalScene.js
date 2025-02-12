@@ -96,10 +96,13 @@ const SceneBuilder = () => {
                 <group
                   key={index}
                   onPointerOver={(e) => {
-                    console.log("onPointerOver", e.object.name, e);
+                    console.log("\nonPointerOver", e.object.name, e);
                     hover(e.object.name);
                   }}
-                  onPointerOut={(e) => hover('')}
+                  onPointerOut={(e) => {
+                    console.log("\nonPointerOut", e.object.name, e);
+                    hover('');
+                  }}
                 >
                   <Group{...newProps} />
                 </group>
