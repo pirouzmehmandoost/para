@@ -12,7 +12,7 @@ ColorManagement.enabled = true;
 const calculatePositions = (scaleFactor, numPositions, center) => {
   const positions = [];
   const xOffset = [];
-  const yOffset = numPositions >= 2 ? -25 : -30;
+  const yOffset = -25;
 
   if (numPositions === 1) {
     return [new Vector3(center.x, yOffset, center.z)]
@@ -61,7 +61,7 @@ const Group = (data) => {
   const { size } = useThree();
   let positions = calculatePositions(size.width, modelUrls.length, groupPosition);
   const setSelection = useSelection((state) => state.setSelection);
-  console.log("group: ", isPointerOver)
+  // console.log("group: ", isPointerOver)
   return (
     <group
       onClick={() => {
