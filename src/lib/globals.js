@@ -11,15 +11,15 @@ const matteMaterial = {
   flatShading: false,
 };
 
-const metallicMaterial = {
-  roughness: 0.2,
-  metalness: 1,
-  ior: 1.8,
-  sheen: 0.15,
-  sheenColor: "#707070",
-  sheenRoughness: 1,
-  flatShading: false,
-};
+// const metallicMaterial = {
+//   roughness: 0.2,
+//   metalness: 1,
+//   ior: 1.8,
+//   sheen: 0.15,
+//   sheenColor: "#707070",
+//   sheenRoughness: 1,
+//   flatShading: false,
+// };
 
 export const glossMaterial = {
   roughness: 0.4,
