@@ -21,7 +21,7 @@ const metallicMaterial = {
   flatShading: false,
 };
 
-const glossMaterial = {
+export const glossMaterial = {
   roughness: 0.4,
   metalness: 0,
   ior: 1.5,
@@ -50,14 +50,34 @@ export const colorCodes = {
       ...matteMaterial,
     },
   },
-  silver: {
-    label: "Silver",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
+
+  natural: {
+    label: "Off-White",
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
     material: {
-      color: "#444444",
-      ...metallicMaterial,
+      color: "#ccc0a3",
+      ...matteMaterial,
+      ior: 1.8,
+      roughness: 0.6,
+      metalness: 0,
+      // reflectivity: 1,
+      sheen: 1,
+      sheenRoughness: 0.5,
+      sheenColor: "#ccc0a3",
+      // transmission: 1,
+      // sheenColor: "#f5ebd9",
     },
   },
+
+  // #f5ebd9
+  // silver: {
+  //   label: "Silver",
+  //   tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
+  //   material: {
+  //     color: "#444444",
+  //     ...metallicMaterial,
+  //   },
+  // },
 };
 
 export const portfolio = {
@@ -247,16 +267,4 @@ export const portfolio = {
 `,
     },
   ],
-};
-
-export const storePolicy = {
-  shipping:
-    "UPS Express Saver delivery: 2-4 business days, 10 USD. When ordering outside US, taxes and duties are excluded in the product price and local custom fees may apply. Please contact your local customs office for further information.",
-  payment:
-    "All major payment methods are supported. Card information is encrypted using SSL encryption, which prevents unauthorized access to card details.",
-  returns: "",
-  customerSupport: {
-    email: "pirouzmehmandoost@gmail.com",
-    FAQ: {},
-  },
 };
