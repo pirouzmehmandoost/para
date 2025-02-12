@@ -1,22 +1,20 @@
 "use client";
 
-import { Suspense, useRef, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Environment, Loader } from "@react-three/drei";
-import portfolio from "../../../lib/globals"
+import { Environment, Loader, Bounds } from "@react-three/drei";
+import { EffectComposer, N8AO, SMAA, Selection, Outline } from "@react-three/postprocessing"
+import { cameraPosition, portfolio } from "../../../lib/globals"
 import { Model as Ground } from "../../../../public/Env_ground_3"
 import Group from "./Group";
 
 THREE.ColorManagement.enabled = true;
-const cameraPosition = [0, 10, 180];
 
 const SceneBuilder = () => {
-  const groupRef = useRef();
-  const { camera } = useThree();
-
+  const [hovered, hover] = useState('');
   const { projects } = portfolio;
-  const handleBoxes = []; //to see positions developing
+  const handleBoxes = []; //to see positions while developing
   const handlePositions = [];
 
   const bezierCurve = new THREE.EllipseCurve(0, 0, 280, 20, 0, (2 * Math.PI), false, 0);
@@ -50,46 +48,67 @@ const SceneBuilder = () => {
   const cameraPoints = [];
   handleBoxes.forEach(box => {
     cameraPoints.push(box.position)
-    cameraPoints.push(new THREE.Vector3(box.position.x * 1.1, box.position.y + 5, box.position.z - 20))
-    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y - 5, box.position.z - 30))
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y + 5, box.position.z - 25))
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0.95, box.position.y + 8, box.position.z + -20))
-    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y + 10, box.position.z - 15))
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y, box.position.z - 20))
-    cameraPoints.push(new THREE.Vector3(box.position.x * 1.02, box.position.y - 5, box.position.z - 25))
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0, box.position.y, box.position.z))
+    cameraPoints.push(new THREE.Vector3(box.position.x * 1.1, box.position.y + 5, box.position.z - 20));
+    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y - 5, box.position.z - 30));
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y + 5, box.position.z - 25));
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0.95, box.position.y + 8, box.position.z + -20));
+    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y + 10, box.position.z - 15));
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y, box.position.z - 20));
+    cameraPoints.push(new THREE.Vector3(box.position.x * 1.02, box.position.y - 5, box.position.z - 25));
+    cameraPoints.push(new THREE.Vector3(box.position.x * 0, box.position.y, box.position.z));
   });
 
   const cameraPathCurve = new THREE.CatmullRomCurve3(cameraPoints.map((handle) => handle));
   cameraPathCurve.curveType = 'centripetal';
   cameraPathCurve.closed = true;
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, camera }) => {
     let s = (clock.getElapsedTime() * 0.03) % 1;
     const position = cameraPathCurve.getPoint(s);
-
-    camera.position.x = position.x
-    camera.position.y = cameraPosition[1] + 27
+    camera.position.x = position.x;
+    camera.position.y = cameraPosition[1] + 27;
     camera.position.z = position.z + cameraPosition[2];
-
     camera.lookAt(position.x, position.y, position.z);
   });
 
   return (
-    <group ref={groupRef}>
-      {
-        projects.map((data, index) => {
-          const newProps = {
-            data,
-            ...data.sceneData,
-            position: handlePositions[index],
-            autoRotateSpeed: index % 2 == 0 ? -1 : 1
-          };
+    <Selection>
+      <EffectComposer multisampling={0} autoClear={false}>
+        < N8AO radius={0.05} intensity={100} luminanceInfluence={0.5} color="white" />
+        <Outline visibleEdgeColor="white" hiddenEdgeColor="white" width={1000} edgeStrength={1} blur={true} pulseSpeed={0.5}// whether the outline should be blurred
+        />
+        <SMAA />
+      </EffectComposer>
+      <Bounds fit clip margin={1.2} damping={10}>
+        {/* <group ref={groupRef}> */}
+        <group>
+          {
+            projects.map((data, index) => {
+              const newProps = {
+                data,
+                ...data.sceneData,
+                position: handlePositions[index],
+                autoRotateSpeed: index % 2 == 0 ? -1 : 1,
+                isPointerOver: hovered
+              };
 
-          return <Group key={index} {...newProps} />
-        })
-      }
-    </group>
+              return (
+                <group
+                  key={index}
+                  onPointerOver={(e) => {
+                    console.log("onPointerOver", e.object.name, e);
+                    hover(e.object.name);
+                  }}
+                  onPointerOut={(e) => hover('')}
+                >
+                  <Group{...newProps} />
+                </group>
+              )
+            })
+          }
+        </group>
+      </Bounds>
+    </Selection >
   );
 };
 
@@ -116,30 +135,17 @@ export const GlobalScene = () => {
         orthographic={orthographic}
         shadows
       >
-        <AdaptivePixelRatio pixelated />
         <Environment shadows files="./studio_small_08_4k.exr" />
-        <directionalLight
-          castShadow={true}
-          position={[0, 100, 0]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={7}
-          angle={0.45}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        />
+        <color args={["#bcbcbc"]} attach="background" />
+        <fog attach="fog" density={0.002} color="#bcbcbc" near={60} far={350} />
+        <AdaptivePixelRatio pixelated />
+
         <directionalLight
           castShadow={true}
           position={[0, 200, 0]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          intensity={5}
-          angle={0.45}
+          intensity={16}
           shadow-camera-near={0.5}
           shadow-camera-far={1000}
           shadow-bias={-0.001}
@@ -148,9 +154,8 @@ export const GlobalScene = () => {
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
         />
-        <fog attach="fog" density={0.006} color="#bcbcbc" near={50} far={310} />
         <SceneBuilder />
-        <Ground position={[0, -85, 20]} scale={1.6} />
+        <Ground position={[0, -70, 20]} scale={[1.8, 1, 1]} />
       </Canvas>
     </Suspense>
   );

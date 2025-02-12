@@ -1,14 +1,4 @@
-export const storePolicy = {
-  shipping:
-    "UPS Express Saver delivery: 2-4 business days, 10 USD. When ordering outside US, taxes and duties are excluded in the product price and local custom fees may apply. Please contact your local customs office for further information.",
-  payment:
-    "All major payment methods are supported. Card information is encrypted using SSL encryption, which prevents unauthorized access to card details.",
-  returns: "",
-  customerSupport: {
-    email: "pirouzmehmandoost@gmail.com",
-    FAQ: {},
-  },
-};
+export const cameraPosition = [0, 10, 180];
 
 const matteMaterial = {
   roughness: 1,
@@ -70,7 +60,7 @@ export const colorCodes = {
   },
 };
 
-const portfolio = {
+export const portfolio = {
   products: [
     {
       name: "Oval Bag",
@@ -189,9 +179,9 @@ const portfolio = {
           colorWays: { ...colorCodes },
         },
         modelUrls: [
-          "/oval_bag_3.glb",
-          "/oval_bag_xl_v2.glb",
           "/oval_bag_1.glb",
+          "/oval_bag_3-transformed.glb",
+          "/oval_bag_xl_v2-transformed.glb",
         ],
         scale: 1.0,
         autoRotate: true,
@@ -259,4 +249,14 @@ const portfolio = {
   ],
 };
 
-export default portfolio;
+export const storePolicy = {
+  shipping:
+    "UPS Express Saver delivery: 2-4 business days, 10 USD. When ordering outside US, taxes and duties are excluded in the product price and local custom fees may apply. Please contact your local customs office for further information.",
+  payment:
+    "All major payment methods are supported. Card information is encrypted using SSL encryption, which prevents unauthorized access to card details.",
+  returns: "",
+  customerSupport: {
+    email: "pirouzmehmandoost@gmail.com",
+    FAQ: {},
+  },
+};

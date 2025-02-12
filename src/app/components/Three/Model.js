@@ -1,8 +1,9 @@
 "use client";
 
+import { ColorManagement, MeshPhysicalMaterial, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import { ColorManagement, MeshPhysicalMaterial, Vector3 } from "three";
+import { Select, } from "@react-three/postprocessing"
 
 ColorManagement.enabled = true;
 
@@ -13,22 +14,20 @@ const Model = (data) => {
     autoRotate,
     autoRotateSpeed,
     scale,
-    position = new Vector3(0, -25, 0)
+    position = new Vector3(0, -25, 0),
+    isPointerOver = '',
   } = data;
 
   const { scene } = useGLTF(modelUrl);
 
   scene.traverse((child) => {
     if (!!child.isMesh) {
-
-      console.log(child)
       child.material = new MeshPhysicalMaterial(materialProps);;
       child.castShadow = true;
       child.receiveShadow = true;
       child.position.copy(position);
       child.scale.set(scale, scale, scale);
-
-    }
+    };
   });
 
   useFrame(({ clock }) => {
@@ -41,7 +40,7 @@ const Model = (data) => {
     });
   });
 
-  return <primitive castShadow receiveShadow object={scene} />;
+  return <Select name={scene.name} enabled={isPointerOver == scene.children[0].name}> <primitive castShadow receiveShadow object={scene} /> </Select>
 };
 
 export default Model;

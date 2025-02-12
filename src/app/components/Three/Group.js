@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from 'next/navigation'
-// import { useEffect, useState, useRef } from "react";
 import { ColorManagement, Vector3 } from 'three';
 import { useThree, } from "@react-three/fiber";
 import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../../lib/utils"
@@ -55,13 +54,14 @@ const Group = (data) => {
     autoRotateSpeed,
     position: groupPosition,
     data: selectedProject,
+    isPointerOver
   } = data;
 
   const router = useRouter()
   const { size } = useThree();
   let positions = calculatePositions(size.width, modelUrls.length, groupPosition);
   const setSelection = useSelection((state) => state.setSelection);
-
+  console.log("group: ", isPointerOver)
   return (
     <group
       onClick={() => {
@@ -73,6 +73,7 @@ const Group = (data) => {
         modelUrls.map((url, index) => {
           let updateScale = modelUrls.length === 1 ? scale * 0.5 : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
           const newProps = {
+            isPointerOver,
             modelUrl: url,
             material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays)[index].material,
             scale: updateScale,

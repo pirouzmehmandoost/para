@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Loader, CameraControls, SoftShadows } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, ACTION } from "../../../lib/utils"
-import { Model as Ground } from "./../../../../public/Env_ground_3"
+import { Model as Ground } from "../../../../public/Env_ground_3"
 
 THREE.ColorManagement.enabled = true;
 
