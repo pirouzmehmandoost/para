@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import * as THREE from "three";
 import { DoubleSide } from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Environment, Loader, Bounds, Outlines, Plane } from "@react-three/drei";
+import { Environment, Loader, Bounds, Plane } from "@react-three/drei";
 import { EffectComposer, N8AO, SMAA, Selection, Outline } from "@react-three/postprocessing";
 import { cameraPosition, portfolio, glossMaterial } from "../../../lib/globals";
 import { Model as Ground } from "../../../../public/Env_ground_3";
