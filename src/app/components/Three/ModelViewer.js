@@ -2,9 +2,12 @@
 
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
+import { DoubleSide } from "three"
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment, Loader, CameraControls, SoftShadows } from "@react-three/drei";
+import { useGLTF, Environment, Loader, CameraControls, SoftShadows, Plane } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, ACTION } from "../../../lib/utils"
+import { glossMaterial } from "../../../lib/globals"
+
 import { Model as Ground } from "../../../../public/Env_ground_3"
 
 THREE.ColorManagement.enabled = true;
@@ -100,6 +103,7 @@ export const ModelViewer = ({ data }) => {
         shadows
       >
         <Environment shadows files="./studio_small_08_4k.exr" />
+        <color args={["#bcbcbc"]} attach="background" />
         <CameraControls
           minPolarAngle={0}
           maxPolarAngle={Math.PI / 2}
@@ -109,14 +113,13 @@ export const ModelViewer = ({ data }) => {
           touches={{ one: ACTION.TOUCH_ROTATE, two: ACTION.NONE, three: ACTION.NONE }}
         />
         <CameraRig {...data} />
-        <fog attach="fog" density={0.005} color="#bcbcbc" near={50} far={400} />
+        <fog attach="fog" density={0.006} color="#bcbcbc" near={50} far={320} />
         <directionalLight
           castShadow={true}
-          position={[-12, 60, -40]}
+          position={[-12, 50, -50]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          intensity={5}
-          angle={0.45}
+          intensity={3}
           shadow-camera-near={0.5}
           shadow-camera-far={500}
           shadow-bias={-0.001}
@@ -126,9 +129,12 @@ export const ModelViewer = ({ data }) => {
           shadow-camera-right={1000}
         />
         <Model {...data} />
-        <SoftShadows samples={10} size={4} />
-        <Ground position={[0, -55, 30]} scale={0.8} />
+        <SoftShadows samples={10} size={6} />
+        <Ground position={[0, -55, 0]} scale={[0.8, 0.6, 0.6]} rotation={Math.PI / 12} />
+        <Plane castShadow args={[1500, 1500, 500, 500]} position={[-240, 0, 0]} side={DoubleSide} rotation={[0, Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
+        <Plane castShadow args={[1500, 1500, 500, 500]} position={[240, 0, 0]} side={DoubleSide} rotation={[0, -Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
       </Canvas>
+
     </Suspense>
   );
 };
