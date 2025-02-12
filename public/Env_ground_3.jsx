@@ -8,15 +8,16 @@ import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {
-  const { position, scale = 1 } = props;
+  const { position, scale = [1, 1, 1] } = props;
 
   const { nodes } = useGLTF('/env_ground_3-transformed.glb')
   const materialProps = {
-    metalness: 0.8,
-    roughness: 1,
-    ior: 1.5,
-    color: "#202020",
+    metalness: 0,
+    roughness: 0.6,
+    ior: 1.1,
+    color: "#101010",
     flatShading: false,
+    reflectivity: 0,
   }
   return (
     <group scale={scale} position={position} dispose={null}>
