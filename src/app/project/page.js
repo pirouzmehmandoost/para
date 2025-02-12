@@ -79,7 +79,7 @@ const ProjectViewer = () => {
 
       <div
         id="project_menu"
-        className={`fixed bottom-0 z-20 right-0 w-full sm:w-full md:w-full lg:w-1/2 place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
+        className={`fixed bottom-0 z-20 right-0 w-full place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
       >
         <div className="flex z-20 w-full h-full bottom-0 right-0">
           <div className="w-full h-full border-solid border-2 border-zinc-900">
