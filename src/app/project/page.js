@@ -43,9 +43,8 @@ const ProjectViewer = () => {
   };
 
   const colorSelectButtons = (
-    <div className="flex flex-row">
-
-      <p className="text-nowrap">Select Color</p>
+    <div className="flex flex-row place-content-center items-center">
+      <p className="text-nowrap text-2xl">Select Color</p>
 
       {
         Object.entries(colorWays).map((entry) => {
@@ -109,7 +108,7 @@ const ProjectViewer = () => {
                   </div>
                 </div>
                 <div className="justify-self-center basis-1/3">
-                  <p className="text-xl text-center justify-self-center ">
+                  <p className="text-2xl text-center justify-self-center ">
                     {name}
                   </p>
                 </div>
