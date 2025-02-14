@@ -1,18 +1,17 @@
 "use client";
 
 import { Suspense, useRef } from "react";
-import * as THREE from "three";
-import { DoubleSide } from "three"
+import { Color, ColorManagement, DoubleSide, MeshPhysicalMaterial, Vector3 } from "three"
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Loader, CameraControls, SoftShadows, Plane } from "@react-three/drei";
 import { scaleMeshAtBreakpoint, ACTION } from "../../../lib/utils"
 import { glossMaterial } from "../../../lib/globals"
-
 import { Model as Ground } from "../../../../public/Env_ground_3"
 
-THREE.ColorManagement.enabled = true;
+ColorManagement.enabled = true;
 
-const CameraRig = (data, { v = new THREE.Vector3() }) => {
+//should be using CameraRig.js
+const CameraRig = (data, { v = new Vector3() }) => {
   const { cameraPosition } = data;
 
   return useFrame((state) => {
@@ -29,6 +28,7 @@ const CameraRig = (data, { v = new THREE.Vector3() }) => {
     state.camera.lookAt(0, 0, 0);
   });
 };
+
 
 const Model = (data) => {
   const {
@@ -47,7 +47,7 @@ const Model = (data) => {
   const { size } = useThree();
   const groupRef = useRef();
   const { scene } = useGLTF(modelUrl);
-  const material = new THREE.MeshPhysicalMaterial(materialProps);
+  const material = new MeshPhysicalMaterial(materialProps);
   const groupScale = scaleMeshAtBreakpoint(size.width) * scale;
 
   scene.traverse((child) => {
@@ -71,8 +71,8 @@ const Model = (data) => {
         };
 
         if (!!child?.material && autoUpdateMaterial) {
-          const color = new THREE.Color("black").lerp(
-            new THREE.Color("white"),
+          const color = new Color("black").lerp(
+            new Color("white"),
             Math.sin(elapsedTime) * 0.5 + 0.5,
           );
           child.material.color = color;
