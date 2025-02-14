@@ -1,12 +1,10 @@
 "use client";
 
-import * as THREE from "three";
+import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 
-THREE.ColorManagement.enabled = true;
-
-const CameraRig = (data, { v = new THREE.Vector3() }) => {
-  const { cameraPosition } = data;
+const CameraRig = (data, { v = new Vector3() }) => {
+  const { cameraPosition = [0, 10, 180], } = data;
 
   return useFrame(({ clock, camera }) => {
     const t = clock.elapsedTime;
@@ -23,4 +21,4 @@ const CameraRig = (data, { v = new THREE.Vector3() }) => {
   });
 };
 
-export default CameraRig; 
+export default CameraRig;
