@@ -24,7 +24,7 @@ const Header = () => {
             href="/"
             rel="noopener noreferrer"
           >
-            <p className="cursor-pointer text-nowrap">Pirouz Mehmandoost</p>
+            <h1 className="cursor-pointer text-nowrap">Pirouz Mehmandoost</h1>
           </Link>
         </div>
 
