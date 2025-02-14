@@ -25,7 +25,7 @@ const SceneBuilder = () => {
 
   const bezierGeometry = new BufferGeometry().setFromPoints(bezierCurvePoints);
 
-  const ellipse = new Line(bezierGeometry, new LineBasicMaterial({ color: "red" }));
+  const ellipse = new Line(bezierGeometry, new LineBasicMaterial({ color: "red" })); //to see camera path while developing
   ellipse.position.set(0, 0, 0);
   ellipse.rotation.x = Math.PI * 0.5;
 
@@ -37,7 +37,7 @@ const SceneBuilder = () => {
     handlePositions.push(new Vector3(pt.x, 0, pt.y));
   };
 
-  const boxGeometry = new BoxGeometry(5, 5, 5); // to visualize handle positions
+  const boxGeometry = new BoxGeometry(5, 5, 5); // to see handles positions while developing
   const boxMaterial = new MeshBasicMaterial({ color: "blue" });
   for (const handlePosition of handlePositions) {
     const handle = new Mesh(boxGeometry, boxMaterial);
@@ -45,6 +45,7 @@ const SceneBuilder = () => {
     handleBoxes.push(handle);
   };
 
+  //this approach to positioning a camera must change. 
   const cameraPoints = [];
   handleBoxes.forEach(box => {
     cameraPoints.push(box.position)
