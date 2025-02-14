@@ -23,7 +23,6 @@ const ProjectViewer = () => {
   } = selection;
 
   const [selectedMaterial, setMaterial] = useState(defaultColor ?? null);
-
   const data = {
     modelUrl: modelUrls[0],
     ...selection.sceneData,
@@ -36,10 +35,7 @@ const ProjectViewer = () => {
     orthographic: false,
     autoUpdateMaterial: false,
     scale: 0.45,
-    colorCodes: {
-      colorWays,
-      defaultColor: selectedMaterial,
-    },
+    material: selectedMaterial.material,
   };
 
   const colorSelectButtons = (
