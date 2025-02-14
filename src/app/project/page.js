@@ -31,7 +31,7 @@ const ProjectViewer = () => {
     enableZoom: false,
     enableRotate: true,
     autoRotate: true,
-    autoRotateSpeed: 2,
+    autoRotateSpeed: 0.4,
     cameraPosition: [0, 10, 180],
     orthographic: false,
     autoUpdateMaterial: false,
@@ -39,7 +39,7 @@ const ProjectViewer = () => {
     colorCodes: {
       colorWays,
       defaultColor: selectedMaterial,
-    }
+    },
   };
 
   const colorSelectButtons = (
