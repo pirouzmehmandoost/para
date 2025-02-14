@@ -1,9 +1,9 @@
 "use client";
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import { ColorManagement, Vector3 } from 'three';
 import { useThree, } from "@react-three/fiber";
-import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../../lib/utils"
+import { scaleMeshAtBreakpoint, scalePositionAtBreakPoint } from "../../../lib/utils";
 import useSelection from "../../store/selection";
 import Model from "./Model";
 
@@ -15,12 +15,12 @@ const calculatePositions = (scaleFactor, numPositions, center) => {
   const yOffset = -25;
 
   if (numPositions === 1) {
-    return [new Vector3(center.x, yOffset, center.z)]
+    return [new Vector3(center.x, yOffset, center.z)];
   };
 
 
   if (numPositions % 2 == 1) {
-    xOffset.push(0)
+    xOffset.push(0);
   };
 
   for (let i = 1; i < numPositions; i++) {
@@ -30,8 +30,8 @@ const calculatePositions = (scaleFactor, numPositions, center) => {
   };
 
   for (let i = 0; i < numPositions; i++) {
-    const pos = new Vector3(xOffset[i] + center.x, yOffset, center.z)
-    positions.push(pos)
+    const pos = new Vector3(xOffset[i] + center.x, yOffset, center.z);
+    positions.push(pos);
   };
 
   positions.sort((a, b) => a.x - b.x);
@@ -54,7 +54,7 @@ const Group = (data) => {
     autoRotateSpeed,
     position: groupPosition,
     data: selectedProject,
-    isPointerOver
+    isPointerOver,
   } = data;
 
   const router = useRouter();
@@ -79,10 +79,10 @@ const Group = (data) => {
             scale: updateScale,
             autoRotate: modelUrls.length === 1 || index > -20 ? autoRotate : false,
             autoRotateSpeed: autoRotateSpeed,
-            position: positions[index]
+            position: positions[index],
           };
 
-          return <Model key={index} {...newProps} />;
+          return <Model key={index} {...newProps} />
         })
       }
     </group>

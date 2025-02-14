@@ -38,7 +38,7 @@ const ProjectViewer = () => {
     scale: 0.45,
     colorCodes: {
       colorWays,
-      defaultColor: selectedMaterial
+      defaultColor: selectedMaterial,
     }
   };
 
@@ -75,7 +75,6 @@ const ProjectViewer = () => {
           data={data}
         />
       </div>
-
       <div
         id="project_menu"
         className={`fixed bottom-0 z-20 right-0 w-full place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}

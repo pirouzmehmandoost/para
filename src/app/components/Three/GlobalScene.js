@@ -157,7 +157,7 @@ export const GlobalScene = () => {
           shadow-camera-right={1500}
         />
         <SceneBuilder />
-        <Ground position={[0, -75, 20]} scale={[1.6, 1.1, 1]} rotation={Math.PI / 20} />
+        <Ground position={[0, -75, 20]} scale={[2, 1.1, 1.1]} rotation={Math.PI / 20} />
         {/* these plane positions should scale with canvas size */}
         {/* <Plane castShadow args={[5000, 5000, 1, 1]} position={[-600, 0, 0]} side={DoubleSide} rotation={[-Math.PI / 1.4, Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane> */}
         {/* <Plane castShadow args={[5000, 5000, 1, 1]} position={[600, 0, 0]} side={DoubleSide} rotation={[-Math.PI / 1.4, -Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane> */}

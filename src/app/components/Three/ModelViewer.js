@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useRef } from "react";
-import { Color, ColorManagement, DoubleSide, MeshPhysicalMaterial, Vector3 } from "three"
+import { Color, ColorManagement, DoubleSide, MeshPhysicalMaterial, Vector3 } from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Loader, CameraControls, SoftShadows, Plane } from "@react-three/drei";
-import { scaleMeshAtBreakpoint } from "../../../lib/utils"
+import { scaleMeshAtBreakpoint } from "../../../lib/utils";
 import cameraConfigs from "components/lib/cameraConfigs";
-import { glossMaterial } from "../../../lib/globals"
-import { Model as Ground } from "../../../../public/Env_ground_3"
+import { glossMaterial } from "../../../lib/globals";
+import { Model as Ground } from "../../../../public/Env_ground_3";
 
 ColorManagement.enabled = true;
 
@@ -70,7 +70,6 @@ const Model = (data) => {
         if (!!child?.isMesh && autoRotate) {
           child.rotation.set(0, Math.sin(Math.PI / 4) * elapsedTime * 0.25, 0);
         };
-
         if (!!child?.material && autoUpdateMaterial) {
           const color = new Color("black").lerp(
             new Color("white"),
@@ -136,7 +135,6 @@ export const ModelViewer = ({ data }) => {
         <Plane castShadow args={[1500, 1500, 500, 500]} position={[-240, 0, 0]} side={DoubleSide} rotation={[0, Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
         <Plane castShadow args={[1500, 1500, 500, 500]} position={[240, 0, 0]} side={DoubleSide} rotation={[0, -Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
       </Canvas>
-
     </Suspense>
   );
 };
