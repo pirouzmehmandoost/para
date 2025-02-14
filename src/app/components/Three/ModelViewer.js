@@ -4,7 +4,8 @@ import { Suspense, useRef } from "react";
 import { Color, ColorManagement, DoubleSide, MeshPhysicalMaterial, Vector3 } from "three"
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Loader, CameraControls, SoftShadows, Plane } from "@react-three/drei";
-import { scaleMeshAtBreakpoint, ACTION } from "../../../lib/utils"
+import { scaleMeshAtBreakpoint } from "../../../lib/utils"
+import cameraConfigs from "components/lib/cameraConfigs";
 import { glossMaterial } from "../../../lib/globals"
 import { Model as Ground } from "../../../../public/Env_ground_3"
 
@@ -109,8 +110,8 @@ export const ModelViewer = ({ data }) => {
           maxPolarAngle={Math.PI / 2}
           minAzimuthAngle={-Math.PI / 2}
           maxAzimuthAngle={Math.PI / 2}
-          mouseButtons={{ left: ACTION.ROTATE, middle: ACTION.NONE, right: ACTION.NONE, wheel: ACTION.NONE }}
-          touches={{ one: ACTION.TOUCH_ROTATE, two: ACTION.NONE, three: ACTION.NONE }}
+          mouseButtons={{ left: cameraConfigs.ROTATE, middle: cameraConfigs.NONE, right: cameraConfigs.NONE, wheel: cameraConfigs.NONE }}
+          touches={{ one: cameraConfigs.TOUCH_ROTATE, two: cameraConfigs.NONE, three: cameraConfigs.NONE }}
         />
         <CameraRig {...data} />
         <fog attach="fog" density={0.006} color="#bcbcbc" near={50} far={320} />
@@ -131,6 +132,7 @@ export const ModelViewer = ({ data }) => {
         <Model {...data} />
         <SoftShadows samples={10} size={6} />
         <Ground position={[0, -55, 0]} scale={[0.8, 0.6, 0.6]} rotation={Math.PI / 12} />
+        {/* these plane positions should scale with canvas size */}
         <Plane castShadow args={[1500, 1500, 500, 500]} position={[-240, 0, 0]} side={DoubleSide} rotation={[0, Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
         <Plane castShadow args={[1500, 1500, 500, 500]} position={[240, 0, 0]} side={DoubleSide} rotation={[0, -Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
       </Canvas>
