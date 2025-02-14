@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import * as THREE from "three";
+import { BoxGeometry, BufferGeometry, CatmullRomCurve3, ColorManagement, EllipseCurve, Line, LineBasicMaterial, Mesh, MeshBasicMaterial, Vector3 } from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Environment, Loader, Bounds } from "@react-three/drei";
 import { EffectComposer, N8AO, SMAA, Selection, Outline } from "@react-three/postprocessing";
@@ -9,7 +9,7 @@ import { cameraPosition, portfolio } from "../../../lib/globals";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
 
-THREE.ColorManagement.enabled = true;
+ColorManagement.enabled = true;
 
 const SceneBuilder = () => {
   const [hovered, hover] = useState('');
@@ -17,30 +17,30 @@ const SceneBuilder = () => {
   const handleBoxes = []; //to see positions while developing
   const handlePositions = [];
 
-  const bezierCurve = new THREE.EllipseCurve(0, 0, 280, 20, 0, (2 * Math.PI), false, 0);
+  const bezierCurve = new EllipseCurve(0, 0, 280, 20, 0, (2 * Math.PI), false, 0);
   bezierCurve.closed = true;
 
   const bezierCurvePoints = bezierCurve.getPoints(projects.length);
   bezierCurvePoints.shift(); //remove an overlapping point
 
-  const bezierGeometry = new THREE.BufferGeometry().setFromPoints(bezierCurvePoints);
+  const bezierGeometry = new BufferGeometry().setFromPoints(bezierCurvePoints);
 
-  const ellipse = new THREE.Line(bezierGeometry, new THREE.LineBasicMaterial({ color: "red" }));
+  const ellipse = new Line(bezierGeometry, new LineBasicMaterial({ color: "red" }));
   ellipse.position.set(0, 0, 0);
   ellipse.rotation.x = Math.PI * 0.5;
 
   const positionAttribute = ellipse.geometry.getAttribute('position');
-  const vertex = new THREE.Vector3();
+  const vertex = new Vector3();
 
   for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
     const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
-    handlePositions.push(new THREE.Vector3(pt.x, 0, pt.y));
+    handlePositions.push(new Vector3(pt.x, 0, pt.y));
   };
 
-  const boxGeometry = new THREE.BoxGeometry(5, 5, 5); // to visualize handle positions
-  const boxMaterial = new THREE.MeshBasicMaterial({ color: "blue" });
+  const boxGeometry = new BoxGeometry(5, 5, 5); // to visualize handle positions
+  const boxMaterial = new MeshBasicMaterial({ color: "blue" });
   for (const handlePosition of handlePositions) {
-    const handle = new THREE.Mesh(boxGeometry, boxMaterial);
+    const handle = new Mesh(boxGeometry, boxMaterial);
     handle.position.copy(handlePosition);
     handleBoxes.push(handle);
   };
@@ -48,17 +48,17 @@ const SceneBuilder = () => {
   const cameraPoints = [];
   handleBoxes.forEach(box => {
     cameraPoints.push(box.position)
-    cameraPoints.push(new THREE.Vector3(box.position.x * 1.1, box.position.y + 5, box.position.z - 20));
-    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y - 5, box.position.z - 30));
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y + 5, box.position.z - 25));
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0.95, box.position.y + 8, box.position.z + -20));
-    cameraPoints.push(new THREE.Vector3(box.position.x, box.position.y + 10, box.position.z - 15));
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0.9, box.position.y, box.position.z - 20));
-    cameraPoints.push(new THREE.Vector3(box.position.x * 1.02, box.position.y - 5, box.position.z - 25));
-    cameraPoints.push(new THREE.Vector3(box.position.x * 0, box.position.y, box.position.z));
+    cameraPoints.push(new Vector3(box.position.x * 1.1, box.position.y + 5, box.position.z - 20));
+    cameraPoints.push(new Vector3(box.position.x, box.position.y - 5, box.position.z - 30));
+    cameraPoints.push(new Vector3(box.position.x * 0.9, box.position.y + 5, box.position.z - 25));
+    cameraPoints.push(new Vector3(box.position.x * 0.95, box.position.y + 8, box.position.z + -20));
+    cameraPoints.push(new Vector3(box.position.x, box.position.y + 10, box.position.z - 15));
+    cameraPoints.push(new Vector3(box.position.x * 0.9, box.position.y, box.position.z - 20));
+    cameraPoints.push(new Vector3(box.position.x * 1.02, box.position.y - 5, box.position.z - 25));
+    cameraPoints.push(new Vector3(box.position.x * 0, box.position.y, box.position.z));
   });
 
-  const cameraPathCurve = new THREE.CatmullRomCurve3(cameraPoints.map((handle) => handle));
+  const cameraPathCurve = new CatmullRomCurve3(cameraPoints.map((handle) => handle));
   cameraPathCurve.curveType = 'centripetal';
   cameraPathCurve.closed = true;
 
