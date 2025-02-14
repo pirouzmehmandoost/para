@@ -52,7 +52,13 @@ export const scaleMeshAtBreakpoint = (width) => {
     if (width <= 768) { //md
         return 0.9;
     }
-    return 1;   //lg, xl, 2xl
+    if (width <= 1024) { //md
+        return 0.95;
+    }
+    if (width <= 1920) { //md
+        return 1.0;
+    }
+    return 1.1;   //lg, xl, 2xl
 };
 
 export const scalePositionAtBreakPoint = (width) => {
@@ -68,7 +74,19 @@ export const scalePositionAtBreakPoint = (width) => {
     if (width <= 768) { //md
         return 0.9;
     }
-    return 0.7; //lg, xl, 2xl
+    if (width <= 900) {
+        return 0.8;
+    }
+    if (width <= 1024) { //lg
+        return 0.7;
+    }
+    if (width <= 1280) { //xl
+        return 0.6;
+    }
+    if (width <= 1536) { //2xl
+        return 0.5;
+    }
+    return 0.4;
 };
 
 export const calculatePositions = (scaleFactor, numPositions, center) => {
