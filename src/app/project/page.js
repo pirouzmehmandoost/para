@@ -4,7 +4,7 @@ import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import useSelection from "../store/selection";
-import ModelViewer from "../components/Three/ModelViewer";
+import SingularModelViewer from "../components/Three/SingularModelViewer";
 
 const ProjectViewer = () => {
   const [expanded, setExpanded] = useState(false);
@@ -27,7 +27,6 @@ const ProjectViewer = () => {
   const data = {
     modelUrl: modelUrls[0],
     ...selection.sceneData,
-    isPointerOver: '',
     enablePan: true,
     enableZoom: false,
     enableRotate: true,
@@ -71,7 +70,7 @@ const ProjectViewer = () => {
         id="model_viewer_container"
         className="flex flex-col w-full h-full place-self-center place-content-center"
       >
-        <ModelViewer
+        <SingularModelViewer
           className="w-full h-full self-center place-self-center place-content-center items-center"
           data={data}
         />

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useRef } from "react";
-import { Color, ColorManagement, DoubleSide, MeshPhysicalMaterial, Vector3 } from "three";
+import { Color, ColorManagement, DoubleSide, MeshPhysicalMaterial } from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Loader, CameraControls, SoftShadows, Plane } from "@react-three/drei";
 import { scaleMeshAtBreakpoint } from "../../../lib/utils";
@@ -68,7 +68,7 @@ const Model = (data) => {
   return <primitive castShadow receiveShadow ref={groupRef} object={scene} />;
 };
 
-export const ModelViewer = ({ data }) => {
+export const SingularModelViewer = ({ data }) => {
   const {
     orthographic,
     cameraPosition,
@@ -121,4 +121,4 @@ export const ModelViewer = ({ data }) => {
   );
 };
 
-export default ModelViewer;
+export default SingularModelViewer;
