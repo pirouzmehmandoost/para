@@ -5,7 +5,7 @@ import { Color, ColorManagement, DoubleSide, MeshPhysicalMaterial, Vector3 } fro
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Loader, CameraControls, SoftShadows, Plane } from "@react-three/drei";
 import { scaleMeshAtBreakpoint } from "../../../lib/utils";
-import cameraConfigs from "components/lib/cameraConfigs";
+import cameraConfigs from "../../../lib/cameraConfigs";
 import { glossMaterial } from "../../../lib/globals";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 
