@@ -1,7 +1,7 @@
 "use client";
 
 import localFont from "next/font/local";
-import ProjectBanner from "./components/ProjectBanner";
+import GlobalScene from "./components/Three/GlobalModelViewer";
 
 const myFont = localFont({
   src: "../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
@@ -13,32 +13,23 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-full min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`flex flex-col basis-5/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl uppercase ${myFont.className}`}
+        className={`z-10 flex flex-col w-5/6 h-fit mt-36 place-self-center ${myFont.className} uppercase text-2xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl 2xl:text-4xl`}
       >
         <div className="w-full my-4">
-          <p>Hey There! I&apos;m a software engineer based in the San Francisco Bay Area. I specialize in frontend development with JavaScript Frameworks.
-            I&apos;m also a designer with passions for interactive design, 3D computer graphics and 3D printing.
-          </p>
-          <p
-            className={`mt-14 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
-          >
-            Recent Projects
+          <p>Hey! I&apos;m a software engineer based in the San Francisco Bay Area. </p>
+          <p> I specialize in frontend development, interaction design, and rendering 3D graphics on the web.</p>
+          <p className="italic"> I&apos;m also a big giant 3D printing nerd and love to utilize what I design. </p>
+          <p className={`mt-14 sm:mt-14 md:mt-14 lg:mt-14 xl:mt-14 text-4xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl italic ${myFont.className}`}>
+            Recent Design Projects
           </p>
         </div>
-
       </div>
-      {/* end top section */}
-
       <div
         id="bottom_section"
-        className="flex flex-col basis-7/12 mt-12"
+        className="absolute flex w-full h-2/3 bottom-0"
       >
-        <div className="w-full h-full ">
-          <ProjectBanner />
-        </div>
+        <GlobalScene className="flex h-full w-full place-self-center" />
       </div>
-      {/* end top bottom */}
-
     </main>
   );
 }
