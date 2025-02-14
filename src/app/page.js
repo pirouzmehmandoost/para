@@ -19,7 +19,7 @@ export default function Home() {
           <p>Hey! I&apos;m a software engineer based in the San Francisco Bay Area. </p>
           <p> I specialize in frontend development, interaction design, and rendering 3D graphics on the web.</p>
           <p className="italic"> I&apos;m also a big giant 3D printing nerd and love to utilize what I design. </p>
-          <p className={`mt-14 sm:mt-14 md:mt-14 lg:mt-14 xl:mt-14 text-4xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl italic ${myFont.className}`}>
+          <p className={`mt-14 sm:mt-14 md:mt-14 lg:mt-14 xl:mt-14 text-4xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl`}>
             Recent Design Projects
           </p>
         </div>
@@ -28,8 +28,8 @@ export default function Home() {
         id="bottom_section"
         className="absolute flex w-full h-2/3 bottom-0"
       >
-        <GlobalScene className="flex h-full w-full place-self-center" />
+        <GlobalScene className="flex w-full h-full place-self-center" />
       </div>
     </main>
   );
-}
+};
