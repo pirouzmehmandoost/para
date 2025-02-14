@@ -50,26 +50,20 @@ export const colorCodes = {
       ...matteMaterial,
     },
   },
-
-  natural: {
-    label: "Off-White",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
+  eggshell: {
+    label: "Eggshell",
+    tailwindColor: `bg-orange-100`,
     material: {
       color: "#ccc0a3",
       ...matteMaterial,
       ior: 1.8,
       roughness: 0.6,
       metalness: 0,
-      // reflectivity: 1,
       sheen: 1,
       sheenRoughness: 0.5,
       sheenColor: "#ccc0a3",
-      // transmission: 1,
-      // sheenColor: "#f5ebd9",
     },
   },
-
-  // #f5ebd9
   // silver: {
   //   label: "Silver",
   //   tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
