@@ -3,12 +3,13 @@
 import { Suspense, useState } from "react";
 import { BoxGeometry, BufferGeometry, CatmullRomCurve3, ColorManagement, EllipseCurve, Line, LineBasicMaterial, Mesh, MeshBasicMaterial, Vector3 } from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Loader, Bounds } from "@react-three/drei";
+import { Environment, Loader, Bounds, SoftShadows, Plane } from "@react-three/drei";
 import { EffectComposer, N8AO, SMAA, Selection, Outline } from "@react-three/postprocessing";
 import { cameraPosition, portfolio } from "../../../lib/globals";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
-import AdaptivePixelRatio from "./AdaptivePixelRatio";
+// import AdaptivePixelRatio from "./AdaptivePixelRatio";
+import { glossMaterial } from "../../../lib/globals";
 
 ColorManagement.enabled = true;
 
@@ -129,16 +130,16 @@ export const GlobalModelViewer = () => {
         orthographic={orthographic}
         shadows
       >
-        <AdaptivePixelRatio pixelated />
+        {/* <AdaptivePixelRatio pixelated /> */}
         <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" />
         <color args={["#bcbcbc"]} attach="background" />
-        <fog attach="fog" density={0.004} color="#bcbcbc" near={160} far={290} />
+        <fog attach="fog" density={0.005} color="#bcbcbc" near={160} far={290} />
         <directionalLight
           castShadow={true}
-          position={[0, 100, 0]}
+          position={[0, 80, -40]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          intensity={4}
+          intensity={2}
           shadow-camera-near={0.5}
           shadow-camera-far={1000}
           shadow-bias={-0.001}
@@ -147,11 +148,27 @@ export const GlobalModelViewer = () => {
           shadow-camera-left={-1500}
           shadow-camera-right={1500}
         />
+        <directionalLight
+          castShadow={true}
+          position={[0, 100, 80]}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          intensity={1}
+          shadow-camera-near={0.5}
+          shadow-camera-far={1000}
+          shadow-bias={-0.001}
+          shadow-camera-top={1500}
+          shadow-camera-bottom={-1500}
+          shadow-camera-left={-1500}
+          shadow-camera-right={1500}
+        />
+        <SoftShadows samples={8} size={10} />
         <SceneBuilder />
         <Ground position={[0, -75, 20]} scale={[2, 1.1, 1.1]} rotation={Math.PI / 20} />
         {/* these plane positions should scale with canvas size */}
-        {/* <Plane castShadow args={[5000, 5000, 1, 1]} position={[-600, 0, 0]} side={DoubleSide} rotation={[-Math.PI / 1.4, Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane> */}
-        {/* <Plane castShadow args={[5000, 5000, 1, 1]} position={[600, 0, 0]} side={DoubleSide} rotation={[-Math.PI / 1.4, -Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane> */}
+        <Plane castShadow args={[5000, 5000, 1, 1]} position={[-750, 0, 0]} rotation={[-Math.PI / 1.4, Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
+        <Plane castShadow args={[5000, 5000, 1, 1]} position={[750, 0, 0]} rotation={[-Math.PI / 1.4, -Math.PI / 2.8, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
+
       </Canvas>
     </Suspense>
   );

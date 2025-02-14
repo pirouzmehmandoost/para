@@ -41,10 +41,13 @@ export function flattenAttributes(data) {
 
 export const scaleMeshAtBreakpoint = (width) => {
     if (width <= 360) {
-        return 0.6;
+        return 0.7;
+    }
+    if (width <= 400) {
+        return 0.7;
     }
     if (width <= 480) {
-        return 0.7;
+        return 0.75;
     }
     if (width <= 640) { //sm
         return 0.8;
@@ -52,41 +55,53 @@ export const scaleMeshAtBreakpoint = (width) => {
     if (width <= 768) { //md
         return 0.9;
     }
-    if (width <= 1024) { //md
-        return 0.95;
-    }
-    if (width <= 1920) { //md
+    if (width <= 1024) { //lg
         return 1.0;
     }
-    return 1.1;   //lg, xl, 2xl
+    if (width <= 1280) { //xl
+        return 1.1;
+    }
+    if (width <= 1536) { //2xl
+        return 1.15;
+    }
+    if (width <= 1920) {
+        return 1.2;
+    }
+    return 1.3;
 };
 
 export const scalePositionAtBreakPoint = (width) => {
     if (width <= 360) {
-        return 1.5;
-    }
-    if (width <= 480) {
         return 1.2;
     }
-    if (width <= 640) { //sm
+    if (width <= 400) {
+        return 1.1;
+    }
+    if (width <= 480) {
+        return 1.05;
+    }
+    if (width <= 540) {
         return 1.0;
+    }
+    if (width <= 640) { //sm
+        return 0.95;
     }
     if (width <= 768) { //md
         return 0.9;
     }
     if (width <= 900) {
-        return 0.8;
+        return 0.85;
     }
     if (width <= 1024) { //lg
-        return 0.7;
+        return 0.8;
     }
     if (width <= 1280) { //xl
-        return 0.6;
+        return 0.7;
     }
     if (width <= 1536) { //2xl
-        return 0.5;
+        return 0.6;
     }
-    return 0.4;
+    return 0.5;
 };
 
 export const calculatePositions = (scaleFactor, numPositions, center) => {
