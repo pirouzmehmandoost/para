@@ -8,29 +8,11 @@ import { scaleMeshAtBreakpoint } from "../../../lib/utils";
 import cameraConfigs from "../../../lib/cameraConfigs";
 import { glossMaterial } from "../../../lib/globals";
 import { Model as Ground } from "../../../../public/Env_ground_3";
-
+import CameraRig from "./CameraRig";
+// import Model from "./Model"
 ColorManagement.enabled = true;
 
-//should be using CameraRig.js
-const CameraRig = (data, { v = new Vector3() }) => {
-  const { cameraPosition } = data;
-
-  return useFrame((state) => {
-    const t = state.clock.elapsedTime;
-
-    state.camera.position.lerp(
-      v.set(
-        0,
-        Math.cos(t / 2) * 100,
-        (Math.sin(t / 2) + 1) * cameraPosition[2],
-      ),
-      0.06
-    );
-    state.camera.lookAt(0, 0, 0);
-  });
-};
-
-
+// Should be importing Model.js
 const Model = (data) => {
   const {
     colorCodes: {

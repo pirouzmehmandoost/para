@@ -27,6 +27,7 @@ const ProjectViewer = () => {
   const data = {
     modelUrl: modelUrls[0],
     ...selection.sceneData,
+    isPointerOver: '',
     enablePan: true,
     enableZoom: false,
     enableRotate: true,
