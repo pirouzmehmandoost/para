@@ -8,7 +8,8 @@ import cameraConfigs from "../../../lib/cameraConfigs";
 import { glossMaterial } from "../../../lib/globals";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import CameraRig from "./CameraRig";
-import Model from "./Model"
+import Model from "./Model";
+
 ColorManagement.enabled = true;
 
 export const SingularModelViewer = ({ data }) => {
