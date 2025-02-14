@@ -57,11 +57,11 @@ const Group = (data) => {
     isPointerOver
   } = data;
 
-  const router = useRouter()
+  const router = useRouter();
   const { size } = useThree();
   let positions = calculatePositions(size.width, modelUrls.length, groupPosition);
   const setSelection = useSelection((state) => state.setSelection);
-  // console.log("group: ", isPointerOver)
+
   return (
     <group
       onClick={() => {
@@ -90,109 +90,3 @@ const Group = (data) => {
 };
 
 export default Group;
-
-
-// const Group = (data) => {
-//   const router = useRouter()
-//   const [modelPosition, setModelPosition] = useState([]);
-//   const { size } = useThree();
-//   const setSelection = useSelection((state) => state.setSelection);
-
-//   console.log("Group data: ", data)
-//   const {
-//     colorCodes,
-//     modelUrls,
-//     autoRotate,
-//     scale,
-//     position: groupPosition,
-//     data: selectedProject,
-//   } = data;
-
-//   console.log("groupPosition: ", groupPosition?.x)
-
-//   const positions = [];
-//   const handles = [];
-//   const bezierCurve = new EllipseCurve(0, 0, 40, 30, 0, 2 * Math.PI, false, 0);
-//   bezierCurve.closed = true;
-
-//   const bezierCurvePoints = bezierCurve.getPoints(modelUrls.length);
-//   bezierCurvePoints.shift(); //remove an overlapping point
-
-//   const bezierGeometry = new BufferGeometry().setFromPoints(bezierCurvePoints);
-
-//   const ellipse = new Line(bezierGeometry, new MeshBasicMaterial());
-//   ellipse.rotation.x = Math.PI * 0.5;
-
-//   const vertex = new Vector3();
-//   const positionAttribute = ellipse.geometry.getAttribute('position');
-
-//   const handlePositions = [];
-
-//   for (let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex++) {
-//     const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
-
-//     // const p = new Vector3(pt.x, 0, pt.y)
-//     // handlePositions.push(p);
-
-//     handlePositions.push({
-//       x: pt.x,
-//       y: 0,
-//       z: pt.y
-//     });
-//   };
-
-//   const boxGeometry = new BoxGeometry(2, 2, 2);
-//   for (const handlePosition of handlePositions) {
-//     const handle = new Mesh(boxGeometry);
-//     handle.position.copy(handlePosition);
-//     handles.push(handle);
-//   }
-
-//   useEffect(() => {
-//     if (modelUrls.length > 1) {
-//       for (const handlePosition of handlePositions) {
-//         const p = [
-//           handlePosition.x * 1.6,
-//           handlePosition.y,
-//           handlePosition.z * 1.5,
-//         ]
-
-//         // const p = new Vector3(
-//         //   handlePosition.x * 1.6,
-//         //   handlePosition.y,
-//         //   handlePosition.z * 1.5
-//         // );
-//         positions.push(p);
-//       }
-//       setModelPosition(positions);
-//     };
-
-//   }, [modelUrls]);
-
-//   return (
-//     <group
-//       position={groupPosition}
-//       onClick={() => {
-//         setSelection(selectedProject);
-//         router.push('/project');
-//       }}
-//     >
-//       {
-//         modelUrls.map((url, index) => {
-//           const updateScale = modelUrls.length === 1 ? (scale * 0.5) : (scaleMeshAtBreakpoint(size.width) / modelUrls.length);
-//           const newProps = {
-//             modelUrl: url,
-//             material: modelUrls.length === 1 ? { ...colorCodes.defaultColor.material } : Object.values(colorCodes.colorWays)[index].material,
-//             scale: updateScale,
-//             autoRotate: modelUrls.length === 1 || index > 0 ? autoRotate : false,
-//             position: modelPosition[index]
-//           };
-
-//           return (
-//             <Model key={index} {...newProps} />
-//           );
-//         })
-//       }
-//     </group>
-//   );
-// };
