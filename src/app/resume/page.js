@@ -1,5 +1,20 @@
 
 "use client";
+
+export default function Resume() {
+  return (
+    <div className="flex flex-col w-screen h-screen">
+      <iframe
+        className="mt-28"
+        src={"/pirouz_mehmandoost_resume_2025.pdf"}
+        width="100%"
+        height="100%"
+        allowFullScreen
+      />
+    </div>
+  );
+};
+
 // import React, { useRef, useEffect, useState } from 'react';
 
 // export const IframeComponent = () => {
@@ -48,18 +63,3 @@
 //     < IframeComponent />
 //   );
 // }
-
-
-export default function Resume() {
-  return (
-    <div className="flex flex-col w-screen h-screen">
-      <iframe
-        className="mt-28"
-        src={"/pirouz_mehmandoost_resume_2025.pdf"}
-        width="100%"
-        height="100%"
-        allowFullScreen
-      />
-    </div>
-  );
-}
