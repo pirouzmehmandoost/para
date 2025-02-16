@@ -1,5 +1,3 @@
-export const cameraPosition = [0, 10, 180];
-
 const matteMaterial = {
   roughness: 1,
   metalness: 0.1,
@@ -34,20 +32,20 @@ export const glossMaterial = {
 };
 
 export const colorCodes = {
-  gloss_black: {
-    label: "Gloss Black",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
-    material: {
-      color: "black",
-      ...glossMaterial,
-    },
-  },
   matte_black: {
     label: "Matte Black",
     tailwindColor: `bg-zinc-900`,
     material: {
       color: "black",
       ...matteMaterial,
+    },
+  },
+  gloss_black: {
+    label: "Gloss Black",
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
+    material: {
+      color: "black",
+      ...glossMaterial,
     },
   },
   eggshell: {
@@ -64,14 +62,14 @@ export const colorCodes = {
       sheenColor: "#ccc0a3",
     },
   },
-  // silver: {
-  //   label: "Silver",
-  //   tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
-  //   material: {
-  //     color: "#444444",
-  //     ...metallicMaterial,
+  //   silver: {
+  //     label: "Silver",
+  //     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
+  //     material: {
+  //       color: "#444444",
+  //       ...metallicMaterial,
+  //     },
   //   },
-  // },
 };
 
 export const portfolio = {
@@ -193,11 +191,11 @@ export const portfolio = {
           colorWays: { ...colorCodes },
         },
         modelUrls: [
-          "/oval_bag_1.glb",
           "/oval_bag_3-transformed.glb",
+          "/bag_xl-transformed.glb",
           "/oval_bag_xl_v2-transformed.glb",
         ],
-        scale: 1.0,
+        scale: 0.95,
         autoRotate: true,
       },
       shortDescription: "A small collection of 3D printed handbags.",
@@ -230,7 +228,6 @@ export const portfolio = {
         scale: 1.0,
         autoRotate: true,
         autoUpdateMaterial: false,
-
       },
       shortDescription:
         "An exploration of branding and product design as a Yoga instructor.",

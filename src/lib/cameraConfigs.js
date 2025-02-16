@@ -1,4 +1,7 @@
 const cameraConfigs = {
+  POSITION: [0, 10, 180],
+  NEAR: 1,
+  FAR: 280,
   NONE: 0,
   ROTATE: 1,
   TRUCK: 2,
@@ -15,7 +18,7 @@ const cameraConfigs = {
   TOUCH_DOLLY_ROTATE: 4096,
   TOUCH_ZOOM_TRUCK: 8192,
   TOUCH_ZOOM_OFFSET: 16384,
-  TOUCH_ZOOM_ROTATE: 32768
+  TOUCH_ZOOM_ROTATE: 32768,
 };
 
 export default cameraConfigs;
