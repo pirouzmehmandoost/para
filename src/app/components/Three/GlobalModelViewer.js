@@ -187,11 +187,11 @@ const SceneBuilder = () => {
               <group
                 key={index}
                 onPointerOver={(e) => {
-                  //   console.log("\nonPointerOver", e.object.name, e);
+                  console.log("\nonPointerOver", e.object.name, e);
                   hover(e.object.name);
                 }}
                 onPointerOut={(e) => {
-                  //   console.log("\nonPointerOut", e.object.name, e);
+                  console.log("\nonPointerOut", e.object.name, e);
                   hover("");
                 }}
               >
