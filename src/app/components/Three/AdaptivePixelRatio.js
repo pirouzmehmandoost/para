@@ -1,15 +1,15 @@
-import { useEffect } from "react";
-import { useThree } from "@react-three/fiber";
+// import { useEffect } from "react";
+// import { useThree } from "@react-three/fiber";
 
-const AdaptivePixelRatio = () => {
-  const current = useThree((state) => state.performance.current);
-  const setPixelRatio = useThree((state) => state.setDpr);
+// const AdaptivePixelRatio = () => {
+//   const current = useThree((state) => state.performance.current);
+//   const setPixelRatio = useThree((state) => state.setDpr);
 
-  useEffect(() => {
-    setPixelRatio(window.devicePixelRatio * current)
-  }, [current]);
+//   useEffect(() => {
+//     setPixelRatio(window.devicePixelRatio * current)
+//   }, [current]);
 
-  return null;
-};
+//   return null;
+// };
 
-export default AdaptivePixelRatio;
+// export default AdaptivePixelRatio;
