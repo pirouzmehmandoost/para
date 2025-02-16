@@ -45,13 +45,13 @@ const SceneBuilder = () => {
   const { projects } = portfolio;
   const handleBoxes = []; //to see positions while developing
   const handlePositions = [];
-  const radius = scaleMeshAtBreakpoint(size.width) * 290;
+  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
 
   const ellipseCurve = new EllipseCurve(
     0,
     0,
-    radius,
-    radius,
+    ellipseRadius,
+    ellipseRadius,
     0,
     2 * Math.PI,
     false,
