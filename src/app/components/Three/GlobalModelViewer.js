@@ -24,7 +24,7 @@ import {
 import {
   EffectComposer,
   N8AO,
-  SMAA,
+  //   SMAA,
   Selection,
   Outline,
 } from "@react-three/postprocessing";
