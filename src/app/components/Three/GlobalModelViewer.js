@@ -40,7 +40,7 @@ import Group from "./Group";
 ColorManagement.enabled = true;
 
 const SceneBuilder = () => {
-  const [hovered, hover] = useState("");
+  const [isHovering, setHover] = useState("");
   const { size } = useThree();
   const { projects } = portfolio;
   const handleBoxes = []; //to see positions while developing
@@ -170,7 +170,7 @@ const SceneBuilder = () => {
           blur={true}
           pulseSpeed={0.5} // whether the outline should be blurred
         />
-        <SMAA />
+        {/* <SMAA /> */}
       </EffectComposer>
       <Bounds fit clip margin={1.2} damping={10}>
         <group>
@@ -180,7 +180,7 @@ const SceneBuilder = () => {
               ...data.sceneData,
               position: handlePositions[index],
               autoRotateSpeed: index % 2 == 0 ? -1 : 1,
-              isPointerOver: hovered,
+              isPointerOver: isHovering,
             };
 
             return (
@@ -188,12 +188,17 @@ const SceneBuilder = () => {
                 key={index}
                 onPointerOver={(e) => {
                   console.log("\nonPointerOver", e.object.name, e);
-                  hover(e.object.name);
+                  setHover(e.object.name);
                 }}
-                onPointerOut={(e) => {
-                  console.log("\nonPointerOut", e.object.name, e);
-                  hover("");
+                onPointerMissed={(e) => {
+                  console.log("\nonPointerMissed", e);
+                  //   if (!e?.object?.name || e?.object?.name !== isHovering) {
+                  setHover("");
                 }}
+                // onPointerOut={(e) => {
+                //   console.log("\nonPointerOut", e.object.name, e);
+                //   setHover("");
+                // }}
               >
                 <Group {...newProps} />
               </group>
