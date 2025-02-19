@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import useSelection from "../store/selection";
 import SingularModelViewer from "../components/Three/SingularModelViewer";
 
@@ -11,13 +11,7 @@ const ProjectViewer = () => {
   const selection = useSelection((state) => state.selection);
 
   const {
-    sceneData: {
-      modelUrls,
-      colorCodes: {
-        defaultColor,
-        colorWays,
-      } = {},
-    },
+    sceneData: { modelUrls, colorCodes: { defaultColor, colorWays } = {} } = {},
     description,
     name,
   } = selection;
@@ -42,26 +36,23 @@ const ProjectViewer = () => {
     <div className="flex flex-row place-content-center items-center">
       <p className="text-nowrap text-2xl">Select Color</p>
 
-      {
-        Object.entries(colorWays).map((entry) => {
-          return (
-            <div
-              key={entry[0]}
-              className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial.label !== entry[1].label ? 'outline-none' : 'outline-zinc-900 outline-2'}`}
-              onClick={() => { if (selectedMaterial.label !== entry[1].label) setMaterial(entry[1]) }}
-            >
-            </div>
-          );
-        })
-      }
+      {Object.entries(colorWays).map((entry) => {
+        return (
+          <div
+            key={entry[0]}
+            className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial.label !== entry[1].label ? "outline-none" : "outline-zinc-900 outline-2"}`}
+            onClick={() => {
+              if (selectedMaterial.label !== entry[1].label)
+                setMaterial(entry[1]);
+            }}
+          ></div>
+        );
+      })}
     </div>
   );
 
   return (
-    <div
-      id="project_viewer"
-      className="flex flex-col w-full h-screen"
-    >
+    <div id="project_viewer" className="flex flex-col w-full h-screen">
       <div
         id="model_viewer_container"
         className="flex flex-col w-full h-full place-self-center place-content-center"
@@ -115,7 +106,7 @@ const ProjectViewer = () => {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
