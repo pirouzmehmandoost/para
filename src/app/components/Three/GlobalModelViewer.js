@@ -37,7 +37,7 @@ const SceneBuilder = () => {
   });
   const { size } = useThree();
   const { projects } = portfolio;
-  const handlePositions = [];
+  const groupPositions = [];
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
   const ellipseCurve = new EllipseCurve(
     0,
@@ -58,20 +58,12 @@ const SceneBuilder = () => {
     ellipseCurvePoints,
   );
 
-  //to see camera path while developing
-  const ellipse = new Line(ellipseGeometry);
-  ellipse.rotation.x = Math.PI * 0.5;
-
-  const positionAttribute = ellipse.geometry.getAttribute("position");
+  const positionAttribute = ellipseGeometry.getAttribute("position");
   const vertex = new Vector3();
 
-  for (
-    let vertexIndex = 0;
-    vertexIndex < positionAttribute.count;
-    vertexIndex++
-  ) {
-    const pt = vertex.fromBufferAttribute(positionAttribute, vertexIndex);
-    handlePositions.push(new Vector3(pt.x, 0, pt.y));
+  for (let i = 0; i < positionAttribute.count; i++) {
+    const pt = vertex.fromBufferAttribute(positionAttribute, i);
+    groupPositions.push(new Vector3(pt.x, 0, pt.y));
   }
 
   let cameraTarget =
@@ -86,7 +78,7 @@ const SceneBuilder = () => {
     pointerTarget?.position,
   );
 
-  setCameraRig(handlePositions, cameraTarget);
+  setCameraRig(groupPositions, cameraTarget);
 
   return (
     <Selection>
@@ -113,7 +105,7 @@ const SceneBuilder = () => {
             const newProps = {
               data,
               ...data.sceneData,
-              position: handlePositions[index],
+              position: groupPositions[index],
               autoRotateSpeed: index % 2 == 0 ? -1 : 1,
               isPointerOver: pointerTarget.name,
             };
