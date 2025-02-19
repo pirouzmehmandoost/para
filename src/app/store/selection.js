@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import { portfolio } from "../../lib/globals";
 
-const initialState = null;
+const initialState = portfolio.projects[1];
 
 const selectionStore = (set, get) => ({
   selection: initialState,
