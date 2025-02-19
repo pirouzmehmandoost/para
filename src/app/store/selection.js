@@ -1,8 +1,5 @@
 import { create } from "zustand";
-import { portfolio } from "../../lib/globals";
 
-//temporary
-// const initialState = portfolio.projects[1];
 const initialState = undefined;
 
 const selectionStore = (set, get) => ({

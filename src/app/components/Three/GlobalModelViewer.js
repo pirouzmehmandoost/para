@@ -2,13 +2,7 @@
 
 // import { useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
-import {
-  BufferGeometry,
-  ColorManagement,
-  EllipseCurve,
-  Line,
-  Vector3,
-} from "three";
+import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from "three";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Environment, Loader, Bounds, SoftShadows } from "@react-three/drei";
 import {
@@ -23,7 +17,7 @@ import cameraConfigs from "../../../lib/cameraConfigs";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
 import useSelection from "../../store/selection";
-import { setCameraRig } from "./CameraRig";
+import { SetCameraRig } from "./CameraRig";
 
 ColorManagement.enabled = true;
 
@@ -78,7 +72,7 @@ const SceneBuilder = () => {
     pointerTarget?.position,
   );
 
-  setCameraRig(groupPositions, cameraTarget);
+  SetCameraRig(groupPositions, cameraTarget);
 
   return (
     <Selection>
