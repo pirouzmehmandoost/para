@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const initialState = undefined;
+const initialState = null;
 
 const selectionStore = (set, get) => ({
   selection: initialState,
