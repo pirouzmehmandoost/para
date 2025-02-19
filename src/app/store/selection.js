@@ -13,6 +13,8 @@ const initialState = {
     modelUrls: [""],
     scale: 0.0,
     autoRotate: true,
+    autoRotateSpeed: 1,
+    isPointerOver: "",
     autoUpdateMaterial: false,
     colorCodes: {
       defaultColor: {},

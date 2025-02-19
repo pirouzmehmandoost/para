@@ -17,19 +17,27 @@ import cameraConfigs from "../../../lib/cameraConfigs";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
 import useSelection from "../../store/selection";
-import { SetCameraRig } from "./CameraRig";
+import { setCameraRig } from "./CameraRig";
 
 ColorManagement.enabled = true;
-
 const SceneBuilder = () => {
   const setSelection = useSelection((state) => state.setSelection);
-  const currentSelection = useSelection((state) => state.getSelection());
   //   const router = useRouter();
+  const [currentSelection, select] = useState(null);
+  const handleUpdateSelection = (data) => {
+    if (!data) {
+      setSelection();
+      select(null);
+    } else {
+      setSelection(data);
+      select(data);
+    }
+  };
   const [pointerTarget, setPointerTarget] = useState({
+    eventObject: "",
     name: "",
     position: null,
   });
-  //   const [currentSelection, setCurrentSelection] = useState(null);
   const { size } = useThree();
   const { projects } = portfolio;
   const groupPositions = [];
@@ -52,17 +60,18 @@ const SceneBuilder = () => {
   const ellipseGeometry = new BufferGeometry().setFromPoints(
     ellipseCurvePoints,
   );
-
   const positionAttribute = ellipseGeometry.getAttribute("position");
-  const vertex = new Vector3();
 
+  const vertex = new Vector3();
   for (let i = 0; i < positionAttribute.count; i++) {
     const pt = vertex.fromBufferAttribute(positionAttribute, i);
     groupPositions.push(new Vector3(pt.x, 0, pt.y));
   }
 
   let cameraTarget =
-    !!currentSelection && pointerTarget?.position
+    currentSelection?.name.length &&
+    currentSelection.name === pointerTarget?.eventObject &&
+    pointerTarget?.position
       ? pointerTarget?.position
       : null;
 
@@ -73,7 +82,7 @@ const SceneBuilder = () => {
     pointerTarget?.position,
   );
 
-  SetCameraRig(groupPositions, cameraTarget);
+  setCameraRig(groupPositions, cameraTarget);
 
   return (
     <Selection>
@@ -98,26 +107,31 @@ const SceneBuilder = () => {
         <group>
           {projects.map((data, index) => {
             const newProps = {
-              data,
-              ...data.sceneData,
-              position: groupPositions[index],
-              autoRotateSpeed: index % 2 == 0 ? -1 : 1,
-              isPointerOver: pointerTarget.name,
+              ...data,
+              sceneData: {
+                ...data.sceneData,
+                position: groupPositions[index],
+                autoRotateSpeed: index % 2 == 0 ? -1 : 1,
+                isPointerOver: pointerTarget.name,
+              },
             };
 
             return (
               <group
-                name={`group_${data?.name}`}
+                name={`${newProps?.name}`}
                 key={index}
                 onClick={(e) => {
                   if (e.pointerType === "mouse") {
-                    if (
-                      pointerTarget.name.length > 0 &&
-                      pointerTarget.name === e.object.name
-                    ) {
-                      console.log("\nonClick on desktop", e.object.name, data);
-                      setSelection(data);
+                    if (pointerTarget?.name === e.object.name) {
+                      console.log(
+                        "\nonClick on desktop",
+                        e,
+                        e.object.name,
+                        data,
+                      );
+                      handleUpdateSelection(newProps);
                       setPointerTarget({
+                        eventObject: e.eventObject.name,
                         name: e.object.name,
                         position: e.object.position,
                       });
@@ -130,31 +144,37 @@ const SceneBuilder = () => {
                     }
                   } else {
                     console.log("onClick on mobile", e.object.name);
-                    // if (
-                    //   pointerTarget.name.length > 0 &&
-                    //   pointerTarget.name === e.object.name
-                    // ) {
-                    setSelection(data);
+                    handleUpdateSelection(newProps);
                     setPointerTarget({
+                      eventObject: e.eventObject.name,
                       name: e.object.name,
                       position: e.object.position,
                     });
-                    // }
                   }
                 }}
                 onPointerOver={(e) => {
-                  if (e.pointerType === "touch") {
-                    console.log("onClick on mobile", e.object.name);
-
-                    setSelection(data);
+                  if (e.pointerType === "mouse") {
                     setPointerTarget({
+                      eventObject: e.eventObject.name,
                       name: e.object.name,
                       position: e.object.position,
                     });
+
+                    console.log(
+                      "\nonPointerOver on Desktop\n",
+                      "event:",
+                      e,
+                      "pointerTarget: ",
+                      pointerTarget,
+                      "\n",
+                    );
                   } else {
-                    if (e.pointerType === "mouse") {
-                      console.log("\nonPointerOver on Desktop", e.object.name);
+                    if (e.pointerType === "touch") {
+                      console.log("onPointerOver on mobile", e.object.name);
+                      //   setSelection(newProps);
+                      handleUpdateSelection(newProps);
                       setPointerTarget({
+                        eventObject: e.eventObject.name,
                         name: e.object.name,
                         position: e.object.position,
                       });
@@ -164,30 +184,21 @@ const SceneBuilder = () => {
                 onPointerMissed={(e) => {
                   if (e.pointerType === "mouse") {
                     console.log("\nonPointerMissed on desktop");
-                    setPointerTarget({
-                      name: "",
-                      position: null,
-                    });
-                    setSelection();
+                    setPointerTarget({});
+                    handleUpdateSelection();
                   } else {
                     if (e.pointerType === "touch") {
                       console.log("\nonPointerMissed on mobile");
-                      setPointerTarget({
-                        name: "",
-                        position: null,
-                      });
-                      setSelection();
+                      setPointerTarget({});
+                      handleUpdateSelection();
                     }
                   }
                 }}
                 onPointerOut={(e) => {
                   if (e.pointerType === "mouse") {
-                    console.log("\nonPointerOut onn desktop", e?.object?.name);
+                    console.log("\nonPointerOut on desktop", e?.object?.name);
                     if (!currentSelection) {
-                      setPointerTarget({
-                        name: "",
-                        position: null,
-                      });
+                      setPointerTarget({});
                     }
                   } else {
                     if (e.pointerType === "touch") {
@@ -196,7 +207,7 @@ const SceneBuilder = () => {
                   }
                 }}
               >
-                <Group {...newProps} />
+                <Group {...newProps.sceneData} />
               </group>
             );
           })}
