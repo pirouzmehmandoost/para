@@ -13,11 +13,11 @@ const ProductViewer = () => {
   const imageGrid = [];
   const selection = useSelection((state) => state.selection);
   const [expanded, setExpanded] = useState(false);
-  const { imgUrls = {}, name } = selection;
+  const { imgUrls = {}, name = "" } = selection || {};
 
-  const flattenedUrls = Object.values(imgUrls).flat();
+  const flattenedUrls = Object?.values(imgUrls)?.flat();
 
-  while (count < flattenedUrls.length) {
+  while (count < flattenedUrls?.length) {
     const subArr = [];
     if (numRows % 2 === 0 && flattenedUrls[count]) {
       subArr.push(flattenedUrls[count]);

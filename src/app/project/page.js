@@ -19,7 +19,7 @@ const ProjectViewer = () => {
   const [selectedMaterial, setMaterial] = useState(defaultColor ?? null);
   const data = {
     modelUrl: modelUrls[0],
-    ...selection.sceneData,
+    ...selection?.sceneData,
     enablePan: true,
     enableZoom: false,
     enableRotate: true,
