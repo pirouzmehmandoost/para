@@ -100,7 +100,7 @@ const SceneBuilder = () => {
           width={1000}
           edgeStrength={50}
           blur={true}
-          pulseSpeed={0.3} // whether the outline should be blurred
+          pulseSpeed={0.3}
         />
       </EffectComposer>
       <Bounds fit clip margin={1.2} damping={10}>
@@ -171,7 +171,6 @@ const SceneBuilder = () => {
                   } else {
                     if (e.pointerType === "touch") {
                       console.log("onPointerOver on mobile", e.object.name);
-                      //   setSelection(newProps);
                       handleUpdateSelection(newProps);
                       setPointerTarget({
                         eventObject: e.eventObject.name,

@@ -21,6 +21,7 @@ const CameraRig = (data, { v = new Vector3() }) => {
   });
 };
 
+//lerp to targetPosition or lerp between all positionVectors at an interval
 export const SetCameraRig = (positionVectors, targetPosition) => {
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
@@ -41,9 +42,12 @@ export const SetCameraRig = (positionVectors, targetPosition) => {
       //lerp camera target and position
       camera.lookAt(camera.position.lerp(v, 0.06));
     } else {
+      //Takes about 15 seconds for the camera to lookAt/move between positionVectors.
+      //Position is the vector3 value of a vector2 point on the curve. curve.getPoint(s) => Vector3(x,y,0)
+      //When the distance betw position & positionVector[i] > distanceTo(position, positionVector[i+1])
+      //the camera lerps from positionVector[i] to positionVector[i+1].
       t = clock.getElapsedTime();
-
-      let s = (t * 0.03) % 1; //around 15 seconds
+      let s = (t * 0.03) % 1;
       const position = cameraPathCurve.getPoint(s);
 
       v.set(
@@ -66,65 +70,5 @@ export const SetCameraRig = (positionVectors, targetPosition) => {
     }
   });
 };
-
-// export const setCameraRig = (positions, pointerPosition = null) => {
-//   const cameraPathCurve = new CatmullRomCurve3(
-//     positions.map((handle) => handle),
-//     true,
-//     "centripetal",
-//   );
-//   cameraPathCurve.closed = true;
-
-//   let i = 0;
-
-//   return useFrame(({ clock, camera }) => {
-//     // let t = clock.getElapsedTime();
-//     // let s = (t * 0.03) % 1;
-
-//     // const v = new Vector3(
-//     //   position.x,
-//     //   position.y + cameraConfigs.POSITION[1],
-//     //   position.z + cameraConfigs.POSITION[2],
-//     // );
-//     const v = new Vector3();
-
-//     if (i <= 2) {
-//       console.log("camera : ", camera);
-//     }
-//     i++;
-
-//     if (pointerPosition) {
-//       let t = clock.getElapsedTime();
-
-//       camera.position.lerp(
-//         v.set(0, Math.cos(t / 2) * 20, (Math.sin(t / 2) + 1) * 2),
-//         0.05,
-//       );
-//       camera.lookAt(pointerPosition);
-//     } else {
-//       let t = clock.getElapsedTime();
-
-//       let s = (t * 0.03) % 1;
-//       const position = cameraPathCurve.getPoint(s);
-
-//       v.set(
-//         position.x,
-//         position.y + cameraConfigs.POSITION[1],
-//         position.z + cameraConfigs.POSITION[2],
-//       );
-
-//       camera.lookAt(
-//         camera.position.lerp(
-//           positions.reduce((acc = new Vector3(), el = new Vector3()) =>
-//             Math.abs(acc.distanceTo(position) < el.distanceTo(position))
-//               ? new Vector3(acc.x, v.y, v.z)
-//               : new Vector3(el.x, v.y, v.z),
-//           ),
-//           0.055,
-//         ),
-//       );
-//     }
-//   });
-// };
 
 export default CameraRig;
