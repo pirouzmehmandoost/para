@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import localFont from "next/font/local";
 import GlobalScene from "./components/Three/GlobalModelViewer";
 
@@ -13,12 +13,39 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-full min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`z-10 flex flex-col w-5/6 h-fit place-self-center mt-28 sm:mt-24 md:mt-36 lg:mt-36 xl:mt-36 2xl:mt-36 ${myFont.className} uppercase text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl 2xl:text-4xl`}
+        className={`z-10 flex flex-col w-4/5 min-h-fit place-self-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
       >
-        <div className="w-full my-4">
-          <p>Hey! I&apos;m a software engineer based in the San Francisco Bay Area. I specialize in frontend development, interaction design, and rendering 3D graphics on the web.</p>
-          <p className="italic"> I&apos;m also a big giant 3D printing nerd and love to utilize what I design. </p>
-          <p className={`mt-12 sm:mt-12 md:mt-14 lg:mt-14 xl:mt-14 text-4xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl`}>
+        <div className="w-full">
+          <p>
+            Hey! I&apos;m a software engineer based in the San Francisco Bay
+            Area. I specialize in frontend development and rendering interactive
+            graphics on the web.
+          </p>
+          <p>
+            I love to 3D print and play with computer graphics libraries after
+            my 9-5.
+          </p>
+          <div>
+            <div className="mt-8">
+              WIP! Read my development notes on
+              <Link
+                href="https://github.com/pirouzmehmandoost/para/blob/main/README.md"
+                className="border-transparent"
+                rel="noopener noreferrer"
+                target="blank"
+              >
+                <span
+                  className={`pl-1 cursor-pointer text-zinc-500 italic font-medium underline underline-offset-2 decoration-wavy decoration-2 decoration-clay_dark transition-colors ease-in-out duration-300 hover:text-zinc-400 hover:decoration-zinc-500 `}
+                >
+                  Github
+                </span>
+                <span className="pl-1 italic">.</span>
+              </Link>
+            </div>
+          </div>
+          <p
+            className={`mt-8 sm:mt-8 md:mt-10 lg:mt-10 xl:mt-10 2xl:mt-10 text-4xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-5xl`}
+          >
             Recent Design Projects
           </p>
         </div>
@@ -31,4 +58,4 @@ export default function Home() {
       </div>
     </main>
   );
-};
+}
