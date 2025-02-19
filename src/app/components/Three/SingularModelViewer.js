@@ -1,11 +1,15 @@
 "use client";
 
 import { Suspense } from "react";
-import { ColorManagement, DoubleSide } from "three";
+import { ColorManagement } from "three";
 import { Canvas } from "@react-three/fiber";
-import { Environment, Loader, CameraControls, SoftShadows, Plane } from "@react-three/drei";
+import {
+  Environment,
+  Loader,
+  CameraControls,
+  SoftShadows,
+} from "@react-three/drei";
 import cameraConfigs from "../../../lib/cameraConfigs";
-import { glossMaterial } from "../../../lib/globals";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import CameraRig from "./CameraRig";
 import Model from "./Model";
@@ -13,19 +17,19 @@ import Model from "./Model";
 ColorManagement.enabled = true;
 
 export const SingularModelViewer = ({ data }) => {
-  const {
-    orthographic,
-    cameraPosition,
-  } = data;
-  const near = orthographic ? -100 : 1;
-  const fov = orthographic ? 500 : 50;
+  const { cameraPosition } = data;
 
   return (
     <Suspense fallback={<Loader />}>
       <Canvas
-        camera={{ position: cameraPosition, near: near, far: 500, fov: fov }}
+        camera={{
+          position: cameraPosition,
+          near: cameraConfigs.NEAR,
+          far: cameraConfigs.FAR + 100,
+          fov: 50,
+        }}
         fallback={<div>Sorry no WebGL supported!</div>}
-        orthographic={orthographic}
+        orthographic={false}
         shadows
       >
         <Environment shadows files="./studio_small_08_4k.exr" />
@@ -33,20 +37,29 @@ export const SingularModelViewer = ({ data }) => {
         <CameraControls
           minPolarAngle={0}
           maxPolarAngle={Math.PI / 2}
-          minAzimuthAngle={-Math.PI / 2}
-          maxAzimuthAngle={Math.PI / 2}
-          mouseButtons={{ left: cameraConfigs.ROTATE, middle: cameraConfigs.NONE, right: cameraConfigs.NONE, wheel: cameraConfigs.NONE }}
-          touches={{ one: cameraConfigs.TOUCH_ROTATE, two: cameraConfigs.NONE, three: cameraConfigs.NONE }}
+          minAzimuthAngle={-Math.PI / 3}
+          maxAzimuthAngle={Math.PI / 3}
+          mouseButtons={{
+            left: cameraConfigs.ROTATE,
+            middle: cameraConfigs.NONE,
+            right: cameraConfigs.NONE,
+            wheel: cameraConfigs.NONE,
+          }}
+          touches={{
+            one: cameraConfigs.TOUCH_ROTATE,
+            two: cameraConfigs.NONE,
+            three: cameraConfigs.NONE,
+          }}
         />
         <CameraRig {...data} />
-        <fog attach="fog" density={0.006} color="#bcbcbc" near={50} far={320} />
+        <fog attach="fog" density={0.007} color="#bcbcbc" near={70} far={300} />
         <directionalLight
           castShadow={true}
           position={[-12, 50, -50]}
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
           intensity={3}
-          shadow-camera-near={0.5}
+          shadow-camera-near={0.1}
           shadow-camera-far={500}
           shadow-bias={-0.001}
           shadow-camera-top={1000}
@@ -56,10 +69,11 @@ export const SingularModelViewer = ({ data }) => {
         />
         <Model {...data} />
         <SoftShadows samples={10} size={6} />
-        <Ground position={[0, -55, 0]} scale={[0.8, 0.6, 0.6]} rotation={Math.PI / 12} />
-        {/* these plane positions should scale with canvas size */}
-        <Plane castShadow args={[1500, 1500, 500, 500]} position={[-240, 0, 0]} side={DoubleSide} rotation={[0, Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
-        <Plane castShadow args={[1500, 1500, 500, 500]} position={[240, 0, 0]} side={DoubleSide} rotation={[0, -Math.PI / 2.7, 0]}> <meshPhysicalMaterial {...glossMaterial} color={"black"} /> </Plane>
+        <Ground
+          position={[0, -55, 0]}
+          scale={[0.8, 0.6, 0.6]}
+          rotation={Math.PI / 12}
+        />
       </Canvas>
     </Suspense>
   );
