@@ -13,37 +13,44 @@ export default function Home() {
     <main className="flex flex-col w-screen min-w-screen h-full min-h-screen text-center text-clay_dark">
       <div
         id="top_section"
-        className={`z-10 flex flex-col w-4/5 min-h-fit place-self-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
+        className={`z-10 flex flex-col w-full min-h-fit place-self-center place-items-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
       >
-        <p>
-          Hey! I&apos;m a software engineer based in the San Francisco Bay Area.
-          I specialize in frontend development and rendering interactive
-          graphics on the web.
-        </p>
-        <p>I love to 3D print and study computer graphics after my 9-5.</p>
-        <div>
-          <div className="mt-4 sm:mt-8 md:mt-8 lg:mt-8 xl:mt-8 2xl:mt-8">
-            WIP! Read my dev notes in the
-            <Link
-              href="https://github.com/pirouzmehmandoost/para/blob/main/README.md"
-              className="border-transparent"
-              rel="noopener noreferrer"
-              target="blank"
-            >
-              <span
-                className={`pl-1 cursor-pointer text-zinc-500 italic transition-colors ease-in-out duration-300 hover:text-zinc-400`}
+        <div className="w-4/5">
+          <p>
+            Hey! I&apos;m a software engineer based in the San Francisco Bay
+            Area. I specialize in frontend development and rendering interactive
+            graphics on the web.
+          </p>
+          <p>
+            I love to 3D print and mess around with computer graphics libraries
+            after my 9-5.
+          </p>
+          <div>
+            <div className="mt-4 sm:mt-8 md:mt-8 lg:mt-8 xl:mt-8 2xl:mt-8">
+              WIP- read my latest dev notes in the
+              <Link
+                href="https://github.com/pirouzmehmandoost/para/blob/main/README.md"
+                className="border-transparent"
+                rel="noopener noreferrer"
+                target="blank"
               >
-                Github repo
-              </span>
-              <span className="italic">.</span>
-            </Link>
+                <span
+                  className={`pl-1 cursor-pointer text-zinc-500 italic transition-colors ease-in-out duration-300 hover:text-zinc-400`}
+                >
+                  Github repo
+                </span>
+                <span className="italic">.</span>
+              </Link>
+            </div>
           </div>
         </div>
-        <p
-          className={`mt-4 sm:mt-8 md:mt-10 lg:mt-10 xl:mt-10 2xl:mt-10 text-4xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-5xl`}
-        >
-          Recent Design Projects
-        </p>
+        <div className="w-5/6">
+          <p
+            className={`mt-4 sm:mt-8 md:mt-10 lg:mt-10 xl:mt-10 2xl:mt-10 text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-5xl`}
+          >
+            Recent Design Projects
+          </p>
+        </div>
       </div>
       <div
         id="bottom_section"
