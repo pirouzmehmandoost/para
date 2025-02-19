@@ -1,52 +1,44 @@
 "use client";
 
+// import { useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import {
-  BoxGeometry,
   BufferGeometry,
-  CatmullRomCurve3,
   ColorManagement,
   EllipseCurve,
   Line,
-  LineBasicMaterial,
-  Mesh,
-  MeshBasicMaterial,
   Vector3,
 } from "three";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  Environment,
-  Loader,
-  Bounds,
-  SoftShadows,
-  //   Plane,
-} from "@react-three/drei";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Environment, Loader, Bounds, SoftShadows } from "@react-three/drei";
 import {
   EffectComposer,
   N8AO,
-  //   SMAA,
   Selection,
   Outline,
 } from "@react-three/postprocessing";
-import {
-  portfolio,
-  // glossMaterial,
-} from "../../../lib/globals";
+import { portfolio } from "../../../lib/globals";
 import { scaleMeshAtBreakpoint } from "../../../lib/utils";
 import cameraConfigs from "../../../lib/cameraConfigs";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
+import useSelection from "../../store/selection";
+import { setCameraRig } from "./CameraRig";
 
 ColorManagement.enabled = true;
 
 const SceneBuilder = () => {
-  const [isHovering, setHover] = useState("");
+  const setSelection = useSelection((state) => state.setSelection);
+  const currentSelection = useSelection((state) => state.getSelection());
+  //   const router = useRouter();
+  const [pointerTarget, setPointerTarget] = useState({
+    name: "",
+    position: null,
+  });
   const { size } = useThree();
   const { projects } = portfolio;
-  const handleBoxes = []; //to see positions while developing
   const handlePositions = [];
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
-
   const ellipseCurve = new EllipseCurve(
     0,
     0,
@@ -60,19 +52,16 @@ const SceneBuilder = () => {
   ellipseCurve.closed = true;
 
   const ellipseCurvePoints = ellipseCurve.getPoints(projects.length);
+  ellipseCurvePoints.shift();
+
   const ellipseGeometry = new BufferGeometry().setFromPoints(
     ellipseCurvePoints,
   );
 
   //to see camera path while developing
-  const ellipse = new Line(
-    ellipseGeometry,
-    new LineBasicMaterial({ color: "red" }),
-  );
-  ellipse.position.set(0, 0, 0);
+  const ellipse = new Line(ellipseGeometry);
   ellipse.rotation.x = Math.PI * 0.5;
 
-  //   scene.add(ellipse);
   const positionAttribute = ellipse.geometry.getAttribute("position");
   const vertex = new Vector3();
 
@@ -85,72 +74,19 @@ const SceneBuilder = () => {
     handlePositions.push(new Vector3(pt.x, 0, pt.y));
   }
 
-  const boxGeometry = new BoxGeometry(5, 100, 5); // to see handles positions while developing
-  const boxMaterial = new MeshBasicMaterial({ color: "blue" });
-  for (const handlePosition of handlePositions) {
-    const handle = new Mesh(boxGeometry, boxMaterial);
-    handle.position.copy(handlePosition);
-    handleBoxes.push(handle);
-    // scene.add(handle);
-  }
+  let cameraTarget =
+    !!currentSelection && pointerTarget?.position
+      ? pointerTarget?.position
+      : null;
 
-  // this approach to positioning a camera must change.
-  const cameraPoints = [];
-  handleBoxes.forEach((box) => {
-    cameraPoints.push(box.position);
-    cameraPoints.push(
-      new Vector3(
-        box.position.x * 1.1,
-        box.position.y + 5,
-        box.position.z - 20,
-      ),
-    );
-    cameraPoints.push(
-      new Vector3(box.position.x, box.position.y - 5, box.position.z - 30),
-    );
-    cameraPoints.push(
-      new Vector3(
-        box.position.x * 0.9,
-        box.position.y + 5,
-        box.position.z - 25,
-      ),
-    );
-    cameraPoints.push(
-      new Vector3(
-        box.position.x * 0.95,
-        box.position.y + 8,
-        box.position.z + -20,
-      ),
-    );
-    cameraPoints.push(
-      new Vector3(box.position.x, box.position.y + 10, box.position.z - 15),
-    );
-    cameraPoints.push(
-      new Vector3(box.position.x * 0.9, box.position.y, box.position.z - 20),
-    );
-    cameraPoints.push(
-      new Vector3(
-        box.position.x * 1.02,
-        box.position.y - 5,
-        box.position.z - 25,
-      ),
-    );
-  });
-
-  const cameraPathCurve = new CatmullRomCurve3(
-    cameraPoints.map((handle) => handle),
-    true,
-    "centripetal",
+  console.log(
+    "currentSelection",
+    currentSelection,
+    "pointerTarget?.position",
+    pointerTarget?.position,
   );
 
-  useFrame(({ clock, camera }) => {
-    let s = (clock.getElapsedTime() * 0.03) % 1;
-    const position = cameraPathCurve.getPoint(s);
-    camera.position.x = position.x;
-    camera.position.y = cameraConfigs.POSITION[1] + 27;
-    camera.position.z = position.z + cameraConfigs.POSITION[2];
-    camera.lookAt(position.x, position.y, position.z);
-  });
+  setCameraRig(handlePositions, cameraTarget);
 
   return (
     <Selection>
@@ -166,11 +102,10 @@ const SceneBuilder = () => {
           visibleEdgeColor="white"
           hiddenEdgeColor="white"
           width={1000}
-          edgeStrength={100}
+          edgeStrength={50}
           blur={true}
-          pulseSpeed={0.5} // whether the outline should be blurred
+          pulseSpeed={0.3} // whether the outline should be blurred
         />
-        {/* <SMAA /> */}
       </EffectComposer>
       <Bounds fit clip margin={1.2} damping={10}>
         <group>
@@ -180,25 +115,99 @@ const SceneBuilder = () => {
               ...data.sceneData,
               position: handlePositions[index],
               autoRotateSpeed: index % 2 == 0 ? -1 : 1,
-              isPointerOver: isHovering,
+              isPointerOver: pointerTarget.name,
             };
 
             return (
               <group
+                name={`group_${data?.name}`}
                 key={index}
+                onClick={(e) => {
+                  if (e.pointerType === "mouse") {
+                    if (
+                      pointerTarget.name.length > 0 &&
+                      pointerTarget.name === e.object.name
+                    ) {
+                      console.log("\nonClick on desktop", e.object.name);
+                      setSelection(data);
+                      setPointerTarget({
+                        name: e.object.name,
+                        position: e.object.position,
+                      });
+                      // router.push("/project");
+                    } else {
+                      setPointerTarget({
+                        name: e.object.name,
+                        position: e.object.position,
+                      });
+                    }
+                  } else {
+                    console.log("onClick on mobile", e.object.name);
+                    // if (
+                    //   pointerTarget.name.length > 0 &&
+                    //   pointerTarget.name === e.object.name
+                    // ) {
+                    setSelection(data);
+                    setPointerTarget({
+                      name: e.object.name,
+                      position: e.object.position,
+                    });
+                    // }
+                  }
+                }}
                 onPointerOver={(e) => {
-                  console.log("\nonPointerOver", e.object.name, e);
-                  setHover(e.object.name);
+                  if (e.pointerType === "touch") {
+                    console.log("onClick on mobile", e.object.name);
+
+                    setSelection(data);
+                    setPointerTarget({
+                      name: e.object.name,
+                      position: e.object.position,
+                    });
+                  } else {
+                    if (e.pointerType === "mouse") {
+                      console.log("\nonPointerOver on Desktop", e.object.name);
+                      setPointerTarget({
+                        name: e.object.name,
+                        position: e.object.position,
+                      });
+                    }
+                  }
                 }}
                 onPointerMissed={(e) => {
-                  console.log("\nonPointerMissed", e);
-                  //   if (!e?.object?.name || e?.object?.name !== isHovering) {
-                  setHover("");
+                  if (e.pointerType === "mouse") {
+                    console.log("\nonPointerMissed on desktop");
+                    setPointerTarget({
+                      name: "",
+                      position: null,
+                    });
+                    setSelection();
+                  } else {
+                    if (e.pointerType === "touch") {
+                      console.log("\nonPointerMissed on mobile");
+                      setPointerTarget({
+                        name: "",
+                        position: null,
+                      });
+                      setSelection();
+                    }
+                  }
                 }}
-                // onPointerOut={(e) => {
-                //   console.log("\nonPointerOut", e.object.name, e);
-                //   setHover("");
-                // }}
+                onPointerOut={(e) => {
+                  if (e.pointerType === "mouse") {
+                    console.log("\nonPointerOut onn desktop", e?.object?.name);
+                    if (!currentSelection) {
+                      setPointerTarget({
+                        name: "",
+                        position: null,
+                      });
+                    }
+                  } else {
+                    if (e.pointerType === "touch") {
+                      console.log("\nonPointerOut on mobile", e?.object?.name);
+                    }
+                  }
+                }}
               >
                 <Group {...newProps} />
               </group>
@@ -224,10 +233,7 @@ export const GlobalModelViewer = () => {
         orthographic={false}
         shadows
       >
-        <Environment
-          shadows
-          files="./kloofendal_misty_morning_puresky_4k.hdr"
-        />
+        <Environment shadows files="./studio_small_08_4k.exr" />
         <color args={["#bcbcbc"]} attach="background" />
         <fog
           attach="fog"
@@ -266,25 +272,11 @@ export const GlobalModelViewer = () => {
         />
         <SoftShadows samples={8} size={10} />
         <SceneBuilder />
-        <Ground position={[0, -75, 20]} scale={[2, 1.2, 1.1]} />
-        {/* these plane positions should scale with canvas size */}
-        {/* <Plane
-          castShadow
-          args={[5000, 5000, 1, 1]}
-          position={[-750, 0, 0]}
-          rotation={[-Math.PI / 1.4, Math.PI / 2.8, 0]}
-        >
-          <meshPhysicalMaterial {...glossMaterial} color={"black"} />{" "}
-        </Plane>
-        <Plane
-          castShadow
-          args={[5000, 5000, 1, 1]}
-          position={[750, 0, 0]}
-          rotation={[-Math.PI / 1.4, -Math.PI / 2.8, 0]}
-        > 
-          <meshPhysicalMaterial {...glossMaterial} color={"black"} />{" "}
-        </Plane>
-        */}
+        <Ground
+          position={[0, -75, 20]}
+          scale={[2, 1.1, 1.1]}
+          rotation={Math.PI / 14}
+        />
       </Canvas>
     </Suspense>
   );
