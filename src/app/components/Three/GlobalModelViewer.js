@@ -75,12 +75,12 @@ const SceneBuilder = () => {
       ? pointerTarget?.position
       : null;
 
-  console.log(
-    "currentSelection",
-    currentSelection,
-    "pointerTarget?.position",
-    pointerTarget?.position,
-  );
+  //   console.log(
+  //     "currentSelection",
+  //     currentSelection,
+  //     "pointerTarget?.position",
+  //     pointerTarget?.position,
+  //   );
 
   SetCameraRig(groupPositions, cameraTarget);
 
@@ -123,12 +123,12 @@ const SceneBuilder = () => {
                 onClick={(e) => {
                   if (e.pointerType === "mouse") {
                     if (pointerTarget?.name === e.object.name) {
-                      console.log(
-                        "\nonClick on desktop",
-                        e,
-                        e.object.name,
-                        data,
-                      );
+                      //   console.log(
+                      //     "\nonClick on desktop",
+                      //     e,
+                      //     e.object.name,
+                      //     data,
+                      //   );
                       handleUpdateSelection(newProps);
                       setPointerTarget({
                         eventObject: e.eventObject.name,
@@ -143,7 +143,8 @@ const SceneBuilder = () => {
                       });
                     }
                   } else {
-                    console.log("onClick on mobile", e.object.name);
+                    //mobile
+                    // console.log("onClick on mobile", e.object.name);
                     handleUpdateSelection(newProps);
                     setPointerTarget({
                       eventObject: e.eventObject.name,
@@ -170,7 +171,7 @@ const SceneBuilder = () => {
                     );
                   } else {
                     if (e.pointerType === "touch") {
-                      console.log("onPointerOver on mobile", e.object.name);
+                      //   console.log("onPointerOver on mobile", e.object.name);
                       handleUpdateSelection(newProps);
                       setPointerTarget({
                         eventObject: e.eventObject.name,
@@ -181,17 +182,11 @@ const SceneBuilder = () => {
                   }
                 }}
                 onPointerMissed={(e) => {
-                  if (e.pointerType === "mouse") {
-                    console.log("\nonPointerMissed on desktop");
-                    setPointerTarget({});
-                    handleUpdateSelection();
-                  } else {
-                    if (e.pointerType === "touch") {
-                      console.log("\nonPointerMissed on mobile");
-                      setPointerTarget({});
-                      handleUpdateSelection();
-                    }
-                  }
+                  console.log(
+                    `onPointerMissed on ${e.pointerType === "touch" ? "mobile" : "desktop"}`,
+                  );
+                  setPointerTarget({});
+                  handleUpdateSelection();
                 }}
                 onPointerOut={(e) => {
                   if (e.pointerType === "mouse") {
