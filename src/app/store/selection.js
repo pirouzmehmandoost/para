@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { portfolio } from "../../lib/globals";
+// import { portfolio } from "../../lib/globals";
 
 // const initialState = portfolio.projects[1];
 
