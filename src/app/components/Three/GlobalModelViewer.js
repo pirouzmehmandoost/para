@@ -17,7 +17,7 @@ import cameraConfigs from "../../../lib/cameraConfigs";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
 import useSelection from "../../store/selection";
-import { setCameraRig } from "./CameraRig";
+import { SetCameraRig } from "./CameraRig";
 
 ColorManagement.enabled = true;
 const SceneBuilder = () => {
@@ -82,7 +82,7 @@ const SceneBuilder = () => {
     pointerTarget?.position,
   );
 
-  setCameraRig(groupPositions, cameraTarget);
+  SetCameraRig(groupPositions, cameraTarget);
 
   return (
     <Selection>

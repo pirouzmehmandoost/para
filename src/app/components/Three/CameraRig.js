@@ -21,7 +21,7 @@ const CameraRig = (data, { v = new Vector3() }) => {
   });
 };
 
-export function setCameraRig(positionVectors, targetPosition) {
+export const SetCameraRig = (positionVectors, targetPosition) => {
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
     true,
@@ -65,6 +65,66 @@ export function setCameraRig(positionVectors, targetPosition) {
       );
     }
   });
-}
+};
+
+// export const setCameraRig = (positions, pointerPosition = null) => {
+//   const cameraPathCurve = new CatmullRomCurve3(
+//     positions.map((handle) => handle),
+//     true,
+//     "centripetal",
+//   );
+//   cameraPathCurve.closed = true;
+
+//   let i = 0;
+
+//   return useFrame(({ clock, camera }) => {
+//     // let t = clock.getElapsedTime();
+//     // let s = (t * 0.03) % 1;
+
+//     // const v = new Vector3(
+//     //   position.x,
+//     //   position.y + cameraConfigs.POSITION[1],
+//     //   position.z + cameraConfigs.POSITION[2],
+//     // );
+//     const v = new Vector3();
+
+//     if (i <= 2) {
+//       console.log("camera : ", camera);
+//     }
+//     i++;
+
+//     if (pointerPosition) {
+//       let t = clock.getElapsedTime();
+
+//       camera.position.lerp(
+//         v.set(0, Math.cos(t / 2) * 20, (Math.sin(t / 2) + 1) * 2),
+//         0.05,
+//       );
+//       camera.lookAt(pointerPosition);
+//     } else {
+//       let t = clock.getElapsedTime();
+
+//       let s = (t * 0.03) % 1;
+//       const position = cameraPathCurve.getPoint(s);
+
+//       v.set(
+//         position.x,
+//         position.y + cameraConfigs.POSITION[1],
+//         position.z + cameraConfigs.POSITION[2],
+//       );
+
+//       camera.lookAt(
+//         camera.position.lerp(
+//           positions.reduce((acc = new Vector3(), el = new Vector3()) =>
+//             Math.abs(acc.distanceTo(position) < el.distanceTo(position))
+//               ? new Vector3(acc.x, v.y, v.z)
+//               : new Vector3(el.x, v.y, v.z),
+//           ),
+//           0.055,
+//         ),
+//       );
+//     }
+//   });
+// };
 
 export default CameraRig;
