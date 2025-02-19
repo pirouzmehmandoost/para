@@ -21,10 +21,7 @@ export default function Home() {
             Area. I specialize in frontend development and rendering interactive
             graphics on the web.
           </p>
-          <p>
-            I love to 3D print and mess around with computer graphics libraries
-            after my 9-5.
-          </p>
+          <p>I love to 3D print and design wearable objects after my 9-5.</p>
           <div>
             <div className="mt-4 sm:mt-8 md:mt-8 lg:mt-8 xl:mt-8 2xl:mt-8">
               WIP- read my latest dev notes in the

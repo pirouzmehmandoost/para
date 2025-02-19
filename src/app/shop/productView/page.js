@@ -13,7 +13,7 @@ const ProductViewer = () => {
   const imageGrid = [];
   const selection = useSelection((state) => state.selection);
   const [expanded, setExpanded] = useState(false);
-  const { imgUrls = {}, name = "" } = selection || {};
+  const { imgUrls = {}, name = "" } = selection;
 
   const flattenedUrls = Object?.values(imgUrls)?.flat();
 
