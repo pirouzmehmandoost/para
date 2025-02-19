@@ -1,10 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { ColorManagement } from "three";
 import { useThree } from "@react-three/fiber";
 import { scaleMeshAtBreakpoint, calculatePositions } from "../../../lib/utils";
-// import useSelection from "../../store/selection";
 import Model from "./Model";
 
 ColorManagement.enabled = true;
@@ -17,30 +15,17 @@ const Group = (data) => {
     scale,
     autoRotateSpeed,
     position: groupPosition,
-    data: selectedProject,
     isPointerOver,
   } = data;
-
-  //   const router = useRouter();
   const { size } = useThree();
   let positions = calculatePositions(
     size.width,
     modelUrls.length,
     groupPosition,
   );
-  //   const setSelection = useSelection((state) => state.setSelection);
-  //   console.log("Group. isPointerOver: ", isPointerOver);
-  //   console.log("data", data);
+
   return (
-    <group
-    //   onClick={(e) => {
-    //     console.log("onClick: ", e);
-    //     if (e.object.name === isPointerOver) {
-    //       setSelection(selectedProject);
-    //       router.push("/project");
-    //     }
-    //   }}
-    >
+    <group>
       {modelUrls.map((url, index) => {
         let updateScale =
           modelUrls.length === 1
