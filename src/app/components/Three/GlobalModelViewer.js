@@ -29,6 +29,7 @@ const SceneBuilder = () => {
     name: "",
     position: null,
   });
+  //   const [currentSelection, setCurrentSelection] = useState(null);
   const { size } = useThree();
   const { projects } = portfolio;
   const groupPositions = [];
@@ -74,6 +75,37 @@ const SceneBuilder = () => {
 
   SetCameraRig(groupPositions, cameraTarget);
 
+  const handlePointerEvent = (e, target, data) => {
+    if (e.pointerType === "mouse") {
+      if (target.name.length > 0 && target.name === e.object.name) {
+        console.log("\nonClick on desktop", e.object.name);
+        setSelection(data);
+        setPointerTarget({
+          name: e.object.name,
+          position: e.object.position,
+        });
+        // router.push("/project");
+      } else {
+        setPointerTarget({
+          name: e.object.name,
+          position: e.object.position,
+        });
+      }
+    } else {
+      console.log("onClick on mobile", e.object.name);
+      // if (
+      //   pointerTarget.name.length > 0 &&
+      //   pointerTarget.name === e.object.name
+      // ) {
+      setSelection(data);
+      setPointerTarget({
+        name: e.object.name,
+        position: e.object.position,
+      });
+      // }
+    }
+  };
+
   return (
     <Selection>
       <EffectComposer multisampling={0} autoClear={false}>
@@ -114,7 +146,7 @@ const SceneBuilder = () => {
                       pointerTarget.name.length > 0 &&
                       pointerTarget.name === e.object.name
                     ) {
-                      console.log("\nonClick on desktop", e.object.name);
+                      console.log("\nonClick on desktop", e.object.name, data);
                       setSelection(data);
                       setPointerTarget({
                         name: e.object.name,

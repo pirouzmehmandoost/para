@@ -1,7 +1,25 @@
 import { create } from "zustand";
 import { portfolio } from "../../lib/globals";
 
-const initialState = portfolio.projects[1];
+// const initialState = portfolio.projects[1];
+
+const initialState = {
+  name: "",
+  bannerUrl: "",
+  description: "",
+  shortDescription: "",
+  imgUrls: {},
+  sceneData: {
+    modelUrls: [""],
+    scale: 0.0,
+    autoRotate: true,
+    autoUpdateMaterial: false,
+    colorCodes: {
+      defaultColor: {},
+      colorWays: {},
+    },
+  },
+};
 
 const selectionStore = (set, get) => ({
   selection: initialState,
