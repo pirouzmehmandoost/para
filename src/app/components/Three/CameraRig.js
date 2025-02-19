@@ -21,7 +21,7 @@ const CameraRig = (data, { v = new Vector3() }) => {
   });
 };
 
-export const setCameraRig = (positionVectors, targetPosition = null) => {
+export const SetCameraRig = (positionVectors, targetPosition = null) => {
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
     true,
