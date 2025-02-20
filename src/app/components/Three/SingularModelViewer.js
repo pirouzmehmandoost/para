@@ -11,7 +11,7 @@ import {
 } from "@react-three/drei";
 import cameraConfigs from "../../../lib/cameraConfigs";
 import { Model as Ground } from "../../../../public/Env_ground_3";
-import CameraRig from "./CameraRig";
+import { SimpleCameraRig } from "./CameraRig";
 import Model from "./Model";
 
 ColorManagement.enabled = true;
@@ -51,7 +51,7 @@ export const SingularModelViewer = ({ data }) => {
             three: cameraConfigs.NONE,
           }}
         />
-        <CameraRig {...data} />
+        <SimpleCameraRig {...data} />
         <fog attach="fog" density={0.007} color="#bcbcbc" near={70} far={300} />
         <directionalLight
           castShadow={true}

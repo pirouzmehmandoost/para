@@ -17,7 +17,7 @@ import cameraConfigs from "../../../lib/cameraConfigs";
 import { Model as Ground } from "../../../../public/Env_ground_3";
 import Group from "./Group";
 import useSelection from "../../store/selection";
-import { SetCameraRig } from "./CameraRig";
+import { CameraRig } from "./CameraRig";
 
 ColorManagement.enabled = true;
 const SceneBuilder = () => {
@@ -54,6 +54,7 @@ const SceneBuilder = () => {
   );
   ellipseCurve.closed = true;
 
+  //Messy. like wtf
   const ellipseCurvePoints = ellipseCurve.getPoints(projects.length);
   ellipseCurvePoints.shift();
 
@@ -75,14 +76,8 @@ const SceneBuilder = () => {
       ? pointerTarget?.position
       : null;
 
-  //   console.log(
-  //     "currentSelection",
-  //     currentSelection,
-  //     "pointerTarget?.position",
-  //     pointerTarget?.position,
-  //   );
-
-  SetCameraRig(groupPositions, cameraTarget);
+  //Bad. useFrame w/o declaratively returning r3f component
+  CameraRig(groupPositions, cameraTarget);
 
   return (
     <Selection>
@@ -123,12 +118,6 @@ const SceneBuilder = () => {
                 onClick={(e) => {
                   if (e.pointerType === "mouse") {
                     if (pointerTarget?.name === e.object.name) {
-                      //   console.log(
-                      //     "\nonClick on desktop",
-                      //     e,
-                      //     e.object.name,
-                      //     data,
-                      //   );
                       handleUpdateSelection(newProps);
                       setPointerTarget({
                         eventObject: e.eventObject.name,
@@ -144,7 +133,6 @@ const SceneBuilder = () => {
                     }
                   } else {
                     //mobile
-                    // console.log("onClick on mobile", e.object.name);
                     handleUpdateSelection(newProps);
                     setPointerTarget({
                       eventObject: e.eventObject.name,
@@ -160,43 +148,26 @@ const SceneBuilder = () => {
                       name: e.object.name,
                       position: e.object.position,
                     });
-
-                    console.log(
-                      "\nonPointerOver on Desktop\n",
-                      "event:",
-                      e,
-                      "pointerTarget: ",
-                      pointerTarget,
-                      "\n",
-                    );
                   } else {
-                    if (e.pointerType === "touch") {
-                      //   console.log("onPointerOver on mobile", e.object.name);
-                      handleUpdateSelection(newProps);
-                      setPointerTarget({
-                        eventObject: e.eventObject.name,
-                        name: e.object.name,
-                        position: e.object.position,
-                      });
-                    }
+                    //mobile
+                    handleUpdateSelection(newProps);
+                    setPointerTarget({
+                      eventObject: e.eventObject.name,
+                      name: e.object.name,
+                      position: e.object.position,
+                    });
                   }
                 }}
                 onPointerMissed={(e) => {
-                  console.log(
-                    `onPointerMissed on ${e.pointerType === "touch" ? "mobile" : "desktop"}`,
-                  );
+                  //same logic for desktop and mobile
                   setPointerTarget({});
                   handleUpdateSelection();
                 }}
                 onPointerOut={(e) => {
+                  //only trigger handler on desktop.
                   if (e.pointerType === "mouse") {
-                    console.log("\nonPointerOut on desktop", e?.object?.name);
                     if (!currentSelection) {
                       setPointerTarget({});
-                    }
-                  } else {
-                    if (e.pointerType === "touch") {
-                      console.log("\nonPointerOut on mobile", e?.object?.name);
                     }
                   }
                 }}

@@ -3,7 +3,7 @@ import { CatmullRomCurve3, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import cameraConfigs from "../../../lib/cameraConfigs";
 
-const CameraRig = (data, { v = new Vector3() }) => {
+export const SimpleCameraRig = (data, { v = new Vector3() }) => {
   const { cameraPosition = [0, 10, 180] } = data;
 
   return useFrame(({ clock, camera }) => {
@@ -22,7 +22,7 @@ const CameraRig = (data, { v = new Vector3() }) => {
 };
 
 //lerp to targetPosition or lerp between all positionVectors at an interval
-export const SetCameraRig = (positionVectors, targetPosition) => {
+export const CameraRig = (positionVectors, targetPosition) => {
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
     true,
@@ -70,5 +70,3 @@ export const SetCameraRig = (positionVectors, targetPosition) => {
     }
   });
 };
-
-export default CameraRig;
