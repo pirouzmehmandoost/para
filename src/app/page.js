@@ -10,10 +10,10 @@ const myFont = localFont({
 
 export default function Home() {
   return (
-    <main className="flex flex-col w-screen min-w-screen h-full min-h-screen text-center text-clay_dark">
+    <main className="flex flex-col w-screen h-full text-center text-clay_dark">
       <div
         id="top_section"
-        className={`z-10 flex flex-col w-full min-h-fit place-self-center place-items-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
+        className={`z-10 flex flex-col w-full h-1/2 place-self-center place-items-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
       >
         <div className="w-4/5">
           <p>
