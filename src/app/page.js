@@ -1,12 +1,7 @@
 "use client";
-
-import { Splide, SplideSlide } from "@splidejs/react-splide";
-import "@splidejs/react-splide/css";
-import "@splidejs/react-splide/css/core";
-import splideConfig from "./../lib/splideConfig";
-import portfolio from "./../lib/globals";
+import Link from "next/link";
 import localFont from "next/font/local";
-import ProjectBanner from "./components/ProjectBanner";
+import GlobalScene from "./components/Three/GlobalModelViewer";
 
 const myFont = localFont({
   src: "../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
@@ -14,54 +9,51 @@ const myFont = localFont({
 });
 
 export default function Home() {
-  const { projects } = portfolio;
-
   return (
-    <main className="flex flex-col w-screen min-w-screen h-screen min-h-screen text-center text-clay_dark">
+    <main className="flex flex-col w-screen h-full text-center text-clay_dark">
       <div
         id="top_section"
-        className={`flex flex-col basis-7/12 w-5/6 h-fit mt-36 place-self-center text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl uppercase ${myFont.className}`}
+        className={`z-10 flex flex-col w-full h-1/2 place-self-center place-items-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
       >
-        <div className="w-full my-4">
-          <p>Hey There! I&apos;m a software engineer based in the San Francisco Bay Area. I specialize in frontend development with JavaScript Frameworks.
-            I&apos;m also a designer with passions for interactive design, 3D computer graphics and 3D printing.
+        <div className="w-4/5">
+          <p>
+            Hey! I&apos;m a software engineer based in the San Francisco Bay
+            Area. I specialize in frontend development and rendering interactive
+            graphics on the web.
+          </p>
+          <p>I love to 3D print and design wearable objects after my 9-5.</p>
+          <div>
+            <div className="mt-4 sm:mt-8 md:mt-8 lg:mt-8 xl:mt-8 2xl:mt-8">
+              WIP- read my latest dev notes in the
+              <Link
+                href="https://github.com/pirouzmehmandoost/para/blob/main/README.md"
+                className="border-transparent"
+                rel="noopener noreferrer"
+                target="blank"
+              >
+                <span
+                  className={`pl-1 cursor-pointer text-zinc-500 italic transition-colors ease-in-out duration-300 hover:text-zinc-400`}
+                >
+                  Github repo
+                </span>
+                <span className="italic">.</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="w-5/6">
+          <p
+            className={`mt-4 sm:mt-8 md:mt-10 lg:mt-10 xl:mt-10 2xl:mt-10 text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-5xl`}
+          >
+            Recent Design Projects
           </p>
         </div>
       </div>
       <div
         id="bottom_section"
-        className="flex flex-col basis-5/12"
+        className="absolute w-full h-1/2 min-h-96 bottom-0"
       >
-        <h1
-          className={`mt-12 mb-16 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl italic ${myFont.className}`}
-        >
-          Recent Projects
-        </h1>
-        <div className="mb-20">
-          <div className="flex flex-col-reverse w-full h-full place-self-center">
-            {/* <ProjectBanner /> */}
-            <Splide options={splideConfig} aria-label="Projects Carousel">
-              {projects.map((item, index) => {
-                const props = {
-                  name: item.name,
-                  autoRotateSpeed: index % 2 === 0 ? -1.0 : 1.0
-                };
-
-                return (
-                  <SplideSlide key={index} data-splide-interval="10000"
-                  >
-                    <div
-                      key={index}
-                      className="relative flex w-full h-full place-self-center "
-                    >
-                      <ProjectBanner key={index} data={props} />
-                    </div>
-                  </SplideSlide>
-                );
-              })}
-            </Splide>
-          </div>
-        </div>
+        <GlobalScene className="flex-row w-full h-full place-self-center" />
       </div>
     </main>
   );

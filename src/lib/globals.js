@@ -1,15 +1,3 @@
-export const storePolicy = {
-  shipping:
-    "UPS Express Saver delivery: 2-4 business days, 10 USD. When ordering outside US, taxes and duties are excluded in the product price and local custom fees may apply. Please contact your local customs office for further information.",
-  payment:
-    "All major payment methods are supported. Card information is encrypted using SSL encryption, which prevents unauthorized access to card details.",
-  returns: "",
-  customerSupport: {
-    email: "pirouzmehmandoost@gmail.com",
-    FAQ: {},
-  },
-};
-
 const matteMaterial = {
   roughness: 1,
   metalness: 0.1,
@@ -21,17 +9,17 @@ const matteMaterial = {
   flatShading: false,
 };
 
-const metallicMaterial = {
-  roughness: 0.2,
-  metalness: 1,
-  ior: 1.8,
-  sheen: 0.15,
-  sheenColor: "#707070",
-  sheenRoughness: 1,
-  flatShading: false,
-};
+// const metallicMaterial = {
+//   roughness: 0.2,
+//   metalness: 1,
+//   ior: 1.8,
+//   sheen: 0.15,
+//   sheenColor: "#707070",
+//   sheenRoughness: 1,
+//   flatShading: false,
+// };
 
-const glossMaterial = {
+export const glossMaterial = {
   roughness: 0.4,
   metalness: 0,
   ior: 1.5,
@@ -44,14 +32,6 @@ const glossMaterial = {
 };
 
 export const colorCodes = {
-  gloss_black: {
-    label: "Gloss Black",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
-    material: {
-      color: "black",
-      ...glossMaterial,
-    },
-  },
   matte_black: {
     label: "Matte Black",
     tailwindColor: `bg-zinc-900`,
@@ -60,17 +40,39 @@ export const colorCodes = {
       ...matteMaterial,
     },
   },
-  silver: {
-    label: "Silver",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
+  gloss_black: {
+    label: "Gloss Black",
+    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
     material: {
-      color: "#444444",
-      ...metallicMaterial,
+      color: "black",
+      ...glossMaterial,
     },
   },
+  eggshell: {
+    label: "Eggshell",
+    tailwindColor: `bg-orange-100`,
+    material: {
+      color: "#ccc0a3",
+      ...matteMaterial,
+      ior: 1.8,
+      roughness: 0.6,
+      metalness: 0,
+      sheen: 1,
+      sheenRoughness: 0.5,
+      sheenColor: "#ccc0a3",
+    },
+  },
+  //   silver: {
+  //     label: "Silver",
+  //     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
+  //     material: {
+  //       color: "#444444",
+  //       ...metallicMaterial,
+  //     },
+  //   },
 };
 
-const portfolio = {
+export const portfolio = {
   products: [
     {
       name: "Oval Bag",
@@ -189,12 +191,12 @@ const portfolio = {
           colorWays: { ...colorCodes },
         },
         modelUrls: [
-          "/oval_bag_3.glb",
-          "/oval_bag_xl_v2.glb",
-          "/oval_bag_1.glb",
+          "/oval_bag_3-transformed.glb",
+          "/bag_xl-transformed.glb",
+          "/oval_bag_xl_v2-transformed.glb",
         ],
-        scale: 1.0,
-        autoRotate: false,
+        scale: 0.95,
+        autoRotate: true,
       },
       shortDescription: "A small collection of 3D printed handbags.",
       description:
@@ -226,7 +228,6 @@ const portfolio = {
         scale: 1.0,
         autoRotate: true,
         autoUpdateMaterial: false,
-
       },
       shortDescription:
         "An exploration of branding and product design as a Yoga instructor.",
@@ -258,5 +259,3 @@ const portfolio = {
     },
   ],
 };
-
-export default portfolio;

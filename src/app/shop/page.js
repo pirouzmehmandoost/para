@@ -1,7 +1,7 @@
 "use client";
 
 import ProductCard from "../components/ProductCard";
-import portfolio from "../../lib/globals";
+import { portfolio } from "../../lib/globals";
 
 const Shop = () => {
   const { products } = portfolio;

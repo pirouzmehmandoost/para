@@ -1,85 +1,70 @@
 "use client";
 
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import { useState } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import useSelection from "../store/selection";
-import ModelViewer from "../components/ModelViewer";
+import SingularModelViewer from "../components/Three/SingularModelViewer";
 
 const ProjectViewer = () => {
   const [expanded, setExpanded] = useState(false);
   const selection = useSelection((state) => state.selection);
 
   const {
-    sceneData: {
-      modelUrls,
-      colorCodes: {
-        defaultColor,
-        colorWays,
-      } = {},
-    },
+    sceneData: { modelUrls, colorCodes: { defaultColor, colorWays } = {} } = {},
     description,
     name,
   } = selection;
 
   const [selectedMaterial, setMaterial] = useState(defaultColor ?? null);
-
   const data = {
     modelUrl: modelUrls[0],
-    ...selection.sceneData,
+    ...selection?.sceneData,
     enablePan: true,
     enableZoom: false,
     enableRotate: true,
     autoRotate: true,
-    autoRotateSpeed: 2,
+    autoRotateSpeed: 0.4,
     cameraPosition: [0, 10, 180],
     orthographic: false,
     autoUpdateMaterial: false,
     scale: 0.45,
-    colorCodes: {
-      colorWays,
-      defaultColor: selectedMaterial
-    }
+    material: selectedMaterial.material,
   };
 
   const colorSelectButtons = (
-    <div className="flex flex-row">
+    <div className="flex flex-row place-content-center items-center">
+      <p className="text-nowrap text-2xl">Select Color</p>
 
-      <p className="text-nowrap">Select Color</p>
-
-      {
-        Object.entries(colorWays).map((entry) => {
-          return (
-            <div
-              key={entry[0]}
-              className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial.label !== entry[1].label ? 'outline-none' : 'outline-zinc-900 outline-2'}`}
-              onClick={() => { if (selectedMaterial.label !== entry[1].label) setMaterial(entry[1]) }}
-            >
-            </div>
-          );
-        })
-      }
+      {Object.entries(colorWays).map((entry) => {
+        return (
+          <div
+            key={entry[0]}
+            className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial.label !== entry[1].label ? "outline-none" : "outline-zinc-900 outline-2"}`}
+            onClick={() => {
+              if (selectedMaterial.label !== entry[1].label)
+                setMaterial(entry[1]);
+            }}
+          ></div>
+        );
+      })}
     </div>
   );
 
   return (
-    <div
-      id="project_viewer"
-      className="flex flex-col w-full h-screen"
-    >
+    <div id="project_viewer" className="flex flex-col w-full h-screen">
       <div
         id="model_viewer_container"
         className="flex flex-col w-full h-full place-self-center place-content-center"
       >
-        <ModelViewer
+        <SingularModelViewer
           className="w-full h-full self-center place-self-center place-content-center items-center"
           data={data}
         />
       </div>
-
       <div
         id="project_menu"
-        className={`fixed bottom-0 z-20 right-0 w-full sm:w-full md:w-full lg:w-1/2 place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
+        className={`fixed bottom-0 z-20 right-0 w-full place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
       >
         <div className="flex z-20 w-full h-full bottom-0 right-0">
           <div className="w-full h-full border-solid border-2 border-zinc-900">
@@ -109,7 +94,7 @@ const ProjectViewer = () => {
                   </div>
                 </div>
                 <div className="justify-self-center basis-1/3">
-                  <p className="text-xl text-center justify-self-center ">
+                  <p className="text-2xl text-center justify-self-center ">
                     {name}
                   </p>
                 </div>
@@ -121,7 +106,7 @@ const ProjectViewer = () => {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

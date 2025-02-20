@@ -17,6 +17,7 @@
     "@next/eslint-plugin-next": "^15.1.2",
     "@react-three/drei": "^9.121.2",
     "@react-three/fiber": "^8.17.12",
+    "@react-three/postprocessing": "^2.19.1",
     "@splidejs/react-splide": "^0.7.12",
     "@splidejs/splide-extension-auto-scroll": "^0.5.3",
     "@types/react": "^18.0.0",

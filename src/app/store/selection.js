@@ -1,8 +1,27 @@
-import { create } from 'zustand'
-import portfolio from "../../lib/globals"
+import { create } from "zustand";
+// import { portfolio } from "../../lib/globals";
 
-//temporary
-const initialState = portfolio.projects[1];
+// const initialState = portfolio.projects[1];
+
+const initialState = {
+  name: "",
+  bannerUrl: "",
+  description: "",
+  shortDescription: "",
+  imgUrls: {},
+  sceneData: {
+    modelUrls: [""],
+    scale: 0.0,
+    autoRotate: true,
+    autoRotateSpeed: 1,
+    isPointerOver: "",
+    autoUpdateMaterial: false,
+    colorCodes: {
+      defaultColor: {},
+      colorWays: {},
+    },
+  },
+};
 
 const selectionStore = (set, get) => ({
   selection: initialState,
@@ -21,12 +40,10 @@ const selectionStore = (set, get) => ({
       ...state,
       selection: initialState,
     }));
-    return get().selection
+    return get().selection;
   },
-
 });
 
 const useSelection = create(selectionStore);
 
 export default useSelection;
-
