@@ -158,7 +158,7 @@ const SceneBuilder = () => {
                     });
                   }
                 }}
-                onPointerMissed={(e) => {
+                onPointerMissed={() => {
                   //same logic for desktop and mobile
                   setPointerTarget({});
                   handleUpdateSelection();
