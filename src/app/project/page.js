@@ -9,17 +9,22 @@ import SingularModelViewer from "../components/Three/SingularModelViewer";
 const ProjectViewer = () => {
   const [expanded, setExpanded] = useState(false);
   const selection = useSelection((state) => state.selection);
-
   const {
-    sceneData: { modelUrls, colorCodes: { defaultColor, colorWays } = {} } = {},
-    description,
-    name,
+    sceneData = {},
+    sceneData: {
+      scale = 1.0,
+      modelUrls = [],
+      colorCodes: { defaultColor = {}, colorWays = {} } = {},
+    } = {},
+    description = "",
+    name = "",
   } = selection;
 
   const [selectedMaterial, setMaterial] = useState(defaultColor ?? null);
   const data = {
     modelUrl: modelUrls[0],
-    ...selection?.sceneData,
+    ...sceneData,
+    position: undefined,
     enablePan: true,
     enableZoom: false,
     enableRotate: true,
@@ -28,7 +33,7 @@ const ProjectViewer = () => {
     cameraPosition: [0, 10, 180],
     orthographic: false,
     autoUpdateMaterial: false,
-    scale: 0.45,
+    scale: scale * 0.5,
     material: selectedMaterial.material,
   };
 
