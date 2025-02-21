@@ -1,6 +1,5 @@
 import { create } from "zustand";
 // import { portfolio } from "../../lib/globals";
-
 // const initialState = portfolio.projects[1];
 
 const initialState = {
@@ -10,8 +9,9 @@ const initialState = {
   shortDescription: "",
   imgUrls: {},
   sceneData: {
-    modelUrls: [""],
+    modelUrls: [{ name: "", url: "" }],
     scale: 0.0,
+    position: {},
     autoRotate: true,
     autoRotateSpeed: 1,
     isPointerOver: "",
