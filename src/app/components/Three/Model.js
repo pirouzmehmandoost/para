@@ -21,7 +21,7 @@ const Model = (data) => {
     isPointerOver = "",
   } = data;
 
-  const node = name ? useGLTF(url).nodes[`${name}`] : "";
+  const node = useGLTF(url).nodes[`${name ? name : '/oval_bag_1.glb'}`];
 
   const newData = {
     name: name,
