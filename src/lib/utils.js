@@ -131,7 +131,7 @@ export const calculatePositions = (scaleFactor, numPositions, center) => {
     let offset =
       parseInt(
         (scalePositionAtBreakPoint(scaleFactor) * parseInt(i * scaleFactor)) /
-          (numPositions * 2),
+        (numPositions * 2),
       ) * (i % 2 === 0 ? 1 : -1);
     xOffset.push(offset);
     xOffset.push(-1 * offset);
