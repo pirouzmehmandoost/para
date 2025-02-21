@@ -42,7 +42,7 @@ const SceneBuilder = () => {
 
   const handleUpdateSelection = (data) => {
     if (!data) {
-      setSelection();
+      //   setSelection();
       select();
     } else {
       setSelection(data);
@@ -79,8 +79,8 @@ const SceneBuilder = () => {
 
   let cameraTarget =
     currentSelection?.name.length &&
-      currentSelection.name === pointerTarget?.eventObject &&
-      pointerTarget?.position
+    currentSelection.name === pointerTarget?.eventObject &&
+    pointerTarget?.position
       ? pointerTarget?.position
       : null;
 
@@ -169,17 +169,22 @@ const SceneBuilder = () => {
                 >
                   <Group {...newProps.sceneData}>
                     <Html
+                      occlude={
+                        !(
+                          !!currentSelection &&
+                          pointerTarget?.eventObject === currentSelection.name
+                        )
+                      }
                       transform
                       scale={[10, 10, 10]}
                       position={[
-                        groupPositions[index].x + 40,
-                        groupPositions[index].y,
+                        groupPositions[index].x,
+                        groupPositions[index].y + 40,
                         groupPositions[index].z,
                       ]}
                     >
-
                       <div
-                        className={`cursor-pointer uppercase text-nowrap w-full h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-opacity duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "opacity-100 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "opacity-0"}`}
+                        className={`flex flex-grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "w-0 opacity-0"}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           if (currentSelection) {
