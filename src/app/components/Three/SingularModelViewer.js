@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { ColorManagement } from "three";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import {
   Environment,
   Loader,
@@ -10,14 +10,72 @@ import {
   SoftShadows,
 } from "@react-three/drei";
 import cameraConfigs from "../../../lib/cameraConfigs";
-import { Model as Ground } from "../../../../public/Env_ground_3";
+import { Ground } from "../../../../public/Env_ground_3";
 import { SimpleCameraRig } from "./CameraRig";
 import Model from "./Model";
 
 ColorManagement.enabled = true;
 
+export const scaleModel = (width) => {
+  if (width <= 360) {
+    return 0.525;
+  }
+  if (width <= 400) {
+    return 0.55;
+  }
+  if (width <= 480) {
+    return 0.7;
+  }
+  if (width <= 640) {
+    //sm
+    return 0.75;
+  }
+  if (width <= 768) {
+    //md
+    return 0.8;
+  }
+  if (width <= 1024) {
+    //lg
+    return 0.9;
+  }
+  if (width <= 1280) {
+    //xl
+    return 1.0;
+  }
+  if (width <= 1536) {
+    //2xl
+    return 1.1;
+  }
+  return 1.2;
+};
+
+const ScaledModel = (modelData) => {
+  const { size, viewport } = useThree();
+  console.log("modelData is:", modelData)
+  console.log("size is:", size)
+  console.log("viewport is:", viewport)
+
+  console.log("size.width: ", size.width, "model scale; ", modelData.scale, "multiplied: ", size.width * modelData.scale / 1000)
+  console.log("ground height: ", size.height / -10)
+
+  const newModelData = {
+    ...modelData,
+    scale: modelData.scale * scaleModel(size.width),
+  }
+
+  const groundHeight = size.height / -10
+  return (<><Model {...newModelData} />
+    <Ground
+      position={[0, -45, 0]}
+      scale={[0.8, 0.6, 0.6]}
+      rotation={Math.PI / 12}
+    />
+  </>
+  )
+}
+
 export const SingularModelViewer = ({ data }) => {
-  const { cameraPosition } = data;
+  const { cameraPosition, ...modelData } = data;
 
   return (
     <Suspense fallback={<Loader />}>
@@ -67,16 +125,12 @@ export const SingularModelViewer = ({ data }) => {
           shadow-camera-left={-1000}
           shadow-camera-right={1000}
         />
-        <Model {...data} />
+        <ScaledModel {...modelData} />
         <SoftShadows samples={10} size={6} />
-        <Ground
-          position={[0, -55, 0]}
-          scale={[0.8, 0.6, 0.6]}
-          rotation={Math.PI / 12}
-        />
       </Canvas>
     </Suspense>
   );
 };
 
 export default SingularModelViewer;
+
