@@ -7,7 +7,7 @@ import Model from "./Model";
 
 ColorManagement.enabled = true;
 
-const Group = (data) => {
+const Group = ({ children, ...data }) => {
   const {
     colorCodes,
     modelUrls,
@@ -26,14 +26,14 @@ const Group = (data) => {
 
   return (
     <group>
-      {modelUrls.map((url, index) => {
+      {modelUrls.map((modelData, index) => {
         let updateScale =
           modelUrls.length === 1
             ? scale * 0.45
             : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
         const newProps = {
           isPointerOver,
-          modelUrl: url,
+          modelUrl: modelData,
           material:
             modelUrls.length === 1
               ? { ...colorCodes.defaultColor.material }
@@ -47,8 +47,10 @@ const Group = (data) => {
 
         return <Model key={index} {...newProps} />;
       })}
+      {children}
     </group>
   );
 };
 
 export default Group;
+
