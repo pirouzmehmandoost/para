@@ -10,8 +10,9 @@ const initialState = {
   shortDescription: "",
   imgUrls: {},
   sceneData: {
-    modelUrls: [""],
+    modelUrls: [{ name: "", url: "" }],
     scale: 0.0,
+    position: {},
     autoRotate: true,
     autoRotateSpeed: 1,
     isPointerOver: "",

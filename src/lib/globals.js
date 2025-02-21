@@ -191,9 +191,9 @@ export const portfolio = {
           colorWays: { ...colorCodes },
         },
         modelUrls: [
-          "/oval_bag_3-transformed.glb",
-          "/bag_xl-transformed.glb",
-          "/oval_bag_xl_v2-transformed.glb",
+          { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
+          { name: "bag_88", url: "/bag_xl-transformed.glb" },
+          { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
         ],
         scale: 0.95,
         autoRotate: true,
@@ -224,7 +224,9 @@ export const portfolio = {
           defaultColor: { ...colorCodes.gloss_black },
           colorWays: { ...colorCodes },
         },
-        modelUrls: ["/yoga_mat_strap_for_web2.glb"],
+        modelUrls: [
+          { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },
+        ],
         scale: 1.0,
         autoRotate: true,
         autoUpdateMaterial: false,

@@ -10,14 +10,14 @@ import {
   SoftShadows,
 } from "@react-three/drei";
 import cameraConfigs from "../../../lib/cameraConfigs";
-import { Model as Ground } from "../../../../public/Env_ground_3";
+import { Ground } from "../../../../public/Env_ground_3";
 import { SimpleCameraRig } from "./CameraRig";
 import Model from "./Model";
 
 ColorManagement.enabled = true;
 
 export const SingularModelViewer = ({ data }) => {
-  const { cameraPosition } = data;
+  const { cameraPosition, ...modelData } = data;
 
   return (
     <Suspense fallback={<Loader />}>
@@ -67,7 +67,7 @@ export const SingularModelViewer = ({ data }) => {
           shadow-camera-left={-1000}
           shadow-camera-right={1000}
         />
-        <Model {...data} />
+        <Model {...modelData} />
         <SoftShadows samples={10} size={6} />
         <Ground
           position={[0, -55, 0]}
