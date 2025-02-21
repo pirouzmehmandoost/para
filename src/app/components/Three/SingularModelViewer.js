@@ -63,7 +63,6 @@ const ScaledModel = (modelData) => {
     scale: modelData.scale * scaleModel(size.width),
   }
 
-  const groundHeight = size.height / -10
   return (<><Model {...newModelData} />
     <Ground
       position={[0, -45, 0]}
