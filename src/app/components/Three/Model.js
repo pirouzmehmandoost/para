@@ -21,7 +21,17 @@ const Model = (data) => {
     isPointerOver = "",
   } = data;
 
-  const node = useGLTF(url).nodes[`${name ? name : '/oval_bag_1.glb'}`];
+  if (!name.length) {
+    return (
+      <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
+        <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-clay_dark">
+          <p>⚒️ Please navigate back to the home page ⚒️</p>
+        </div>
+      </Html>
+    )
+  }
+
+  const node = useGLTF(url).nodes[`${name}`];
 
   const newData = {
     name: name,
