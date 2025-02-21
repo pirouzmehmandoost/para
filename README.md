@@ -9,10 +9,11 @@ My objectives are to:
 
 - Clearly express that I'm a professional software engineer, and not a designer (though I've worked as both).
 - Display a well-formatted resume.
-- Optimize performance of Web graphics and animations 
+- Optimize performance of WebGL implementations and animations.
 - Display an understanding of CSS, HTML, JavaScript, React, and Next.js (14).
 
 My current development goals are :
+
 - Refine the home page- latest feature branch significantly optimizes use of Three.js, but isn't ready to merge.
 - Present PDF resume's without the use of paid API's.
 - Implement blog functionality.
@@ -23,14 +24,16 @@ My current development goals are :
 
 - Refine the Resume page- it currently uses an iframe which does not enable responsive styling on mobile screens.
 - Refine home page- at first glance it isn't clear what my "recent design projects" are.
+- Issues when running on mobile- canvas pointer event handler logic needs refinement. meshes could be easier to select.
+- No logic to conditionally enable routing.
 - make a streamlined version of the app for interviews (different route).
 - menus should have a visible toggle expand/collapse icon, and should upen up to screen width/height
 
 Libraries Extensively Used:
 
-Three.js 
+Three.js
 https://threejs.org/
-JavaScript API for implementing WebGL- for rendering 2D/3D computer graphics on browsers. 
+JavaScript API for implementing WebGL- for rendering 2D/3D computer graphics on browsers.
 
 React Three Fiber
 https://github.com/pmndrs/react-three-fiber
@@ -40,23 +43,21 @@ React renderer for Threejs. For building 3D scenes as JSX components, useful hoo
 https://r3f.docs.pmnd.rs/advanced/scaling-performance
 
 React Three Fiber Post Processing
-Library of functionalities for post-processing graphics- ie special effects to rendered graphics. 
+Library of functionalities for post-processing graphics- ie special effects to rendered graphics.
 https://react-postprocessing.docs.pmnd.rs/introduction
 https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80
-
 
 GLTFJSX
 CLI tool that turns GLTF assets into declarative, reusable (react-three-fiber) JSX components. Trims .glb file size which is immensely helpful when staging static assets on github.
 https://github.com/pmndrs/gltfjsx
 
 GSAP
-A JavaScript animation library, currently only using on feature branches.
+A JavaScript animation library, currently only using on feature branches. Thus far I've managed some nifty camera repositioning/manipulations with only Three and R3F.  
 https://gsap.com/
 
 JEasings
 JavaScript engine for 3d graphics animations, currently only using on feature branches.
 https://sbcode.net/threejs/jeasings/
-
 
 #Typefaces used:
 Diatype
