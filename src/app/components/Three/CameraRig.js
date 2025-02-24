@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+// import { useRef } from "react";
 import { CatmullRomCurve3, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import cameraConfigs from "../../../lib/cameraConfigs";
@@ -24,7 +24,7 @@ export const SimpleCameraRig = (data, { v = new Vector3() }) => {
 
 //lerp to targetPosition or lerp between all positionVectors at an interval
 export const CameraRig = ({ positionVectors, targetPosition }) => {
-  const ref = useRef();
+  //   const ref = useRef();
 
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
@@ -32,8 +32,8 @@ export const CameraRig = ({ positionVectors, targetPosition }) => {
     "centripetal",
   );
 
-  useFrame(({ clock, camera }) => {
-    ref.current.updateMatrixWorld();
+  return useFrame(({ clock, camera }) => {
+    // ref.current.updateMatrixWorld();
 
     const v = new Vector3();
     let t = clock.elapsedTime;
@@ -75,5 +75,5 @@ export const CameraRig = ({ positionVectors, targetPosition }) => {
       );
     }
   });
-  return <perspectiveCamera ref={ref} />;
+  //   return <perspectiveCamera ref={ref} />;
 };
