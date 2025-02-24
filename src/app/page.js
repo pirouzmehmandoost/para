@@ -23,7 +23,7 @@ export default function Home() {
           </p>
           <p>I love to 3D print and design wearable objects after my 9-5.</p>
           <div>
-            <div className="mt-4 sm:mt-4 md:mt-4 lg:mt-4 xl:mt-8 2xl:mt-8">
+            <div className="mt-4 sm:mt-8 md:mt-8 lg:mt-8 xl:mt-8 2xl:mt-8">
               WIP- read my latest dev notes in the
               <Link
                 href="https://github.com/pirouzmehmandoost/para/blob/main/README.md"
