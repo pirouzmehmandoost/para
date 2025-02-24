@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRef } from "react";
@@ -20,16 +19,6 @@ const Model = (data) => {
     position = new Vector3(0, -25, 0),
     isPointerOver = "",
   } = data;
-
-  // if (!name.length) {
-  //   return (
-  //     <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
-  //       <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-clay_dark">
-  //         <p>⚒️ Please navigate back to the home page ⚒️</p>
-  //       </div>
-  //     </Html>
-  //   )
-  // }
 
   const node = useGLTF(url).nodes[`${name}`];
 
@@ -56,7 +45,7 @@ const Model = (data) => {
     }
   });
 
-  return name ? (
+  return name.length ? (
     <Select name={node.name} enabled={isPointerOver === node.name}>
       <mesh castShadow receiveShadow ref={meshRef} {...newData} />
     </Select>
@@ -132,4 +121,3 @@ export default Model;
 // };
 
 // export default Model;
-
