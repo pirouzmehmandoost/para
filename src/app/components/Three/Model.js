@@ -20,7 +20,7 @@ const Model = (data) => {
     isPointerOver = "",
   } = data;
 
-  const node = useGLTF(url).nodes[`${name}`];
+  const node = useGLTF(url).nodes[`${name?.length ? name : "/oval_bag_1.glb"}`];
 
   const newData = {
     name: name,
@@ -45,7 +45,7 @@ const Model = (data) => {
     }
   });
 
-  return name.length ? (
+  return node ? (
     <Select name={node.name} enabled={isPointerOver === node.name}>
       <mesh castShadow receiveShadow ref={meshRef} {...newData} />
     </Select>
