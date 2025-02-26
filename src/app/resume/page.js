@@ -1,64 +1,55 @@
 "use client";
+import { useState, useEffect } from "react";
 
-export default function Resume() {
+const Resume = () => {
+  const [screenSize, setScreenSize] = useState("");
+  const [dimensions, setDimensions] = useState([0, 0]);
+
+  useEffect(() => {
+    console.log(window);
+    const handleResize = () => {
+      setDimensions([window.innerWidth, window.innerHeight]);
+      const shortest =
+        window.innerWidth < window.innerHeight
+          ? window.innerWidth
+          : window.innerHeight;
+
+      if (shortest < 640) {
+        setScreenSize("xs");
+      } else if (shortest < 768) {
+        setScreenSize("sm");
+      } else if (shortest < 1024) {
+        setScreenSize("md");
+      } else if (shortest < 1280) {
+        setScreenSize("lg");
+      } else if (shortest < 1536) {
+        setScreenSize("xl");
+      } else if (shortest >= 1536) {
+        setScreenSize("2xl");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <div className="flex flex-col w-screen h-screen">
+    <div className="fixed flex flex-col w-full h-full mt-24 place-content-center overflow-hidden bg-white">
+      {/* <h1>
+        Current screen size: {screenSize} {dimensions[0]}x{dimensions[1]}{" "}
+        {screenSize === "xs" && <span> mobile </span>}
+      </h1> */}
       <iframe
-        className="mt-28"
+        className={`flex-col self-center object-center place-self-center justify-items-center place-items-center items-center place-content-center content-center border-0 border-none bg-contain overflow-hidden object-scale-down overscroll-x-none ${screenSize === "xs" ? "fixed top-0 scale-[0.75]" : "w-4/5  h-full"}`}
         src={"/pirouz_mehmandoost_resume.pdf"}
-        width="100%"
-        height="100%"
-        allowFullScreen
+        allow="fullscreen"
+        width={`${screenSize === "xs" ? `${dimensions[0] < dimensions[1] ? dimensions[0] * 1.3 : dimensions[0] * 1.1}px` : parseInt(dimensions[0] * 0.8)}`}
+        height={`${screenSize === "xs" ? `${dimensions[1] < dimensions[0] ? dimensions[1] * 1.3 : dimensions[1] * 1.1}px` : parseInt(dimensions[1] * 0.8)}`}
       />
     </div>
   );
-}
+};
 
-// import React, { useRef, useEffect, useState } from 'react';
-
-// export const IframeComponent = () => {
-//   const iframeRef = useRef(null);
-//   const containerRef = useRef(null);
-//   const [scale, setScale] = useState(null);
-//   useEffect(() => {
-//     const iframe = iframeRef.current;
-//     const container = containerRef.current;
-
-//     const calculateScaleFactor = () => {
-//       const containerWidth = container.offsetWidth;
-//       const iframeWidth = iframe.contentWindow.document.body.offsetWidth;
-//       return containerWidth / iframeWidth;
-//     };
-
-//     const scaleIframe = () => {
-//       const scaleFactor = calculateScaleFactor();
-//       iframe.style.transform = `scale(${scaleFactor})`;
-//       setScale(scaleFactor)
-//     };
-
-//     scaleIframe();
-//     window.addEventListener('resize', scaleIframe);
-
-//     return () => window.removeEventListener('resize', scaleIframe);
-//   }, []);
-
-//   console.log(scale)
-//   return (
-//     <div ref={containerRef} className="w-4/5 h-screen py-16 mb-18">
-//       <iframe
-//         ref={iframeRef}
-//         width="500px"
-//         height="500px"
-//         allow="fullscreen"
-//         src="/pirouz_mehmandoost_resume.pdf"
-//         className="mt-28 w-2/3 h-5/6 place-self-center"
-//       />
-//     </div>
-//   );
-// };
-
-// export default function Resume() {
-//   return (
-//     < IframeComponent />
-//   );
-// }
+export default Resume;
