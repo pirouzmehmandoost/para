@@ -6,7 +6,6 @@ const Resume = () => {
   const [dimensions, setDimensions] = useState([0, 0]);
 
   useEffect(() => {
-    console.log(window);
     const handleResize = () => {
       setDimensions([window.innerWidth, window.innerHeight]);
       const shortest =
@@ -36,13 +35,13 @@ const Resume = () => {
   }, []);
 
   return (
-    <div className="fixed flex flex-col w-full h-full mt-24 place-content-center overflow-hidden bg-white">
+    <div className="relative flex flex-col w-full h-screen overflow-hidden overscroll-none">
       {/* <h1>
         Current screen size: {screenSize} {dimensions[0]}x{dimensions[1]}{" "}
         {screenSize === "xs" && <span> mobile </span>}
       </h1> */}
       <iframe
-        className={`flex-col self-center object-center place-self-center justify-items-center place-items-center items-center place-content-center content-center border-0 border-none bg-contain overflow-hidden object-scale-down overscroll-x-none ${screenSize === "xs" ? "fixed top-0 scale-[0.75]" : "w-4/5  h-full"}`}
+        className={`flex flex-col top-0 mt-0 self-center object-center place-self-center justify-items-center place-items-center items-center place-content-center content-center border-0 border-none bg-contain overflow-hidden object-scale-down ${screenSize === "xs" ? "fixed bg-white mx-0 px-0 scale-[0.75]" : "mt-28 w-4/5 h-full"}`}
         src={"/pirouz_mehmandoost_resume.pdf"}
         allow="fullscreen"
         width={`${screenSize === "xs" ? `${dimensions[0] < dimensions[1] ? dimensions[0] * 1.3 : dimensions[0] * 1.1}px` : parseInt(dimensions[0] * 0.8)}`}
