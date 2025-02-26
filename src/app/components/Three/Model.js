@@ -1,22 +1,23 @@
 "use client";
 
 import { useRef } from "react";
-import { ColorManagement, MeshPhysicalMaterial, Vector3 } from "three";
+// import { ColorManagement, MeshPhysicalMaterial, Vector3 } from "three";
+import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, Html } from "@react-three/drei";
-import { Select } from "@react-three/postprocessing";
+// import { Select } from "@react-three/postprocessing";
 
-ColorManagement.enabled = true;
+THREE.ColorManagement.enabled = true;
 
 const Model = (data) => {
-  const meshRef = useRef(undefined);
+  const meshRef = useRef(null);
   const {
     material: materialProps,
     modelUrl: { name = "", url = "" },
     autoRotate,
     autoRotateSpeed,
     scale,
-    position = new Vector3(0, -25, 0),
+    position = new THREE.Vector3(0, -25, 0),
     isPointerOver = "",
   } = data;
 
@@ -29,8 +30,8 @@ const Model = (data) => {
     geometry: node.geometry,
     castShadow: true,
     receiveShadow: true,
-    material: new MeshPhysicalMaterial(materialProps),
     position: position,
+    // material: new THREE.MeshStandardMaterial(materialProps),
   };
 
   useFrame(({ clock }) => {
@@ -46,10 +47,12 @@ const Model = (data) => {
   });
 
   return node ? (
-    <Select name={node.name} enabled={isPointerOver === node.name}>
-      <mesh {...newData} />
-    </Select>
+    // <Select name={node.name} enabled={isPointerOver === node.name}>
+    <mesh {...newData}>
+      <meshBasicMaterial color={"black"} />
+    </mesh>
   ) : (
+    // </Select>
     <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
       <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-clay_dark">
         <p>⚒️ Please navigate back to the home page ⚒️</p>

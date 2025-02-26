@@ -91,8 +91,8 @@ const SceneBuilder = () => {
         positionVectors={groupPositions}
         targetPosition={cameraTarget}
       />
-      <Selection>
-        {/* <EffectComposer multisampling={0} autoClear={false}>
+      {/* <Selection> */}
+      {/* <EffectComposer multisampling={0} autoClear={false}>
           <N8AO
             radius={0.05}
             intensity={100}
@@ -110,101 +110,101 @@ const SceneBuilder = () => {
             blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
           />
         </EffectComposer> */}
-        <Bounds fit clip margin={1.2} damping={10}>
-          <group>
-            {projects.map((data, index) => {
-              const newProps = {
-                ...data,
-                sceneData: {
-                  ...data.sceneData,
-                  position: groupPositions[index],
-                  autoRotateSpeed: index % 2 == 0 ? -1 : 1,
-                  isPointerOver: pointerTarget.name,
-                },
-              };
+      {/* <Bounds fit clip margin={1.2} damping={10}> */}
+      <group>
+        {projects.map((data, index) => {
+          const newProps = {
+            ...data,
+            sceneData: {
+              ...data.sceneData,
+              position: groupPositions[index],
+              autoRotateSpeed: index % 2 == 0 ? -1 : 1,
+              isPointerOver: pointerTarget.name,
+            },
+          };
 
-              return (
-                <group
-                  name={`${newProps?.name}`}
-                  key={index}
-                  onClick={(e) => {
-                    handleUpdateSelection(newProps);
+          return (
+            <group
+              name={`${newProps?.name}`}
+              key={index}
+              onClick={(e) => {
+                handleUpdateSelection(newProps);
+                setPointerTarget({
+                  eventObject: e.eventObject.name,
+                  name: e.object.name,
+                  position: e.object.position,
+                });
+              }}
+              onPointerOver={(e) => {
+                if (e.pointerType === "mouse") {
+                  //if a model is highlighted via onClick, do not invoke handler.
+                  //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
+                  if (!currentSelection) {
                     setPointerTarget({
                       eventObject: e.eventObject.name,
                       name: e.object.name,
                       position: e.object.position,
                     });
-                  }}
-                  onPointerOver={(e) => {
-                    if (e.pointerType === "mouse") {
-                      //if a model is highlighted via onClick, do not invoke handler.
-                      //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
-                      if (!currentSelection) {
-                        setPointerTarget({
-                          eventObject: e.eventObject.name,
-                          name: e.object.name,
-                          position: e.object.position,
-                        });
-                      }
-                    } else {
-                      //mobile
-                      handleUpdateSelection(newProps);
-                      setPointerTarget({
-                        eventObject: e.eventObject.name,
-                        name: e.object.name,
-                        position: e.object.position,
-                      });
-                    }
-                  }}
-                  onPointerMissed={() => {
+                  }
+                } else {
+                  //mobile
+                  handleUpdateSelection(newProps);
+                  setPointerTarget({
+                    eventObject: e.eventObject.name,
+                    name: e.object.name,
+                    position: e.object.position,
+                  });
+                }
+              }}
+              onPointerMissed={() => {
+                setPointerTarget({});
+                handleUpdateSelection();
+              }}
+              onPointerOut={(e) => {
+                //don't handle this event on mobile devices.
+                if (e.pointerType === "mouse") {
+                  if (!currentSelection) {
                     setPointerTarget({});
-                    handleUpdateSelection();
-                  }}
-                  onPointerOut={(e) => {
-                    //don't handle this event on mobile devices.
-                    if (e.pointerType === "mouse") {
-                      if (!currentSelection) {
-                        setPointerTarget({});
-                      }
-                    }
-                  }}
+                  }
+                }
+              }}
+            >
+              <Group {...newProps.sceneData}>
+                {/* <Html
+                  occlude={
+                    !(
+                      !!currentSelection &&
+                      pointerTarget?.eventObject === currentSelection.name
+                    )
+                  }
+                  transform
+                  scale={[10, 10, 10]}
+                  position={[
+                    groupPositions[index].x,
+                    groupPositions[index].y + 40,
+                    groupPositions[index].z,
+                  ]}
                 >
-                  <Group {...newProps.sceneData}>
-                    <Html
-                      occlude={
-                        !(
-                          !!currentSelection &&
-                          pointerTarget?.eventObject === currentSelection.name
-                        )
+                  <div
+                    className={`flex flex-grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "w-0 opacity-0"}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (currentSelection) {
+                        setSelection(currentSelection);
+                        router.push("/project");
                       }
-                      transform
-                      scale={[10, 10, 10]}
-                      position={[
-                        groupPositions[index].x,
-                        groupPositions[index].y + 40,
-                        groupPositions[index].z,
-                      ]}
-                    >
-                      <div
-                        className={`flex flex-grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "w-0 opacity-0"}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (currentSelection) {
-                            setSelection(currentSelection);
-                            router.push("/project");
-                          }
-                        }}
-                      >
-                        See More
-                      </div>
-                    </Html>
-                  </Group>
-                </group>
-              );
-            })}
-          </group>
-        </Bounds>
-      </Selection>
+                    }}
+                  >
+                    See More
+                  </div>
+                </Html> */}
+              </Group>
+            </group>
+          );
+        })}
+      </group>
+      {/* </Bounds> */}
+      {/* </Selection> */}
     </>
   );
 };
