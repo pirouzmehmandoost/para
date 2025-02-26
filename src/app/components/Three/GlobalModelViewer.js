@@ -17,6 +17,7 @@ import {
   Selection,
   Outline,
 } from "@react-three/postprocessing";
+// import { BlendFunction } from "postprocessing";
 import { portfolio } from "../../../lib/globals";
 import { scaleMeshAtBreakpoint } from "../../../lib/utils";
 import cameraConfigs from "../../../lib/cameraConfigs";
@@ -91,7 +92,7 @@ const SceneBuilder = () => {
         targetPosition={cameraTarget}
       />
       <Selection>
-        <EffectComposer multisampling={0} autoClear={false}>
+        {/* <EffectComposer multisampling={0} autoClear={false}>
           <N8AO
             radius={0.05}
             intensity={100}
@@ -106,8 +107,9 @@ const SceneBuilder = () => {
             edgeStrength={50}
             blur={true}
             pulseSpeed={0.3}
+            blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
           />
-        </EffectComposer>
+        </EffectComposer> */}
         <Bounds fit clip margin={1.2} damping={10}>
           <group>
             {projects.map((data, index) => {

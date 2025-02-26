@@ -9,7 +9,9 @@ const initialState = {
   shortDescription: "",
   imgUrls: {},
   sceneData: {
-    modelUrls: [{ name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },],
+    modelUrls: [
+      { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },
+    ],
     scale: 0.0,
     position: {},
     autoRotate: true,

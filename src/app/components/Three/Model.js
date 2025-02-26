@@ -9,7 +9,7 @@ import { Select } from "@react-three/postprocessing";
 ColorManagement.enabled = true;
 
 const Model = (data) => {
-  const meshRef = useRef();
+  const meshRef = useRef(undefined);
   const {
     material: materialProps,
     modelUrl: { name = "", url = "" },
@@ -47,7 +47,7 @@ const Model = (data) => {
 
   return node ? (
     <Select name={node.name} enabled={isPointerOver === node.name}>
-      <mesh castShadow receiveShadow ref={meshRef} {...newData} />
+      <mesh {...newData} />
     </Select>
   ) : (
     <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>

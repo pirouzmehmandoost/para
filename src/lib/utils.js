@@ -22,7 +22,8 @@ export function flattenAttributes(data) {
   // Iterate over each key in the object
   for (let key in data) {
     // Skip inherited properties from the prototype chain
-    if (!data.hasOwnProperty(key)) continue;
+    // if (!data.hasOwnProperty(key)) continue;
+    if (!data?.key) continue;
 
     // If the key is 'attributes' or 'data', and its value is an object, merge their contents
     if (
@@ -131,7 +132,7 @@ export const calculatePositions = (scaleFactor, numPositions, center) => {
     let offset =
       parseInt(
         (scalePositionAtBreakPoint(scaleFactor) * parseInt(i * scaleFactor)) /
-        (numPositions * 2),
+          (numPositions * 2),
       ) * (i % 2 === 0 ? 1 : -1);
     xOffset.push(offset);
     xOffset.push(-1 * offset);
