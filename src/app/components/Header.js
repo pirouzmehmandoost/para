@@ -46,7 +46,7 @@ const Header = () => {
           >
             <p className="text-nowrap cursor-pointer">Github</p>
           </Link>
-          <Link
+          {/* <Link
             href="/shop"
             className="border-transparent transition-colors hover:text-zinc-500"
             rel="noopener noreferrer"
@@ -54,7 +54,7 @@ const Header = () => {
             <p className="text-nowrap cursor-pointer line-through decoration-wavy decoration-stone-700/80 decoration-4">
               Shop
             </p>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>

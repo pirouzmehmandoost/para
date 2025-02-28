@@ -44,7 +44,7 @@ const NavBar = () => {
           <h2>Projects</h2>
         </Link>
       </div>
-
+{/* 
       <div className="mb-3" onClick={toggleExpanded}>
         <Link
           href="/shop"
@@ -53,7 +53,7 @@ const NavBar = () => {
         >
           <h2>Shop</h2>
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 

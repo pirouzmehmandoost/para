@@ -35,8 +35,8 @@ const Group = ({ children, ...data }) => {
                     modelUrl: modelData,
                     materialId:
                         modelUrls.length === 1
-                        ? materials.defaultMaterial.id 
-                        : Object.values(materials.colorWays)[index].material.id,
+                        ? materials.defaultMaterial
+                        : Object.values(materials.colorWays)[index],
                     scale: updateScale,
                     autoRotate: autoRotate,
                     autoRotateSpeed: autoRotateSpeed,
