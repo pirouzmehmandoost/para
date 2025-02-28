@@ -1,37 +1,43 @@
 "use client";
 
-import { useRef } from "react";
-// import { ColorManagement, MeshPhysicalMaterial, Vector3 } from "three";
-import * as THREE from "three";
+import React, { useRef } from "react";
+import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
-import { useGLTF, Html } from "@react-three/drei";
-// import { Select } from "@react-three/postprocessing";
-
-THREE.ColorManagement.enabled = true;
+ import { useGLTF } from "@react-three/drei";
+import { Select } from "@react-three/postprocessing";
+import useMaterial from "../../stores/materialStore";
+import useMesh from "../../stores/meshStore";
 
 const Model = (data) => {
-  const meshRef = useRef(null);
+  const getMaterial = useMaterial((state) => state.getMaterial);
+  const getMesh = useMesh((state) => state.getMesh);
+  const setMesh = useMesh((state)=> state.setMesh)
+  const meshRef = useRef(undefined);
   const {
-    material: materialProps,
+    materialId,
     modelUrl: { name = "", url = "" },
     autoRotate,
     autoRotateSpeed,
     scale,
-    position = new THREE.Vector3(0, -25, 0),
+    position = new Vector3(0, -25, 0),
     isPointerOver = "",
   } = data;
 
-  const node = useGLTF(url).nodes[`${name?.length ? name : "/oval_bag_1.glb"}`];
-
+  let mesh = null;
+  if (getMesh(name)) {
+    mesh = getMesh(name);
+  } else {
+    mesh = useGLTF(url).nodes[`${name}`];
+    setMesh(mesh);
+  }
   const newData = {
     name: name,
-    ref: meshRef,
     scale: scale,
-    geometry: node.geometry,
     castShadow: true,
     receiveShadow: true,
     position: position,
-    // material: new THREE.MeshStandardMaterial(materialProps),
+    geometry: mesh.geometry,
+    material: getMaterial(materialId).material,
   };
 
   useFrame(({ clock }) => {
@@ -46,81 +52,26 @@ const Model = (data) => {
     }
   });
 
-  return node ? (
-    // <Select name={node.name} enabled={isPointerOver === node.name}>
-    <mesh {...newData}>
-      <meshBasicMaterial color={"black"} />
-    </mesh>
-  ) : (
-    // </Select>
-    <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
-      <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-clay_dark">
-        <p>⚒️ Please navigate back to the home page ⚒️</p>
-      </div>
-    </Html>
+  return (
+    <Select name={name} enabled={isPointerOver === name}>
+      <mesh ref={meshRef} {...newData}></mesh>
+    </Select>
   );
 };
 
 export default Model;
 
-// "use client";
-
-// import { useRef } from "react";
-// import { ColorManagement, MeshPhysicalMaterial, Vector3 } from "three";
-// import { useFrame } from "@react-three/fiber";
-// import { useGLTF } from "@react-three/drei";
-// import { Select } from "@react-three/postprocessing";
-
-// ColorManagement.enabled = true;
-
-// const Model = (data) => {
-//   const ref = useRef();
-//   const {
-//     material: materialProps,
-//     modelUrl: { name = "", url = "" },
-//     autoRotate,
-//     autoRotateSpeed,
-//     scale,
-//     position = new Vector3(0, -25, 0),
-//     isPointerOver = "",
-//   } = data;
-
-//   const { nodes, scene } = useGLTF(url);
-
-//   console.log("node is: ", nodes[`${name}`]);
-
-//   scene.traverse((child) => {
-//     if (!!child.isMesh) {
-//       child.material = new MeshPhysicalMaterial(materialProps);
-//       child.castShadow = true;
-//       child.receiveShadow = true;
-//       child.position.copy(position);
-//       child.scale.set(scale, scale, scale);
-//     }
-//   });
-
-//   useFrame(({ clock }) => {
-//     const elapsedTime = clock.getElapsedTime();
-
-//     scene.traverse((child) => {
-//       if (!!child?.isMesh && autoRotate) {
-//         child.rotation.set(
-//           0,
-//           Math.sin(Math.PI / 2) * elapsedTime * 0.3 * autoRotateSpeed,
-//           0,
-//         );
-//       }
-//     });
-//   });
-
-//   return (
-//     <Select
-//       name={scene.name}
-//       enabled={isPointerOver === scene.children[0].name}
-//     >
-//       <primitive castShadow receiveShadow object={scene} />
+//   return node ? (
+//     <Select name={node.name} enabled={isPointerOver === node.name}>
+//       <mesh ref={meshRef} {...newData}>
+//         {/* <meshStandardMaterial color={"black"} /> */}
+//       </mesh>
 //     </Select>
+//   ) : (
+//     <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
+//       <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-clay_dark">
+//         <p>⚒️ Please navigate back to the home page ⚒️</p>
+//       </div>
+//     </Html>
 //   );
 // };
-
-// export default Model;

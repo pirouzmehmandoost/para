@@ -1,6 +1,4 @@
 import { create } from "zustand";
-// import { portfolio } from "../../lib/globals";
-// const initialState = portfolio.projects[1];
 
 const initialState = {
   name: "",
@@ -9,17 +7,15 @@ const initialState = {
   shortDescription: "",
   imgUrls: {},
   sceneData: {
-    modelUrls: [
-      { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },
-    ],
-    scale: 0.0,
+    modelUrls: [{ name: "poop", url: "TEST" }],
+    scale: 0,
     position: {},
     autoRotate: true,
     autoRotateSpeed: 1,
     isPointerOver: "",
     autoUpdateMaterial: false,
-    colorCodes: {
-      defaultColor: {},
+    materials: {
+      defaultMMaterial: {},
       colorWays: {},
     },
   },

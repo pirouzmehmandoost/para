@@ -3,7 +3,7 @@
 import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
-import useSelection from "../store/selection";
+import useSelection from "../stores/selectionStore";
 import SingularModelViewer from "../components/Three/SingularModelViewer";
 
 const ProjectViewer = () => {
@@ -14,13 +14,13 @@ const ProjectViewer = () => {
     sceneData: {
       scale = 1.0,
       modelUrls = [],
-      colorCodes: { defaultColor = {}, colorWays = {} } = {},
+      materials: { defaultMaterial = {}, colorWays = {} } = {},
     } = {},
     description = "",
     name = "",
   } = selection;
 
-  const [selectedMaterial, setMaterial] = useState(defaultColor ?? null);
+  const [selectedMaterial, setMaterial] = useState(defaultMaterial ?? null);
   const data = {
     modelUrl: modelUrls[0],
     ...sceneData,

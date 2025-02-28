@@ -10,7 +10,7 @@ import {
   SoftShadows,
 } from "@react-three/drei";
 import cameraConfigs from "../../../lib/cameraConfigs";
-import { Ground } from "../../../../public/Env_ground_3";
+import { Ground } from "../../../../public/Ground";
 import { SimpleCameraRig } from "./CameraRig";
 import Model from "./Model";
 
@@ -51,27 +51,36 @@ export const scaleModel = (width) => {
 
 const ScaledModel = (modelData) => {
   const { size, viewport } = useThree();
-  console.log("modelData is:", modelData)
-  console.log("size is:", size)
-  console.log("viewport is:", viewport)
+  console.log("modelData is:", modelData);
+  console.log("size is:", size);
+  console.log("viewport is:", viewport);
 
-  console.log("size.width: ", size.width, "model scale; ", modelData.scale, "multiplied: ", size.width * modelData.scale / 1000)
-  console.log("ground height: ", size.height / -10)
+  console.log(
+    "size.width: ",
+    size.width,
+    "model scale; ",
+    modelData.scale,
+    "multiplied: ",
+    (size.width * modelData.scale) / 1000,
+  );
+  console.log("ground height: ", size.height / -10);
 
   const newModelData = {
     ...modelData,
     scale: modelData.scale * scaleModel(size.width),
-  }
+  };
 
-  return (<><Model {...newModelData} />
-    <Ground
-      position={[0, -45, 0]}
-      scale={[0.8, 0.6, 0.6]}
-      rotation={Math.PI / 12}
-    />
-  </>
-  )
-}
+  return (
+    <>
+      <Model {...newModelData} />
+      <Ground
+        position={[0, -45, 0]}
+        scale={[0.8, 0.6, 0.6]}
+        rotation={Math.PI / 12}
+      />
+    </>
+  );
+};
 
 export const SingularModelViewer = ({ data }) => {
   const { cameraPosition, ...modelData } = data;
@@ -132,4 +141,3 @@ export const SingularModelViewer = ({ data }) => {
 };
 
 export default SingularModelViewer;
-

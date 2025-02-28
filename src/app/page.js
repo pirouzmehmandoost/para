@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import localFont from "next/font/local";
-import GlobalScene from "./components/Three/GlobalModelViewer";
+import GlobalModelViewer from "./components/Three/GlobalModelViewer";
 
 const myFont = localFont({
   src: "../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
@@ -53,7 +53,7 @@ export default function Home() {
         id="bottom_section"
         className="absolute w-full h-1/2 min-h-96 bottom-0"
       >
-        <GlobalScene className="flex-row w-full h-full place-self-center" />
+        <GlobalModelViewer className="flex flex-row w-full h-full place-self-center" />
       </div>
     </main>
   );

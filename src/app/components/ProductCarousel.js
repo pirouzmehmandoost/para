@@ -5,7 +5,7 @@ import "@splidejs/react-splide/css";
 import "@splidejs/react-splide/css/core";
 import splideConfig from "../../lib/splideConfig";
 import { portfolio } from "../../lib/globals";
-import useSelection from "../store/selection";
+import useSelection from "../stores/selectionStore";
 import ProductCard from "./ProductCard";
 
 const ProductCarousel = () => {
@@ -17,7 +17,7 @@ const ProductCarousel = () => {
     ...splideConfig,
     perPage: 3,
     autoplay: false,
-    type: "slide"
+    type: "slide",
   };
 
   let relatedProducts = products.filter(

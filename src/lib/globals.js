@@ -31,30 +31,33 @@ export const glossMaterial = {
   flatShading: false,
 };
 
-export const colorCodes = {
+export const materials = {
   matte_black: {
     label: "Matte Black",
+    id: "matte_black",
     tailwindColor: `bg-zinc-900`,
     material: {
-      color: "black",
       ...matteMaterial,
+      color: "black",
     },
   },
   gloss_black: {
     label: "Gloss Black",
+    id: "gloss_black",
     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
     material: {
-      color: "black",
       ...glossMaterial,
+      color: "black",
     },
   },
   eggshell: {
     label: "Eggshell",
+    id: "eggshell",
     tailwindColor: `bg-orange-100`,
     material: {
       color: "#ccc0a3",
       ...matteMaterial,
-      ior: 1.8,
+      ior: 1.5,
       roughness: 0.6,
       metalness: 0,
       sheen: 1,
@@ -95,9 +98,9 @@ export const portfolio = {
       sceneData: {
         orthographic: false,
         autoUpdateMaterial: true,
-        colorCodes: {
-          defaultColor: { ...colorCodes.gloss_black },
-          colorWays: { ...colorCodes },
+        materials: {
+          defaultMaterial: { ...materials.gloss_black },
+          colorWays: { ...materials },
         },
       },
       modelUrl: "/oval_bag_1.glb",
@@ -126,9 +129,9 @@ export const portfolio = {
       sceneData: {
         orthographic: false,
         autoUpdateMaterial: true,
-        colorCodes: {
-          defaultColor: { ...colorCodes.gloss_black },
-          colorWays: { ...colorCodes },
+        materials: {
+          defaultMaterial: { ...materials.gloss_black },
+          colorWays: { ...materials },
         },
       },
       modelUrl: "/oval_bag_xl_v2.glb",
@@ -156,9 +159,9 @@ export const portfolio = {
       sceneData: {
         orthographic: false,
         autoUpdateMaterial: true,
-        colorCodes: {
-          defaultColor: { ...colorCodes.gloss_black },
-          colorWays: { ...colorCodes },
+        materials: {
+          defaultMaterial: { ...materials.gloss_black },
+          colorWays: { ...materials },
         },
       },
       modelUrl: "/yoga_mat_strap_for_web2.glb",
@@ -186,16 +189,16 @@ export const portfolio = {
       },
       sceneData: {
         autoUpdateMaterial: false,
-        colorCodes: {
-          defaultColor: { ...colorCodes.gloss_black },
-          colorWays: { ...colorCodes },
+        materials: {
+          defaultMaterial: { ...materials.gloss_black },
+          colorWays: { ...materials },
         },
         modelUrls: [
-          { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
+          //   { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
           { name: "bag_88", url: "/bag_xl-transformed.glb" },
-          { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
+          //   { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
         ],
-        scale: 0.95,
+        scale: 0.9,
         autoRotate: true,
       },
       shortDescription: "A small collection of 3D printed handbags.",
@@ -220,14 +223,14 @@ export const portfolio = {
         ],
       },
       sceneData: {
-        colorCodes: {
-          defaultColor: { ...colorCodes.gloss_black },
-          colorWays: { ...colorCodes },
+        materials: {
+          defaultMaterial: { ...materials.gloss_black },
+          colorWays: { ...materials },
         },
         modelUrls: [
           { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },
         ],
-        scale: 1.0,
+        scale: 1.1,
         autoRotate: true,
         autoUpdateMaterial: false,
       },

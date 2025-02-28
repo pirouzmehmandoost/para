@@ -13,12 +13,13 @@ const NavBar = () => {
   const toggleExpanded = () => setExpanded((current) => !current);
 
   const dropDown = (
-    <div className="flex flex-col flex-grow">
+    // <div className="flex flex-col flex-grow">
+    <div className="flex flex-col grow">
       <div className="self-center my-6">
         <input
           type="text"
           id="search_input"
-          className="w-full text-center bg-transparent border-b border-clay_dark focus:outline-none placeholder-clay_dark"
+          className="w-full text-center bg-transparent border-b border-clay_dark focus:outline-hidden placeholder-clay_dark"
           placeholder="Search Products"
           required
         />

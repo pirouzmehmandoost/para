@@ -1,12 +1,12 @@
 "use client";
 
-import useSelection from "../store/selection";
+import useSelection from "../stores/selectionStore";
 
 const Menu = ({ setExpanded, expanded }) => {
   const selection = useSelection((state) => state.selection);
   const {
     sceneData: {
-      colorCodes: { colorWays },
+      materials: { colorWays },
     },
     description,
     name,
