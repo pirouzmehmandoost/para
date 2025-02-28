@@ -194,9 +194,9 @@ export const portfolio = {
           colorWays: [ "gloss_black", "matte_black", "eggshell"],
         },
         modelUrls: [
-          //   { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
+            { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
           { name: "bag_88", url: "/bag_xl-transformed.glb" },
-          //   { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
+            { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
         ],
         scale: 0.9,
         autoRotate: true,

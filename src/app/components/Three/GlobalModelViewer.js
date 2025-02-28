@@ -7,20 +7,11 @@ import { Canvas, useThree } from "@react-three/fiber";
 import Light from "./Light";
 import {
   Environment,
-  Loader,
   Bounds,
-  // Html,
   Outlines,
-  //   Plane,
+  Html
 } from "@react-three/drei";
-// import {
-//   EffectComposer,
-//   //   RenderPass,
-//   N8AO,
-//   Selection,
-//   Outline,
-// } from "@react-three/postprocessing";
-// import { BlendFunction } from "postprocessing";
+
 import { portfolio } from "../../../lib/globals";
 import { scaleMeshAtBreakpoint } from "../../../lib/utils";
 import cameraConfigs from "../../../lib/cameraConfigs";
@@ -36,6 +27,8 @@ const SceneBuilder = () => {
   //   const s = useSelection((state) => state.selection);
   const router = useRouter();
   const [currentSelection, select] = useState();
+    const [l, setl] = useState([1,null]);
+
   const [pointerTarget, setPointerTarget] = useState({
     eventObject: "",
     name: "",
@@ -44,12 +37,26 @@ const SceneBuilder = () => {
   const { size } = useThree();
   const { projects } = portfolio;
   const groupPositions = [];
-  //   const { camera } = useThree();
+    const { camera } = useThree();
+// camera.position.copy(cameraConfigs.POSITION)
+camera.near = cameraConfigs.NEAR
+camera.far = cameraConfigs.FAR
+camera.fov = 50
+    //       camera={{
+    //     position: cameraConfigs.POSITION,
+    //     near: cameraConfigs.NEAR,
+    //     far: cameraConfigs.FAR,
+    //     fov: 50,
+    //   }}
+        //   camera.position.lerp(new Vector3(666, 666, 666), 0.06)
 
-  //   useEffect(() => {
-  //     console.log(camera);
-  //     camera.position.copy(new Vector3(-10000, 1000, 0));
-  //   }, []);
+    // useEffect(() => {
+    //   console.log(camera);
+    // //   camera.position.copy(new Vector3(-10000, 1000, 0));
+
+    // }, []);
+
+
 
   const handleUpdateSelection = (data) => {
     if (!data) {
@@ -60,6 +67,10 @@ const SceneBuilder = () => {
       select(data);
     }
   };
+
+  const toggleLight = (x, i) => {
+    setl([x, i])
+  }
 
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
   const ellipseCurve = new EllipseCurve(
@@ -98,8 +109,8 @@ const SceneBuilder = () => {
   CameraRig(groupPositions, cameraTarget);
 
   return (
-    <>
-      {/* <Selection>    */}
+     <>
+    {/*    <Selection>    */}
       <Bounds fit clip margin={1.2} damping={10}>
         {projects.map((data, index) => {
           const newProps = {
@@ -114,22 +125,8 @@ const SceneBuilder = () => {
           };
 
           return (
-            <group key={index}>
-              <Light
-                position={[
-                  groupPositions[index].x,
-                  groupPositions[index].y + 80,
-                  groupPositions[index].z + 50,
-                ]}
-                intensity={6}
-                //   color={index % 2 == 1 ? "magenta" : "blue"}
-                target={[
-                  groupPositions[index].x,
-                  groupPositions[index].y,
-                  groupPositions[index].z,
-                ]}
-              />
               <group
+                key={index}
                 name={`${newProps?.name}`}
                 onClick={(e) => {
                   handleUpdateSelection(newProps);
@@ -138,6 +135,8 @@ const SceneBuilder = () => {
                     name: e.object.name,
                     position: e.object.position,
                   });
+                toggleLight(5, `${newProps?.name}`)
+
                 }}
                 onPointerOver={(e) => {
                   if (e.pointerType === "mouse") {
@@ -149,6 +148,8 @@ const SceneBuilder = () => {
                         name: e.object.name,
                         position: e.object.position,
                       });
+                    toggleLight(5, `${newProps?.name}`)
+
                     }
                   } else {
                     //mobile
@@ -163,25 +164,42 @@ const SceneBuilder = () => {
                 onPointerMissed={() => {
                   setPointerTarget({});
                   handleUpdateSelection();
+                toggleLight(1, null)
+
                 }}
                 onPointerOut={(e) => {
                   //don't handle this event on mobile devices.
                   if (e.pointerType === "mouse") {
                     if (!currentSelection) {
                       setPointerTarget({});
+                      toggleLight(1, null)
                     }
                   }
                 }}
               >
+            <Light
+                position={[
+                  groupPositions[index].x,
+                  groupPositions[index].y + 100,
+                  groupPositions[index].z + -50,
+                ]}
+                intensity={4}
+                  color={ l[1] === `${newProps?.name}` ? "white" : "black"}
+                target={[
+                  groupPositions[index].x,
+                  groupPositions[index].y,
+                  groupPositions[index].z,
+                ]}
+              />
                 <Group {...newProps.sceneData} />
 
-                {/* <Html
-                      occlude={
-                        !(
-                          !!currentSelection &&
-                          pointerTarget?.eventObject === currentSelection.name
-                        )
-                      }
+                <Html
+                    //   occlude={
+                    //     !(
+                    //       !!currentSelection &&
+                    //       pointerTarget?.eventObject === currentSelection.name
+                    //     )
+                    //   }
                       transform
                       scale={[10, 10, 10]}
                       position={[
@@ -203,37 +221,32 @@ const SceneBuilder = () => {
                       >
                         See More
                       </div>
-                    </Html> */}
-                {/* </Group> */}
+                    </Html>
               </group>
-            </group>
           );
         })}
       </Bounds>
-      {/* </Selection>*
-      <EffectComposer multisampling={0} autoClear={true} disableNormalPass>
-        <N8AO
-          radius={0.05}
-          intensity={100}
-          xray={true}
-          luminanceInfluence={0.5}
-          color="white"
-        /> */}
-      {/* 
-      <Outline
-          visibleEdgeColor={"white"}
-          hiddenEdgeColor={"white"}
-          width={1000}
-          edgeStrength={50}
-          blur={true}
-          pulseSpeed={0.3}
-          // // blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
-          alpha={false}
-          options={{ alpha: false }}
-        /> 
-        */}
-      {/* </EffectComposer> */}
-    </>
+   </>
+    // </Selection>
+    //    <EffectComposer multisampling={0} autoClear={true} disableNormalPass>
+    //     <N8AO
+    //       radius={0.05}
+    //       intensity={100}
+    //       xray={true}
+    //       luminanceInfluence={0.5}
+    //       color="white"
+    //     />
+    //   {
+    //   <Outline
+    //       visibleEdgeColor={"white"}
+    //       hiddenEdgeColor={"white"}
+    //       width={1000}
+    //       edgeStrength={50}
+    //       blur={true}
+    //       pulseSpeed={0.3}
+    //     /> 
+    //   </EffectComposer>
+    //  </> 
   );
 };
 
@@ -241,7 +254,8 @@ export const GlobalModelViewer = () => {
   return (
     <Canvas
       camera={{
-        position: cameraConfigs.POSITION,
+        position:[666,666,666],
+        // position: cameraConfigs.POSITION,
         near: cameraConfigs.NEAR,
         far: cameraConfigs.FAR,
         fov: 50,
@@ -250,10 +264,10 @@ export const GlobalModelViewer = () => {
       orthographic={false}
       shadows
     >
-      {/* <Environment shadows files="./studio_small_08_4k.exr" /> */}
-      {/* <color args={["#bcbcbc"]} attach="background" /> */}
-      <fog attach="fog" density={0.005} color="#bcbcbc" near={160} far={290} />
-      <directionalLight
+     <Environment shadows files="./studio_small_08_4k.exr" />
+      <color args={["#bcbcbc"]} attach="background" />
+      <fog attach="fog" density={0.006} color="#bcbcbc" near={160} far={285} />
+      {/* <directionalLight
         castShadow={true}
         // position={[0, 80, -40]}
         position={[-150, 80, -80]}
@@ -284,8 +298,7 @@ export const GlobalModelViewer = () => {
         shadow-camera-bottom={-1500}
         shadow-camera-left={-1500}
         shadow-camera-right={1500}
-      />
-      <ambientLight intensity={100} color="red" />
+      /> */}
       {/* <ambientLight intensity={5} /> */}
       {/*     castShadow={true}
         position={[150, 80, -180]}

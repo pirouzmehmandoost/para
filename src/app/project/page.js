@@ -5,16 +5,19 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import useSelection from "../stores/selectionStore";
 import SingularModelViewer from "../components/Three/SingularModelViewer";
+import useMaterial from "../stores/materialStore";
 
 const ProjectViewer = () => {
+  const getMaterial = useMaterial((state) => state.getMaterial);
   const [expanded, setExpanded] = useState(false);
   const selection = useSelection((state) => state.selection);
   const {
-    sceneData = {},
-    sceneData: {
-      scale = 1.0,
-      modelUrls = [],
-      materials: { defaultMaterial = {}, colorWays = {} } = {},
+        sceneData = {},
+        sceneData: {
+        isPointerOver,
+        scale = 1.0,
+        modelUrls = [],
+        materials: { defaultMaterial = '', colorWays = {} } = {},
     } = {},
     description = "",
     name = "",
@@ -22,7 +25,7 @@ const ProjectViewer = () => {
 
   const [selectedMaterial, setMaterial] = useState(defaultMaterial ?? null);
   const data = {
-    modelUrl: modelUrls[0],
+    modelUrl: isPointerOver? modelUrls.reduce((acc, el)=> acc.name==isPointerOver? acc : el) : modelUrls[0],
     ...sceneData,
     position: undefined,
     enablePan: true,
@@ -33,8 +36,8 @@ const ProjectViewer = () => {
     cameraPosition: [0, 10, 180],
     orthographic: false,
     autoUpdateMaterial: false,
-    scale: scale * 0.5,
-    material: selectedMaterial.material,
+    scale: scale * 0.45,
+    materialId:selectedMaterial,
   };
 
   const colorSelectButtons = (
@@ -45,9 +48,9 @@ const ProjectViewer = () => {
         return (
           <div
             key={entry[0]}
-            className={`flex ${entry[1].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial.label !== entry[1].label ? "outline-none" : "outline-zinc-900 outline-2"}`}
+            className={`flex ${getMaterial(entry[1]).tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry[1]? "outline-none" : "outline-zinc-900 outline-2"}`}
             onClick={() => {
-              if (selectedMaterial.label !== entry[1].label)
+              if (selectedMaterial !== entry[1])
                 setMaterial(entry[1]);
             }}
           ></div>

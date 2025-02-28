@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+// import { Suspense } from "react";
 import { ColorManagement } from "three";
 import { Canvas, useThree } from "@react-three/fiber";
 import {
@@ -51,24 +51,25 @@ export const scaleModel = (width) => {
 
 const ScaledModel = (modelData) => {
   const { size, viewport } = useThree();
-  console.log("modelData is:", modelData);
-  console.log("size is:", size);
-  console.log("viewport is:", viewport);
+//   console.log("size is:", size);
+//   console.log("viewport is:", viewport);
 
-  console.log(
-    "size.width: ",
-    size.width,
-    "model scale; ",
-    modelData.scale,
-    "multiplied: ",
-    (size.width * modelData.scale) / 1000,
-  );
-  console.log("ground height: ", size.height / -10);
+//   console.log(
+//     "size.width: ",
+//     size.width,
+//     "model scale; ",
+//     modelData.scale,
+//     "multiplied: ",
+//     (size.width * modelData.scale) / 1000,
+//   );
+//   console.log("ground height: ", size.height / -10);
 
   const newModelData = {
     ...modelData,
     scale: modelData.scale * scaleModel(size.width),
   };
+
+    // console.log("modelData is:", newModelData);
 
   return (
     <>
@@ -83,10 +84,11 @@ const ScaledModel = (modelData) => {
 };
 
 export const SingularModelViewer = ({ data }) => {
+    console.log("sdata: ",data)
   const { cameraPosition, ...modelData } = data;
 
   return (
-    <Suspense fallback={<Loader />}>
+    // <Suspense fallback={<Loader />}>
       <Canvas
         camera={{
           position: cameraPosition,
@@ -136,7 +138,7 @@ export const SingularModelViewer = ({ data }) => {
         <ScaledModel {...modelData} />
         <SoftShadows samples={10} size={6} />
       </Canvas>
-    </Suspense>
+    // </Suspense>
   );
 };
 

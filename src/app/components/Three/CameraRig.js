@@ -1,12 +1,14 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { CatmullRomCurve3, Vector3 } from "three";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import cameraConfigs from "../../../lib/cameraConfigs";
 
-export const SimpleCameraRig = (data, { v = new Vector3() }) => {
-  const { cameraPosition = [0, 10, 180] } = data;
+// export const SimpleCameraRig = (data, { v = new Vector3() }) => {
+    export const SimpleCameraRig = (data) => {
 
+  const { cameraPosition = [0, 10, 180] } = data;
+const v = new Vector3()
   return useFrame(({ clock, camera }) => {
     const t = clock.elapsedTime;
 

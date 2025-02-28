@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
  import { useGLTF } from "@react-three/drei";
-import { Select } from "@react-three/postprocessing";
+// import { Select } from "@react-three/postprocessing";
 import useMaterial from "../../stores/materialStore";
 import useMesh from "../../stores/meshStore";
 
@@ -53,9 +53,9 @@ const Model = (data) => {
   });
 
   return (
-    <Select name={name} enabled={isPointerOver === name}>
+    // <Select name={name} enabled={isPointerOver === name}>
       <mesh ref={meshRef} {...newData}></mesh>
-    </Select>
+   // {/* </Select> */}
   );
 };
 
