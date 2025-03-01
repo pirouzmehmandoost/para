@@ -2,36 +2,41 @@ import { create } from "zustand";
 import { MeshPhysicalMaterial } from "three";
 
 const matteMaterial = {
-  roughness: 1,
-  metalness: 0.1,
-  ior: 1.8,
-  reflectivity: 0.05,
+  clearcoat: 0,
+  clearcoatRoughness: 0,
+  flatShading: false,
+  ior: 1.5,
+  metalness: 0,
+  reflectivity: 0.1,
+  roughness: 0.7,
   sheen: 0.5,
   sheenColor: "#707070",
-  sheenRoughness: 0.9,
-  flatShading: false,
+  sheenRoughness: 0.5,
+
 };
 
 const metallicMaterial = {
-  roughness: 0.2,
-  metalness: 1,
+  clearcoat: 0,
+  clearcoatRoughness: 0,
+  flatShading: false,
   ior: 1.8,
+  metalness: 1,
+  roughness: 0.2,
   sheen: 0.15,
   sheenColor: "#707070",
   sheenRoughness: 1,
-  flatShading: false,
 };
 
 const glossMaterial = {
-  roughness: 0.4,
-  metalness: 0,
-  ior: 1.5,
-  reflectivity: 0,
-  sheen: 0,
-  sheenRoughness: 0,
   clearcoat: 0.3,
   clearcoatRoughness: 0.9,
   flatShading: false,
+  ior: 1.5,
+  metalness: 0,
+  reflectivity: 0,
+  roughness: 0.4,
+  sheen: 0,
+  sheenRoughness: 0,
 };
 
 const initialState = {
@@ -57,12 +62,12 @@ const initialState = {
     material: new MeshPhysicalMaterial({
       ...matteMaterial,
       color: "#ccc0a3",
-      ior: 1.5,
+      ior: 1.8,
+      reflectivity: 0.4,
       roughness: 0.6,
-      metalness: 0,
       sheen: 1,
-      sheenRoughness: 0.5,
       sheenColor: "#ccc0a3",
+      sheenRoughness: 1,
     }),
   },
   silver: {
@@ -80,6 +85,7 @@ const materialStore = (set, get) => ({
 
   getMaterials: () => get().materials,
 
+  //possibly create new shadermaterial and apply when selection changes
 //   setMaterial: (material) => {
 //     set((state) => ({
 //       materials: {

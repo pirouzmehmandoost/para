@@ -1,61 +1,45 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { Suspense, useState, useEffect } from "react";
-import { BufferGeometry, ColorManagement, EllipseCurve, Vector3, MathUtils,Color} from "three";
+import React, { Suspense, useState, } from "react";
+import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from "three";
 import { Canvas, useThree } from "@react-three/fiber";
-import Light from "./Light";
-import {
-  Environment,
-//   Bounds,
-//   Outlines,
-  Html
-} from "@react-three/drei";
-
+import { Environment, Html } from "@react-three/drei";
+import useSelection from "../../stores/selectionStore";
 import { portfolio } from "../../../lib/globals";
 import { scaleMeshAtBreakpoint } from "../../../lib/utils";
 import cameraConfigs from "../../../lib/cameraConfigs";
 import { Ground } from "../../../../public/Ground";
+import Light from "./Light";
 import Group from "./Group";
-import useSelection from "../../stores/selectionStore";
 import { CameraRig } from "./CameraRig";
 
 ColorManagement.enabled = true;
 
 const SceneBuilder = () => {
   const setSelection = useSelection((state) => state.setSelection);
-  //   const s = useSelection((state) => state.selection);
+  const resetSelection = useSelection((state) => state.reset);
+
+  const { size } = useThree();
   const router = useRouter();
   const [currentSelection, select] = useState();
-    const [light, setLight] = useState([1,null]);
-
   const [pointerTarget, setPointerTarget] = useState({
     eventObject: "",
     name: "",
     position: null,
   });
-  const { size } = useThree();
   const { projects } = portfolio;
   const groupPositions = [];
 
-
-
-
   const handleUpdateSelection = (data) => {
     if (!data) {
-      //   setSelection();
       select();
+      resetSelection();
     } else {
       setSelection(data);
       select(data);
     }
   };
-
-  const toggleLight = ( i) => {
-    
-    setLight([light[0], i])
-  }
-
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
   const ellipseCurve = new EllipseCurve(
     0,
@@ -94,7 +78,6 @@ const SceneBuilder = () => {
 
   return (
      <>
-      {/* <Bounds fit clip margin={1.2} damping={10}> */}
         {projects.map((data, index) => {
           const groupProps = {
             ...data,
@@ -112,14 +95,13 @@ const SceneBuilder = () => {
                 key={groupProps?.name}
                 name={`${groupProps?.name}`}
                 onClick={(e) => {
+                console.log("onclick!")
                   handleUpdateSelection(groupProps);
                   setPointerTarget({
                     eventObject: e.eventObject.name,
                     name: e.object.name,
                     position: e.object.position,
                   });
-                toggleLight(`${groupProps?.name}`)
-
                 }}
                 onPointerOver={(e) => {
                   if (e.pointerType === "mouse") {
@@ -131,8 +113,6 @@ const SceneBuilder = () => {
                         name: e.object.name,
                         position: e.object.position,
                       });
-                    toggleLight( `${groupProps?.name}`)
-
                     }
                   } else {
                     //mobile
@@ -147,7 +127,6 @@ const SceneBuilder = () => {
                 onPointerMissed={() => {
                   setPointerTarget({});
                   handleUpdateSelection();
-                toggleLight(null)
 
                 }}
                 onPointerOut={(e) => {
@@ -155,7 +134,6 @@ const SceneBuilder = () => {
                   if (e.pointerType === "mouse") {
                     if (!currentSelection) {
                       setPointerTarget({});
-                      toggleLight(null)
                     }
                   }
                 }}
@@ -167,8 +145,6 @@ const SceneBuilder = () => {
                   groupPositions[index].z + 50,
                 ]}
                 intensity={1}
-                //  intensity={ light[1] === `${groupProps?.name}` ? MathUtils.damp(1, 20, 0.06  ) : 1}
-                // color={ light[1] === `${groupProps?.name}` ? new Color("white").lerp(new Color("red"), 0.6  ):  new Color("red").lerp(new Color("white"), 0.6  )}
                 target={[
                   groupPositions[index].x,
                   groupPositions[index].y,
@@ -177,13 +153,6 @@ const SceneBuilder = () => {
               />
                 <Group {...groupProps.sceneData} />
                 <Html
-                // occlude prop is potentially causing issues 
-                    //   occlude={
-                    //     !(
-                    //       !!currentSelection &&
-                    //       pointerTarget?.eventObject === currentSelection.name
-                    //     )
-                    //   }
                       transform
                       scale={[10, 10, 10]}
                       position={[
@@ -208,27 +177,7 @@ const SceneBuilder = () => {
               </group>
           );
         })}
-      {/* </Bounds> */}
    </>
-    //    <EffectComposer multisampling={0} autoClear={true} disableNormalPass>
-    //     <N8AO
-    //       radius={0.05}
-    //       intensity={100}
-    //       xray={true}
-    //       luminanceInfluence={0.5}
-    //       color="white"
-    //     />
-    //   {
-    //   <Outline
-    //       visibleEdgeColor={"white"}
-    //       hiddenEdgeColor={"white"}
-    //       width={1000}
-    //       edgeStrength={50}
-    //       blur={true}
-    //       pulseSpeed={0.3}
-    //     /> 
-    //   </EffectComposer>
-    //  </> 
   );
 };
 
@@ -237,7 +186,6 @@ export const GlobalModelViewer = () => {
     <Canvas
       camera={{
         position:[666,666,666],
-        // position: cameraConfigs.POSITION,
         near: cameraConfigs.NEAR,
         far: cameraConfigs.FAR,
         fov: 50,
@@ -252,11 +200,9 @@ export const GlobalModelViewer = () => {
       <directionalLight
         castShadow={true}
         position={[0, 80, -40]}
-        // position={[-150, 80, -80]}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         intensity={2}
-        // intensity={0.2}
         shadow-camera-near={0.05}
         shadow-camera-far={1000}
         shadow-bias={-0.001}
@@ -268,10 +214,8 @@ export const GlobalModelViewer = () => {
       <directionalLight
         castShadow={true}
         position={[0, 100, 80]}
-        // position={[150, 80, 80]}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        // intensity={0.2}
         intensity={1}
         shadow-camera-near={0.05}
         shadow-camera-far={1000}

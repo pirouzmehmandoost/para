@@ -7,17 +7,18 @@ const initialState = {
   shortDescription: "",
   imgUrls: {},
   sceneData: {
-    modelUrls: [{ name: "poop", url: "TEST" }],
-    scale: 0,
-    position: {},
     autoRotate: true,
     autoRotateSpeed: 1,
-    isPointerOver: "",
     autoUpdateMaterial: false,
+    groupName: "",
+    isPointerOver: "",
     materials: {
-      defaultMMaterial: {},
+      defaultMaterial: {},
       colorWays: {},
     },
+    modelUrls: [{ name: "", url: "" }],
+    position: {},
+    scale: 0,
   },
 };
 
@@ -36,9 +37,8 @@ const selectionStore = (set, get) => ({
   reset: () => {
     set((state) => ({
       ...state,
-      selection: initialState,
+      selection: {...initialState, sceneData: {...initialState.sceneData}},
     }));
-    return get().selection;
   },
 });
 

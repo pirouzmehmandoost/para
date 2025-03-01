@@ -1119,9 +1119,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-three/drei@npm:^10.0.2":
-  version: 10.0.2
-  resolution: "@react-three/drei@npm:10.0.2"
+"@react-three/drei@npm:^10.0.3":
+  version: 10.0.3
+  resolution: "@react-three/drei@npm:10.0.3"
   dependencies:
     "@babel/runtime": "npm:^7.26.0"
     "@mediapipe/tasks-vision": "npm:0.10.17"
@@ -1152,7 +1152,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10c0/fad80274c6b60e167555d470d06703bc3276b5a58446ce3d5170b36d1b804a2d3c0aff3740383f2e7b4ff7c57c845426158a8df4ff11b27f5f6d6cde0032e678
+  checksum: 10c0/bbf1ad2d1d2574abca8e1eaea712486e9b76b2129555fd5b76e67037ba911d90514e4fdf43702d217dba7fba00cb070f324c04906af44afcf1467a1561468243
   languageName: node
   linkType: hard
 
@@ -5066,7 +5066,7 @@ __metadata:
     "@mui/icons-material": "npm:^6.4.6"
     "@mui/material": "npm:^6.4.6"
     "@next/eslint-plugin-next": "npm:^15.1.7"
-    "@react-three/drei": "npm:^10.0.2"
+    "@react-three/drei": "npm:^10.0.3"
     "@react-three/fiber": "npm:^9.0.4"
     "@react-three/postprocessing": "npm:^3.0.4"
     "@splidejs/react-splide": "npm:^0.7.12"
