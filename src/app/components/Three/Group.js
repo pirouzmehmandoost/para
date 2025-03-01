@@ -7,13 +7,13 @@ import Model from "./Model";
 const Group = ({ children, ...data }) => {
     const { size } = useThree();
     const {
+        autoRotate,
+        autoRotateSpeed,
         materials,
         modelUrls,
-        autoRotate,
-        scale,
-        autoRotateSpeed,
-        position: groupPosition,
         isPointerOver,
+        position: groupPosition,
+        scale,
     } = data;
 
     let positions = calculatePositions(
@@ -29,21 +29,22 @@ const Group = ({ children, ...data }) => {
 
     return (
         <group>
-            {modelUrls.map((modelData, index) => {
-                const newProps = {
+            {modelUrls.map((modelUrl, index) => {
+                const key = modelUrl.name;
+                const props = {
+                    autoRotate: autoRotate,
+                    autoRotateSpeed: autoRotateSpeed,
                     isPointerOver,
-                    modelUrl: modelData,
                     materialId:
                         modelUrls.length === 1
                         ? materials.defaultMaterial
                         : Object.values(materials.colorWays)[index],
-                    scale: updateScale,
-                    autoRotate: autoRotate,
-                    autoRotateSpeed: autoRotateSpeed,
+                    modelUrl: modelUrl,
                     position: positions[index],
+                    scale: updateScale,
                 };
                 
-                return <Model key={index} {...newProps} />;
+                return <Model key={key} {...props} />;
             })}
             {children}
         </group>

@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import React, { Suspense, useState, useEffect } from "react";
-import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from "three";
+import { BufferGeometry, ColorManagement, EllipseCurve, Vector3, MathUtils,Color} from "three";
 import { Canvas, useThree } from "@react-three/fiber";
 import Light from "./Light";
 import {
   Environment,
-  Bounds,
-  Outlines,
+//   Bounds,
+//   Outlines,
   Html
 } from "@react-three/drei";
 
@@ -27,7 +27,7 @@ const SceneBuilder = () => {
   //   const s = useSelection((state) => state.selection);
   const router = useRouter();
   const [currentSelection, select] = useState();
-    const [l, setl] = useState([1,null]);
+    const [light, setLight] = useState([1,null]);
 
   const [pointerTarget, setPointerTarget] = useState({
     eventObject: "",
@@ -37,24 +37,7 @@ const SceneBuilder = () => {
   const { size } = useThree();
   const { projects } = portfolio;
   const groupPositions = [];
-    const { camera } = useThree();
-// camera.position.copy(cameraConfigs.POSITION)
-camera.near = cameraConfigs.NEAR
-camera.far = cameraConfigs.FAR
-camera.fov = 50
-    //       camera={{
-    //     position: cameraConfigs.POSITION,
-    //     near: cameraConfigs.NEAR,
-    //     far: cameraConfigs.FAR,
-    //     fov: 50,
-    //   }}
-        //   camera.position.lerp(new Vector3(666, 666, 666), 0.06)
 
-    // useEffect(() => {
-    //   console.log(camera);
-    // //   camera.position.copy(new Vector3(-10000, 1000, 0));
-
-    // }, []);
 
 
 
@@ -68,8 +51,9 @@ camera.fov = 50
     }
   };
 
-  const toggleLight = (x, i) => {
-    setl([x, i])
+  const toggleLight = ( i) => {
+    
+    setLight([light[0], i])
   }
 
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
@@ -110,14 +94,13 @@ camera.fov = 50
 
   return (
      <>
-    {/*    <Selection>    */}
-      <Bounds fit clip margin={1.2} damping={10}>
+      {/* <Bounds fit clip margin={1.2} damping={10}> */}
         {projects.map((data, index) => {
-          const newProps = {
+          const groupProps = {
             ...data,
             sceneData: {
               ...data.sceneData,
-              poop: data.name,
+              groupName: data.name,
               position: groupPositions[index],
               autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
               isPointerOver: pointerTarget.name,
@@ -126,16 +109,16 @@ camera.fov = 50
 
           return (
               <group
-                key={index}
-                name={`${newProps?.name}`}
+                key={groupProps?.name}
+                name={`${groupProps?.name}`}
                 onClick={(e) => {
-                  handleUpdateSelection(newProps);
+                  handleUpdateSelection(groupProps);
                   setPointerTarget({
                     eventObject: e.eventObject.name,
                     name: e.object.name,
                     position: e.object.position,
                   });
-                toggleLight(5, `${newProps?.name}`)
+                toggleLight(`${groupProps?.name}`)
 
                 }}
                 onPointerOver={(e) => {
@@ -148,12 +131,12 @@ camera.fov = 50
                         name: e.object.name,
                         position: e.object.position,
                       });
-                    toggleLight(5, `${newProps?.name}`)
+                    toggleLight( `${groupProps?.name}`)
 
                     }
                   } else {
                     //mobile
-                    handleUpdateSelection(newProps);
+                    handleUpdateSelection(groupProps);
                     setPointerTarget({
                       eventObject: e.eventObject.name,
                       name: e.object.name,
@@ -164,7 +147,7 @@ camera.fov = 50
                 onPointerMissed={() => {
                   setPointerTarget({});
                   handleUpdateSelection();
-                toggleLight(1, null)
+                toggleLight(null)
 
                 }}
                 onPointerOut={(e) => {
@@ -172,7 +155,7 @@ camera.fov = 50
                   if (e.pointerType === "mouse") {
                     if (!currentSelection) {
                       setPointerTarget({});
-                      toggleLight(1, null)
+                      toggleLight(null)
                     }
                   }
                 }}
@@ -181,19 +164,20 @@ camera.fov = 50
                 position={[
                   groupPositions[index].x,
                   groupPositions[index].y + 100,
-                  groupPositions[index].z + -50,
+                  groupPositions[index].z + 50,
                 ]}
-                intensity={4}
-                  color={ l[1] === `${newProps?.name}` ? "white" : "black"}
+                intensity={1}
+                //  intensity={ light[1] === `${groupProps?.name}` ? MathUtils.damp(1, 20, 0.06  ) : 1}
+                // color={ light[1] === `${groupProps?.name}` ? new Color("white").lerp(new Color("red"), 0.6  ):  new Color("red").lerp(new Color("white"), 0.6  )}
                 target={[
                   groupPositions[index].x,
                   groupPositions[index].y,
                   groupPositions[index].z,
                 ]}
               />
-                <Group {...newProps.sceneData} />
-
+                <Group {...groupProps.sceneData} />
                 <Html
+                // occlude prop is potentially causing issues 
                     //   occlude={
                     //     !(
                     //       !!currentSelection &&
@@ -209,7 +193,6 @@ camera.fov = 50
                       ]}
                     >
                       <div
-                        // className={`flex flex-grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "w-0 opacity-0"}`}
                         className={`flex grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "w-0 opacity-0"}`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -225,9 +208,8 @@ camera.fov = 50
               </group>
           );
         })}
-      </Bounds>
+      {/* </Bounds> */}
    </>
-    // </Selection>
     //    <EffectComposer multisampling={0} autoClear={true} disableNormalPass>
     //     <N8AO
     //       radius={0.05}
@@ -260,21 +242,21 @@ export const GlobalModelViewer = () => {
         far: cameraConfigs.FAR,
         fov: 50,
       }}
-      fallback={<div>Sorry no WebGL supported!</div>}
+      fallback={<div>My regrets, lowly peon! WebGL is not supported.</div>}
       orthographic={false}
       shadows
     >
      <Environment shadows files="./studio_small_08_4k.exr" />
       <color args={["#bcbcbc"]} attach="background" />
       <fog attach="fog" density={0.006} color="#bcbcbc" near={160} far={285} />
-      {/* <directionalLight
+      <directionalLight
         castShadow={true}
-        // position={[0, 80, -40]}
-        position={[-150, 80, -80]}
+        position={[0, 80, -40]}
+        // position={[-150, 80, -80]}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        // intensity={2}
-        intensity={0.2}
+        intensity={2}
+        // intensity={0.2}
         shadow-camera-near={0.05}
         shadow-camera-far={1000}
         shadow-bias={-0.001}
@@ -285,12 +267,12 @@ export const GlobalModelViewer = () => {
       />
       <directionalLight
         castShadow={true}
-        // position={[0, 100, 80]}
-        position={[150, 80, 80]}
+        position={[0, 100, 80]}
+        // position={[150, 80, 80]}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        intensity={0.2}
-        // intensity={1}
+        // intensity={0.2}
+        intensity={1}
         shadow-camera-near={0.05}
         shadow-camera-far={1000}
         shadow-bias={-0.001}
@@ -298,61 +280,15 @@ export const GlobalModelViewer = () => {
         shadow-camera-bottom={-1500}
         shadow-camera-left={-1500}
         shadow-camera-right={1500}
-      /> */}
-      {/* <ambientLight intensity={5} /> */}
-      {/*     castShadow={true}
-        position={[150, 80, -180]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        intensity={0.25}
-        shadow-camera-near={0.5}
-        shadow-camera-far={1000}
-        shadow-bias={-0.001}
-        shadow-camera-top={1500}
-        shadow-camera-bottom={-1500}
-        shadow-camera-left={-1500}
-        shadow-camera-right={1500}
-      />
-      {/* <directionalLight
-        castShadow={true}
-        position={[150, 80, -180]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        intensity={0.25}
-        shadow-camera-near={0.5}
-        shadow-camera-far={1000}
-        shadow-bias={-0.001}
-        shadow-camera-top={1500}
-        shadow-camera-bottom={-1500}
-        shadow-camera-left={-1500}
-        shadow-camera-right={1500}
-      />
-      <directionalLight
-        castShadow={true}
-        position={[-150, 80, -180]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        intensity={0.25}
-        shadow-camera-near={0.5}
-        shadow-camera-far={1000}
-        shadow-bias={-0.001}
-        shadow-camera-top={1500}
-        shadow-camera-bottom={-1500}
-        shadow-camera-left={-1500}
-        shadow-camera-right={1500}
-      /> */}
+      /> 
       <Suspense>
         <SceneBuilder />
       </Suspense>
       <Ground
         position={[0, -80, 20]}
-        scale={[2, 1.1, 0.8]}
+        scale={[2.3, 1.1, 1.1]}
         rotation={Math.PI / 14}
       />
-
-      {/* <Plane args={[20, 20, 1, 1]} position={[0, 0, 0]} rotation={[0, 0, 0]}>
-        <meshBasicMaterial color="red" />
-      </Plane> */}
     </Canvas>
   );
 };

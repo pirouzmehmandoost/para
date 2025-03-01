@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect, useRef } from "react";
 import { CatmullRomCurve3, Vector3 } from "three";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import cameraConfigs from "../../../lib/cameraConfigs";
 
 // export const SimpleCameraRig = (data, { v = new Vector3() }) => {
@@ -21,6 +20,8 @@ const v = new Vector3()
       0.06,
     );
     camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix()
+
   });
 };
 
@@ -45,6 +46,8 @@ export const CameraRig = (positionVectors, targetPosition) => {
 
       //lerp camera target and position
       camera.lookAt(camera.position.lerp(v, 0.06));
+      camera.updateProjectionMatrix();
+
     } else {
       //Takes about 15 seconds for the camera to lookAt/move between positionVectors.
       //Position is the vector3 value of a vector2 point on the curve. curve.getPoint(s) => Vector3(x,y,0)
@@ -71,6 +74,7 @@ export const CameraRig = (positionVectors, targetPosition) => {
           0.06,
         ),
       );
+    camera.updateProjectionMatrix();
     }
   });
 };

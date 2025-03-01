@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
  import { useGLTF } from "@react-three/drei";
+ import {Color} from  'three';
 // import { Select } from "@react-three/postprocessing";
 import useMaterial from "../../stores/materialStore";
 import useMesh from "../../stores/meshStore";
@@ -40,15 +41,40 @@ const Model = (data) => {
     material: getMaterial(materialId).material,
   };
 
+             const c = new Color(...newData.material.color)
+
+
+  console.log("material color: ", newData.material.color, "vs", c)
   useFrame(({ clock }) => {
     const elapsedTime = clock.getElapsedTime();
+    if(meshRef?.current) {
 
-    if (autoRotate && meshRef?.current) {
-      meshRef.current.rotation.set(
-        0,
-        Math.sin(Math.PI / 2) * elapsedTime * 0.3 * autoRotateSpeed,
-        0,
-      );
+        // if (isPointerOver=== name) {
+        //     // meshRef.current.rotation.set(
+        //     //     0,
+        //     //     Math.sin(Math.PI / 2) * elapsedTime * 0.3 * autoRotateSpeed,
+        //     //     0,
+        //     // );
+
+        //   // Calculate color based on time
+        //   const color = new Color(...newData.material.color).lerp(
+        //     new Color("white"),
+        //     Math.sin( elapsedTime * 0.5),
+        //   );
+        //     meshRef.current.material.color=color;
+        //     // meshRef.current.material.color.lerp()
+        // }
+        // else  meshRef.current.material.color =  c
+
+
+
+        if (autoRotate ) {
+            meshRef.current.rotation.set(
+                0,
+                Math.sin(Math.PI / 2) * elapsedTime * 0.3 * autoRotateSpeed,
+                0,
+            );
+        }
     }
   });
 

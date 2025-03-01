@@ -37,8 +37,9 @@ const ProjectViewer = () => {
     orthographic: false,
     autoUpdateMaterial: false,
     scale: scale * 0.45,
-    materialId:selectedMaterial,
+    materialId: selectedMaterial, 
   };
+    //each time setState is called SingularModelViewer re-renders witth new props. Maybe use context instead or forwardREF to trigger gl draw calls
 
   const colorSelectButtons = (
     <div className="flex flex-row place-content-center items-center">
