@@ -56,24 +56,24 @@ const SceneBuilder = () => {
     groupPositions.push(new Vector3(pt.x, 0, pt.y));
   }
 
-    let cameraTarget =
-        currentSelection?.name.length &&
-            currentSelection.name === pointerTarget?.eventObject &&
-            pointerTarget?.position
-            ? pointerTarget?.position
-            : null;
+  let cameraTarget =
+    currentSelection?.name.length &&
+    currentSelection.name === pointerTarget?.eventObject &&
+    pointerTarget?.position
+      ? pointerTarget?.position
+      : null;
 
-    CameraRig(groupPositions, cameraTarget);
+  CameraRig(groupPositions, cameraTarget);
 
-    const handleUpdateSelection = (data) => {
-        if (!data) {
-        select();
-        resetSelection();
-        } else {
-        setSelection(data);
-        select(data);
-        }
-    };
+  const handleUpdateSelection = (data) => {
+    if (!data) {
+      select();
+      resetSelection();
+    } else {
+      setSelection(data);
+      select(data);
+    }
+  };
 
   return (
     <>
@@ -93,46 +93,53 @@ const SceneBuilder = () => {
           <group
             key={groupProps?.name}
             name={`${groupProps?.name}`}
-               onClick={(e) => {
-                    console.log("%cOnClick","color:blue; background:red;", e )
-                  handleUpdateSelection(groupProps);
+            onClick={(e) => {
+              console.log("%cOnClick", "color:blue; background:red;", e);
+              handleUpdateSelection(groupProps);
+              setPointerTarget({
+                eventObject: e.eventObject.name,
+                name: e.object.name,
+                position: e.object.position,
+              });
+            }}
+            onPointerOver={(e) => {
+              console.log(
+                "%cOnpointerOver",
+                "color:yellow; background:magenta;",
+                e,
+              );
+
+              if (e.pointerType === "mouse") {
+                //if a model is highlighted via onClick, do not invoke handler.
+                //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
+                if (!currentSelection) {
                   setPointerTarget({
                     eventObject: e.eventObject.name,
                     name: e.object.name,
                     position: e.object.position,
                   });
-                }}
-                onPointerOver={(e) => {
-                    console.log("%cOnpointerOver","color:yellow; background:magenta;", e )
-
-                  if (e.pointerType === "mouse") {
-                    //if a model is highlighted via onClick, do not invoke handler.
-                    //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
-                    if (!currentSelection) {
-                      setPointerTarget({
-                        eventObject: e.eventObject.name,
-                        name: e.object.name,
-                        position: e.object.position,
-                      });
-                    }
-                  } else {
-                    //mobile
-                    handleUpdateSelection(groupProps);
-                    setPointerTarget({
-                      eventObject: e.eventObject.name,
-                      name: e.object.name,
-                      position: e.object.position,
-                    });
-                  }
-                }}
-                onPointerMissed={(e) => {
-                console.log("%cOnpointerMissed", "color:purple; background:orange;", e)
-                  setPointerTarget({});
-                  handleUpdateSelection();
-
-                }}
+                }
+              } else {
+                //mobile
+                handleUpdateSelection(groupProps);
+                setPointerTarget({
+                  eventObject: e.eventObject.name,
+                  name: e.object.name,
+                  position: e.object.position,
+                });
+              }
+            }}
+            onPointerMissed={(e) => {
+              console.log(
+                "%cOnpointerMissed",
+                "color:purple; background:orange;",
+                e,
+              );
+              setPointerTarget({});
+              handleUpdateSelection();
+            }}
             onPointerOut={(e) => {
-                console.log("%cOnpointerOut", "color:green;", e)
+              console.log("%cOnpointerOut", "color:green;", e);
               //don't handle this event on mobile devices.
               if (e.pointerType === "mouse") {
                 if (!currentSelection) {

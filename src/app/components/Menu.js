@@ -32,7 +32,7 @@ const Menu = ({ setExpanded, expanded }) => {
       className={`sticky bottom-0 z-20 right-0 sm:w-full md:w-full lg:w-1/2 place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
     >
       <div className="flex z-20 w-full h-full bottom-0 right-0">
-        <div className={`w-full h-full border-solid border-2 border-neutral-600`}>
+        <div className="w-full h-full border-solid border-2 border-neutral-600">
           <div
             className={`flex flex-col text-neutral-600 backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`}
           >
