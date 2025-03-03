@@ -34,6 +34,8 @@ My current development goals are :
 - No logic to conditionally enable routing.
 - make a streamlined version of the app for interviews (different route).
 - menus should have a visible toggle expand/collapse icon, and should upen up to screen width/height
+- yarn exec prettier . --write
+
 
 Libraries Extensively Used:
 
