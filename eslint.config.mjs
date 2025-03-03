@@ -1,34 +1,30 @@
-// import globals from "globals";
-// import pluginJs from "@eslint/js";
-// import pluginReact from "eslint-plugin-react";
+// export default eslintConfig;
+/** @type {import('eslint').Linter.Config[]} */
+// import eslintConfigPrettier from "eslint-config-prettier";
+// import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+// import tailwind from "eslint-plugin-tailwindcss";
 
-// /** @type {import('eslint').Linter.Config[]} */
-// export default [
-//   { files: ["**/*.{js,mjs,cjs,jsx}"] },
-//   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
-//   pluginJs.configs.recommended,
-//   pluginReact.configs.flat.recommended,
-// ];
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
+const configs = [
   ...compat.extends("next/core-web-vitals"),
-  {
-    rules: {
-      "max-len": ["error", { code: 90, tabWidth: 4 }],
-      "no-multi-spaces": ["error"],
-      quotes: ["error", "single"],
-    },
-  },
+  //   ...compat.extends("eslint-plugin-tailwindcss"),
+  //   ...compat.extends(...tailwind.configs["flat/recommended"]),
+
+  //   ...compat.extends("prettier-plugin-tailwindcss"),
+  //   ...compat.extends("prettier"),
+  //   ...compat.extends(eslintConfigPrettier),
+  //  ...compat.extends(eslintPluginPrettierRecommended),
+  //   ...compat.extends("next/typescript"),
 ];
 
-export default eslintConfig;
+export default configs;

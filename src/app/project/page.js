@@ -12,12 +12,12 @@ const ProjectViewer = () => {
   const [expanded, setExpanded] = useState(false);
   const selection = useSelection((state) => state.selection);
   const {
-        sceneData = {},
-        sceneData: {
-        isPointerOver,
-        scale = 1.0,
-        modelUrls = [],
-        materials: { defaultMaterial = '', colorWays = {} } = {},
+    sceneData = {},
+    sceneData: {
+      isPointerOver,
+      scale = 1.0,
+      modelUrls = [],
+      materials: { defaultMaterial = "", colorWays = {} } = {},
     } = {},
     description = "",
     name = "",
@@ -25,7 +25,9 @@ const ProjectViewer = () => {
 
   const [selectedMaterial, setMaterial] = useState(defaultMaterial ?? null);
   const data = {
-    modelUrl: isPointerOver? modelUrls.reduce((acc, el)=> acc.name==isPointerOver? acc : el) : modelUrls[0],
+    modelUrl: isPointerOver
+      ? modelUrls.reduce((acc, el) => (acc.name == isPointerOver ? acc : el))
+      : modelUrls[0],
     ...sceneData,
     position: undefined,
     enablePan: true,
@@ -37,9 +39,9 @@ const ProjectViewer = () => {
     orthographic: false,
     autoUpdateMaterial: false,
     scale: scale * 0.45,
-    materialId: selectedMaterial, 
+    materialId: selectedMaterial,
   };
-    //each time setState is called SingularModelViewer re-renders witth new props. Maybe use context instead or forwardREF to trigger gl draw calls
+  //each time setState is called SingularModelViewer re-renders witth new props. Maybe use context instead or forwardREF to trigger gl draw calls
 
   const colorSelectButtons = (
     <div className="flex flex-row place-content-center items-center">
@@ -49,10 +51,9 @@ const ProjectViewer = () => {
         return (
           <div
             key={entry[0]}
-            className={`flex ${getMaterial(entry[1]).tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry[1]? "outline-none" : "outline-zinc-900 outline-2"}`}
+            className={`flex ${getMaterial(entry[1]).tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry[1] ? "outline-none" : "outline-neutral-900 outline-2"}`}
             onClick={() => {
-              if (selectedMaterial !== entry[1])
-                setMaterial(entry[1]);
+              if (selectedMaterial !== entry[1]) setMaterial(entry[1]);
             }}
           ></div>
         );
@@ -76,7 +77,7 @@ const ProjectViewer = () => {
         className={`fixed bottom-0 z-20 right-0 w-full place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
       >
         <div className="flex z-20 w-full h-full bottom-0 right-0">
-          <div className="w-full h-full border-solid border-2 border-zinc-900">
+          <div className="w-full h-full border-solid border-2 border-neutral-900">
             <div
               className={`flex flex-col backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`}
             >
@@ -85,13 +86,13 @@ const ProjectViewer = () => {
                 className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? "overflow-auto max-h-96" : "overflow-hidden max-h-0"}`}
               >
                 <p
-                  className={`mt-5 text-zinc-900 transition-all duration-700 ease-in-out delay-75 ${expanded ? "opacity-100" : "opacity-0"}`}
+                  className={`mt-5 text-neutral-900 transition-all duration-700 ease-in-out delay-75 ${expanded ? "opacity-100" : "opacity-0"}`}
                 >
                   {description}
                 </p>
               </div>
               {/* permanently visible menu items */}
-              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch text-zinc-900">
+              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch text-neutral-900">
                 <div className="ml-5 justify-self-center align-items-center basis-1/3">
                   <div
                     className="cursor-pointer self-center"

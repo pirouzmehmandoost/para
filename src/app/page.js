@@ -10,7 +10,7 @@ const myFont = localFont({
 
 export default function Home() {
   return (
-    <main className="flex flex-col w-screen h-full text-center text-clay_dark">
+    <main className="flex flex-col w-screen h-full text-center text-neutral-600">
       <div
         id="top_section"
         className={`z-10 flex flex-col w-full h-1/2 place-self-center place-items-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
@@ -32,7 +32,7 @@ export default function Home() {
                 target="blank"
               >
                 <span
-                  className={`pl-1 cursor-pointer text-zinc-500 italic transition-colors ease-in-out duration-300 hover:text-zinc-400`}
+                  className={`pl-1 cursor-pointer text-neutral-500 italic transition-colors ease-in-out duration-300 hover:text-neutral-400`}
                 >
                   Github repo
                 </span>

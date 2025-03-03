@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { Suspense, useState, } from "react";
+import React, { Suspense, useState } from "react";
 import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from "three";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Environment, Html } from "@react-three/drei";
@@ -19,7 +19,6 @@ ColorManagement.enabled = true;
 const SceneBuilder = () => {
   const setSelection = useSelection((state) => state.setSelection);
   const resetSelection = useSelection((state) => state.reset);
-
   const { size } = useThree();
   const router = useRouter();
   const [currentSelection, select] = useState();
@@ -30,16 +29,6 @@ const SceneBuilder = () => {
   });
   const { projects } = portfolio;
   const groupPositions = [];
-
-  const handleUpdateSelection = (data) => {
-    if (!data) {
-      select();
-      resetSelection();
-    } else {
-      setSelection(data);
-      select(data);
-    }
-  };
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
   const ellipseCurve = new EllipseCurve(
     0,
@@ -54,7 +43,7 @@ const SceneBuilder = () => {
   ellipseCurve.closed = true;
 
   const ellipseCurvePoints = ellipseCurve.getPoints(projects.length);
-  // getPoints() always returns one additioal point.
+  // getPoints always returns one additional point.
   ellipseCurvePoints.shift();
 
   const positionAttribute = new BufferGeometry()
@@ -67,35 +56,45 @@ const SceneBuilder = () => {
     groupPositions.push(new Vector3(pt.x, 0, pt.y));
   }
 
-  let cameraTarget =
-    currentSelection?.name.length &&
-    currentSelection.name === pointerTarget?.eventObject &&
-    pointerTarget?.position
-      ? pointerTarget?.position
-      : null;
+    let cameraTarget =
+        currentSelection?.name.length &&
+            currentSelection.name === pointerTarget?.eventObject &&
+            pointerTarget?.position
+            ? pointerTarget?.position
+            : null;
 
-  CameraRig(groupPositions, cameraTarget);
+    CameraRig(groupPositions, cameraTarget);
+
+    const handleUpdateSelection = (data) => {
+        if (!data) {
+        select();
+        resetSelection();
+        } else {
+        setSelection(data);
+        select(data);
+        }
+    };
 
   return (
-     <>
-        {projects.map((data, index) => {
-          const groupProps = {
-            ...data,
-            sceneData: {
-              ...data.sceneData,
-              groupName: data.name,
-              position: groupPositions[index],
-              autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
-              isPointerOver: pointerTarget.name,
-            },
-          };
+    <>
+      {projects.map((data, index) => {
+        const groupProps = {
+          ...data,
+          sceneData: {
+            ...data.sceneData,
+            groupName: data.name,
+            position: groupPositions[index],
+            autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
+            isPointerOver: pointerTarget.name,
+          },
+        };
 
-          return (
-              <group
-                key={groupProps?.name}
-                name={`${groupProps?.name}`}
-                onClick={(e) => {
-                console.log("onclick!")
+        return (
+          <group
+            key={groupProps?.name}
+            name={`${groupProps?.name}`}
+               onClick={(e) => {
+                    console.log("%cOnClick","color:blue; background:red;", e )
                   handleUpdateSelection(groupProps);
                   setPointerTarget({
                     eventObject: e.eventObject.name,
@@ -104,6 +103,8 @@ const SceneBuilder = () => {
                   });
                 }}
                 onPointerOver={(e) => {
+                    console.log("%cOnpointerOver","color:yellow; background:magenta;", e )
+
                   if (e.pointerType === "mouse") {
                     //if a model is highlighted via onClick, do not invoke handler.
                     //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
@@ -124,60 +125,62 @@ const SceneBuilder = () => {
                     });
                   }
                 }}
-                onPointerMissed={() => {
+                onPointerMissed={(e) => {
+                console.log("%cOnpointerMissed", "color:purple; background:orange;", e)
                   setPointerTarget({});
                   handleUpdateSelection();
 
                 }}
-                onPointerOut={(e) => {
-                  //don't handle this event on mobile devices.
-                  if (e.pointerType === "mouse") {
-                    if (!currentSelection) {
-                      setPointerTarget({});
-                    }
+            onPointerOut={(e) => {
+                console.log("%cOnpointerOut", "color:green;", e)
+              //don't handle this event on mobile devices.
+              if (e.pointerType === "mouse") {
+                if (!currentSelection) {
+                  setPointerTarget({});
+                }
+              }
+            }}
+          >
+            <Light
+              position={[
+                groupPositions[index].x,
+                groupPositions[index].y + 100,
+                groupPositions[index].z + 50,
+              ]}
+              intensity={1}
+              target={[
+                groupPositions[index].x,
+                groupPositions[index].y,
+                groupPositions[index].z,
+              ]}
+            />
+            <Group {...groupProps.sceneData} />
+            <Html
+              transform
+              scale={[10, 10, 10]}
+              position={[
+                groupPositions[index].x,
+                groupPositions[index].y + 40,
+                groupPositions[index].z,
+              ]}
+            >
+              <div
+                className={`flex grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-neutral-300 text-neutral-600 text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200" : "w-0 opacity-0"}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (currentSelection) {
+                    setSelection(currentSelection);
+                    router.push("/project");
                   }
                 }}
               >
-            <Light
-                position={[
-                  groupPositions[index].x,
-                  groupPositions[index].y + 100,
-                  groupPositions[index].z + 50,
-                ]}
-                intensity={1}
-                target={[
-                  groupPositions[index].x,
-                  groupPositions[index].y,
-                  groupPositions[index].z,
-                ]}
-              />
-                <Group {...groupProps.sceneData} />
-                <Html
-                      transform
-                      scale={[10, 10, 10]}
-                      position={[
-                        groupPositions[index].x,
-                        groupPositions[index].y + 40,
-                        groupPositions[index].z,
-                      ]}
-                    >
-                      <div
-                        className={`flex grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "w-0 opacity-0"}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (currentSelection) {
-                            setSelection(currentSelection);
-                            router.push("/project");
-                          }
-                        }}
-                      >
-                        See More
-                      </div>
-                    </Html>
-              </group>
-          );
-        })}
-   </>
+                See More
+              </div>
+            </Html>
+          </group>
+        );
+      })}
+    </>
   );
 };
 
@@ -185,7 +188,7 @@ export const GlobalModelViewer = () => {
   return (
     <Canvas
       camera={{
-        position:[666,666,666],
+        position: [666, 666, 666],
         near: cameraConfigs.NEAR,
         far: cameraConfigs.FAR,
         fov: 50,
@@ -194,7 +197,7 @@ export const GlobalModelViewer = () => {
       orthographic={false}
       shadows
     >
-     <Environment shadows files="./studio_small_08_4k.exr" />
+      <Environment shadows files="./studio_small_08_4k.exr" />
       <color args={["#bcbcbc"]} attach="background" />
       <fog attach="fog" density={0.006} color="#bcbcbc" near={160} far={285} />
       <directionalLight
@@ -224,7 +227,7 @@ export const GlobalModelViewer = () => {
         shadow-camera-bottom={-1500}
         shadow-camera-left={-1500}
         shadow-camera-right={1500}
-      /> 
+      />
       <Suspense>
         <SceneBuilder />
       </Suspense>

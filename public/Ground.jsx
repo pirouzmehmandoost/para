@@ -13,7 +13,7 @@ export function Ground({
 }) {
   const getMaterial = useMaterial((state) => state.getMaterial);
   const { nodes } = useGLTF("/env_ground_3-transformed.glb");
-  const material= getMaterial('ground').material;
+  const material = getMaterial("ground").material;
 
   return (
     <group scale={scale} position={position} dispose={null}>
@@ -23,8 +23,7 @@ export function Ground({
         material={material}
         receiveShadow={true}
         rotation={[rotation, 0, 0]}
-      >
-      </mesh>
+      />
     </group>
   );
 }

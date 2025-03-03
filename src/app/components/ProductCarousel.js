@@ -32,7 +32,7 @@
 
 //   return (
 //     <div className="flex flex-col w-full h-full justify-between">
-//       <p className="ml-10 max-sm:ml-5  my-5 text-clay_dark max-sm:text-xl text-3xl">
+//       <p className="ml-10 max-sm:ml-5  my-5 text-neutral-600 max-sm:text-xl text-3xl">
 //         {headerText}
 //       </p>
 //       <div className="relative flex flex-row w-full h-full overflow-auto">

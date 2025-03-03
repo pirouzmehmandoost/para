@@ -1,174 +1,97 @@
-// const matteMaterial = {
-//   roughness: 1,
-//   metalness: 0.1,
-//   ior: 1.8,
-//   reflectivity: 0.05,
-//   sheen: 0.5,
-//   sheenColor: "#707070",
-//   sheenRoughness: 0.9,
-//   flatShading: false,
-// };
-
-// // const metallicMaterial = {
-// //   roughness: 0.2,
-// //   metalness: 1,
-// //   ior: 1.8,
-// //   sheen: 0.15,
-// //   sheenColor: "#707070",
-// //   sheenRoughness: 1,
-// //   flatShading: false,
-// // };
-
-// export const glossMaterial = {
-//   roughness: 0.4,
-//   metalness: 0,
-//   ior: 1.5,
-//   reflectivity: 0,
-//   sheen: 0,
-//   sheenRoughness: 0,
-//   clearcoat: 0.3,
-//   clearcoatRoughness: 0.9,
-//   flatShading: false,
-// };
-
-// export const materials = {
-//   matte_black: {
-//     label: "Matte Black",
-//     id: "matte_black",
-//     tailwindColor: `bg-zinc-900`,
-//     material: {
-//       ...matteMaterial,
-//       color: "black",
-//     },
-//   },
-//   gloss_black: {
-//     label: "Gloss Black",
-//     id: "gloss_black",
-//     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 to-black`,
-//     material: {
-//       ...glossMaterial,
-//       color: "black",
-//     },
-//   },
-//   eggshell: {
-//     label: "Eggshell",
-//     id: "eggshell",
-//     tailwindColor: `bg-orange-100`,
-//     material: {
-//       color: "#ccc0a3",
-//       ...matteMaterial,
-//       ior: 1.5,
-//       roughness: 0.6,
-//       metalness: 0,
-//       sheen: 1,
-//       sheenRoughness: 0.5,
-//       sheenColor: "#ccc0a3",
-//     },
-//   },
-//   //   silver: {
-//   //     label: "Silver",
-//   //     tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
-//   //     material: {
-//   //       color: "#444444",
-//   //       ...metallicMaterial,
-//   //     },
-//   //   },
-// };
-
 export const portfolio = {
-//   products: [
-//     {
-//       name: "Oval Bag",
-//       price: `$${100}`,
-//       productType: "bag",
-//       imgUrls: {
-//         matte_black: [
-//           "/oval_bag_matte_black_1.png",
-//           "/oval_bag_matte_black_2.png",
-//           "/oval_bag_matte_black_3.png",
-//           "/oval_bag_matte_black_4.png",
-//         ],
-//         matte_white: [
-//           "/oval_bag_matte_white_1.png",
-//           "/oval_bag_matte_white_2.png",
-//           "/oval_bag_matte_white_3.png",
-//           "/oval_bag_matte_white_4.png",
-//         ],
-//       },
-//       sceneData: {
-//         orthographic: false,
-//         autoUpdateMaterial: true,
-//         materials: {
-//           defaultMaterial: { ...materials.gloss_black },
-//           colorWays: { ...materials },
-//         },
-//       },
-//       modelUrl: "/oval_bag_1.glb",
-//       description:
-//         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
-//     },
-//     {
-//       name: "XL Oval Bag",
-//       imgUrls: {
-//         matte_black: [
-//           "/oval_bag_v8.5_matte_black_1.png",
-//           "/oval_bag_v8.5_matte_black_2.png",
-//           "/oval_bag_v8.5_matte_black_3.png",
-//           "/oval_bag_v8.5_matte_black_4.png",
-//         ],
-//         matte_white: [
-//           "/oval_bag_v8.5_matte_white_1.png",
-//           "/oval_bag_v8.5_matte_white_2.png",
-//           "/oval_bag_v8.5_matte_white_3.png",
-//           "/oval_bag_v8.5_matte_white_4.png",
-//           "/oval_bag_v8.5_matte_white_5.png",
-//         ],
-//       },
-//       price: `$${100}`,
-//       productType: "bag",
-//       sceneData: {
-//         orthographic: false,
-//         autoUpdateMaterial: true,
-//         materials: {
-//           defaultMaterial: { ...materials.gloss_black },
-//           colorWays: { ...materials },
-//         },
-//       },
-//       modelUrl: "/oval_bag_xl_v2.glb",
-//       description:
-//         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
-//     },
-//     {
-//       name: "Yoga Mat Strap",
-//       imgUrls: {
-//         gunmetal: [
-//           "/yoga_mat_strap_metallic_perspective_side.png",
-//           "/yoga_mat_strap_metallic_perspective_top.png",
-//           "/yoga_mat_strap_metallic_perspective_front.png",
-//           "/yoga_mat_strap_metallic_perspective_quarter.png",
-//         ],
-//         matte_black: [
-//           "/yoga_mat_strap_top.png",
-//           "/yoga_mat_strap_front.png",
-//           "/yoga_mat_strap_side.png",
-//           "/yoga_mat_strap_quarter.png",
-//         ],
-//       },
-//       price: `$${100}`,
-//       productType: "fitness",
-//       sceneData: {
-//         orthographic: false,
-//         autoUpdateMaterial: true,
-//         materials: {
-//           defaultMaterial: { ...materials.gloss_black },
-//           colorWays: { ...materials },
-//         },
-//       },
-//       modelUrl: "/yoga_mat_strap_for_web2.glb",
-//       description:
-//         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
-//     },
-//   ],
+  //   products: [
+  //     {
+  //       name: "Oval Bag",
+  //       price: `$${100}`,
+  //       productType: "bag",
+  //       imgUrls: {
+  //         matte_black: [
+  //           "/oval_bag_matte_black_1.png",
+  //           "/oval_bag_matte_black_2.png",
+  //           "/oval_bag_matte_black_3.png",
+  //           "/oval_bag_matte_black_4.png",
+  //         ],
+  //         matte_white: [
+  //           "/oval_bag_matte_white_1.png",
+  //           "/oval_bag_matte_white_2.png",
+  //           "/oval_bag_matte_white_3.png",
+  //           "/oval_bag_matte_white_4.png",
+  //         ],
+  //       },
+  //       sceneData: {
+  //         orthographic: false,
+  //         autoUpdateMaterial: true,
+  //         materials: {
+  //           defaultMaterial: { ...materials.gloss_black },
+  //           colorWays: { ...materials },
+  //         },
+  //       },
+  //       modelUrl: "/oval_bag_1.glb",
+  //       description:
+  //         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
+  //     },
+  //     {
+  //       name: "XL Oval Bag",
+  //       imgUrls: {
+  //         matte_black: [
+  //           "/oval_bag_v8.5_matte_black_1.png",
+  //           "/oval_bag_v8.5_matte_black_2.png",
+  //           "/oval_bag_v8.5_matte_black_3.png",
+  //           "/oval_bag_v8.5_matte_black_4.png",
+  //         ],
+  //         matte_white: [
+  //           "/oval_bag_v8.5_matte_white_1.png",
+  //           "/oval_bag_v8.5_matte_white_2.png",
+  //           "/oval_bag_v8.5_matte_white_3.png",
+  //           "/oval_bag_v8.5_matte_white_4.png",
+  //           "/oval_bag_v8.5_matte_white_5.png",
+  //         ],
+  //       },
+  //       price: `$${100}`,
+  //       productType: "bag",
+  //       sceneData: {
+  //         orthographic: false,
+  //         autoUpdateMaterial: true,
+  //         materials: {
+  //           defaultMaterial: { ...materials.gloss_black },
+  //           colorWays: { ...materials },
+  //         },
+  //       },
+  //       modelUrl: "/oval_bag_xl_v2.glb",
+  //       description:
+  //         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
+  //     },
+  //     {
+  //       name: "Yoga Mat Strap",
+  //       imgUrls: {
+  //         gunmetal: [
+  //           "/yoga_mat_strap_metallic_perspective_side.png",
+  //           "/yoga_mat_strap_metallic_perspective_top.png",
+  //           "/yoga_mat_strap_metallic_perspective_front.png",
+  //           "/yoga_mat_strap_metallic_perspective_quarter.png",
+  //         ],
+  //         matte_black: [
+  //           "/yoga_mat_strap_top.png",
+  //           "/yoga_mat_strap_front.png",
+  //           "/yoga_mat_strap_side.png",
+  //           "/yoga_mat_strap_quarter.png",
+  //         ],
+  //       },
+  //       price: `$${100}`,
+  //       productType: "fitness",
+  //       sceneData: {
+  //         orthographic: false,
+  //         autoUpdateMaterial: true,
+  //         materials: {
+  //           defaultMaterial: { ...materials.gloss_black },
+  //           colorWays: { ...materials },
+  //         },
+  //       },
+  //       modelUrl: "/yoga_mat_strap_for_web2.glb",
+  //       description:
+  //         "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
+  //     },
+  //   ],
   projects: [
     {
       name: "Gerd",
@@ -191,12 +114,12 @@ export const portfolio = {
         autoUpdateMaterial: false,
         materials: {
           defaultMaterial: "gloss_black",
-          colorWays: [ "gloss_black", "matte_black", "eggshell"],
+          colorWays: ["gloss_black", "matte_black", "eggshell"],
         },
         modelUrls: [
-            { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
+          { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
           { name: "bag_88", url: "/bag_xl-transformed.glb" },
-            { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
+          { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
         ],
         scale: 0.9,
         autoRotate: true,
@@ -224,10 +147,8 @@ export const portfolio = {
       },
       sceneData: {
         materials: {
-                      defaultMaterial: "gloss_black",
-          colorWays: [ "gloss_black", "matte_black", "eggshell"],
-        //   defaultMaterial: { ...materials.gloss_black },
-        //   colorWays: { ...materials },
+          defaultMaterial: "gloss_black",
+          colorWays: ["gloss_black", "matte_black", "eggshell"],
         },
         modelUrls: [
           { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },

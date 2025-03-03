@@ -26,6 +26,7 @@ export const SimpleCameraRig = (data) => {
 };
 
 export const CameraRig = (positionVectors, targetPosition) => {
+  // export const CameraRig = ({positionVectors=[], targetPosition}) => {
   const v = new Vector3();
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
@@ -34,7 +35,8 @@ export const CameraRig = (positionVectors, targetPosition) => {
   );
 
   return useFrame(({ clock, camera }) => {
-    camera.updateProjectionMatrix();//likely unnecessary at beggining of frame loop
+    //   useFrame(({ clock, camera }) => {
+    camera.updateProjectionMatrix(); //likely unnecessary at beggining of frame loop
     let t = clock.elapsedTime;
 
     if (targetPosition?.x) {
@@ -46,8 +48,7 @@ export const CameraRig = (positionVectors, targetPosition) => {
 
       //lerp camera target and position
       camera.lookAt(camera.position.lerp(v, 0.06));
-    } 
-    else {
+    } else {
       //Takes about 15 seconds for the camera to lookAt/move between positionVectors.
       //Position is the vector3 value of a vector2 point on the curve. curve.getPoint(s) => Vector3(x,y,0)
       //When the distance betw position & positionVector[i] > distanceTo(position, positionVector[i+1])
@@ -73,7 +74,9 @@ export const CameraRig = (positionVectors, targetPosition) => {
           0.06,
         ),
       );
-    }; //end else
+    } //end else
     camera.updateProjectionMatrix();
   });
+
+  //   return <perspectiveCamera ref={camRef}/>
 };

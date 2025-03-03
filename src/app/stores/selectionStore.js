@@ -37,7 +37,7 @@ const selectionStore = (set, get) => ({
   reset: () => {
     set((state) => ({
       ...state,
-      selection: {...initialState, sceneData: {...initialState.sceneData}},
+      selection: { ...initialState, sceneData: { ...initialState.sceneData } },
     }));
   },
 });

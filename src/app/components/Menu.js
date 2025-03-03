@@ -19,7 +19,7 @@ const Menu = ({ setExpanded, expanded }) => {
         return (
           <div
             key={entry[0]}
-            className={`${entry[1].tailwindColor} w-6 h-6 mx-3 border-solid border-4 rounded-full border-clay_dark cursor-pointer`}
+            className={`${entry[1].tailwindColor} w-6 h-6 mx-3 border-solid border-4 rounded-full border-neutral-600 cursor-pointer`}
           ></div>
         );
       })}
@@ -32,9 +32,9 @@ const Menu = ({ setExpanded, expanded }) => {
       className={`sticky bottom-0 z-20 right-0 sm:w-full md:w-full lg:w-1/2 place-self-end transition-all duration-700 ease-in-out ${expanded ? "mt-96" : "mt-0"}`}
     >
       <div className="flex z-20 w-full h-full bottom-0 right-0">
-        <div className={`w-full h-full border-solid border-2 border-clay_dark`}>
+        <div className={`w-full h-full border-solid border-2 border-neutral-600`}>
           <div
-            className={`flex flex-col text-clay_dark backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`}
+            className={`flex flex-col text-neutral-600 backdrop-blur-xl backdrop-brightness-150 transition-all duration-500 ease-in-out ${expanded ? "backdrop-opacity-100" : "backdrop-opacity-0"}`}
           >
             <div
               className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? "overflow-auto max-h-96" : "overflow-hidden max-h-0"}`}

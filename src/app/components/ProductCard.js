@@ -14,7 +14,7 @@
 
 //   return (
 //     //1920x1080 images (16:9)
-//     <div className="relative flex flex-col w-full h-full justify-center items-center text-center text-clay_dark">
+//     <div className="relative flex flex-col w-full h-full justify-center items-center text-center text-neutral-600">
 //       <div className="flex flex-col justify-center items-center">
 //         <Link
 //           onMouseEnter={() => setIncrement(1)}
