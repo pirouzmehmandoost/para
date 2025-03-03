@@ -16,18 +16,17 @@ My current development goals are :
 
 - Refine the home page.
 - Update Next.js, React, Tailwind CSS, and key packages- incoming chages from branch upgrade_packages handle migration.
-- optimize Three.js implementation- Same branch introduces changes including: 
- 1.) Removal of R3F post-processing, replaced with vanilla three.js and R3F. 
- 2.) All .glb files are preloaded using useGLTF.preload(). 
- 3.) All meshes are cached and reused throughout runtime.
- 4.) All materials are cached and reused throughout runtime.
-  
+- optimize Three.js implementation- Same branch introduces changes including:
+  1.) Removal of R3F post-processing, replaced with vanilla three.js and R3F.
+  2.) All .glb files are preloaded using useGLTF.preload().
+  3.) All meshes are cached and reused throughout runtime.
+  4.) All materials are cached and reused throughout runtime.
 
 # Current To Do's:
 
 - Linting- Configure linter with rules for Tailwind CSS.
 - Resume page- iframe does not enable responsive styling on mobile screens, looks worse when device orientation tilts to landscape.
-- Home page- Create a new spash page with a modal which may route to the current home page. 
+- Home page- Create a new spash page with a modal which may route to the current home page.
 - Projects page (current home page) - at first glance it isn't clear what my "recent design projects" are.
 
 - Issues when running on mobile- canvas pointer event handler logic needs refinement. meshes could be easier to select.
@@ -35,7 +34,6 @@ My current development goals are :
 - make a streamlined version of the app for interviews (different route).
 - menus should have a visible toggle expand/collapse icon, and should upen up to screen width/height
 - yarn exec prettier . --write
-
 
 Libraries Extensively Used:
 
