@@ -10,7 +10,7 @@ import useMaterial from "../stores/materialStore";
 const ProjectViewer = () => {
   const getMaterial = useMaterial((state) => state.getMaterial);
   const [expanded, setExpanded] = useState(false);
-  const selection = useSelection((state) => state.selection);
+  const selection = useSelection((state) => state.getSelection());
   const {
     sceneData = {},
     sceneData: {
@@ -25,21 +25,26 @@ const ProjectViewer = () => {
 
   const [selectedMaterial, setMaterial] = useState(defaultMaterial ?? null);
   const data = {
-    modelUrl: isPointerOver
-      ? modelUrls.reduce((acc, el) => (acc.name == isPointerOver ? acc : el))
-      : modelUrls[0],
-    ...sceneData,
-    position: undefined,
-    enablePan: true,
-    enableZoom: false,
-    enableRotate: true,
-    autoRotate: true,
-    autoRotateSpeed: 0.4,
-    cameraPosition: [0, 10, 180],
-    orthographic: false,
-    autoUpdateMaterial: false,
-    scale: scale * 0.45,
-    materialId: selectedMaterial,
+    ...selection,
+    sceneData: {
+        ...selection.sceneData,
+        autoRotate: true,
+        autoRotateSpeed: 0.4,
+        autoUpdateMaterial: false,
+        cameraPosition: [0, 10, 180],
+        enablePan: true,
+        enableZoom: false,
+        enableRotate: true,
+        // modelUrl: isPointerOver
+        //   ? modelUrls.reduce((acc, el) => (acc.name == isPointerOver ? acc : el))
+        //   : modelUrls[0],
+        materialId: selectedMaterial,
+        modelUrl: {}, 
+        modelUrls: [],
+        orthographic: false,
+        position: undefined,
+        scale: scale * 0.45,
+    }
   };
   //each time setState is called SingularModelViewer re-renders witth new props. Maybe use context instead or forwardREF to trigger gl draw calls
 

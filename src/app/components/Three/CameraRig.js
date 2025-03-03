@@ -35,7 +35,6 @@ export const CameraRig = (positionVectors, targetPosition) => {
   );
 
   return useFrame(({ clock, camera }) => {
-    //   useFrame(({ clock, camera }) => {
     camera.updateProjectionMatrix(); //likely unnecessary at beggining of frame loop
     let t = clock.elapsedTime;
 
@@ -68,8 +67,8 @@ export const CameraRig = (positionVectors, targetPosition) => {
           positionVectors.reduce(
             (closest = new Vector3(), pt = new Vector3()) =>
               closest.distanceTo(position) < pt.distanceTo(position)
-                ? new Vector3(v.x + closest.x, v.y, v.z)
-                : new Vector3(v.x + pt.x, v.y, v.z),
+                ? new Vector3(v.x + closest.x, v.y + 10, v.z)
+                : new Vector3(v.x + pt.x, v.y + 10, v.z),
           ),
           0.06,
         ),

@@ -84,7 +84,7 @@ const ScaledModel = (modelData) => {
 };
 
 export const SingularModelViewer = ({ data }) => {
-  console.log("sdata: ", data);
+  console.log("SingularModelViewer data: ", data);
   const { cameraPosition, ...modelData } = data;
 
   return (

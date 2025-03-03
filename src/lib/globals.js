@@ -94,6 +94,22 @@ export const portfolio = {
   //   ],
   projects: [
     {
+      sceneData: {
+        autoRotate: true,
+        autoRotateSpeed: 1,
+        autoUpdateMaterial: false,
+        groupName: "Gerd",
+        materials: {
+          defaultMaterial: "gloss_black",
+          colorWays: ["gloss_black", "matte_black", "eggshell"],
+        },
+        modelUrls: [
+          { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
+          { name: "bag_88", url: "/bag_xl-transformed.glb" },
+          { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
+        ],
+        scale: 0.9,
+      },
       name: "Gerd",
       bannerUrl: "/oval_bag_v8.5_matte_white_5.png",
       imgUrls: {
@@ -110,25 +126,25 @@ export const portfolio = {
           "/oval_bag_matte_white_4.png",
         ],
       },
+      shortDescription: "A small collection of 3D printed handbags.",
+      description:
+        "Product description: magna congue justo non velit semper elit",
+    },
+    {
       sceneData: {
+        autoRotate: true,
+        autoRotateSpeed: 1,
         autoUpdateMaterial: false,
+        groupName: "PÍ",
         materials: {
           defaultMaterial: "gloss_black",
           colorWays: ["gloss_black", "matte_black", "eggshell"],
         },
         modelUrls: [
-          { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
-          { name: "bag_88", url: "/bag_xl-transformed.glb" },
-          { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
+          { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },
         ],
-        scale: 0.9,
-        autoRotate: true,
+        scale: 1.1,
       },
-      shortDescription: "A small collection of 3D printed handbags.",
-      description:
-        "Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.Product description: Lorem ipsum odor amet, consectetuer adipiscing elit. Mi rhoncus in a class ac convallis pulvinar. Conubia netus tempor nisl euismod justo faucibus bibendum varius porttitor. Nascetur laoreet dolor congue commodo justo auctor id tortor quis. Per porta proin lobortis quam quis libero nec. Laoreet iaculis feugiat praesent cubilia maecenas nostra dolor. Eu dictum suscipit; nibh arcu sollicitudin fringilla aliquet curae arcu.Vulputate class facilisi sodales at ligula dignissim sagittis. Eleifend massa maecenas arcu euismod ante senectus. Nascetur tincidunt himenaeos risus justo consectetur. Inceptos semper ipsum leo donec sodales leo facilisis. Pharetra nisl dictum platea nam ipsum. Porta erat magna congue justo non velit semper elit. Tristique eget elit; gravida cursus sodales commodo nibh. Donec vulputate in et porta lectus convallis elementum posuere. Venenatis interdum lobortis luctus ridiculus mollis donec.",
-    },
-    {
       name: "PÍ",
       bannerUrl: "/yoga_mat_strap_metallic_perspective_quarter.png",
       imgUrls: {
@@ -145,18 +161,7 @@ export const portfolio = {
           "/yoga_mat_strap_quarter.png",
         ],
       },
-      sceneData: {
-        materials: {
-          defaultMaterial: "gloss_black",
-          colorWays: ["gloss_black", "matte_black", "eggshell"],
-        },
-        modelUrls: [
-          { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },
-        ],
-        scale: 1.1,
-        autoRotate: true,
-        autoUpdateMaterial: false,
-      },
+  
       shortDescription:
         "An exploration of branding and product design as a Yoga instructor.",
       description: `I began teaching Yoga at 19, back in 2008. I had started taking classes shortly after graduating from high school, and like many of my interests it became a short lived obsession. 
