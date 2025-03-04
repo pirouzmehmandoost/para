@@ -58,7 +58,7 @@ export const SingularModelViewer = ({ data }) => {
         far: cameraConfigs.FAR + 100,
         fov: 50,
       }}
-      fallback={<div>Sorry no WebGL supported!</div>}
+      fallback={<div> Sorry no WebGL supported! </div>}
       orthographic={false}
       shadows
     >
@@ -101,8 +101,9 @@ export const SingularModelViewer = ({ data }) => {
         ? <Model{...data}/>
         : 
             <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
-                <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-">
-                    <p>⚒️ Please navigate back to the home page ⚒️</p>
+                <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-"
+                >
+                    <p> ⚒️ Please navigate back to the home page ⚒️ </p>
                 </div>
             </Html>
         }

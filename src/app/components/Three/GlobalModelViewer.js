@@ -23,7 +23,7 @@ const SceneBuilder = () => {
   });
   const { projects } = portfolio;
   const groupPositions = [];
-  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 200;
+  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
   const ellipseCurve = new EllipseCurve(
     0,
     0,
@@ -179,7 +179,7 @@ export const GlobalModelViewer = () => {
     >
       <Environment shadows files="./studio_small_08_4k.exr" />
       <color args={["#bcbcbc"]} attach="background" />
-      <fog attach="fog" density={0.006} color="#bcbcbc" near={160} far={285} />
+      <fog attach="fog" density={0.007} color="#bcbcbc" near={70} far={280} />
       <directionalLight
         castShadow={true}
         position={[0, 80, -40]}
