@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion';
 
-const links = [
+const topLinks = [
     {
         href: "/projects",
         title: "Projects",
@@ -19,7 +19,7 @@ const links = [
     },
 ];
 
-const footerLinks = [
+const bottomLinks = [
     {
         href:"https://www.linkedin.com/in/pirouzmehmandoost/",
         title: "LinkedIn",
@@ -92,22 +92,23 @@ const menu = {
     }
 }
 
-function ToggleButton({isActive, toggleMenu}) {
+const ToggleButton = ({isActive, toggleMenu}) => {
     return (
-        <div className = "absolute top-0 left-0 w-20 h-10 rounded-xl">
-            <ButtonText handler={() => toggleMenu()} label="Menu" isActive={isActive}/>
-            <ButtonText handler={() => toggleMenu()} label="Close" isActive={!isActive}/>
+        <div className = "absolute top-0 left-0 w-20 h-10 rounded-xl" >
+            <ButtonText handler={() => toggleMenu()} label="Menu" isActive={isActive} />
+            <ButtonText handler={() => toggleMenu()} label="Close" isActive={!isActive} />
         </div>
     )
 }
 
-function ButtonText({handler, label, isActive}) {
+const ButtonText = ({handler, label, isActive}) => {
     return (    
         <div 
-            className={`absolute w-full h-full rounded-xl transition-all duration-1000 ease-in-out ${isActive ? "opacity-0 text-neutral-500" : "opacity-100 text-neutral-600 "}`}
-            onClick={handler}
+        className={`absolute w-full h-full rounded-xl transition-all duration-1000 ease-in-out ${isActive ? "opacity-0 text-neutral-500" : "opacity-100 text-neutral-600 "}`}
+        onClick={handler}
         >
-            <div className="flex flex-col w-full h-full cursor-pointer text-center px-2 bg-neutral-400 rounded-xl">
+            <div className="flex flex-col w-full h-full cursor-pointer text-center px-2 bg-neutral-400 rounded-xl"
+            >
                 {label}
             </div>
         </div>
@@ -116,24 +117,24 @@ function ButtonText({handler, label, isActive}) {
 
 const Links = () => {
     return (
-        <div className="flex flex-col w-full h-full justify-between p-10 text-4xl">
-            <div className="flex flex-col">
+        <div className="flex flex-col w-full h-full justify-between p-10 text-4xl" >
+            <div className="flex flex-col" >
             {
-                links.map( (link, i) => {
+                topLinks.map( (link, i) => {
                     const { title, href } = link;
                     return (
-                        <div key={`b_${i}`} className = "perspective-origin-bottom">
+                        <div key={`b_${i}`} className = "perspective-origin-bottom" >
                             <motion.div
-                                custom={i}
-                                variants={perspective}
-                                initial="initial"
-                                animate="enter"
-                                exit="exit"
+                            custom={i}
+                            variants={perspective}
+                            initial="initial"
+                            animate="enter"
+                            exit="exit"
                             >
                                 <Link 
-                                    className="border-transparent cursor-pointer"
-                                    rel="noopener noreferrer"
-                                    href={href}
+                                className="border-transparent cursor-pointer"
+                                rel="noopener noreferrer"
+                                href={href}
                                 >
                                     {title}
                                 </Link>
@@ -143,26 +144,27 @@ const Links = () => {
                 })
             }
             </div>
-            <motion.div className="flex flex-row w-full justify-between">
+            <motion.div className="flex flex-row w-full justify-between" >
             {
-                footerLinks.map( (link, i) => {
+                bottomLinks.map( (link, i) => {
                     const { title, href } = link;
+
                     return (
                         <motion.div
-                            variants={slideIn}
-                            custom={i} 
-                            initial="initial"
-                            animate="enter"
-                            exit="exit"
-                            key={`f_${i}`}
+                        variants={slideIn}
+                        custom={i} 
+                        initial="initial"
+                        animate="enter"
+                        exit="exit"
+                        key={`f_${i}`}
                         >
                             <Link
-                                className="border-transparent cursor-pointer"
-                                rel="noopener noreferrer"
-                                target="blank"
-                                href={href}
-                                >
-                                    {title}
+                            className="border-transparent cursor-pointer"
+                            rel="noopener noreferrer"
+                            target="blank"
+                            href={href}
+                            >
+                                {title}
                             </Link>
                         </motion.div>
                     )
@@ -173,7 +175,7 @@ const Links = () => {
     )
 }
 
- function Menu() {
+ const  Menu = () => {
     const [isActive, setIsActive] = useState(false);
 
     return (
@@ -185,7 +187,7 @@ const Links = () => {
                 initial="closed"
             >
                 <AnimatePresence>
-                    {isActive && <Links />}
+                    { isActive && <Links /> }
                 </AnimatePresence>
             
             <ToggleButton isActive={isActive} toggleMenu={() => {setIsActive(!isActive)}} /> 
@@ -197,19 +199,12 @@ const Links = () => {
 
 export default function Home() {
     return (
-        <main className="flex flex-col w-screen h-full">
-        <div
-            className={`z-10 flex flex-col place-self-center place-items-center mt-32 uppercase text-center text-neutral-600 text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
-        >
-            <Menu/>
-    </div>
-
-    {/* <div
-        id="bottom_section"
-        className="absolute w-full h-1/2 min-h-96 bottom-0"
-      >
-        <GlobalModelViewer className="flex flex-row w-full h-full place-self-center" />
-      </div> */}
-    </main>
-  );
+        <main className="flex flex-col w-screen h-full" >
+            <div className={`z-10 flex flex-col place-self-center place-items-center mt-32 uppercase text-center text-neutral-600 
+            text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
+            >
+                <Menu />
+            </div>
+        </main>
+    );
 }
