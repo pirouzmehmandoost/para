@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-// import MenuIcon from "@mui/icons-material/Menu";
-// import ClearIcon from "@mui/icons-material/Clear";
-// import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import MenuIcon from "@mui/icons-material/Menu";
+import ClearIcon from "@mui/icons-material/Clear";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 
 const NavBar = () => {
   // const [searchQuery, setsearchQuery] = useState("invisible");

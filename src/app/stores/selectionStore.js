@@ -18,7 +18,7 @@ const initialState = {
     },
     modelUrls: [{ name: "", url: "" }],
     position: {},
-    scale: 0,
+    scale: 1,
   },
 };
 

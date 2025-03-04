@@ -1,11 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import React, { Suspense, useState } from "react";
 import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from "three";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Environment, Html, SoftShadows } from "@react-three/drei";
-import useSelection from "../../stores/selectionStore";
+import { Environment, SoftShadows } from "@react-three/drei";
 import { portfolio } from "../../../lib/globals";
 import { scaleMeshAtBreakpoint } from "../../../lib/utils";
 import cameraConfigs from "../../../lib/cameraConfigs";
@@ -17,11 +15,7 @@ import { CameraRig } from "./CameraRig";
 ColorManagement.enabled = true;
 
 const SceneBuilder = () => {
-//   const setSelection = useSelection((state) => state.setSelection);
-//   const resetSelection = useSelection((state) => state.reset);
   const { size } = useThree();
-//   const router = useRouter();
-//   const [currentSelection, select] = useState();
   const [pointerTarget, setPointerTarget] = useState({
     eventObject: "",
     name: "",
@@ -57,8 +51,6 @@ const SceneBuilder = () => {
   }
 
   let cameraTarget =
-    // currentSelection?.name.length &&
-    // currentSelection.name === 
     pointerTarget?.eventObject &&
     pointerTarget?.position
       ? pointerTarget?.position
@@ -82,6 +74,8 @@ const SceneBuilder = () => {
         const groupProps = {
           ...data,
           sceneData: {
+            description: data.description, 
+            shortDescription: data.shortDescription,
             ...data.sceneData,
             groupName: data.name,
             position: groupPositions[index],
@@ -95,8 +89,7 @@ const SceneBuilder = () => {
             key={groupProps?.name}
             name={`${groupProps?.name}`}
             onClick={(e) => {
-              console.log("%cOnClick", "color:blue; background:red;", e);
-            //   handleUpdateSelection(groupProps);
+              console.log("%cOnClick GroupProps:", "color:blue; background:red;", groupProps);
               setPointerTarget({
                 eventObject: e.eventObject.name,
                 name: e.object.name,
@@ -162,30 +155,8 @@ const SceneBuilder = () => {
                 groupPositions[index].z,
               ]}
             />
-            {/* <Group {...groupProps.sceneData} /> */}
-            <Group {...groupProps} />
-            {/* <Html
-              transform
-              scale={[10, 10, 10]}
-              position={[
-                groupPositions[index].x,
-                groupPositions[index].y + 40,
-                groupPositions[index].z,
-              ]}
-            >
-              <div
-                className={`flex grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-neutral-300 text-neutral-600 text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200" : "w-0 opacity-0"}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (currentSelection) {
-                    setSelection(currentSelection);
-                    router.push("/project");
-                  }
-                }}
-              >
-                See More
-              </div>
-            </Html> */}
+                        {/* <Group {...groupProps} /> */}
+            <Group {...groupProps.sceneData} />
           </group>
         );
       })}
@@ -240,10 +211,9 @@ export const GlobalModelViewer = () => {
       <Suspense>
         <SceneBuilder />
       </Suspense>
-            <SoftShadows samples={10} size={6} />
-      
+      <SoftShadows samples={10} size={6} />  
       <Ground
-        position={[0, -100, 20]}
+        position={[0, -80, 20]}
         scale={[1.5, 1, 1]}
         rotation={Math.PI / 14}
       />

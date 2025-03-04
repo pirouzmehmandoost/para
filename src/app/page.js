@@ -1,15 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import localFont from "next/font/local";
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion';
-
-
-const myFont = localFont({
-  src: "../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2",
-  display: "swap",
-});
 
 const links = [
     {
@@ -101,7 +94,7 @@ const menu = {
 
 function ToggleButton({isActive, toggleMenu}) {
     return (
-        <div className = "absolute top-0 left-0 w-20 h-10 rounded-xl bg-red-400">
+        <div className = "absolute top-0 left-0 w-20 h-10 rounded-xl">
             <ButtonText handler={() => toggleMenu()} label="Menu" isActive={isActive}/>
             <ButtonText handler={() => toggleMenu()} label="Close" isActive={!isActive}/>
         </div>
@@ -114,7 +107,7 @@ function ButtonText({handler, label, isActive}) {
             className={`absolute w-full h-full rounded-xl transition-all duration-1000 ease-in-out ${isActive ? "opacity-0 text-neutral-500" : "opacity-100 text-neutral-600 "}`}
             onClick={handler}
         >
-            <div className="flex flex-col w-full h-full cursor-pointer text-center px-2 bg-green-500 rounded-xl">
+            <div className="flex flex-col w-full h-full cursor-pointer text-center px-2 bg-neutral-400 rounded-xl">
                 {label}
             </div>
         </div>
@@ -203,45 +196,15 @@ const Links = () => {
 
 
 export default function Home() {
-  return (
-    <main className="flex flex-col w-screen h-full text-center text-neutral-600">
-      <div
-        id="top_section"
-        className={`z-10 flex flex-col w-full h-1/2 place-self-center place-items-center mt-28 ${myFont.className} uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
-      >
-        <div className="w-4/5">
-          <p>
-            Hey! I&apos;m a software engineer based in the San Francisco Bay
-            Area. I specialize in frontend development and rendering interactive
-            graphics on the web.
-          </p>
-          <p>I love to 3D print and design wearable objects after my 9-5.</p>
-          <div>
-            <div className="mt-4 sm:mt-8 md:mt-8 lg:mt-8 xl:mt-8 2xl:mt-8">
-              WIP- read my latest dev notes in the
-              <Link
-                href="https://github.com/pirouzmehmandoost/para/blob/main/README.md"
-                className="border-transparent"
-                rel="noopener noreferrer"
-                target="blank"
-              >
-                <span
-                  className="pl-1 cursor-pointer text-neutral-500 italic transition-colors ease-in-out duration-300 hover:text-neutral-400"
-                >
-                  Github repo
-                </span>
-                <span className="italic">.</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-        <div className="w-5/6">
-                  <Menu/>
-        </div>
-      </div>
+    return (
+        <main className="flex flex-col w-screen h-full">
+        <div
+            className={`z-10 flex flex-col place-self-center place-items-center mt-32 uppercase text-center text-neutral-600 text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
+        >
+            <Menu/>
+    </div>
 
-
-      {/* <div
+    {/* <div
         id="bottom_section"
         className="absolute w-full h-1/2 min-h-96 bottom-0"
       >

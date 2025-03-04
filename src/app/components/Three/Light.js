@@ -14,19 +14,18 @@ const Light = ({
   lightHelper = false,
 }) => {
   const { scene } = useThree();
-  const lightRef = useRef();
+  const lightRef = useRef(undefined);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (lightRef.current) {
+    if (lightRef?.current) {
       const targetObject = new Object3D();
       targetObject.position.copy(new Vector3(target[0], target[1], target[2]));
       scene.add(targetObject);
       lightRef.current.target = targetObject;
-
       setIsReady(true);
     }
-  }, []);
+  }, [lightRef, target, scene]);
 
   return (
     <>
