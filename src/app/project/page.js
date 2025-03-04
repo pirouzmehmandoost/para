@@ -1,5 +1,6 @@
 "use client";
-
+import Link from "next/link";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
@@ -64,6 +65,16 @@ const ProjectViewer = () => {
           className="w-full h-full self-center place-self-center place-content-center items-center"
           data={data}
         />
+            <div className="fixed bottom-40 left-10 mt-10 p-8 rounded-full bg-white/1  text-5xl backdrop-blur-sm transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700" >  
+            <Link
+                href="/"
+                rel="noopener noreferrer"
+            >
+                <div className="flex flex-row w-full place-items-center cursor-pointer">
+                    <ArrowBackIosNewIcon fontSize="large"/>
+                </div>
+            </Link>
+        </div>
       </div>
       <div
         id="project_menu"
