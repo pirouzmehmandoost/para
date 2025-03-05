@@ -21,7 +21,7 @@ const metallicMaterial = {
   ior: 1.8,
   metalness: 1,
   roughness: 0.2,
-  sheen: 0.15,
+  sheen: 0.2,
   sheenColor: "#707070",
   sheenRoughness: 1,
 };
@@ -80,14 +80,6 @@ const initialState = {
       sheen: 1,
       sheenColor: "#ccc0a3",
       sheenRoughness: 1,
-    }),
-  },
-  silver: {
-    name: "Silver",
-    tailwindColor: `bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-100 to-zinc-900`,
-    material: new MeshPhysicalMaterial({
-      ...metallicMaterial,
-      color: "#444444",
     }),
   },
 };

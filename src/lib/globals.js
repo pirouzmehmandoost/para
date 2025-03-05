@@ -101,7 +101,7 @@ export const portfolio = {
         groupName: "Gerd",
         materials: {
           defaultMaterial: "gloss_black",
-          colorWays: ["gloss_black", "matte_black", "eggshell"],
+          colorWays: ["gloss_black", "matte_black", "eggshell",],
         },
         modelUrls: [
           { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
@@ -138,7 +138,7 @@ export const portfolio = {
         groupName: "PÍ",
         materials: {
           defaultMaterial: "gloss_black",
-          colorWays: ["gloss_black", "matte_black", "eggshell"],
+          colorWays: ["gloss_black", "matte_black", "eggshell",],
         },
         modelUrls: [
           { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },

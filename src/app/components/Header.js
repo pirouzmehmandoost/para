@@ -15,7 +15,7 @@ const Header = () => {
   return (
     <div
       id="header"
-      className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? "text-2xl pb-1" : "text-4xl pb-3"} text-neutral-600 uppercase ${myFont.className} bg-gradient-to-b from-[#bcbcbc] from-85% to-transparent`}
+      className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? "text-2xl pb-1" : "text-4xl pb-3"} text-neutral-600 uppercase ${myFont.className} bg-gradient-to-b from-[#bcbcbc] from-85% `}
     >
       <div className={`flex flex-col flex-nowrap`}>
         <div className={`text-center ${pathname.length > 1 ? "mb-1" : "mb-2"}`}>

@@ -77,7 +77,9 @@ const Group = ({ children, ...data }) => {
                 return ( 
                     <group key={key}> 
                     <Html
+                        // occlude="blending"
                         transform
+                        zIndexRange={[0,0]}
                         scale={[10, 10, 10]}
                         position={[
                             positions[index].x,
