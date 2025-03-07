@@ -3,10 +3,10 @@
 import { useRef } from "react";
 import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+// import { useGLTF } from "@react-three/drei";
 import useMaterial from "@/stores/materialStore";
 import useMesh, {asyncLoadGLTF} from "@/stores/meshStore";
-import { portfolio} from "@/lib/globals";
+// import { portfolio} from "@/lib/globals";
 
 const Model = (props) => {
     const meshRef = useRef(undefined);
@@ -36,10 +36,9 @@ const Model = (props) => {
     }
 
     console.log('mesh: ', mesh)
-    
+
     const meshProps = {
         name,
-        // geometry: mesh.geometry,
         geometry: mesh,
         material: getMaterial(materialId).material,
         position,

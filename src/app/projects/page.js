@@ -4,6 +4,12 @@ import Link from "next/link";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import GlobalModelViewer from "@/components/Three/GlobalModelViewer";
 import DynamicMenu from "@/components/DynamicMenu";
+import useMesh from "@/stores/meshStore"
+import { asyncInitializeStore }  from "@/stores/meshStore";
+
+
+
+
 
 const menuProps = {
     topLinks : [
@@ -34,6 +40,9 @@ const menuProps = {
 };
 
 const ProjectsPage = () => {
+    const setMesh = useMesh(state=> state.setMesh)
+        // asyncInitializeStore(setMesh);
+
     return (
         <div className="flex flex-col w-full h-full mt-14 uppercase text-neutral-600" >
             <div className="absolute p-8 z-100">
