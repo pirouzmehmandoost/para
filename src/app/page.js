@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -216,7 +215,6 @@ const ToggleButton = ({isActive, toggleMenu}) => {
 
 
 const Home = () => {
-
     return (
         <main className="flex flex-col w-screen h-full" >
             <div

@@ -6,7 +6,6 @@ import { useFrame } from "@react-three/fiber";
 // import { useGLTF } from "@react-three/drei";
 import useMaterial from "@/stores/materialStore";
 import useMesh, {asyncLoadGLTF} from "@/stores/meshStore";
-// import { portfolio} from "@/lib/globals";
 
 const Model = (props) => {
     const meshRef = useRef(undefined);
@@ -26,13 +25,14 @@ const Model = (props) => {
     if (name.length) {
         if (getMesh(name)) {
             mesh = getMesh(name);
-        } 
+        }
 
-        asyncLoadGLTF(url)
-        mesh = getMesh(name)
-        // const node = useGLTF(url).nodes[`${name}`]
-        // mesh = node.geometry;
-        // setMesh(node)
+        if (!getMesh(name)) {
+            asyncLoadGLTF(url)
+            mesh = getMesh(name)
+        }
+        // mesh = useGLTF(url).nodes[`${name}`]
+        // setMesh(mesh)
     }
 
     console.log('mesh: ', mesh)

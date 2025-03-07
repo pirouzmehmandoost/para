@@ -38,7 +38,7 @@ export function asyncLoadGLTF(url, callBack) {
     const loader = new GLTFLoader();
 
     const load = async (url) => {
-        const promise =  loader.loadAsync(url);
+        const promise = loader.loadAsync(url);
         return Promise.resolve(promise);
     }
 
@@ -46,7 +46,6 @@ export function asyncLoadGLTF(url, callBack) {
         const gltf = await load(url)
         if (typeof callBack === 'function') { callBack(gltf.scene.children[0])} 
         else initialState[`${gltf.scene.children[0].name}`] = gltf.scene.children[0].geometry;
-        return gltf.scene.children[0].geometry;
     }.call();
 };
 
@@ -92,12 +91,13 @@ export function asyncInitializeStore(callBack) {
 //     });
 // };
 
-// export function asyncInitializeStore() {
+// export function asyncInitializeStore(callBack) {
 //     return projects.map( ({sceneData: {modelUrls}}) => { 
 //         return async function () {
 //             const models = await loadGLBModels(modelUrls.map(data=> data.url))
 //             models.forEach(gltf => {
-//                 initialState[`${gltf.scene.children[0].name}`] = gltf.scene.children[0].geometry;
+//                 if (typeof callBack === 'function') { callBack(gltf.scene.children[0])} 
+//                 else initialState[`${gltf.scene.children[0].name}`] = gltf.scene.children[0].geometry;
 //             });
 //         }.call();
 //     });
