@@ -4,15 +4,29 @@ import React, { Suspense, useState } from "react";
 import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from "three";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
-import { portfolio } from "../../../lib/globals";
-import { scaleMeshAtBreakpoint } from "../../../lib/utils";
-import cameraConfigs from "../../../lib/cameraConfigs";
+import cameraConfigs from "@/lib/cameraConfigs";
+import { portfolio } from "@/lib/globals";
+import { scaleMeshAtBreakpoint } from "@/lib/utils";
+import { CameraRig } from "./CameraRig";
 import { Ground } from "@/public/Ground";
 import Light from "./Light";
 import Group from "./Group";
-import { CameraRig } from "./CameraRig";
 
 ColorManagement.enabled = true;
+
+// const onCreate = ()=> {
+//     const { projects } = portfolio;
+//     const setMesh = useMesh(state=>state.setMesh)
+//     const getMeshes = useMesh(state=>state.getMeshes)
+    
+//         projects.forEach(({ sceneData }) => {
+//             for (const {name, url} of sceneData.modelUrls) {
+//             //   initialState[`${name}`] = useGLTF(url).nodes[`${name}`];
+//                  setMesh(useGLTF(url).nodes[`${name}`])
+//             }
+//         });
+//         console.log("onCreate ", getMeshes());
+// }
 
 const SceneBuilder = () => {
     const { size } = useThree();
@@ -63,13 +77,13 @@ const SceneBuilder = () => {
                 const groupProps = {
                     ...data,
                     sceneData: {
-                    description: data.description, 
-                    shortDescription: data.shortDescription,
-                    ...data.sceneData,
-                    groupName: data.name,
-                    position: groupPositions[index],
-                    autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
-                    isPointerOver: pointerTarget.name,
+                        description: data.description, 
+                        shortDescription: data.shortDescription,
+                        ...data.sceneData,
+                        groupName: data.name,
+                        position: groupPositions[index],
+                        autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
+                        isPointerOver: pointerTarget.name,
                     },
                 };
 
@@ -160,10 +174,8 @@ export const GlobalModelViewer = () => {
         shadows
         >
             <Environment shadows files="./studio_small_08_4k.exr" />
-            {/* <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" /> */}
             <color args={["#bcbcbc"]} attach="background" />
             <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} /> 
-            {/* near used to be 160 */}
             <directionalLight
             castShadow={true}
             position={[0, 80, -40]}

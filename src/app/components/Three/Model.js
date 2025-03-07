@@ -1,22 +1,17 @@
 "use client";
 
 import { useRef } from "react";
-import { Vector3, 
-    // Color, MeshPhysicalMaterial
-} from "three";
+import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import useMaterial from "../../stores/materialStore";
-import useMesh from "../../stores/meshStore";
+import useMaterial from "@/stores/materialStore";
+import useMesh from "@/stores/meshStore";
 
-const Model = (data) => {
-    const getMaterial = useMaterial((state) => state.getMaterial);
-    // const getMesh = useMesh((state) => state.getMesh);
-    // const setMesh = useMesh((state) => state.setMesh);
+const Model = (props) => {
     const meshRef = useRef(undefined);
-
-    console.log("Model. Data: ",  data)
-
+    const getMaterial = useMaterial((state) => state.getMaterial);
+    const getMesh = useMesh((state) => state.getMesh);
+    const setMesh = useMesh(state=>state.setMesh)
     const {
         autoRotate = true,
         autoRotateSpeed = 1,
@@ -24,55 +19,46 @@ const Model = (data) => {
         modelUrl: { name = "", url = "" } = {},
         position = new Vector3(0, -25, 0),
         scale,
-    } = data;
+    } = props;
 
     let mesh = null;
 
-    // if (name.length) {
-    //     if (getMesh(name)) {
-    //         mesh = getMesh(name);
-    //     } 
-    //     else {
-            mesh = useGLTF(url).nodes[`${name}`];
-            // setMesh(mesh);
-    //     }
+    // console.log("Model. name: ",name , "does it exist in store? ", getMesh(name))
+    if (name.length) {
+        if (getMesh(name)) {
+            mesh = getMesh(name);
+        } 
+        // else {
+        //     mesh = useGLTF(url).nodes[`${name}`];
+        //     setMesh(mesh);
+        // }
+    }
+
+    // useEffect(()=> {
+    //     if ( !getMesh(name)) {
+    //     projects.forEach(({ sceneData }) => {
+    //         // useGLTF.preload(sceneData.modelUrls.map(({ url }) => url));
+        
+    //         for (const {name, url} of sceneData.modelUrls) {
+    //         //   initialState[`${name}`] = useGLTF(url).nodes[`${name}`];
+    //              setMesh(useGLTF(url).nodes[`${name}`])
+    //         }
+    //     });
     // }
+    // }, []);
 
     const meshProps = {
-        name: name,
-        scale: scale,
-        castShadow: true,
-        receiveShadow: true,
-        position: position,
-        geometry: mesh.geometry,
+        name,
+        // geometry: mesh.geometry,
+        geometry: mesh,
         material: getMaterial(materialId).material,
+        position,
+        scale,
     };
-
-    //TESTING
-    // const mutableMaterial = new MeshPhysicalMaterial();
-    // mutableMaterial.copy(getMaterial(materialId).material);
-    // const c = new Color();
-    // c.copy(mutableMaterial.color);
 
     useFrame(({ clock }) => {
         const elapsedTime = clock.getElapsedTime();
         if (meshRef?.current) {
-            // if (
-            //     selection.sceneData.isPointerOver === name &&
-            //     isPointerOver === name
-            // ) {
-            //     const color = c.lerp(
-            //         new Color("red"),
-            //         (Math.sin(elapsedTime * 0.5) + 1) * 0.2,
-            //     );
-            //     meshRef.current.material.color = color;
-            //     // meshRef.current.material.roughness = (Math.sin(elapsedTime * 0.5) + 1) * 0.25;
-            //     // meshRef.current.material.metalness = (Math.sin(elapsedTime * 0.25) + 1) * 0.5;
-            // } 
-            // else {
-            //     meshRef.current.material = mutableMaterial;
-            // }
-
             if (autoRotate) {
                 meshRef.current.rotation.set(
                     0,
@@ -101,7 +87,7 @@ const Model = (data) => {
     //         setSelection(obj);
     //     }
     // };
-    return <mesh ref={meshRef} {...meshProps} />
+    return <mesh castShadow={true} recieveShadow={true} ref={meshRef} {...meshProps} />
 };
 
 export default Model;

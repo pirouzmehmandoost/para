@@ -15,7 +15,7 @@ const Header = () => {
   return (
     <div
       id="header"
-      className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? "text-2xl pb-1" : "text-4xl pb-3"} text-neutral-600 uppercase ${myFont.className} bg-gradient-to-b from-[#bcbcbc] from-85% `}
+      className={`fixed z-50 w-full min-w-full h-fit min-h-fit inset-0 top-0 pt-4 ${pathname.length > 1 ? "text-2xl pb-1 bg-gradient-to-b from-[#bcbcbc] from-85% " : "text-4xl pb-3"} text-neutral-600 uppercase ${myFont.className} `}
     >
       <div className={`flex flex-col flex-nowrap`}>
         <div className={`text-center ${pathname.length > 1 ? "mb-1" : "mb-2"}`}>
@@ -28,10 +28,10 @@ const Header = () => {
           </Link>
         </div>
 
-        <div
+        {/* <div
           className={`flex flex-nowrap flex-row justify-evenly w-full ${pathname.length > 1 ? "text-lg" : "text-2xl"}`}
-        >
-          <Link
+        > */}
+          {/* <Link
             className="border-transparent transition-colors hover:text-neutral-500"
             href="/resume"
             rel="noopener noreferrer"
@@ -45,7 +45,7 @@ const Header = () => {
             target="blank"
           >
             <p className="text-nowrap cursor-pointer">Github</p>
-          </Link>
+          </Link> */}
           {/* <Link
             href="/shop"
             className="border-transparent transition-colors hover:text-neutral-500"
@@ -55,10 +55,12 @@ const Header = () => {
               Shop
             </p>
           </Link> */}
-        </div>
+        {/* </div> */}
       </div>
     </div>
   );
 };
 
 export default Header;
+
+

@@ -1,6 +1,6 @@
 "use client";
 
-import useSelection from "../stores/selectionStore";
+import useSelection from "@/stores/selectionStore";
 
 const Menu = ({ setExpanded, expanded }) => {
   const selection = useSelection((state) => state.selection);

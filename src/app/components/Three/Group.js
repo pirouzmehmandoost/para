@@ -1,30 +1,27 @@
 "use client";
 
-import { useThree } from "@react-three/fiber";
-import { scaleMeshAtBreakpoint, calculatePositions } from "../../../lib/utils";
-import Model from "./Model";
-import { Html } from "@react-three/drei";
-import useSelection from "../../stores/selectionStore";
 import { useRouter } from "next/navigation";
+import { useThree } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
+import useSelection from "@/stores/selectionStore";
+import { scaleMeshAtBreakpoint, calculatePositions } from "@/lib/utils";
+import Model from "./Model";
 
 
 const Group = ({ children, ...data }) => {
     const router = useRouter();
+    const { size } = useThree();
     const setSelection = useSelection((state) => state.setSelection);
     const resetSelection = useSelection((state) => state.reset);
 
-    const { size } = useThree();
-
-    console.log("Group. Data: ",  data)
-
     const {
-            autoRotate,
-            autoRotateSpeed,
-            materials,
-            modelUrls,
-            isPointerOver,
-            position: groupPosition,
-            scale,
+        autoRotate,
+        autoRotateSpeed,
+        materials,
+        modelUrls,
+        isPointerOver,
+        position: groupPosition,
+        scale,
     } = data;
 
     let positions = calculatePositions(
@@ -50,8 +47,6 @@ const Group = ({ children, ...data }) => {
                     ...x,
                 },
             };
-
-            console.log("handleUpdateSelection\ndata is :" , data, "\nobj is ", obj, "\n");
             setSelection(obj);
         }
     };

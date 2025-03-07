@@ -13,12 +13,14 @@ const perspective = {
         rotateX: 90,
         translateY: 80,
         translateX: -20,
+        filter: "blur(100px)",
     },
     enter: (i) => ({
         opacity: 1,
         rotateX: 0,
         translateY: 0,
         translateX: 0,
+        filter: "blur(0px)",
         transition: {
             duration: 0.65, 
             delay: 0.5 + (i * 0.1), 
@@ -28,6 +30,7 @@ const perspective = {
     }),
     exit: {
         opacity: 0,
+        filter: "blur(100px)",
         transition: { duration: 0.5, type: "linear", ease: [0.76, 0, 0.24, 1]}
     }
 }
@@ -35,11 +38,12 @@ const perspective = {
 export const slideIn = {
     initial: {
         opacity: 0,
-        y: 20
+        y: 20,
     },
     enter: (i) => ({
         opacity: 1,
         y: 0,
+        filter: "blur(0px)",
         transition: { 
             duration: 0.5,
             delay: 0.75 + (i * 0.1), 
@@ -48,6 +52,7 @@ export const slideIn = {
     }),
     exit: {
         opacity: 0,
+        filter: "blur(100px)",
         transition: { duration: 0.5, type: "tween", ease: "easeInOut"}
     }
 }
@@ -73,10 +78,6 @@ const menu = {
     }
 }
 
-
-
-
-
 const Links = ({topLinks, bottomLinks}) => {
     return (
 
@@ -95,7 +96,7 @@ const Links = ({topLinks, bottomLinks}) => {
                             exit="exit"
                             >
                                 <Link 
-                                className="border-transparent cursor-pointer"
+                                className="cursor-pointer"
                                 rel="noopener noreferrer"
                                 href={href}
                                 >
@@ -133,13 +134,13 @@ const Links = ({topLinks, bottomLinks}) => {
                 })
             }
             </motion.div>
-            <div className=" absolute flex w-full h-full bg-neutral-200/50 rounded-3xl -z-1 inset-0 scale-100 blur-2xl" >
-            </div>
+            <div className=" absolute flex w-full h-full bg-neutral-200/80 rounded-3xl -z-1 inset-0 scale-100 blur-xl" />
+            <div className = "absolute flex w-full h-full" style={{  "maskImage": `linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,00,0,1) 100%)`}}/>
+
         </div>
 
     )
 }
-
 
 const ButtonContainer = ({isActive, toggleMenu}) => {
     return (
@@ -163,7 +164,7 @@ const ButtonContainer = ({isActive, toggleMenu}) => {
     )
 }
 
- const DynamicMenu = ({linkProps}) => {
+ const DynamicMenu = (props) => {
 
     const [isActive, setIsActive] = useState(false);
 
@@ -171,13 +172,13 @@ const ButtonContainer = ({isActive, toggleMenu}) => {
         <div className="relative flex flex-col grow w-fit min-w-18 h-fit min-h-18">
             <div>
                 <motion.div 
-                    className={`absolute flex flex-col inset-0 bottom-0 w-fit h-fit bg-neutral-200/0 backdrop-blur-xs rounded-3xl`}
+                    className={`absolute flex flex-col inset-0 bottom-0 w-fit h-fit bg-neutral-200/0 rounded-3xl`}
                     variants={menu}
                     animate={isActive ? "open" : "closed"}
                     initial="closed"
                 >
                     <AnimatePresence>
-                        { isActive && <Links {...linkProps} /> }
+                        { isActive && <Links {...props} /> }
                     </AnimatePresence>
                 </motion.div> 
 

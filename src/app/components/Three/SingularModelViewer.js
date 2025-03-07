@@ -2,54 +2,49 @@
 
 import { ColorManagement } from "three";
 import { Canvas } from "@react-three/fiber";
-import {
-  Environment,
-  CameraControls,
-  SoftShadows,
-  Html,
-} from "@react-three/drei";
-import cameraConfigs from "../../../lib/cameraConfigs";
-import { Ground } from "../../../../public/Ground";
+import { Environment, CameraControls, SoftShadows, Html } from "@react-three/drei";
+import cameraConfigs from "@/lib/cameraConfigs";
+import { Ground } from "@/public/Ground";
 import { SimpleCameraRig } from "./CameraRig";
 import Model from "./Model";
 
 ColorManagement.enabled = true;
 
-export const scaleModel = (width) => {
-  if (width <= 360) {
-    return 0.525;
-  }
-  if (width <= 400) {
-    return 0.55;
-  }
-  if (width <= 480) {
-    return 0.7;
-  }
-  if (width <= 640) {
-    //sm
-    return 0.75;
-  }
-  if (width <= 768) {
-    //md
-    return 0.8;
-  }
-  if (width <= 1024) {
-    //lg
-    return 0.9;
-  }
-  if (width <= 1280) {
-    //xl
-    return 1.0;
-  }
-  if (width <= 1536) {
-    //2xl
-    return 1.1;
-  }
-  return 1.2;
-};
+// const scaleModel = (width) => {
+//   if (width <= 360) {
+//     return 0.525;
+//   }
+//   if (width <= 400) {
+//     return 0.55;
+//   }
+//   if (width <= 480) {
+//     return 0.7;
+//   }
+//   if (width <= 640) {
+//     //sm
+//     return 0.75;
+//   }
+//   if (width <= 768) {
+//     //md
+//     return 0.8;
+//   }
+//   if (width <= 1024) {
+//     //lg
+//     return 0.9;
+//   }
+//   if (width <= 1280) {
+//     //xl
+//     return 1.0;
+//   }
+//   if (width <= 1536) {
+//     //2xl
+//     return 1.1;
+//   }
+//   return 1.2;
+// };
 
 export const SingularModelViewer = ({ data }) => {
-  console.log("SingularModelViewer data: ", data);
+//   console.log("SingularModelViewer data: ", data);
   return (
     <Canvas
       camera={{
@@ -98,14 +93,14 @@ export const SingularModelViewer = ({ data }) => {
             shadow-camera-right={1000}
         />
         {data.modelUrl?.name?.length
-        ? <Model{...data}/>
-        : 
-            <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
-                <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-"
-                >
-                    <p> ⚒️ Please navigate back to the home page ⚒️ </p>
-                </div>
-            </Html>
+            ? <Model{...data}/>
+            : 
+                <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
+                    <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-"
+                    >
+                        <p> ⚒️ Please navigate back to the home page ⚒️ </p>
+                    </div>
+                </Html>
         }
         <SoftShadows samples={10} size={6} />
         <Ground
