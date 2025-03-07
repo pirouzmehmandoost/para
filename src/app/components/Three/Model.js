@@ -5,13 +5,13 @@ import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import useMaterial from "@/stores/materialStore";
-import useMesh from "@/stores/meshStore";
+import useMesh, {asyncLoadGLTF} from "@/stores/meshStore";
+import { portfolio} from "@/lib/globals";
 
 const Model = (props) => {
     const meshRef = useRef(undefined);
     const getMaterial = useMaterial((state) => state.getMaterial);
     const getMesh = useMesh((state) => state.getMesh);
-    const setMesh = useMesh(state=>state.setMesh)
     const {
         autoRotate = true,
         autoRotateSpeed = 1,
@@ -23,30 +23,20 @@ const Model = (props) => {
 
     let mesh = null;
 
-    // console.log("Model. name: ",name , "does it exist in store? ", getMesh(name))
     if (name.length) {
         if (getMesh(name)) {
             mesh = getMesh(name);
         } 
-        // else {
-        //     mesh = useGLTF(url).nodes[`${name}`];
-        //     setMesh(mesh);
-        // }
+
+        asyncLoadGLTF(url)
+        mesh = getMesh(name)
+        // const node = useGLTF(url).nodes[`${name}`]
+        // mesh = node.geometry;
+        // setMesh(node)
     }
 
-    // useEffect(()=> {
-    //     if ( !getMesh(name)) {
-    //     projects.forEach(({ sceneData }) => {
-    //         // useGLTF.preload(sceneData.modelUrls.map(({ url }) => url));
-        
-    //         for (const {name, url} of sceneData.modelUrls) {
-    //         //   initialState[`${name}`] = useGLTF(url).nodes[`${name}`];
-    //              setMesh(useGLTF(url).nodes[`${name}`])
-    //         }
-    //     });
-    // }
-    // }, []);
-
+    console.log('mesh: ', mesh)
+    
     const meshProps = {
         name,
         // geometry: mesh.geometry,
@@ -54,6 +44,8 @@ const Model = (props) => {
         material: getMaterial(materialId).material,
         position,
         scale,
+        castShadow: true, 
+        receiveShadow: true,
     };
 
     useFrame(({ clock }) => {
@@ -82,12 +74,11 @@ const Model = (props) => {
     //                 ...x,
     //             },
     //         };
-
     //         console.log("handleUpdateSelection\n", "data is :" , data, "\nobj is ", obj, "\n");
     //         setSelection(obj);
     //     }
     // };
-    return <mesh castShadow={true} recieveShadow={true} ref={meshRef} {...meshProps} />
+    return <>mesh && <mesh castShadow={true} recieveShadow={true} ref={meshRef} {...meshProps} /></>
 };
 
 export default Model;

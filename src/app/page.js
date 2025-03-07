@@ -5,6 +5,12 @@ import Image from "next/image";
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import useMesh from "@/stores/meshStore"
+
+
+import { initializeStore, asyncInitializeStore}  from "@/stores/meshStore";
+// import { portfolio } from "@/lib/globals";
+
 
 const variants = {
     top: {
@@ -211,8 +217,13 @@ const ToggleButton = ({isActive, toggleMenu}) => {
         </div>
     )
 };
+    // initializeStore();
 
 const Home = () => {
+    const getMeshes = useMesh(state=> state.getMeshes)
+asyncInitializeStore()
+    console.log("getMeshes", getMeshes())
+
     return (
         <main className="flex flex-col w-screen h-full" >
             <div

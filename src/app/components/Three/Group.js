@@ -84,8 +84,8 @@ const Group = ({ children, ...data }) => {
                     >
                         <div
                             className={`flex grow cursor-pointer uppercase text-nowrap w-fit h-full text-center 
-                                p-4 place-self-center place-items-center rounded-full bg-neutral-300 text-neutral-600
-                                text-5xl transition-all duration-500 ease-in-out w-96 opacity-90 transition-all duration-500 
+                                p-4 place-self-center place-items-center rounded-full bg-neutral-300/30 text-neutral-600
+                                text-5xl transition-all duration-500 ease-in-out w-96 transition-all duration-500 
                                 ease-in-out hover:text-neutral-500 hover:bg-neutral-200`}
 
                             onClick={(e) => {
