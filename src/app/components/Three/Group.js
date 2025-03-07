@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import useSelection from "@/stores/selectionStore";
-import { scaleMeshAtBreakpoint, calculatePositions } from "@/lib/utils";
+import { scaleMeshAtBreakpoint, calculatePositions } from "@/lib/utils/meshUtils";
 import Model from "./Model";
 
 
@@ -40,7 +40,7 @@ const Group = ({ children, ...data }) => {
         }
         else {
             const obj = {
-                ...data, 
+                ...data,
                 ...x,
                 sceneData: {
                     ...data,
@@ -61,43 +61,42 @@ const Group = ({ children, ...data }) => {
                     autoRotateSpeed: autoRotateSpeed,
                     isPointerOver,
                     materialId:
-                    modelUrls.length === 1
-                        ? materials.defaultMaterial
-                        : Object.values(materials.colorWays)[index],
+                        modelUrls.length === 1
+                            ? materials.defaultMaterial
+                            : Object.values(materials.colorWays)[index],
                     modelUrl: modelUrl,
                     position: positions[index],
                     scale: updateScale,
                 };
 
-                return ( 
-                    <group key={key}> 
-                    <Html
-                        // occlude="blending"
-                        transform
-                        zIndexRange={[0,0]}
-                        scale={[10, 10, 10]}
-                        position={[
-                            positions[index].x,
-                            positions[index].y + 40,
-                            positions[index].z,
-                        ]}
-                    >
-                        <div
-                            className={`flex grow cursor-pointer uppercase text-nowrap w-fit h-full text-center 
-                                p-4 place-self-center place-items-center rounded-full bg-neutral-300/30 text-neutral-600
-                                text-5xl transition-all duration-500 ease-in-out w-96 transition-all duration-500 
-                                ease-in-out hover:text-neutral-500 hover:bg-neutral-200`}
-
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdateSelection(props);
-                                router.push("/project");
-                            }}
+                return (
+                    <group key={key}>
+                        <Html
+                            // occlude="blending"
+                            transform
+                            zIndexRange={[0, 0]}
+                            scale={[10, 10, 10]}
+                            position={[
+                                positions[index].x,
+                                positions[index].y + 40,
+                                positions[index].z,
+                            ]}
                         >
-                            See More
-                        </div>
-                    </Html>
-                    <Model key={key} {...props} />
+                            <div
+                                className={`flex grow p-4 cursor-pointer uppercase text-nowrap w-fit h-full text-center 
+                                place-self-center place-items-center rounded-full bg-neutral-300/30 text-neutral-600
+                                text-5xl transition-all duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200`}
+
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleUpdateSelection(props);
+                                    router.push("/project");
+                                }}
+                            >
+                                See More
+                            </div>
+                        </Html>
+                        <Model key={key} {...props} />
                     </group>
                 );
             })}

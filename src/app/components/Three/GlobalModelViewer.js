@@ -6,7 +6,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import cameraConfigs from "@/lib/cameraConfigs";
 import { portfolio } from "@/lib/globals";
-import { scaleMeshAtBreakpoint } from "@/lib/utils";
+import { scaleMeshAtBreakpoint } from "@/lib/utils/meshUtils";
 import { CameraRig } from "./CameraRig";
 import { Ground } from "@/public/Ground";
 import Light from "./Light";
@@ -18,7 +18,7 @@ ColorManagement.enabled = true;
 //     const { projects } = portfolio;
 //     const setMesh = useMesh(state=>state.setMesh)
 //     const getMeshes = useMesh(state=>state.getMeshes)
-    
+
 //         projects.forEach(({ sceneData }) => {
 //             for (const {name, url} of sceneData.modelUrls) {
 //             //   initialState[`${name}`] = useGLTF(url).nodes[`${name}`];
@@ -66,8 +66,8 @@ const SceneBuilder = () => {
 
     let cameraTarget =
         pointerTarget?.eventObject && pointerTarget?.position
-        ? pointerTarget?.position
-        : null;
+            ? pointerTarget?.position
+            : null;
 
     CameraRig(groupPositions, cameraTarget);
 
@@ -77,7 +77,7 @@ const SceneBuilder = () => {
                 const groupProps = {
                     ...data,
                     sceneData: {
-                        description: data.description, 
+                        description: data.description,
                         shortDescription: data.shortDescription,
                         ...data.sceneData,
                         groupName: data.name,
@@ -89,18 +89,18 @@ const SceneBuilder = () => {
 
                 return (
                     <group
-                    key={groupProps?.name}
-                    name={`${groupProps?.name}`}
-                    onClick={(e) => {
-                        setPointerTarget({
-                            eventObject: e.eventObject.name,
-                            name: e.object.name,
-                            position: e.object.position,
-                        });
-                    }}
-                    onPointerMissed={(e) => {
-                        setPointerTarget({});
-                    }}
+                        key={groupProps?.name}
+                        name={`${groupProps?.name}`}
+                        onClick={(e) => {
+                            setPointerTarget({
+                                eventObject: e.eventObject.name,
+                                name: e.object.name,
+                                position: e.object.position,
+                            });
+                        }}
+                        onPointerMissed={(e) => {
+                            setPointerTarget({});
+                        }}
                     // onPointerOver={(e) => {
                     //   console.log(
                     //     "%cOnpointerOver",
@@ -140,17 +140,17 @@ const SceneBuilder = () => {
                     // }}
                     >
                         <Light
-                        position={[
-                            groupPositions[index].x,
-                            groupPositions[index].y + 900,
-                            groupPositions[index].z + 50,
-                        ]}
-                        intensity={1}
-                        target={[
-                            groupPositions[index].x,
-                            groupPositions[index].y,
-                            groupPositions[index].z,
-                        ]}
+                            position={[
+                                groupPositions[index].x,
+                                groupPositions[index].y + 900,
+                                groupPositions[index].z + 50,
+                            ]}
+                            intensity={1}
+                            target={[
+                                groupPositions[index].x,
+                                groupPositions[index].y,
+                                groupPositions[index].z,
+                            ]}
                         />
                         <Group {...groupProps.sceneData} />
                     </group>
@@ -163,55 +163,55 @@ const SceneBuilder = () => {
 export const GlobalModelViewer = () => {
     return (
         <Canvas
-        camera={{
-            position: [666, 666, 666],
-            near: cameraConfigs.NEAR,
-            far: cameraConfigs.FAR,
-            fov: 50,
-        }}
-        fallback={<div> Sorry, WebGL is not supported.c</div>}
-        orthographic={false}
-        shadows
+            camera={{
+                position: [666, 666, 666],
+                near: cameraConfigs.NEAR,
+                far: cameraConfigs.FAR,
+                fov: 50,
+            }}
+            fallback={<div> Sorry, WebGL is not supported.c</div>}
+            orthographic={false}
+            shadows
         >
             <Environment shadows files="./studio_small_08_4k.exr" />
             <color args={["#bcbcbc"]} attach="background" />
-            <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} /> 
+            <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} />
             <directionalLight
-            castShadow={true}
-            position={[0, 80, -40]}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-            intensity={1}
-            shadow-camera-near={0.05}
-            shadow-camera-far={1000}
-            shadow-bias={-0.001}
-            shadow-camera-top={1500}
-            shadow-camera-bottom={-1500}
-            shadow-camera-left={-1500}
-            shadow-camera-right={1500}
+                castShadow={true}
+                position={[0, 80, -40]}
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
+                intensity={1}
+                shadow-camera-near={0.05}
+                shadow-camera-far={1000}
+                shadow-bias={-0.001}
+                shadow-camera-top={1500}
+                shadow-camera-bottom={-1500}
+                shadow-camera-left={-1500}
+                shadow-camera-right={1500}
             />
             <directionalLight
-            castShadow={true}
-            position={[0, 100, 80]}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-            intensity={1}
-            shadow-camera-near={0.05}
-            shadow-camera-far={1000}
-            shadow-bias={-0.001}
-            shadow-camera-top={1500}
-            shadow-camera-bottom={-1500}
-            shadow-camera-left={-1500}
-            shadow-camera-right={1500}
+                castShadow={true}
+                position={[0, 100, 80]}
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
+                intensity={1}
+                shadow-camera-near={0.05}
+                shadow-camera-far={1000}
+                shadow-bias={-0.001}
+                shadow-camera-top={1500}
+                shadow-camera-bottom={-1500}
+                shadow-camera-left={-1500}
+                shadow-camera-right={1500}
             />
             <Suspense >
                 <SceneBuilder />
             </Suspense >
             {/* <SoftShadows samples={10} size={5} />   */}
             <Ground
-            position={[-50, -85, 20]}
-            scale={[1.4, 1, 1.4]}
-            rotation={Math.PI / 7}
+                position={[-50, -85, 20]}
+                scale={[1.4, 1, 1.4]}
+                rotation={Math.PI / 7}
             />
         </Canvas>
     );
