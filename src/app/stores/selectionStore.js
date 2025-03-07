@@ -1,22 +1,22 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 const initialState = {
-  name: "",
-  bannerUrl: "",
-  description: "",
-  shortDescription: "",
+  name: '',
+  bannerUrl: '',
+  description: '',
+  shortDescription: '',
   imgUrls: {},
   sceneData: {
     autoRotate: true,
     autoRotateSpeed: 1,
     autoUpdateMaterial: false,
-    groupName: "",
-    isPointerOver: "",
+    groupName: '',
+    isPointerOver: '',
     materials: {
       defaultMaterial: {},
       colorWays: {},
     },
-    modelUrls: [{ name: "", url: "" }],
+    modelUrls: [{ name: '', url: '' }],
     position: {},
     scale: 1,
   },

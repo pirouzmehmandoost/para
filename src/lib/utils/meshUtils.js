@@ -1,12 +1,12 @@
-import { Vector3 } from "three";
+import { Vector3 } from 'three';
 
 export function flattenAttributes(data) {
   // Check if data is a plain object; return as is if not
   if (
-    typeof data !== "object" ||
+    typeof data !== 'object' ||
     data === null ||
     data instanceof Date ||
-    typeof data === "function"
+    typeof data === 'function'
   ) {
     return data;
   }
@@ -27,8 +27,8 @@ export function flattenAttributes(data) {
 
     // If the key is 'attributes' or 'data', and its value is an object, merge their contents
     if (
-      (key === "attributes" || key === "data") &&
-      typeof data[key] === "object" &&
+      (key === 'attributes' || key === 'data') &&
+      typeof data[key] === 'object' &&
       !Array.isArray(data[key])
     ) {
       Object.assign(flattened, flattenAttributes(data[key]));
@@ -132,7 +132,7 @@ export const calculatePositions = (scaleFactor, numPositions, center) => {
     let offset =
       parseInt(
         (scalePositionAtBreakPoint(scaleFactor) * parseInt(i * scaleFactor)) /
-        (numPositions * 2),
+          (numPositions * 2),
       ) * (i % 2 === 0 ? 1 : -1);
     xOffset.push(offset);
     xOffset.push(-1 * offset);

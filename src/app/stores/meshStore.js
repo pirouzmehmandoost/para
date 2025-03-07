@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { portfolio } from "@/lib/globals";
+import { portfolio } from '@/lib/globals';
 const { projects } = portfolio;
 
 const initialState = {};
@@ -35,40 +35,44 @@ const initialState = {};
 // };
 
 export function asyncLoadGLTF(url, callBack) {
-    const loader = new GLTFLoader();
+  const loader = new GLTFLoader();
 
-    const load = async (url) => {
-        const promise = loader.loadAsync(url);
-        return Promise.resolve(promise);
-    }
+  const load = async (url) => {
+    const promise = loader.loadAsync(url);
+    return Promise.resolve(promise);
+  };
 
-    return async function () {
-        const gltf = await load(url)
-        if (typeof callBack === 'function') { callBack(gltf.scene.children[0])} 
-        else initialState[`${gltf.scene.children[0].name}`] = gltf.scene.children[0].geometry;
-    }.call();
-};
-
+  return async function () {
+    const gltf = await load(url);
+    if (typeof callBack === 'function') {
+      callBack(gltf.scene.children[0]);
+    } else
+      initialState[`${gltf.scene.children[0].name}`] =
+        gltf.scene.children[0].geometry;
+  }.call();
+}
 
 export function asyncInitializeStore(callBack) {
-    const loader = new GLTFLoader();
+  const loader = new GLTFLoader();
 
-     const load = async (url) => {
-        const promise = loader.loadAsync(url);
-        return Promise.resolve(promise);
-    }
+  const load = async (url) => {
+    const promise = loader.loadAsync(url);
+    return Promise.resolve(promise);
+  };
 
-    return projects.map( ({sceneData: {modelUrls}}) => { 
-        return async function () {
-            modelUrls.forEach( async ({url}) => {
-                const gltf = await load(url);
-                if (typeof callBack === 'function') { callBack(gltf.scene.children[0])} 
-                else initialState[`${gltf.scene.children[0].name}`] = gltf.scene.children[0].geometry;
-            })
-        }.call();
-    });
-};
-
+  return projects.map(({ sceneData: { modelUrls } }) => {
+    return async function () {
+      modelUrls.forEach(async ({ url }) => {
+        const gltf = await load(url);
+        if (typeof callBack === 'function') {
+          callBack(gltf.scene.children[0]);
+        } else
+          initialState[`${gltf.scene.children[0].name}`] =
+            gltf.scene.children[0].geometry;
+      });
+    }.call();
+  });
+}
 
 // export function asyncInitializeStore(callBack) {
 //     const loader = new GLTFLoader();
@@ -80,11 +84,11 @@ export function asyncInitializeStore(callBack) {
 //         return Promise.all(promises);
 //     }
 
-//     return projects.map( ({sceneData: {modelUrls}}) => { 
+//     return projects.map( ({sceneData: {modelUrls}}) => {
 //         return async function () {
 //             const models = await load(modelUrls.map(data=> data.url))
 //             models.forEach(gltf => {
-//                 if (typeof callBack === 'function') { callBack(gltf.scene.children[0])} 
+//                 if (typeof callBack === 'function') { callBack(gltf.scene.children[0])}
 //                 else initialState[`${gltf.scene.children[0].name}`] = gltf.scene.children[0].geometry;
 //             });
 //         }.call();
@@ -92,11 +96,11 @@ export function asyncInitializeStore(callBack) {
 // };
 
 // export function asyncInitializeStore(callBack) {
-//     return projects.map( ({sceneData: {modelUrls}}) => { 
+//     return projects.map( ({sceneData: {modelUrls}}) => {
 //         return async function () {
 //             const models = await loadGLBModels(modelUrls.map(data=> data.url))
 //             models.forEach(gltf => {
-//                 if (typeof callBack === 'function') { callBack(gltf.scene.children[0])} 
+//                 if (typeof callBack === 'function') { callBack(gltf.scene.children[0])}
 //                 else initialState[`${gltf.scene.children[0].name}`] = gltf.scene.children[0].geometry;
 //             });
 //         }.call();
@@ -105,7 +109,7 @@ export function asyncInitializeStore(callBack) {
 
 // export function initializeStore() {
 //     const loader = new GLTFLoader();
-//     projects.map( ({sceneData: {modelUrls}}) => { 
+//     projects.map( ({sceneData: {modelUrls}}) => {
 //         modelUrls.map(({url, name} ) => {
 //             loader.load(url, (gltf) => {
 //                 initialState[`${name}`] = gltf.scene.children[0].geometry;
@@ -113,8 +117,6 @@ export function asyncInitializeStore(callBack) {
 //         });
 //     });
 // };
-
-
 
 const meshStore = (set, get) => ({
   meshes: initialState,

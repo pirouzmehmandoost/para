@@ -98,10 +98,10 @@ export const portfolio = {
         autoRotate: true,
         autoRotateSpeed: 1,
         autoUpdateMaterial: false,
-        groupName: "Gerd",
+        groupName: 'Gerd',
         materials: {
-          defaultMaterial: "gloss_black",
-          colorWays: ["gloss_black", "matte_black", "eggshell",],
+          defaultMaterial: 'gloss_black',
+          colorWays: ['gloss_black', 'matte_black', 'eggshell'],
         },
         // modelUrls: [
         //   { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
@@ -109,66 +109,66 @@ export const portfolio = {
         //   { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
         // ],
         modelUrls: [
-          { name: "bag_9_for_web", url: "/oval_bag_3.glb" },
-          { name: "bag_88", url: "/bag_xl.glb" },
-          { name: "bag_85", url: "/oval_bag_xl_v2.glb" },
+          { name: 'bag_9_for_web', url: '/oval_bag_3.glb' },
+          { name: 'bag_88', url: '/bag_xl.glb' },
+          { name: 'bag_85', url: '/oval_bag_xl_v2.glb' },
         ],
         scale: 0.9,
       },
-      name: "Gerd",
-      bannerUrl: "/oval_bag_v8.5_matte_white_5.png",
+      name: 'Gerd',
+      bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
       imgUrls: {
         matte_black: [
-          "/oval_bag_matte_black_1.png",
-          "/oval_bag_matte_black_2.png",
-          "/oval_bag_matte_black_3.png",
-          "/oval_bag_matte_black_4.png",
+          '/oval_bag_matte_black_1.png',
+          '/oval_bag_matte_black_2.png',
+          '/oval_bag_matte_black_3.png',
+          '/oval_bag_matte_black_4.png',
         ],
         matte_white: [
-          "/oval_bag_matte_white_1.png",
-          "/oval_bag_matte_white_2.png",
-          "/oval_bag_matte_white_3.png",
-          "/oval_bag_matte_white_4.png",
+          '/oval_bag_matte_white_1.png',
+          '/oval_bag_matte_white_2.png',
+          '/oval_bag_matte_white_3.png',
+          '/oval_bag_matte_white_4.png',
         ],
       },
-      shortDescription: "A small collection of 3D printed handbags.",
+      shortDescription: 'A small collection of 3D printed handbags.',
       description:
-        "Product description: magna congue justo non velit semper elit",
+        'Product description: magna congue justo non velit semper elit',
     },
     {
       sceneData: {
         autoRotate: true,
         autoRotateSpeed: 1,
         autoUpdateMaterial: false,
-        groupName: "PÍ",
+        groupName: 'PÍ',
         materials: {
-          defaultMaterial: "gloss_black",
-          colorWays: ["gloss_black", "matte_black", "eggshell",],
+          defaultMaterial: 'gloss_black',
+          colorWays: ['gloss_black', 'matte_black', 'eggshell'],
         },
         modelUrls: [
-          { name: "Yoga_Mat_Strap", url: "/yoga_mat_strap_for_web2.glb" },
+          { name: 'Yoga_Mat_Strap', url: '/yoga_mat_strap_for_web2.glb' },
         ],
         scale: 1.1,
       },
-      name: "PÍ",
-      bannerUrl: "/yoga_mat_strap_metallic_perspective_quarter.png",
+      name: 'PÍ',
+      bannerUrl: '/yoga_mat_strap_metallic_perspective_quarter.png',
       imgUrls: {
         gloss_black: [
-          "/yoga_mat_strap_metallic_perspective_side.png",
-          "/yoga_mat_strap_metallic_perspective_top.png",
-          "/yoga_mat_strap_metallic_perspective_front.png",
-          "/yoga_mat_strap_metallic_perspective_quarter.png",
+          '/yoga_mat_strap_metallic_perspective_side.png',
+          '/yoga_mat_strap_metallic_perspective_top.png',
+          '/yoga_mat_strap_metallic_perspective_front.png',
+          '/yoga_mat_strap_metallic_perspective_quarter.png',
         ],
         matte_black: [
-          "/yoga_mat_strap_top.png",
-          "/yoga_mat_strap_front.png",
-          "/yoga_mat_strap_side.png",
-          "/yoga_mat_strap_quarter.png",
+          '/yoga_mat_strap_top.png',
+          '/yoga_mat_strap_front.png',
+          '/yoga_mat_strap_side.png',
+          '/yoga_mat_strap_quarter.png',
         ],
       },
-  
+
       shortDescription:
-        "An exploration of branding and product design as a Yoga instructor.",
+        'An exploration of branding and product design as a Yoga instructor.',
       description: `I began teaching Yoga at 19, back in 2008. I had started taking classes shortly after graduating from high school, and like many of my interests it became a short lived obsession. 
         I quit a year and a half later after transferring colleges and leaving my hometown. I didn't return to practicing or teaching until 2023, some 15 years later. Ironically enough I got back into it much in the same way I began, while recovering from an injury.
         In May 2024, almost a year into teaching I suffered a knee injury that I still have a hard time describing... one day my leg just shot out of its knee joint and nobody, no matter how many emergency room visits I made or MRI's that specialists ordered could tell me why.
