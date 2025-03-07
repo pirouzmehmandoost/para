@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
-import MenuIcon from "@mui/icons-material/Menu";
-import ClearIcon from "@mui/icons-material/Clear";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import Link from 'next/link';
+import { useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
+import ClearIcon from '@mui/icons-material/Clear';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 
 const NavBar = () => {
   // const [searchQuery, setsearchQuery] = useState("invisible");
@@ -98,7 +98,7 @@ const NavBar = () => {
             </div>
           </div>
           <div
-            className={`flex flex-col self-center px-6 pt-0 overflow-hidden transition-all duration-300 ease-in ${expanded ? "max-h-96" : "max-h-0"}`}
+            className={`flex flex-col self-center px-6 pt-0 overflow-hidden transition-all duration-300 ease-in ${expanded ? 'max-h-96' : 'max-h-0'}`}
           >
             {dropDown}
           </div>

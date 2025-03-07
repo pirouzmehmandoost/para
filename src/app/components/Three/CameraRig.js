@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { CatmullRomCurve3, Vector3 } from "three";
-import { useFrame } from "@react-three/fiber";
-import cameraConfigs from "@/lib/cameraConfigs";
+import { CatmullRomCurve3, Vector3 } from 'three';
+import { useFrame } from '@react-three/fiber';
+import cameraConfigs from '@/lib/cameraConfigs';
 
 export const SimpleCameraRig = (data) => {
   const { cameraPosition = [0, 10, 180] } = data;
@@ -30,7 +30,7 @@ export const CameraRig = (positionVectors, targetPosition) => {
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
     true,
-    "centripetal",
+    'centripetal',
   );
 
   return useFrame(({ clock, camera }) => {
