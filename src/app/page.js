@@ -4,13 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-
+import {GlobalModelViewer} from "@/components/Three/GlobalModelViewer"
 
 const variants = {
     top: {
         initial: {
             filter: "blur(100px)",
-            opacity: 0,
+            opacity: 1,
             rotateX: 90,
             translateY: 80,
             translateX: -20,
@@ -43,7 +43,7 @@ const variants = {
     bottom: {
         initial: {
             filter: "blur(100px)",
-            opacity: 0,
+            opacity: 1,
             y: 20
         },
         enter: (i) => ({
@@ -163,7 +163,7 @@ const Links = () => {
             }
             </motion.div>
             <div className="absolute flex w-full h-full bg-neutral-200/0 rounded-3xl -z-1 inset-0 scale-100 backdrop-blur-xl" />
-            <div className="absolute w-full h-full bg-neutral-200/0 inset-0 -z-10 scale-120 backdrop-blur blur" />
+            <div className="absolute w-screen h-screen bg-neutral-200/0 inset-0 -z-10 scale-200 backdrop-blur blur" />
         </div>
     )
 };
@@ -192,7 +192,7 @@ const ToggleButton = ({isActive, toggleMenu}) => {
 };
 
  const  Menu = () => {
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(true);
 
     return (
         <div className="absolute">
@@ -200,7 +200,7 @@ const ToggleButton = ({isActive, toggleMenu}) => {
             className="relative w-96 h-96 bg-neutral-300 rounded-xl"
             variants={variants.menu}
             animate={isActive ? "open" : "closed"}
-            initial="closed"
+            initial="open"
             >
                 <AnimatePresence>
                     { isActive && <Links /> }
@@ -220,9 +220,14 @@ const Home = () => {
             <div
             className={`z-10 flex flex-col place-self-center place-items-center mt-32 uppercase text-center text-neutral-600 text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
             >
+                            <div className="absolute p-8 z-100">
+
                 <Menu />
-        
-                <Image
+        </div>
+                    <div className="flex flex-col justify-stretch w-screen h-screen min-h-96" >
+                        <GlobalModelViewer /> 
+                    </div>
+                {/* <Image
                     priority
                     className=" -z-100 w-auto h-auto bg-cover overflow-auto"
                     src={"/oval_bag_hero_1.png"}
@@ -230,7 +235,7 @@ const Home = () => {
                     height={432}
                     quality={100}
                     alt={"poop"}
-                />               
+                />                */}
 
             </div>
         </main>
