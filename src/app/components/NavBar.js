@@ -66,7 +66,7 @@ const NavBar = () => {
           <div className={`flex flex-nowrap flex-row justify-between`}>
             <div className="self-center ml-5 mr-10">
               <Link
-                className="border-transparent transition-colors hover:text-neutral-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
+                className="border-transparent transition-colors hover:text-neutral-100 hover:dark:text-neutral-800/30"
                 href="/"
                 rel="noopener noreferrer"
                 onClick={() => setExpanded(false)}
@@ -83,11 +83,11 @@ const NavBar = () => {
                 rel="noopener noreferrer"
                 onClick={() => setExpanded(false)}
               >
-                <ShoppingBagIcon className=" self-center cursor-pointer mx-5 transition-colors duration-700 ease-in-out  hover:text-neutral-100 hover:dark:text-neutral-700 hover:dark:text-neutral-800/30" />
+                <ShoppingBagIcon className=" self-center cursor-pointer mx-5 transition-colors duration-700 ease-in-out  hover:text-neutral-100 hover:dark:text-neutral-800/30" />
               </Link>
             </div>
             <div
-              className="flex self-center mr-5 transition-colors duration-700 ease-in-out hover:text-neutral-100  hover:dark:text-neutral-700 hover:dark:text-neutral-800/30"
+              className="flex self-center mr-5 transition-colors duration-700 ease-in-out hover:text-neutral-100 hover:dark:text-neutral-800/30"
               onClick={toggleExpanded}
             >
               {expanded ? (
