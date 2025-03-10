@@ -157,10 +157,28 @@ const bottomLinks = [
 
 const Links = ({ toggleMenu }) => {
   return (
-    <div className="flex flex-col w-full h-full justify-evenly text-center text-4xl uppercase text-neutral-900 bg-neutral-300/0">
-      {/* top items */}
+    <div className="flex flex-col w-full h-full justify-around text-center text-4xl uppercase text-neutral-900 bg-neutral-300/0">
+      {/* Header */}
+      <motion.div
+        key={`b_0`}
+        custom={0}
+        variants={variants.top}
+        initial="initial"
+        animate="enter"
+        exit="exit"
+        className="flex flex-row w-full h-fit justify-center text-nowrap perspective-origin-bottom bg-neutral-500/0"
+        style={{
+          maskImage:
+            'radial-gradient(ellipse 80% 100% at 50% 50% , #a3a3a3 30%, #a3a3a300 90%)',
+        }}
+      >
+        <div className="text-nowrap sm:text-4xl md:text-4xl lg:text:5xl xl:text-5xl 2xl:text-5xl md:px-1 xl:px-1 lg:px-1 2xl:px-1">
+          Pirouz Mehmandoost
+        </div>
+      </motion.div>
+      {/* top links */}
       <div
-        className="flex flex-col bg-neutral-500/0"
+        className="flex flex-col justify-evenly bg-neutral-500/0"
         style={{
           maskImage:
             'radial-gradient(ellipse 70% 80% at 50% 50% , #a3a3a3 30%, #a3a3a300 70%)',
@@ -169,9 +187,9 @@ const Links = ({ toggleMenu }) => {
         {topLinks.map((link, i) => {
           const { title, href } = link;
           return (
-            <div key={`b_${i}`} className="perspective-origin-bottom my-2">
+            <div key={`b_${i + 1}`} className="perspective-origin-bottom my-2">
               <motion.div
-                custom={i}
+                custom={i + 1}
                 variants={variants.top}
                 initial="initial"
                 animate="enter"
@@ -195,9 +213,9 @@ const Links = ({ toggleMenu }) => {
           );
         })}
       </div>
-      {/* bottom items */}
+      {/* bottom links */}
       <motion.div
-        className="flex flex-row w-fit h-fit justify-center place-items-center"
+        className="flex flex-row w-full h-fit justify-between"
         style={{
           maskImage:
             'radial-gradient(ellipse 80% 100% at 50% 50% , #a3a3a3 30%, #a3a3a300 90%)',
@@ -205,7 +223,6 @@ const Links = ({ toggleMenu }) => {
       >
         {bottomLinks.map((link, i) => {
           const { title, href } = link;
-
           return (
             <motion.div
               variants={variants.bottom}
@@ -214,7 +231,7 @@ const Links = ({ toggleMenu }) => {
               animate="enter"
               exit="exit"
               key={`f_${i}`}
-              className="mx-4"
+              className="mx-5"
             >
               <Link
                 className="cursor-pointer"
@@ -232,18 +249,15 @@ const Links = ({ toggleMenu }) => {
   );
 };
 
+// <div className="absolute  w-fit h-fit inset-0 top-10 left-5 sm:top-10 sm:left-10 md:top-10 md:left-10 lg:top-10 lg:left-10 xl:top-10 xl:left-10 2xl:top-10 2xl:left-10 justify-center place-self-center bg-red-600">
+
 const ToggleButton = ({ isActive, toggleMenu }) => {
   return (
-    <div>
-      <div className="fixed top-10 left-10 justify-center place-self-center bg-red-600 w-fit h-fit">
-        <div onClick={() => toggleMenu()}>
-          <div
-            className={`absolute cursor-pointer p-4 rounded-full bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700  ${isActive ? 'opacity-0  bg-neutral-500/30' : 'opacity-100'}`}
-          >
-            <MenuIcon fontSize="large" />
-          </div>
-        </div>
-      </div>
+    <div
+      onClick={() => toggleMenu()}
+      className={`fixed w-fit h-fit inset-0 top-1 left-1 justify-center place-self-center cursor-pointer p-4 rounded-full bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700  ${isActive ? 'opacity-0 w-1 h-1  bg-neutral-500/30' : 'opacity-100 w-fit h-fit'}`}
+    >
+      <MenuIcon fontSize="large" />
     </div>
   );
 };
@@ -252,6 +266,13 @@ const Menu = () => {
   const [isActive, setIsActive] = useState(true);
   return (
     <div className="relative flex flex-col grow w-fit h-fit z-1 place-items-center ">
+      <ToggleButton
+        isActive={isActive}
+        toggleMenu={() => {
+          setIsActive(!isActive);
+        }}
+      />
+
       {/* menu/links container */}
       <motion.div
         variants={variants.menu}
@@ -268,20 +289,15 @@ const Menu = () => {
           )}
         </AnimatePresence>
       </motion.div>
-      <ToggleButton
-        isActive={isActive}
-        toggleMenu={() => {
-          setIsActive(!isActive);
-        }}
-      />
       {/* overlay a blurry div */}
       {/* <AnimatePresence> */}
       <motion.div
-        className="absolute flex flex-col grow w-full h-full -z-1 place-self-center justify-center bg-neutral-400/0 "
+        className="absolute flex flex-col grow w-full h-full -z-1 place-self-center justify-center bg-neutral-400/0 backdrop-blur-xl"
         variants={variants.overlay}
         animate={isActive ? 'open' : 'closed'}
         initial="open"
       />
+
       {/* </AnimatePresence> */}
     </div>
   );
@@ -290,7 +306,7 @@ const Menu = () => {
 const Home = () => {
   return (
     <main className="flex flex-col w-full h-full">
-      <div className="relative flex w-full h-full">
+      <div className="relative flex w-full h-fit">
         <Menu />
       </div>
       <div className="fixed inset-0 bottom-10 flex-col grow w-full h-full">
