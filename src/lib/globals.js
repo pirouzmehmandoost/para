@@ -109,9 +109,14 @@ export const portfolio = {
         //   { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
         // ],
         modelUrls: [
-          { name: 'bag_9_for_web', url: '/oval_bag_3.glb' },
+          // { name: 'bag_9_for_web', url: '/oval_bag_3.glb' },
           { name: 'bag_88', url: '/bag_xl.glb' },
-          { name: 'bag_85', url: '/oval_bag_xl_v2.glb' },
+          // { name: 'bag_85', url: '/oval_bag_xl_v2.glb' },
+          // {
+          //   name: 'rocky_bag_for_web_(bag_85)',
+          //   url: '/rock_bag_for_web-transformed.glb',
+          // },
+          // { name: 'subdidived_wave_sandal002', url: '/rocky_sandal_web.glb' },
         ],
         scale: 0.9,
       },
@@ -148,7 +153,7 @@ export const portfolio = {
         modelUrls: [
           { name: 'Yoga_Mat_Strap', url: '/yoga_mat_strap_for_web2.glb' },
         ],
-        scale: 1.1,
+        scale: 1,
       },
       name: 'PÍ',
       bannerUrl: '/yoga_mat_strap_metallic_perspective_quarter.png',

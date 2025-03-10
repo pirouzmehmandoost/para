@@ -8,18 +8,18 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 
 const perspective = {
   initial: {
+    filter: 'blur(100px)',
     opacity: 0,
     rotateX: 90,
-    translateY: 80,
     translateX: -20,
-    filter: 'blur(100px)',
+    translateY: 80,
   },
   enter: (i) => ({
+    filter: 'blur(0px)',
     opacity: 1,
     rotateX: 0,
-    translateY: 0,
     translateX: 0,
-    filter: 'blur(0px)',
+    translateY: 0,
     transition: {
       duration: 0.65,
       delay: 0.5 + i * 0.1,
@@ -27,11 +27,25 @@ const perspective = {
       opacity: { duration: 0.35 },
     },
   }),
-  exit: {
+  exit: (i) => ({
+    filter: 'blur(500px)',
     opacity: 0,
-    filter: 'blur(100px)',
-    transition: { duration: 0.5, type: 'linear', ease: [0.76, 0, 0.24, 1] },
-  },
+    transition: {
+      duration: 0.5,
+      delay: 0.5 - i * 0.1,
+      type: 'easeInOut',
+      ease: [0.76, 0, 0.24, 1],
+    },
+  }),
+  // exit: {
+  //   filter: 'blur(100px)',
+  //   opacity: 0,
+  //   transition: {
+  //     duration: 0.5,
+  //     type: 'linear',
+  //     ease: [0.76, 0, 0.24, 1],
+  //   },
+  // },
 };
 
 export const slideIn = {

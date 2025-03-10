@@ -1,32 +1,23 @@
 'use client';
 
 import React, { Suspense, useState } from 'react';
-import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from 'three';
-import { Canvas, useThree } from '@react-three/fiber';
+import {
+  BufferGeometry,
+  CatmullRomCurve3,
+  ColorManagement,
+  EllipseCurve,
+  Vector3,
+} from 'three';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import cameraConfigs from '@/lib/cameraConfigs';
 import { portfolio } from '@/lib/globals';
 import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
-import { CameraRig } from './CameraRig';
 import { Ground } from '@/public/Ground';
 import Light from './Light';
 import Group from './Group';
 
 ColorManagement.enabled = true;
-
-// const onCreate = ()=> {
-//     const { projects } = portfolio;
-//     const setMesh = useMesh(state=>state.setMesh)
-//     const getMeshes = useMesh(state=>state.getMeshes)
-
-//         projects.forEach(({ sceneData }) => {
-//             for (const {name, url} of sceneData.modelUrls) {
-//             //   initialState[`${name}`] = useGLTF(url).nodes[`${name}`];
-//                  setMesh(useGLTF(url).nodes[`${name}`])
-//             }
-//         });
-//         console.log("onCreate ", getMeshes());
-// }
 
 const SceneBuilder = () => {
   const { size } = useThree();
@@ -69,7 +60,50 @@ const SceneBuilder = () => {
       ? pointerTarget?.position
       : null;
 
-  CameraRig(groupPositions, cameraTarget);
+  const v = new Vector3();
+  const cameraPathCurve = new CatmullRomCurve3(
+    groupPositions.map((pos) => pos),
+    true,
+    'centripetal',
+  );
+
+  useFrame(({ clock, camera }) => {
+    let t = clock.elapsedTime;
+
+    if (cameraTarget?.x) {
+      v.set(
+        cameraTarget.x,
+        camera.position.y + Math.cos(t / 2),
+        cameraConfigs.POSITION[2] - 20 + Math.sin(t / 2) * 5,
+      );
+
+      //lerp camera target and position
+      camera.lookAt(camera.position.lerp(v, 0.06));
+    } else {
+      t = clock.getElapsedTime();
+      let s = (t * 0.03) % 1;
+      const position = cameraPathCurve.getPoint(s);
+
+      v.set(
+        Math.sin(t / 2) * 5,
+        position.y + (Math.cos(t / 2) * cameraConfigs.POSITION[1]) / 2,
+        position.z + cameraConfigs.POSITION[2] + Math.sin(t / 4) * 5,
+      );
+      //lerp camera target and position
+      camera.lookAt(
+        camera.position.lerp(
+          groupPositions.reduce(
+            (closest = new Vector3(), pt = new Vector3()) =>
+              closest.distanceTo(position) < pt.distanceTo(position)
+                ? new Vector3(v.x + closest.x, v.y + 10, v.z)
+                : new Vector3(v.x + pt.x, v.y + 10, v.z),
+          ),
+          0.06,
+        ),
+      );
+    } //end else
+    camera.updateProjectionMatrix();
+  });
 
   return (
     <>
@@ -86,7 +120,6 @@ const SceneBuilder = () => {
             isPointerOver: pointerTarget.name,
           },
         };
-
         return (
           <group
             key={groupProps?.name}
@@ -164,7 +197,7 @@ export const GlobalModelViewer = () => {
   return (
     <Canvas
       camera={{
-        position: [666, 666, 666],
+        position: [666, 80, 666],
         near: cameraConfigs.NEAR,
         far: cameraConfigs.FAR,
         fov: 50,
@@ -174,6 +207,11 @@ export const GlobalModelViewer = () => {
       shadows
     >
       <Environment shadows files="./studio_small_08_4k.exr" />
+      {/* <Ground
+        position={[-50, 150, 20]}
+        scale={[1.4, 1, 1.4]}
+        rotation={-Math.PI / 4}
+      /> */}
       <color args={['#bcbcbc']} attach="background" />
       <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} />
       <directionalLight
@@ -207,7 +245,6 @@ export const GlobalModelViewer = () => {
       <Suspense>
         <SceneBuilder />
       </Suspense>
-      {/* <SoftShadows samples={10} size={5} />   */}
       <Ground
         position={[-50, -85, 20]}
         scale={[1.4, 1, 1.4]}

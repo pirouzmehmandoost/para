@@ -63,6 +63,11 @@ export const SingularModelViewer = ({ data }) => {
       shadows
     >
       <Environment shadows files="./studio_small_08_4k.exr" />
+      <Ground
+        position={[-50, 100, -50]}
+        scale={[0.8, 0.6, 0.6]}
+        rotation={-Math.PI / 4}
+      />
       <color args={['#bcbcbc']} attach="background" />
       <CameraControls
         minPolarAngle={0}

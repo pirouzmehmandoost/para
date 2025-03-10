@@ -1,6 +1,6 @@
 import './globals.css';
 import localFont from 'next/font/local';
-import Header from './components/Header';
+// import Header from './components/Header';
 
 const myFont = localFont({
   src: './../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2',
@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${myFont.className} bg-cover bg-[#bcbcbc]`}>
-        <Header />
+        {/* <Header /> */}
         {children}
       </body>
     </html>

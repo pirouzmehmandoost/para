@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { MeshPhysicalMaterial } from 'three';
-
+import { DoubleSide } from 'three';
 const matteMaterial = {
   flatShading: false,
   ior: 1.5,
@@ -35,6 +35,7 @@ const initialState = {
       ior: 1.5,
       metalness: 0.8,
       roughness: 1,
+      side: DoubleSide,
     }),
   },
 

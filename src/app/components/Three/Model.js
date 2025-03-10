@@ -3,14 +3,17 @@
 import { useRef } from 'react';
 import { Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
-// import { useGLTF } from "@react-three/drei";
+import { useGLTF } from '@react-three/drei';
 import useMaterial from '@/stores/materialStore';
-import useMesh, { asyncLoadGLTF } from '@/stores/meshStore';
+// import useMesh, { asyncLoadGLTF } from '@/stores/meshStore';
 
 const Model = (props) => {
   const meshRef = useRef(undefined);
+
   const getMaterial = useMaterial((state) => state.getMaterial);
-  const getMesh = useMesh((state) => state.getMesh);
+  // const getMesh = useMesh((state) => state.getMesh);
+  // const setMesh = useMesh((state) => state.setMesh);
+
   const {
     autoRotate = true,
     autoRotateSpeed = 1,
@@ -22,24 +25,25 @@ const Model = (props) => {
 
   let mesh = null;
 
-  if (name.length) {
-    if (getMesh(name)) {
-      mesh = getMesh(name);
-    }
+  // if (name.length) {
+  //   if (getMesh(name)) {
+  //     mesh = getMesh(name);
+  //   }
 
-    if (!getMesh(name)) {
-      asyncLoadGLTF(url);
-      mesh = getMesh(name);
-    }
-    // mesh = useGLTF(url).nodes[`${name}`]
-    // setMesh(mesh)
-  }
+  // if (!getMesh(name)) {
+  //   asyncLoadGLTF(url);
+  //   mesh = getMesh(name);
+  // }
+  const nam = useGLTF(url);
+  mesh = useGLTF(url).nodes[`${name}`];
+  // setMesh(mesh);
+  // }
 
-  console.log('mesh: ', mesh);
+  // console.log('mesh: ', mesh);
 
   const meshProps = {
     name,
-    geometry: mesh,
+    geometry: mesh.geometry,
     material: getMaterial(materialId).material,
     position,
     scale,
@@ -60,26 +64,9 @@ const Model = (props) => {
     }
   });
 
-  // const handleUpdateSelection = (x) => {
-  //     if (!x) {
-  //         resetSelection();
-  //     }
-  //     else {
-  //         const obj = {
-  //             ...data,
-  //             ...x,
-  //             sceneData: {
-  //                 ...data,
-  //                 ...x,
-  //             },
-  //         };
-  //         console.log("handleUpdateSelection\n", "data is :" , data, "\nobj is ", obj, "\n");
-  //         setSelection(obj);
-  //     }
-  // };
   return (
     <>
-      mesh &&{' '}
+      mesh &&
       <mesh
         castShadow={true}
         recieveShadow={true}

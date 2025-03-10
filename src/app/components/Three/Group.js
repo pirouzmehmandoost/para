@@ -86,8 +86,9 @@ const Group = ({ children, ...data }) => {
             >
               <div
                 className={`flex grow p-4 cursor-pointer uppercase text-nowrap w-fit h-full text-center 
-                    place-self-center place-items-center rounded-full bg-neutral-300/30 text-neutral-600
-                    text-5xl transition-all duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200`}
+                    place-self-center place-items-center rounded-full bg-neutral-300/50 text-neutral-600
+                    text-5xl transition-all transition-discrete duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200
+                    ${isPointerOver === modelUrl.name ? 'w-fit h-full opacity-100' : 'w-0 h-0 min-w-0 mhn-h-0 opacity-0'}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleUpdateSelection(props);
@@ -108,3 +109,26 @@ const Group = ({ children, ...data }) => {
 };
 
 export default Group;
+// <>
+//   <div
+//     className={`absolute flex grow p-4 cursor-pointer uppercase text-nowrap w-fit h-full text-center
+//       place-self-center place-items-center rounded-full bg-neutral-300/50 opacity-100 text-neutral-600
+//       text-5xl transition-all transition-discrete duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200
+//       ${isPointerOver !== modelUrl.name ? 'w-fit h-full opacity-100' : 'w-0 h-0 opacity-0'}`}
+//     onClick={(e) => {
+//       e.stopPropagation();
+//       handleUpdateSelection(props);
+//       router.push('/project');
+//     }}
+//   >
+//     See More
+//   </div>
+//   {/* <div
+//     className={`absolute flex flex-row grow p-4 cursor-pointer uppercase text-nowrap w-fit h-full text-center
+//       place-self-center place-items-center bg-neutral-300/0 opacity-100 text-neutral-600
+//       text-5xl transition-all transition-discrete duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200
+//       ${isPointerOver !== modelUrl.name ? 'w-fit h-full opacity-100' : 'w-0 h-0 opacity-0'}`}
+//   >
+//     See More
+//   </div>
+// </>
