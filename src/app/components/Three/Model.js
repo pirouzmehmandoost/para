@@ -1,11 +1,13 @@
 'use client';
 
 import { useRef } from 'react';
-import { Vector3 } from 'three';
+import { Vector3, Cache } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import useMaterial from '@/stores/materialStore';
 // import useMesh, { asyncLoadGLTF } from '@/stores/meshStore';
+
+Cache.enabled = true;
 
 const Model = (props) => {
   const meshRef = useRef(undefined);
@@ -26,15 +28,14 @@ const Model = (props) => {
   let mesh = null;
 
   // if (name.length) {
-  //   if (getMesh(name)) {
-  //     mesh = getMesh(name);
-  //   }
-
-  // if (!getMesh(name)) {
-  //   asyncLoadGLTF(url);
+  // if (getMesh(name)) {
+  //   mesh = getMesh(name);
+  // } else {
+  //   const m = asyncLoadGLTF(url);
   //   mesh = getMesh(name);
   // }
-  const nam = useGLTF(url);
+
+  // const nam = useGLTF(url);
   mesh = useGLTF(url).nodes[`${name}`];
   // setMesh(mesh);
   // }

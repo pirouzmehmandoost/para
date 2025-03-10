@@ -2,9 +2,10 @@ import { create } from 'zustand';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { portfolio } from '@/lib/globals';
 const { projects } = portfolio;
-
+import { Cache } from 'three';
 const initialState = {};
 
+Cache.enabled = true;
 // async function loadGLBModels(urls) {
 //     const loader = new GLTFLoader();
 //     const promises = urls.map(url => loader.loadAsync(url));
@@ -33,10 +34,9 @@ const initialState = {};
 //             return gltf.scene.children[0].geometry;
 //     }.call();
 // };
+const loader = new GLTFLoader();
 
 export function asyncLoadGLTF(url, callBack) {
-  const loader = new GLTFLoader();
-
   const load = async (url) => {
     const promise = loader.loadAsync(url);
     return Promise.resolve(promise);
@@ -46,15 +46,15 @@ export function asyncLoadGLTF(url, callBack) {
     const gltf = await load(url);
     if (typeof callBack === 'function') {
       callBack(gltf.scene.children[0]);
-    } else
+    } else {
       initialState[`${gltf.scene.children[0].name}`] =
         gltf.scene.children[0].geometry;
+      return gltf.scene.children[0].geometry;
+    }
   }.call();
 }
 
 export function asyncInitializeStore(callBack) {
-  const loader = new GLTFLoader();
-
   const load = async (url) => {
     const promise = loader.loadAsync(url);
     return Promise.resolve(promise);

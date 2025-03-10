@@ -12,6 +12,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import cameraConfigs from '@/lib/cameraConfigs';
 import { portfolio } from '@/lib/globals';
+import { CameraRig } from './CameraRig';
 import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
 import { Ground } from '@/public/Ground';
 import Light from './Light';
@@ -60,50 +61,51 @@ const SceneBuilder = () => {
       ? pointerTarget?.position
       : null;
 
-  const v = new Vector3();
-  const cameraPathCurve = new CatmullRomCurve3(
-    groupPositions.map((pos) => pos),
-    true,
-    'centripetal',
-  );
+  CameraRig(groupPositions, cameraTarget);
+  // const v = new Vector3();
+  // const cameraPathCurve = new CatmullRomCurve3(
+  //   groupPositions.map((pos) => pos),
+  //   true,
+  //   'centripetal',
+  // );
 
-  useFrame(({ clock, camera }) => {
-    let t = clock.elapsedTime;
+  // useFrame(({ clock, camera }) => {
+  //   let t = clock.elapsedTime;
 
-    if (cameraTarget?.x) {
-      v.set(
-        cameraTarget.x,
-        camera.position.y + Math.cos(t / 2),
-        cameraConfigs.POSITION[2] - 20 + Math.sin(t / 2) * 5,
-      );
+  //   if (cameraTarget?.x) {
+  //     v.set(
+  //       cameraTarget.x,
+  //       camera.position.y + Math.cos(t / 2),
+  //       cameraConfigs.POSITION[2] - 20 + Math.sin(t / 2) * 5,
+  //     );
 
-      //lerp camera target and position
-      camera.lookAt(camera.position.lerp(v, 0.06));
-    } else {
-      t = clock.getElapsedTime();
-      let s = (t * 0.03) % 1;
-      const position = cameraPathCurve.getPoint(s);
+  //     //lerp camera target and position
+  //     camera.lookAt(camera.position.lerp(v, 0.06));
+  //   } else {
+  //     t = clock.getElapsedTime();
+  //     let s = (t * 0.03) % 1;
+  //     const position = cameraPathCurve.getPoint(s);
 
-      v.set(
-        Math.sin(t / 2) * 5,
-        position.y + (Math.cos(t / 2) * cameraConfigs.POSITION[1]) / 2,
-        position.z + cameraConfigs.POSITION[2] + Math.sin(t / 4) * 5,
-      );
-      //lerp camera target and position
-      camera.lookAt(
-        camera.position.lerp(
-          groupPositions.reduce(
-            (closest = new Vector3(), pt = new Vector3()) =>
-              closest.distanceTo(position) < pt.distanceTo(position)
-                ? new Vector3(v.x + closest.x, v.y + 10, v.z)
-                : new Vector3(v.x + pt.x, v.y + 10, v.z),
-          ),
-          0.06,
-        ),
-      );
-    } //end else
-    camera.updateProjectionMatrix();
-  });
+  //     v.set(
+  //       Math.sin(t / 2) * 5,
+  //       position.y + (Math.cos(t / 2) * cameraConfigs.POSITION[1]) / 2,
+  //       position.z + cameraConfigs.POSITION[2] + Math.sin(t / 4) * 5,
+  //     );
+  //     //lerp camera target and position
+  //     camera.lookAt(
+  //       camera.position.lerp(
+  //         groupPositions.reduce(
+  //           (closest = new Vector3(), pt = new Vector3()) =>
+  //             closest.distanceTo(position) < pt.distanceTo(position)
+  //               ? new Vector3(v.x + closest.x, v.y + 10, v.z)
+  //               : new Vector3(v.x + pt.x, v.y + 10, v.z),
+  //         ),
+  //         0.06,
+  //       ),
+  //     );
+  //   } //end else
+  //   camera.updateProjectionMatrix();
+  // });
 
   return (
     <>

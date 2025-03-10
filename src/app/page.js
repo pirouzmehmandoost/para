@@ -249,13 +249,11 @@ const Links = ({ toggleMenu }) => {
   );
 };
 
-// <div className="absolute  w-fit h-fit inset-0 top-10 left-5 sm:top-10 sm:left-10 md:top-10 md:left-10 lg:top-10 lg:left-10 xl:top-10 xl:left-10 2xl:top-10 2xl:left-10 justify-center place-self-center bg-red-600">
-
 const ToggleButton = ({ isActive, toggleMenu }) => {
   return (
     <div
       onClick={() => toggleMenu()}
-      className={`fixed w-fit h-fit inset-0 top-1 left-1 justify-center place-self-center cursor-pointer p-4 rounded-full bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700  ${isActive ? 'opacity-0 w-1 h-1  bg-neutral-500/30' : 'opacity-100 w-fit h-fit'}`}
+      className={`fixed w-fit h-fit inset-0 top-5 left-5 justify-center p-4 rounded-full cursor-pointer bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700  ${isActive ? 'opacity-0 w-1 h-1  bg-neutral-500/30' : 'opacity-100 w-fit h-fit'}`}
     >
       <MenuIcon fontSize="large" />
     </div>
@@ -290,15 +288,12 @@ const Menu = () => {
         </AnimatePresence>
       </motion.div>
       {/* overlay a blurry div */}
-      {/* <AnimatePresence> */}
       <motion.div
         className="absolute flex flex-col grow w-full h-full -z-1 place-self-center justify-center bg-neutral-400/0 backdrop-blur-xl"
         variants={variants.overlay}
         animate={isActive ? 'open' : 'closed'}
         initial="open"
       />
-
-      {/* </AnimatePresence> */}
     </div>
   );
 };

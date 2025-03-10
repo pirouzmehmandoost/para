@@ -98,6 +98,30 @@ export const portfolio = {
         autoRotate: true,
         autoRotateSpeed: 1,
         autoUpdateMaterial: false,
+        groupName: 'subdidived_wave_sandal002',
+        materials: {
+          defaultMaterial: 'gloss_black',
+          colorWays: ['gloss_black', 'matte_black'],
+        },
+        modelUrls: [
+          { name: 'subdidived_wave_sandal002', url: '/rocky_sandal_web.glb' },
+        ],
+        scale: 3.4,
+      },
+      name: 'shoe',
+      bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
+      imgUrls: {
+        matte_black: ['/oval_bag_matte_black_1.png'],
+        matte_white: ['/oval_bag_matte_white_1.png'],
+      },
+      shortDescription: 'A shoe.',
+      description: ' Shoe.',
+    },
+    {
+      sceneData: {
+        autoRotate: true,
+        autoRotateSpeed: 1,
+        autoUpdateMaterial: false,
         groupName: 'Gerd',
         materials: {
           defaultMaterial: 'gloss_black',
@@ -110,15 +134,12 @@ export const portfolio = {
         // ],
         modelUrls: [
           // { name: 'bag_9_for_web', url: '/oval_bag_3.glb' },
-          { name: 'bag_88', url: '/bag_xl.glb' },
+          { name: 'bag_88', url: '/bag_xl-transformed.glb' },
           // { name: 'bag_85', url: '/oval_bag_xl_v2.glb' },
-          // {
-          //   name: 'rocky_bag_for_web_(bag_85)',
-          //   url: '/rock_bag_for_web-transformed.glb',
-          // },
+          //
           // { name: 'subdidived_wave_sandal002', url: '/rocky_sandal_web.glb' },
         ],
-        scale: 0.9,
+        scale: 0.7,
       },
       name: 'Gerd',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
@@ -11,6 +12,8 @@ import {
 import Model from './Model';
 
 const Group = ({ children, ...data }) => {
+  const [hidden, setHidden] = useState();
+
   const router = useRouter();
   const { size } = useThree();
   const setSelection = useSelection((state) => state.setSelection);
@@ -74,10 +77,18 @@ const Group = ({ children, ...data }) => {
         return (
           <group key={key}>
             <Html
-              // occlude="blending"
+              occlude
+              onOcclude={setHidden}
+              castShadow={true}
+              receiveShadow={true}
               transform
               zIndexRange={[0, 0]}
               scale={[10, 10, 10]}
+              style={{
+                transition: 'all 0.5s',
+                opacity: hidden ? 0 : 1,
+                transform: `scale(${hidden ? 0.5 : 1})`,
+              }}
               position={[
                 positions[index].x,
                 positions[index].y + 40,
