@@ -1,35 +1,56 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
-import {
-  BufferGeometry,
-  CatmullRomCurve3,
-  ColorManagement,
-  EllipseCurve,
-  Vector3,
-} from 'three';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
+import React, { Suspense, useState, useRef } from 'react';
+import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from 'three';
+import { Canvas, useThree } from '@react-three/fiber';
+import { Environment, Stats } from '@react-three/drei';
 import cameraConfigs from '@/lib/cameraConfigs';
 import { portfolio } from '@/lib/globals';
-import { CameraRig } from './CameraRig';
 import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
+import AdaptivePixelRatio from './AdaptivePixelRatio';
+import { CameraRig2 } from './CameraRig';
 import { Ground } from '@/public/Ground';
-import Light from './Light';
 import Group from './Group';
+import Light from './Light';
+import * as THREE from 'three';
+import { BlendFunction, Resizer, KernelSize } from 'postprocessing';
+import {
+  Bloom,
+  DepthOfField,
+  EffectComposer,
+  Noise,
+  Vignette,
+  Outline,
+  Select,
+  Selection,
+} from '@react-three/postprocessing';
 
-ColorManagement.enabled = true;
+THREE.ColorManagement.enabled = true;
 
 const SceneBuilder = () => {
-  const { size } = useThree();
+  const selectedRef = useRef();
+  const { size, scene } = useThree();
+  const [hovered, onHover] = useState(null);
+  const selected = hovered ? [hovered] : undefined;
+
   const [pointerTarget, setPointerTarget] = useState({
     eventObject: '',
     name: '',
     position: null,
   });
+
+  if (
+    pointerTarget?.name?.length > 0 &&
+    scene.getObjectByName(pointerTarget.name)
+  ) {
+    selectedRef.current = scene.getObjectByName(pointerTarget.name);
+  }
+
   const { projects } = portfolio;
   const groupPositions = [];
-  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
+  // const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
+  const ellipseRadius = scaleMeshAtBreakpoint(window.innerWidth) * 150;
+
   const ellipseCurve = new EllipseCurve(
     0,
     0,
@@ -56,61 +77,43 @@ const SceneBuilder = () => {
     groupPositions.push(new Vector3(pt.x, 0, pt.y));
   }
 
-  let cameraTarget =
-    pointerTarget?.eventObject && pointerTarget?.position
-      ? pointerTarget?.position
-      : null;
-
-  CameraRig(groupPositions, cameraTarget);
-  // const v = new Vector3();
-  // const cameraPathCurve = new CatmullRomCurve3(
-  //   groupPositions.map((pos) => pos),
-  //   true,
-  //   'centripetal',
-  // );
-
-  // useFrame(({ clock, camera }) => {
-  //   let t = clock.elapsedTime;
-
-  //   if (cameraTarget?.x) {
-  //     v.set(
-  //       cameraTarget.x,
-  //       camera.position.y + Math.cos(t / 2),
-  //       cameraConfigs.POSITION[2] - 20 + Math.sin(t / 2) * 5,
-  //     );
-
-  //     //lerp camera target and position
-  //     camera.lookAt(camera.position.lerp(v, 0.06));
-  //   } else {
-  //     t = clock.getElapsedTime();
-  //     let s = (t * 0.03) % 1;
-  //     const position = cameraPathCurve.getPoint(s);
-
-  //     v.set(
-  //       Math.sin(t / 2) * 5,
-  //       position.y + (Math.cos(t / 2) * cameraConfigs.POSITION[1]) / 2,
-  //       position.z + cameraConfigs.POSITION[2] + Math.sin(t / 4) * 5,
-  //     );
-  //     //lerp camera target and position
-  //     camera.lookAt(
-  //       camera.position.lerp(
-  //         groupPositions.reduce(
-  //           (closest = new Vector3(), pt = new Vector3()) =>
-  //             closest.distanceTo(position) < pt.distanceTo(position)
-  //               ? new Vector3(v.x + closest.x, v.y + 10, v.z)
-  //               : new Vector3(v.x + pt.x, v.y + 10, v.z),
-  //         ),
-  //         0.06,
-  //       ),
-  //     );
-  //   } //end else
-  //   camera.updateProjectionMatrix();
-  // });
+  // let cameraTarget =
+  //   pointerTarget?.eventObject && pointerTarget?.position
+  //     ? pointerTarget
+  //     : null;
 
   return (
     <>
+      <CameraRig2 positionVectors={groupPositions} target={pointerTarget} />
+      <EffectComposer autoClear={false}>
+        <DepthOfField
+          focusDistance={0}
+          focalLength={0.02}
+          bokehScale={2}
+          height={480}
+        />
+        <Bloom luminanceThreshold={10} luminanceSmoothing={1} height={200} />
+        <Noise opacity={0.02} />
+        <Vignette eskil={false} offset={0.1} darkness={0.8} />
+        <Outline
+          selection={selected} // selection of objects that will be outlined
+          selectionLayer={10} // selection layer
+          blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
+          patternTexture={null} // a pattern texture
+          edgeStrength={7} // the edge strength
+          pulseSpeed={0.3} // a pulse speed. A value of zero disables the pulse effect
+          visibleEdgeColor={0xffffff} // the color of visible edges
+          hiddenEdgeColor={0xffffff} // the color of hidden edges
+          width={Resizer.AUTO_SIZE} // render width
+          height={Resizer.AUTO_SIZE} // render height
+          kernelSize={KernelSize.LARGE} // blur kernel size
+          blur={true} // whether the outline should be blurred
+          xRay={true} // indicates whether X-Ray outlines are enabled
+        />
+      </EffectComposer>
       {projects.map((data, index) => {
         const groupProps = {
+          onHover: onHover,
           ...data,
           sceneData: {
             description: data.description,
@@ -124,6 +127,7 @@ const SceneBuilder = () => {
         };
         return (
           <group
+            // ref={selectedRef}
             key={groupProps?.name}
             name={`${groupProps?.name}`}
             onClick={(e) => {
@@ -132,9 +136,15 @@ const SceneBuilder = () => {
                 name: e.object.name,
                 position: e.object.position,
               });
+
+              console.log('what is the current ref? ', selectedRef);
+              // selectedRef.current = e.eventObject;
+              // console.log('and what the hell isis now? ', selectedRef);
             }}
             onPointerMissed={(e) => {
               setPointerTarget({});
+              e.stopPropagation();
+              // selectedRef.current = null;
             }}
             // onPointerOver={(e) => {
             //   console.log(
@@ -187,7 +197,12 @@ const SceneBuilder = () => {
                 groupPositions[index].z,
               ]}
             />
-            <Group {...groupProps.sceneData} />
+
+            <Group
+              onHover={onHover}
+              ref={selectedRef}
+              {...groupProps.sceneData}
+            />
           </group>
         );
       })}
@@ -199,7 +214,8 @@ export const GlobalModelViewer = () => {
   return (
     <Canvas
       camera={{
-        position: [666, 80, 666],
+        position: cameraConfigs.POSITION,
+        // position: [666, 80, 666],
         near: cameraConfigs.NEAR,
         far: cameraConfigs.FAR,
         fov: 50,
@@ -208,6 +224,8 @@ export const GlobalModelViewer = () => {
       orthographic={false}
       shadows
     >
+      <Stats />
+      <AdaptivePixelRatio />
       <Environment shadows files="./studio_small_08_4k.exr" />
       {/* <Ground
         position={[-50, 150, 20]}
@@ -247,11 +265,11 @@ export const GlobalModelViewer = () => {
       <Suspense>
         <SceneBuilder />
       </Suspense>
-      <Ground
+      {/* <Ground
         position={[-50, -85, 20]}
         scale={[1.4, 1, 1.4]}
         rotation={Math.PI / 7}
-      />
+      /> */}
     </Canvas>
   );
 };
