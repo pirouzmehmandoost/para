@@ -7,6 +7,7 @@ import {
   CameraControls,
   SoftShadows,
   Html,
+  Stats,
 } from '@react-three/drei';
 import cameraConfigs from '@/lib/cameraConfigs';
 import { Ground } from '@/public/Ground';
@@ -62,6 +63,7 @@ export const SingularModelViewer = ({ data }) => {
       orthographic={false}
       shadows
     >
+      <Stats />
       <Environment shadows files="./studio_small_08_4k.exr" />
       <Ground
         position={[-50, 100, -50]}
