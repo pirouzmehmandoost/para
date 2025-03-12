@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+// import { useRouter } from 'next/navigation';
 import { useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import useSelection from '@/stores/selectionStore';
 import {
   scaleMeshAtBreakpoint,
   calculatePositions,
@@ -12,14 +10,15 @@ import {
 import Model from './Model';
 
 const Group = ({ children, ...data }) => {
-  const [hidden, setHidden] = useState();
+  // const [hidden, setHidden] = useState();
 
-  const router = useRouter();
+  // const router = useRouter();
   const { size } = useThree();
-  const setSelection = useSelection((state) => state.setSelection);
-  const resetSelection = useSelection((state) => state.reset);
+  // const setSelection = useSelection((state) => state.setSelection);
+  // const resetSelection = useSelection((state) => state.reset);
 
   const {
+    onHover,
     autoRotate,
     autoRotateSpeed,
     materials,
@@ -28,6 +27,8 @@ const Group = ({ children, ...data }) => {
     position: groupPosition,
     scale,
   } = data;
+
+  console.log('onHover: ', onHover);
 
   let positions = calculatePositions(
     size.width,
@@ -40,24 +41,8 @@ const Group = ({ children, ...data }) => {
       ? scale * 0.45
       : scaleMeshAtBreakpoint(size.width) / modelUrls.length;
 
-  const handleUpdateSelection = (x) => {
-    if (!x) {
-      resetSelection();
-    } else {
-      const obj = {
-        ...data,
-        ...x,
-        sceneData: {
-          ...data,
-          ...x,
-        },
-      };
-      setSelection(obj);
-    }
-  };
-
   return (
-    <group>
+    <>
       {modelUrls.map((modelUrl, index) => {
         const key = modelUrl.name;
         const props = {
@@ -75,8 +60,11 @@ const Group = ({ children, ...data }) => {
         };
 
         return (
-          <group key={key}>
-            <Html
+          <Model onHover={onHover} key={key} {...props} />
+
+          // <group key={key}>
+          // {
+          /* <Html
               occlude
               onOcclude={setHidden}
               castShadow={true}
@@ -84,11 +72,11 @@ const Group = ({ children, ...data }) => {
               transform
               zIndexRange={[0, 0]}
               scale={[10, 10, 10]}
-              style={{
-                transition: 'all 0.5s',
-                opacity: hidden ? 0 : 1,
-                transform: `scale(${hidden ? 0.5 : 1})`,
-              }}
+              // style={{
+              //   transition: 'all 0.5s',
+              //   opacity: hidden ? 0 : 1,
+              //   transform: `scale(${hidden ? 0.5 : 1})`,
+              // }}
               position={[
                 positions[index].x,
                 positions[index].y + 40,
@@ -96,26 +84,26 @@ const Group = ({ children, ...data }) => {
               ]}
             >
               <div
-                className={`flex grow p-4 cursor-pointer uppercase text-nowrap w-fit h-full text-center 
+                className={`flex grow p-4 cursor-pointer text-3xl uppercase w-fit h-full text-center 
                     place-self-center place-items-center rounded-full bg-neutral-300/50 text-neutral-600
-                    text-5xl transition-all transition-discrete duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200
-                    ${isPointerOver === modelUrl.name ? 'w-fit h-full opacity-100' : 'w-0 h-0 min-w-0 mhn-h-0 opacity-0'}`}
+                   transition-all transition-discrete duration-500 ease-in-out hover:text-neutral-500 hover:bg-neutral-200
+                    ${isPointerOver === modelUrl.name ? 'flex grow w-fit h-full opacity-100 scale-x-100' : ' w-1 h-1 min-w-1 min-h-1 opacity-0 scale-1 hidden'}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleUpdateSelection(props);
                   router.push('/project');
                 }}
               >
-                See More
+                Tap here to see more of this project
               </div>
-            </Html>
-            <Model key={key} {...props} />
-          </group>
+            </Html> */
+          // }
+          // <Model key={key} {...props} />
+          // </group>
         );
       })}
-
-      {children}
-    </group>
+      {/* {children} */}
+    </>
   );
 };
 
