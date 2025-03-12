@@ -5,42 +5,24 @@ import { Vector3, Cache } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import useMaterial from '@/stores/materialStore';
-// import useMesh, { asyncLoadGLTF } from '@/stores/meshStore';
+import { Select } from '@react-three/postprocessing';
 
 Cache.enabled = true;
 
-const Model = (props) => {
+const Model = ({ onHover, ...props }) => {
   const meshRef = useRef(undefined);
-
   const getMaterial = useMaterial((state) => state.getMaterial);
-  // const getMesh = useMesh((state) => state.getMesh);
-  // const setMesh = useMesh((state) => state.setMesh);
-
   const {
     autoRotate = true,
-    autoRotateSpeed = 1,
+    isPointerOver = '',
     materialId,
     modelUrl: { name = '', url = '' } = {},
     position = new Vector3(0, -25, 0),
     scale,
   } = props;
+  let mesh = useGLTF(url).nodes[`${name}`];
 
-  let mesh = null;
-
-  // if (name.length) {
-  // if (getMesh(name)) {
-  //   mesh = getMesh(name);
-  // } else {
-  //   const m = asyncLoadGLTF(url);
-  //   mesh = getMesh(name);
-  // }
-
-  // const nam = useGLTF(url);
-  mesh = useGLTF(url).nodes[`${name}`];
-  // setMesh(mesh);
-  // }
-
-  // console.log('mesh: ', mesh);
+  // console.log('meshRef.current', meshRef.current);
 
   const meshProps = {
     name,
@@ -48,32 +30,27 @@ const Model = (props) => {
     material: getMaterial(materialId).material,
     position,
     scale,
-    castShadow: true,
-    receiveShadow: true,
   };
 
-  useFrame(({ clock }) => {
-    const elapsedTime = clock.getElapsedTime();
-    if (meshRef?.current) {
-      if (autoRotate) {
-        meshRef.current.rotation.set(
-          0,
-          Math.sin(Math.PI / 2) * elapsedTime * 0.3 * autoRotateSpeed,
-          0,
-        );
-      }
+  useFrame((state, delta) => {
+    if (meshRef?.current && autoRotate) {
+      meshRef.current.rotation.y += delta / 2;
     }
   });
 
   return (
     <>
-      mesh &&
-      <mesh
-        castShadow={true}
-        recieveShadow={true}
-        ref={meshRef}
-        {...meshProps}
-      />
+      {mesh && (
+        <Select enabled={isPointerOver === name}>
+          <mesh
+            onClick={(e) => onHover(meshRef)}
+            ref={meshRef}
+            castShadow={true}
+            recieveShadow={true}
+            {...meshProps}
+          />
+        </Select>
+      )}
     </>
   );
 };
