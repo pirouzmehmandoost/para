@@ -265,11 +265,11 @@ export const GlobalModelViewer = () => {
       <Suspense>
         <SceneBuilder />
       </Suspense>
-      {/* <Ground
+      <Ground
         position={[-50, -85, 20]}
         scale={[1.4, 1, 1.4]}
         rotation={Math.PI / 7}
-      /> */}
+      />
     </Canvas>
   );
 };
