@@ -1,26 +1,45 @@
 'use client';
 
 import Link from 'next/link';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const AboutPage = () => {
   return (
-    <div className="flex flex-col w-screen h-full text-center text-neutral-600">
+    <div className="flex flex-col w-full h-full mt-10">
+      <div className="flex flex-row w-full h-fit justify-center my-10 ">
+        <Link href="/" rel="noopener noreferrer">
+          <div className="cursor-pointer rounded-full w-fit h-fit p-6 text-neutral-600 bg-neutral-500/40 transition-all duration-500 ease-in-out hover:bg-neutral-500/20">
+            <ArrowBackIosNewIcon fontSize="large" />
+          </div>
+        </Link>
+      </div>
       <div
-        id="top_section"
-        className={`z-10 flex flex-col w-full h-1/2 place-self-center place-items-center mt-28 uppercase text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl 2xl:text-3xl`}
+        className={`flex flex-col w-full h-full place-items-center text-center text-neutral-600 uppercase text-3xl`}
       >
-        <div className="w-4/5">
+        <div className="flex flex-col justify-between h-full w-4/5">
           <p>
             Hey! I&apos;m a software engineer based in the San Francisco Bay
             Area. I specialize in frontend development and rendering interactive
-            graphics on the web.
+            graphics and virtual experiences.
           </p>
-          <p>
+          <p className="mt-4">
             I also love to 3D print and design wearable objects after my 9-5.
+            About 6 months ago I started playing around Three.js and fell off
+            the deep end- I became obsessed with learning how to develop 3D
+            experiences in apps, getting familiar with computer graphics beyond
+            WebGL, learning about shaders, and trying to get friends on this
+            same tip. This app displays 3D models of some recent 3D printing
+            projects.
+          </p>
+          <p className="mt-4">
+            The app is built with the latest versions of Next.JS, Tailwind CSS,
+            React, and Three.js. I use Zustand to manage app State, React Three
+            Fiber for caching 3D assets, optimizing animations, and for
+            post-processing effects.
           </p>
           <div>
-            <div className="mt-4 sm:mt-8 md:mt-8 lg:mt-8 xl:mt-8 2xl:mt-8">
-              WIP- read my latest dev notes in the
+            <div className="mt-4">
+              WIP, Read my latest dev notes in the
               <Link
                 href="https://github.com/pirouzmehmandoost/para/blob/main/README.md"
                 className="border-transparent"
@@ -32,7 +51,7 @@ const AboutPage = () => {
                 >
                   Github repo
                 </span>
-                <span className="italic">.</span>
+                <span className="italic">!</span>
               </Link>
             </div>
           </div>
