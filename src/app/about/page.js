@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-export default function AboutPage() {
+const AboutPage = () => {
   return (
     <div className="flex flex-col w-screen h-full text-center text-neutral-600">
       <div
@@ -40,4 +40,6 @@ export default function AboutPage() {
       </div>
     </div>
   );
-}
+};
+
+export default AboutPage;
