@@ -93,30 +93,30 @@ export const portfolio = {
   //     },
   //   ],
   projects: [
-    {
-      sceneData: {
-        autoRotate: true,
-        autoRotateSpeed: 1,
-        autoUpdateMaterial: false,
-        groupName: 'subdidived_wave_sandal002',
-        materials: {
-          defaultMaterial: 'gloss_black',
-          colorWays: ['gloss_black', 'matte_black'],
-        },
-        modelUrls: [
-          { name: 'subdidived_wave_sandal002', url: '/rocky_sandal_web.glb' },
-        ],
-        scale: 3.4,
-      },
-      name: 'shoe',
-      bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
-      imgUrls: {
-        matte_black: ['/oval_bag_matte_black_1.png'],
-        matte_white: ['/oval_bag_matte_white_1.png'],
-      },
-      shortDescription: 'A shoe.',
-      description: ' Shoe.',
-    },
+    // {
+    //   sceneData: {
+    //     autoRotate: true,
+    //     autoRotateSpeed: 1,
+    //     autoUpdateMaterial: false,
+    //     groupName: 'subdidived_wave_sandal002',
+    //     materials: {
+    //       defaultMaterial: 'gloss_black',
+    //       colorWays: ['gloss_black', 'matte_black'],
+    //     },
+    //     modelUrls: [
+    //       { name: 'subdidived_wave_sandal002', url: '/rocky_sandal_web.glb' },
+    //     ],
+    //     scale: 3.4,
+    //   },
+    //   name: 'shoe',
+    //   bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
+    //   imgUrls: {
+    //     matte_black: ['/oval_bag_matte_black_1.png'],
+    //     matte_white: ['/oval_bag_matte_white_1.png'],
+    //   },
+    //   shortDescription: 'A shoe.',
+    //   description: ' Shoe.',
+    // },
     {
       sceneData: {
         autoRotate: true,
