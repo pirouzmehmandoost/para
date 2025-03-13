@@ -215,6 +215,9 @@ const ProjectPage = () => {
 
   const data = {
     ...selection.sceneData,
+    modelUrl: selection.sceneData?.ModelUrl
+      ? election.sceneData?.ModelUrl
+      : selection?.sceneData?.modelUrls[0],
     autoRotate: true,
     autoRotateSpeed: 0.4,
     autoUpdateMaterial: false,
@@ -289,7 +292,7 @@ const ProjectPage = () => {
         </div> */}
         <div
           id="back-button"
-          className="fixed bottom-40 left-10 mt-10 p-8 rounded-full bg-white/1 text-5xl backdrop-blur-sm transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700"
+          className="fixed top-10 left-10 mt-10 p-8 rounded-full bg-white/1 text-5xl backdrop-blur-3xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700"
         >
           <Link href="/" rel="noopener noreferrer">
             <div className="flex flex-row w-full place-items-center cursor-pointer">
@@ -303,13 +306,13 @@ const ProjectPage = () => {
         className={`fixed bottom-0 z-20 right-0 w-full place-self-end transition-all duration-700 ease-in-out ${expanded ? 'mt-96' : 'mt-0'}`}
       >
         <div className="flex z-20 w-full h-full bottom-0 right-0">
-          <div className="w-full h-full border-solid border-2 border-neutral-900">
+          <div className="w-full h-full">
             <div
-              className={`flex flex-col backdrop-blur-xl backdrop-brightness-200 transition-all duration-500 ease-in-out ${expanded ? 'backdrop-opacity-100' : 'backdrop-opacity-50'}`}
+              className={`flex flex-col backdrop-blur-3xl backdrop-brightness-200 transition-all duration-700 ease-in-out ${expanded ? 'backdrop-opacity-90 backdrop-blur-xl' : 'backdrop-opacity-50'}`}
             >
               {/* collapsible menu items */}
               <div
-                className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? 'overflow-auto max-h-96' : 'overflow-hidden max-h-0'}`}
+                className={`px-6 pt-0 justify-items-center transition-all transition-discrete duration-700 ease-in-out ${expanded ? 'overflow-auto max-h-96' : 'overflow-hidden max-h-0'}`}
               >
                 <p
                   className={`mt-5 text-neutral-900 transition-all duration-700 ease-in-out delay-75 ${expanded ? 'opacity-100' : 'opacity-0'}`}
@@ -318,7 +321,7 @@ const ProjectPage = () => {
                 </p>
               </div>
               {/* permanently visible menu items */}
-              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch text-neutral-500">
+              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch text-neutral-900">
                 <div className="ml-5 justify-self-center align-items-center basis-1/3">
                   <div
                     className="cursor-pointer self-center"
@@ -334,7 +337,7 @@ const ProjectPage = () => {
                   </div>
                 </div>
                 <div className="justify-self-center basis-1/3">
-                  <p className="text-3xl text-center justify-self-center ">
+                  <p className="text-3xl text-center justify-self-center">
                     {groupName}
                   </p>
                 </div>

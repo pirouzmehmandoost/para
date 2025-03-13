@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { GlobalModelViewer } from '@/components/Three/GlobalModelViewer';
 import MenuIcon from '@mui/icons-material/Menu';
+import useSelection from '@/stores/selectionStore';
 
 const variants = {
   top: {
@@ -361,10 +362,6 @@ const BottomMenu = ({ showMenu }) => {
         opacity: 0,
         width: '1vw',
         height: '1vh',
-        // top: '0px',
-        // right: '0px',
-        // top: '50vh',
-        // right: '50vw',
         transition: {
           delay: 0.5,
           duration: 0.75,
@@ -414,120 +411,89 @@ const BottomMenu = ({ showMenu }) => {
     if (showMenu) setIsActive(showMenu);
     else setIsActive(undefined);
   }, [showMenu]);
-
-  // console.log('BottomMenu. showMenu: ', isActive?.name);
+  const selection = useSelection((state) => state.selection);
 
   const links = [
     {
-      title: 'Close Me',
-      callBack: true,
-    },
-
-    {
-      title: `title is ${isActive?.name}`,
+      title: `${selection?.shortDescription}`,
       callBack: false,
+    },
+    {
+      title: 'Click to See More',
+      callBack: true,
     },
   ];
 
-  // const MenuLinks = ({ callBack }) => {
-  //   return (
-  //     <div className="flex flex-col w-full h-full justify-around text-center text-4xl uppercase text-neutral-900 bg-neutral-300">
-  //       {/* Header */}
-  //       <motion.div
-  //         key={`b_0`}
-  //         custom={0}
-  //         variants={motionVariants.top}
-  //         initial="initial"
-  //         animate="enter"
-  //         exit="exit"
-  //         className="flex flex-row w-full h-fit justify-center text-nowrap perspective-origin-bottom bg-neutral-500/0"
-  //         style={{
-  //           maskImage:
-  //             'radial-gradient(ellipse 80% 100% at 50% 50% , #a3a3a3 30%, #a3a3a300 90%)',
-  //         }}
-  //       >
-  //         <div className="text-nowrap sm:text-4xl md:text-4xl lg:text:5xl xl:text-5xl 2xl:text-5xl md:px-1 xl:px-1 lg:px-1 2xl:px-1">
-  //           Some Text
-  //         </div>
-  //       </motion.div>
-  //       {/* top links */}
-  //       <div
-  //         className="flex flex-row w-full h-fit justify-between bg-neutral-500/0"
-  //         style={{
-  //           maskImage:
-  //             'radial-gradient(ellipse 70% 80% at 50% 50% , #a3a3a3 30%, #a3a3a300 70%)',
-  //         }}
-  //       >
-  //         {links.map((link, i) => {
-  //           const { title, href } = link;
-  //           return (
-  //             <div
-  //               key={`b_${i + 1}`}
-  //               className="perspective-origin-bottom my-2"
-  //             >
-  //               <motion.div
-  //                 custom={i + 1}
-  //                 variants={motionVariants.top}
-  //                 initial="initial"
-  //                 animate="enter"
-  //                 exit="exit"
-  //               >
-  //                 {link.callBack ? (
-  //                   <div className="cursor-pointer" onClick={() => callBack()}>
-  //                     {title}
-  //                   </div>
-  //                 ) : (
-  //                   <p>{title} </p>
-  //                 )}
-  //               </motion.div>
-  //             </div>
-  //           );
-  //         })}
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
-  // const CloseButton = ({ isActive, callBack }) => {
-  //   return (
-  //     <div
-  //       onClick={() => callBack()}
-  //       className={`fixed w-fit h-fit inset-0 bottom-5 left-5 justify-center p-4 rounded-full cursor-pointer bg-red-500 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700  ${isActive ? 'opacity-0 w-1 h-1  bg-neutral-500/30' : 'opacity-100 w-fit h-fit'}`}
-  //     >
-  //       <MenuIcon fontSize="large" />
-  //     </div>
-  //   );
-  // };
+  const MenuLinks = ({ callBack }) => {
+    return (
+      <div className="flex flex-col w-fit h-full text-neutral-800 bg-pink-500/0 place-items-start">
+        <div className="text-4xl perspective-origin-bottom">
+          <motion.div
+            custom={0}
+            variants={motionVariants.top}
+            initial="initial"
+            animate="enter"
+            exit="exit"
+          >
+            {selection?.name}
+          </motion.div>
+        </div>
+        <div className="text-2xl text-pretty perspective-origin-bottom ">
+          <motion.div
+            custom={1}
+            variants={motionVariants.top}
+            initial="initial"
+            animate="enter"
+            exit="exit"
+          >
+            <div>{selection?.shortDescription}</div>
+          </motion.div>
+        </div>
+        <div className="place-self-center text-3xl  text-neutral-800 perspective-origin-bottom">
+          <motion.div
+            custom={1}
+            variants={motionVariants.top}
+            initial="initial"
+            animate="enter"
+            exit="exit"
+          >
+            <Link href="/project" rel="noopener noreferrer">
+              <div
+                className="rounded-full bg-radial-[at_50%_50%] from-neutral-500/35 from-20% to-neutral-500/0 to-70%"
+                style={{
+                  maskImage:
+                    'radial-gradient(ellipse 90% 90% at 50% 50% , #a3a3a3 10%, #a3a3a300 90%)',
+                }}
+              >
+                Click to see more
+              </div>
+            </Link>
+          </motion.div>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div
-      className="relative flex flex-row grow w-full h-full z-1 justify-center bg-neutral-500/0"
-      style={{
-        maskImage:
-          'radial-gradient(ellipse 70% 80% at 50% 50% , #a3a3a3 30%, #a3a3a300 70%)',
-      }}
-    >
-      {/* menu/links container */}
+    <div className="relative flex flex-row grow w-full h-full z-1 justify-center bg-neutral-500/0">
       <motion.div
         variants={motionVariants.menu}
         animate={isActive ? 'open' : 'closed'}
         initial="open"
       >
-        <AnimatePresence>
-          {isActive && (
-            <div className="bg-neutral-300/50 text-4xl uppercase text-neutral-900 backdrop-blur-xl ">
-              {isActive ? isActive?.name : 'nothing selected'}
-            </div>
-          )}
-        </AnimatePresence>
+        <AnimatePresence>{isActive && <MenuLinks />}</AnimatePresence>
       </motion.div>
       {/* overlay a blurry div */}
-      {/* <motion.div
-        className="absolute flex flex-col grow w-full h-1/2 -z-1 place-self-center justify-center bg-pink-400/100 backdrop-blur-xl"
-        variants={variants.overlay}
+      <motion.div
+        className="absolute flex flex-col grow w-full h-full -z-1 place-self-center justify-center bg-neutral-300/0  backdrop-blur-xl contrast-150 hue-rotate-30 "
+        style={{
+          maskImage:
+            'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)',
+        }}
+        variants={motionVariants.overlay}
         animate={isActive ? 'open' : 'closed'}
         initial="open"
-      /> */}
+      />
     </div>
   );
 };
@@ -543,7 +509,9 @@ const Home = () => {
       <div className="fixed inset-0 bottom-10 flex flex-col grow w-full h-full">
         <GlobalModelViewer showMenu={setVisible} />
       </div>
-      <div className="fixed bottom-0 flex flex-col grow w-full h-1/4 bg-yellow-400/0 ">
+      <div
+        className={`fixed place-self-center justify-center top-30  md:left-10 lg:left-10 xl:left-10 2xl:left-10 flex flex-col grow w-full sm:w-full md:w-fit lg:w-fit xl:w-fit 2xl:w-fit h-1/5 transition-all duration 500 ease-in-out ${visible ? 'h-1/5' : 'h-fit'}`}
+      >
         <BottomMenu showMenu={visible} />
       </div>
     </main>

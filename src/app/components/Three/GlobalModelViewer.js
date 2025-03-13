@@ -127,6 +127,7 @@ const SceneBuilder = ({ showMenu }) => {
             position: groupPositions[index],
             autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
             isPointerOver: pointerTarget.name,
+            // isPointerOver: selected?.name,
           },
         };
         return (
