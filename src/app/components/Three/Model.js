@@ -41,15 +41,17 @@ const Model = ({ onHover, ...props }) => {
   return (
     <>
       {mesh && (
-        <Select enabled={isPointerOver === name}>
-          <mesh
-            onClick={(e) => onHover(meshRef)}
-            ref={meshRef}
-            castShadow={true}
-            recieveShadow={true}
-            {...meshProps}
-          />
-        </Select>
+        <mesh
+          onClick={(e) => onHover(meshRef)}
+          onPointerMissed={(e) => {
+            e.stopPropagation();
+            onHover(undefined);
+          }}
+          ref={meshRef}
+          castShadow={true}
+          recieveShadow={true}
+          {...meshProps}
+        />
       )}
     </>
   );

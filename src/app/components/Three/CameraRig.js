@@ -72,6 +72,9 @@ export const CameraRig2 = ({ positionVectors = [], target }) => {
   // useEffect(() => {
   //   const targ = scene.getObjectByName(name);
 
+  //   if (!target) {
+  //   }
+  // }, []);
   //   console.log('CameraRig useEffect.scene: ', scene);
   //   console.log('ref: ', ref?.current);
   //   // console.log(
@@ -118,7 +121,7 @@ export const CameraRig2 = ({ positionVectors = [], target }) => {
   // });
 
   useFrame(({ clock, camera }, delta) => {
-    // camera.updateProjectionMatrix(); //likely unnecessary at beggining of frame loop
+    camera.updateProjectionMatrix(); //likely unnecessary at beggining of frame loop
     let t = clock.elapsedTime;
 
     if (targetPosition?.x) {
@@ -146,6 +149,8 @@ export const CameraRig2 = ({ positionVectors = [], target }) => {
 
       camera.updateProjectionMatrix();
     } else {
+      camera.updateProjectionMatrix();
+
       let s = (clock.elapsedTime * 0.03) % 1;
       const position = cameraPathCurve.getPoint(s);
 
@@ -170,14 +175,9 @@ export const CameraRig2 = ({ positionVectors = [], target }) => {
       // controls?.setLookAt(...camera.position.toArray(), ...j, true);
 
       //lerp camera target and position
-      // camera.lookAt(camera.position.lerp(v, 0.06));
-
-      easing.damp3(camera.position, j, 0.8, delta);
-      // camera.lookAt(s);
-
-      // easing.dampLookAt(camera.position, j, 0.25, delta);
-      // camera.lookAt(easing.damp3(camera.position, j, 0.25, delta));
-
+      camera.lookAt(camera.position.lerp(v, 0.06));
+      // easing.damp3(camera.position, j, 0.8, delta);
+      // camera.lookAt(easing.damp3(camera.position, j, 0.8, delta));
       camera.updateProjectionMatrix();
     }
     //end else
