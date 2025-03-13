@@ -1,17 +1,17 @@
 'use client';
 
 import React, { Suspense, useState, useRef } from 'react';
-import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from 'three';
+import { BufferGeometry, EllipseCurve, Vector3 } from 'three';
 import { Canvas, useThree } from '@react-three/fiber';
-import { Environment, Stats } from '@react-three/drei';
+import { Environment, Stats, AdaptiveDpr } from '@react-three/drei';
 import cameraConfigs from '@/lib/cameraConfigs';
 import { portfolio } from '@/lib/globals';
 import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
-import AdaptivePixelRatio from './AdaptivePixelRatio';
+// import AdaptivePixelRatio from './AdaptivePixelRatio';
 import { CameraRig2 } from './CameraRig';
-import { Ground } from '@/public/Ground';
+// import { Ground } from '@/public/Ground';
 import Group from './Group';
-import Light from './Light';
+// import Light from './Light';
 import * as THREE from 'three';
 import { BlendFunction, Resizer, KernelSize } from 'postprocessing';
 import {
@@ -21,17 +21,15 @@ import {
   Noise,
   Vignette,
   Outline,
-  Select,
-  Selection,
 } from '@react-three/postprocessing';
 
 THREE.ColorManagement.enabled = true;
 
-const SceneBuilder = () => {
+const SceneBuilder = ({ showMenu }) => {
   const selectedRef = useRef();
   const { size, scene } = useThree();
-  const [hovered, onHover] = useState(null);
-  const selected = hovered ? [hovered] : undefined;
+  const [clicked, onSelect] = useState(null);
+  const selected = clicked ? [clicked] : undefined;
 
   const [pointerTarget, setPointerTarget] = useState({
     eventObject: '',
@@ -48,8 +46,7 @@ const SceneBuilder = () => {
 
   const { projects } = portfolio;
   const groupPositions = [];
-  // const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
-  const ellipseRadius = scaleMeshAtBreakpoint(window.innerWidth) * 150;
+  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
 
   const ellipseCurve = new EllipseCurve(
     0,
@@ -85,19 +82,19 @@ const SceneBuilder = () => {
   return (
     <>
       <CameraRig2 positionVectors={groupPositions} target={pointerTarget} />
-      <EffectComposer autoClear={false}>
+      <EffectComposer autoClear={false} disableNormalPass multisampling={8}>
         <DepthOfField
           focusDistance={0}
           focalLength={0.02}
           bokehScale={2}
-          height={480}
+          height={Resizer.AUTO_SIZE} // render height
         />
         <Bloom luminanceThreshold={10} luminanceSmoothing={1} height={200} />
         <Noise opacity={0.02} />
         <Vignette eskil={false} offset={0.1} darkness={0.8} />
         <Outline
           selection={selected} // selection of objects that will be outlined
-          selectionLayer={10} // selection layer
+          // selectionLayer={10} // selection layer
           blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
           patternTexture={null} // a pattern texture
           edgeStrength={7} // the edge strength
@@ -113,7 +110,7 @@ const SceneBuilder = () => {
       </EffectComposer>
       {projects.map((data, index) => {
         const groupProps = {
-          onHover: onHover,
+          onSelect: onSelect,
           ...data,
           sceneData: {
             description: data.description,
@@ -127,7 +124,6 @@ const SceneBuilder = () => {
         };
         return (
           <group
-            // ref={selectedRef}
             key={groupProps?.name}
             name={`${groupProps?.name}`}
             onClick={(e) => {
@@ -136,13 +132,14 @@ const SceneBuilder = () => {
                 name: e.object.name,
                 position: e.object.position,
               });
-
-              console.log('what is the current ref? ', selectedRef);
-              // selectedRef.current = e.eventObject;
-              // console.log('and what the hell isis now? ', selectedRef);
+              onSelect(selectedRef);
+              showMenu(selectedRef);
+              // console.log('what is the current ref? ', selectedRef);
             }}
             onPointerMissed={(e) => {
               setPointerTarget({});
+              onSelect(undefined);
+              showMenu(undefined);
               e.stopPropagation();
               // selectedRef.current = null;
             }}
@@ -184,7 +181,7 @@ const SceneBuilder = () => {
             //   }
             // }}
           >
-            <Light
+            {/* <Light
               position={[
                 groupPositions[index].x,
                 groupPositions[index].y + 900,
@@ -196,10 +193,10 @@ const SceneBuilder = () => {
                 groupPositions[index].y,
                 groupPositions[index].z,
               ]}
-            />
+            /> */}
 
             <Group
-              onHover={onHover}
+              // onSelect={onSelect}
               ref={selectedRef}
               {...groupProps.sceneData}
             />
@@ -210,12 +207,12 @@ const SceneBuilder = () => {
   );
 };
 
-export const GlobalModelViewer = () => {
+export const GlobalModelViewer = ({ showMenu }) => {
   return (
     <Canvas
       camera={{
-        position: cameraConfigs.POSITION,
-        // position: [666, 80, 666],
+        // position: cameraConfigs.POSITION,
+        position: [666, 80, 666],
         near: cameraConfigs.NEAR,
         far: cameraConfigs.FAR,
         fov: 50,
@@ -225,7 +222,10 @@ export const GlobalModelViewer = () => {
       shadows
     >
       <Stats />
-      <AdaptivePixelRatio />
+      {/* <SoftShadows samples={10} size={6} /> */}
+      <AdaptiveDpr pixelated />
+
+      {/* <AdaptivePixelRatio /> */}
       <Environment shadows files="./studio_small_08_4k.exr" />
       {/* <Ground
         position={[-50, 150, 20]}
@@ -262,14 +262,15 @@ export const GlobalModelViewer = () => {
         shadow-camera-left={-1500}
         shadow-camera-right={1500}
       />
+
       <Suspense>
-        <SceneBuilder />
+        <SceneBuilder showMenu={showMenu} />
       </Suspense>
-      <Ground
+      {/* <Ground
         position={[-50, -85, 20]}
         scale={[1.4, 1, 1.4]}
         rotation={Math.PI / 7}
-      />
+      /> */}
     </Canvas>
   );
 };
