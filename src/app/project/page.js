@@ -9,6 +9,166 @@ import useMaterial from '@/stores/materialStore';
 import useSelection from '@/stores/selectionStore';
 import SingularModelViewer from '@/components/Three/SingularModelViewer';
 
+const ProjectPage = () => {
+  const getMaterial = useMaterial((state) => state.getMaterial);
+  const [expanded, setExpanded] = useState(false);
+  const selection = useSelection((state) => state.getSelection());
+
+  const {
+    sceneData: {
+      groupName = '',
+      materialId = '',
+      materials: { defaultMaterial = '', colorWays = {} } = {},
+    } = {},
+    description = '',
+  } = selection;
+
+  const [selectedMaterial, setMaterial] = useState(
+    materialId.length ? materialId : (defaultMaterial ?? null),
+  );
+
+  const data = {
+    ...selection.sceneData,
+    modelUrl: selection.sceneData?.ModelUrl
+      ? election.sceneData?.ModelUrl
+      : selection?.sceneData?.modelUrls[0],
+    autoRotate: true,
+    autoRotateSpeed: 0.4,
+    autoUpdateMaterial: false,
+    enablePan: true,
+    enableRotate: true,
+    enableZoom: false,
+    materialId: selectedMaterial,
+    orthographic: false,
+    position: undefined,
+    scale: 0.38,
+  };
+
+  const colorSelectButtons = (
+    <div className="flex flex-row place-content-center items-center">
+      <p className="text-nowrap text-2xl"> Select a Color </p>
+      {Object.entries(colorWays).map((entry) => {
+        return (
+          <div
+            key={entry[0]}
+            className={`flex ${getMaterial(entry[1]).tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry[1] ? 'outline-none' : 'outline-neutral-500 outline-2'}`}
+            onClick={() => {
+              if (selectedMaterial !== entry[1]) setMaterial(entry[1]);
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+
+  const menuProps = {
+    linkProps: {
+      topLinks: [
+        {
+          href: '/projects',
+          title: 'Projects',
+        },
+        {
+          href: '/resume',
+          title: 'Resume/CV',
+        },
+        {
+          href: '/about',
+          title: 'About',
+        },
+      ],
+
+      bottomLinks: [
+        {
+          href: 'https://www.linkedin.com/in/pirouzmehmandoost/',
+          title: 'LinkedIn',
+        },
+        {
+          href: 'https://github.com/pirouzmehmandoost/para/blob/main/README.md',
+          title: 'Github',
+        },
+      ],
+    },
+  };
+
+  return (
+    <div id="project_viewer" className="flex flex-col w-full h-screen">
+      <div
+        id="model_viewer_container"
+        className="flex flex-col w-full h-full place-self-center place-content-center"
+      >
+        <SingularModelViewer
+          className="w-full h-full self-center place-self-center place-content-center items-center"
+          data={data}
+        />
+        {/* <div className="absolute p-8 ">
+            <DynamicMenu {...menuProps}/>
+        </div> */}
+        <div
+          id="back-button"
+          className="fixed top-10 left-10 mt-10 p-8 rounded-full bg-white/1 text-5xl backdrop-blur-3xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700"
+        >
+          <Link href="/" rel="noopener noreferrer">
+            <div className="flex flex-row w-full place-items-center cursor-pointer">
+              <ArrowBackIosNewIcon fontSize="large" />
+            </div>
+          </Link>
+        </div>
+      </div>
+      <div
+        id="project_menu"
+        className={`fixed bottom-0 z-20 right-0 w-full place-self-end transition-all duration-700 ease-in-out ${expanded ? 'mt-96' : 'mt-0'}`}
+      >
+        <div className="flex z-20 w-full h-full bottom-0 right-0">
+          <div className="w-full h-full">
+            <div
+              className={`flex flex-col backdrop-blur-3xl backdrop-brightness-200 transition-all duration-700 ease-in-out ${expanded ? 'backdrop-opacity-90 backdrop-blur-xl' : 'backdrop-opacity-50'}`}
+            >
+              {/* collapsible menu items */}
+              <div
+                className={`px-6 pt-0 justify-items-center transition-all transition-discrete duration-700 ease-in-out ${expanded ? 'overflow-auto max-h-96' : 'overflow-hidden max-h-0'}`}
+              >
+                <p
+                  className={`mt-5 text-neutral-900 transition-all duration-700 ease-in-out delay-75 ${expanded ? 'opacity-100' : 'opacity-0'}`}
+                >
+                  {description}
+                </p>
+              </div>
+              {/* permanently visible menu items */}
+              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch text-neutral-900">
+                <div className="ml-5 justify-self-center align-items-center basis-1/3">
+                  <div
+                    className="cursor-pointer self-center"
+                    onClick={() => {
+                      setExpanded((current) => !current);
+                    }}
+                  >
+                    {expanded ? (
+                      <CloseFullscreenIcon fontSize="large" />
+                    ) : (
+                      <MenuIcon fontSize="large" />
+                    )}
+                  </div>
+                </div>
+                <div className="justify-self-center basis-1/3">
+                  <p className="text-3xl text-center justify-self-center">
+                    {groupName}
+                  </p>
+                </div>
+                <div className="sm:mx-2 md:mx-2 justify-self-center self-center basis-1/3">
+                  {colorSelectButtons}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProjectPage;
+
 // const perspective = {
 //   initial: {
 //     filter: 'blur(100px)',
@@ -192,165 +352,3 @@ import SingularModelViewer from '@/components/Three/SingularModelViewer';
 //     </div>
 //   );
 // };
-
-const ProjectPage = () => {
-  const getMaterial = useMaterial((state) => state.getMaterial);
-  const [expanded, setExpanded] = useState(false);
-  const selection = useSelection((state) => state.getSelection());
-
-  console.log('ProjectPage data, which is selection: ', selection);
-
-  const {
-    sceneData: {
-      groupName = '',
-      materialId = '',
-      materials: { defaultMaterial = '', colorWays = {} } = {},
-    } = {},
-    description = '',
-  } = selection;
-
-  const [selectedMaterial, setMaterial] = useState(
-    materialId.length ? materialId : (defaultMaterial ?? null),
-  );
-
-  const data = {
-    ...selection.sceneData,
-    modelUrl: selection.sceneData?.ModelUrl
-      ? election.sceneData?.ModelUrl
-      : selection?.sceneData?.modelUrls[0],
-    autoRotate: true,
-    autoRotateSpeed: 0.4,
-    autoUpdateMaterial: false,
-    enablePan: true,
-    enableRotate: true,
-    enableZoom: false,
-    materialId: selectedMaterial,
-    orthographic: false,
-    position: undefined,
-    scale: 0.4,
-  };
-
-  const colorSelectButtons = (
-    <div className="flex flex-row place-content-center items-center">
-      <p className="text-nowrap text-2xl"> Select a Color </p>
-      {Object.entries(colorWays).map((entry) => {
-        return (
-          <div
-            key={entry[0]}
-            className={`flex ${getMaterial(entry[1]).tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry[1] ? 'outline-none' : 'outline-neutral-500 outline-2'}`}
-            onClick={() => {
-              if (selectedMaterial !== entry[1]) setMaterial(entry[1]);
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-
-  const menuProps = {
-    linkProps: {
-      topLinks: [
-        {
-          href: '/projects',
-          title: 'Projects',
-        },
-        {
-          href: '/resume',
-          title: 'Resume/CV',
-        },
-        {
-          href: '/about',
-          title: 'About',
-        },
-      ],
-
-      bottomLinks: [
-        {
-          href: 'https://www.linkedin.com/in/pirouzmehmandoost/',
-          title: 'LinkedIn',
-        },
-        {
-          href: 'https://github.com/pirouzmehmandoost/para/blob/main/README.md',
-          title: 'Github',
-        },
-      ],
-    },
-  };
-
-  return (
-    <div id="project_viewer" className="flex flex-col w-full h-screen">
-      <div
-        id="model_viewer_container"
-        className="flex flex-col w-full h-full place-self-center place-content-center"
-      >
-        <SingularModelViewer
-          className="w-full h-full self-center place-self-center place-content-center items-center"
-          data={data}
-        />
-        {/* <div className="absolute p-8 ">
-            <DynamicMenu {...menuProps}/>
-        </div> */}
-        <div
-          id="back-button"
-          className="fixed top-10 left-10 mt-10 p-8 rounded-full bg-white/1 text-5xl backdrop-blur-3xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700"
-        >
-          <Link href="/" rel="noopener noreferrer">
-            <div className="flex flex-row w-full place-items-center cursor-pointer">
-              <ArrowBackIosNewIcon fontSize="large" />
-            </div>
-          </Link>
-        </div>
-      </div>
-      <div
-        id="project_menu"
-        className={`fixed bottom-0 z-20 right-0 w-full place-self-end transition-all duration-700 ease-in-out ${expanded ? 'mt-96' : 'mt-0'}`}
-      >
-        <div className="flex z-20 w-full h-full bottom-0 right-0">
-          <div className="w-full h-full">
-            <div
-              className={`flex flex-col backdrop-blur-3xl backdrop-brightness-200 transition-all duration-700 ease-in-out ${expanded ? 'backdrop-opacity-90 backdrop-blur-xl' : 'backdrop-opacity-50'}`}
-            >
-              {/* collapsible menu items */}
-              <div
-                className={`px-6 pt-0 justify-items-center transition-all transition-discrete duration-700 ease-in-out ${expanded ? 'overflow-auto max-h-96' : 'overflow-hidden max-h-0'}`}
-              >
-                <p
-                  className={`mt-5 text-neutral-900 transition-all duration-700 ease-in-out delay-75 ${expanded ? 'opacity-100' : 'opacity-0'}`}
-                >
-                  {description}
-                </p>
-              </div>
-              {/* permanently visible menu items */}
-              <div className="flex flex-row my-3 max-w-full align-items-center justify-items-stretch text-neutral-900">
-                <div className="ml-5 justify-self-center align-items-center basis-1/3">
-                  <div
-                    className="cursor-pointer self-center"
-                    onClick={() => {
-                      setExpanded((current) => !current);
-                    }}
-                  >
-                    {expanded ? (
-                      <CloseFullscreenIcon fontSize="large" />
-                    ) : (
-                      <MenuIcon fontSize="large" />
-                    )}
-                  </div>
-                </div>
-                <div className="justify-self-center basis-1/3">
-                  <p className="text-3xl text-center justify-self-center">
-                    {groupName}
-                  </p>
-                </div>
-                <div className="sm:mx-2 md:mx-2 justify-self-center self-center basis-1/3">
-                  {colorSelectButtons}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default ProjectPage;

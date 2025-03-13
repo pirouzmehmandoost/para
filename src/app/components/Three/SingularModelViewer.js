@@ -49,8 +49,6 @@ ColorManagement.enabled = true;
 // };
 
 export const SingularModelViewer = ({ data }) => {
-  console.log('SingularModelViewer data, ', data);
-
   return (
     <Canvas
       camera={{
