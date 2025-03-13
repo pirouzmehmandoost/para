@@ -22,8 +22,6 @@ const Model = ({ onHover, ...props }) => {
   } = props;
   let mesh = useGLTF(url).nodes[`${name}`];
 
-  // console.log('meshRef.current', meshRef.current);
-
   const meshProps = {
     name,
     geometry: mesh.geometry,
@@ -41,17 +39,14 @@ const Model = ({ onHover, ...props }) => {
   return (
     <>
       {mesh && (
-        <mesh
-          onClick={(e) => onHover(meshRef)}
-          onPointerMissed={(e) => {
-            e.stopPropagation();
-            onHover(undefined);
-          }}
-          ref={meshRef}
-          castShadow={true}
-          recieveShadow={true}
-          {...meshProps}
-        />
+        <Select enabled={isPointerOver === name}>
+          <mesh
+            ref={meshRef}
+            castShadow={true}
+            recieveShadow={true}
+            {...meshProps}
+          />
+        </Select>
       )}
     </>
   );
