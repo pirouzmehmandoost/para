@@ -5,7 +5,6 @@ import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
-import { AnimatePresence, motion } from 'framer-motion';
 import useMaterial from '@/stores/materialStore';
 import useSelection from '@/stores/selectionStore';
 import SingularModelViewer from '@/components/Three/SingularModelViewer';
