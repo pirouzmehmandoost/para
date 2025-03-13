@@ -18,6 +18,7 @@ const ProjectPage = () => {
     sceneData: {
       groupName = '',
       materialId = '',
+      scale = 1,
       materials: { defaultMaterial = '', colorWays = {} } = {},
     } = {},
     description = '',
@@ -41,7 +42,7 @@ const ProjectPage = () => {
     materialId: selectedMaterial,
     orthographic: false,
     position: undefined,
-    scale: 0.38,
+    scale: scale * 0.38,
   };
 
   const colorSelectButtons = (
