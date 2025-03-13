@@ -10,24 +10,30 @@ My objectives are to:
 - Clearly express that I'm a professional software engineer, and not a designer (though I've worked as both).
 - Display a well-formatted resume.
 - Optimize performance of WebGL implementations and animations.
-- Display an understanding of CSS, HTML, JavaScript, React, and Next.js (14).
+- Display an understanding of CSS, HTML, JavaScript, React, and Next.js (15).
 
 My current development goals are :
 
-- Refine the home page- latest feature branch significantly optimizes use of Three.js, but isn't ready to merge.
-- Present PDF resume's without the use of paid API's.
-- Implement blog functionality.
-- optimize Three.js implementation- i.e. swap usage post-processing library for alternatives.
-- Host large asset files on the web and outsie of this repo.
+- Refine the home page.
+- Update Next.js, React, Tailwind CSS, and key packages- incoming chages from branch upgrade_packages handle migration.
+- optimize Three.js implementation- Same branch introduces changes including:
+  1.) Removal of R3F post-processing, replaced with vanilla three.js and R3F.
+  2.) All .glb files are preloaded using useGLTF.preload().
+  3.) All meshes are cached and reused throughout runtime.
+  4.) All materials are cached and reused throughout runtime.
 
 # Current To Do's:
 
-- Refine the Resume page- it currently uses an iframe which does not enable responsive styling on mobile screens.
-- Refine home page- at first glance it isn't clear what my "recent design projects" are.
+- Linting- Configure linter with rules for Tailwind CSS.
+- Resume page- iframe does not enable responsive styling on mobile screens, looks worse when device orientation tilts to landscape.
+- Home page- Create a new spash page with a modal which may route to the current home page.
+- Projects page (current home page) - at first glance it isn't clear what my "recent design projects" are.
+
 - Issues when running on mobile- canvas pointer event handler logic needs refinement. meshes could be easier to select.
 - No logic to conditionally enable routing.
 - make a streamlined version of the app for interviews (different route).
 - menus should have a visible toggle expand/collapse icon, and should upen up to screen width/height
+- yarn exec prettier . --write
 
 Libraries Extensively Used:
 

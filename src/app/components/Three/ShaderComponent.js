@@ -6,7 +6,6 @@
 // import { Canvas, useThree, useFrame } from "@react-three/fiber";
 // import { Loader, ScrollControls, useScroll } from "@react-three/drei";
 
-
 // const Box = () => {
 //   const boxRef = useRef();
 //   const { camera, clock, size, viewport, mouse } = useThree();
@@ -50,23 +49,20 @@
 //   }, [])
 
 //   const updateUniforms = () => {
-//     // const x = (mousePos.x * size.width) 
+//     // const x = (mousePos.x * size.width)
 //     // const y = (mousePos.y * size.height)
 //     const x = (mouse.x * size.width)
 //     const y = (mouse.y * size.height)
 //     const currMouse = new THREE.Vector2(x, y)
-
 
 //     // // // ease mouse motion with damping
 //     // for (const k in mouse) {
 //     //   if (k == 'x' || k == 'y') mouse[k] = THREE.MathUtils.damp(mousePos[k], currMouse[k], 8, 0.02);
 //     // }
 
-
 //     boxRef.current.material.uniforms.u_mouse.value.x = x
 //     boxRef.current.material.uniforms.u_mouse.value.y = y
 //     boxRef.current.material.uniforms.uTime = clock.getElapsedTime();
-
 
 //     setMousePos(
 //       {
@@ -75,17 +71,7 @@
 //       }
 //     );
 
-
 //   }
-
-
-
-
-
-
-
-
-
 
 //   // useEffect(() => {
 //   //   if (boxRef?.current) {
@@ -98,23 +84,20 @@
 //   // }, [])
 
 //   // const updateUniforms = (delta) => {
-//   //   // const x = (mousePos.x * size.width) 
+//   //   // const x = (mousePos.x * size.width)
 //   //   // const y = (mousePos.y * size.height)
 //   //   const x = (mouse.x * size.width)
 //   //   const y = (mouse.y * size.height)
 //   //   const currMouse = new THREE.Vector2(x, y)
-
 
 //   //   // // ease mouse motion with damping
 //   //   for (const k in mouse) {
 //   //     if (k == 'x' || k == 'y') mouse[k] = THREE.MathUtils.damp(mousePos[k], currMouse[k], 8, delta);
 //   //   }
 
-
 //   //   boxRef.current.material.uniforms.u_mouse.value.x = x
 //   //   boxRef.current.material.uniforms.u_mouse.value.y = y
 //   //   boxRef.current.material.uniforms.uTime = clock.getElapsedTime();
-
 
 //   //   setMousePos(
 //   //     {
@@ -123,16 +106,12 @@
 //   //     }
 //   //   );
 
-
 //   // }
-
 
 //   // const handlePointerMove = (e) => {
 //   //   // console.log(mouse)
 //   //   // console.log('Pointer move:', e)
 //   //   // mouse.set(e.uv?.x, e.uv?.y);
-
-
 
 //   //   const deltaX = (mouse.x - mousePos.x) * 0.01;
 //   //   const deltaY = (mouse.y - mousePos.y) * 0.01;
@@ -141,8 +120,6 @@
 
 //   //     mouse.x = (e.clientX / size.width) * 2 - 1;
 //   //     mouse.y = -(e.clientY / size.height) * 2 + 1;
-
-
 
 //   //     boxRef.current.material.uniforms.u_mouse.value.x = mouse.x
 //   //     boxRef.current.material.uniforms.u_mouse.value.y = mouse.y
@@ -169,23 +146,6 @@
 //   //     updateUniforms(delta);
 //   //   }
 //   // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //   const handlePointerMove = (e) => {
 //     // console.log(mouse)
@@ -219,7 +179,6 @@
 //     }
 //   });
 
-
 //   return (
 //     <mesh
 //       scale={[5, 5, 5]}
@@ -237,8 +196,6 @@
 //   )
 // };
 // //end Box
-
-
 
 // export const ShaderComponent = () => {
 //   const cameraPosition = [0, 10, 180];

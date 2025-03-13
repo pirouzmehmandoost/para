@@ -1,56 +1,53 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { Suspense, useState } from "react";
-import { BufferGeometry, ColorManagement, EllipseCurve, Vector3 } from "three";
-import { Canvas, useThree } from "@react-three/fiber";
+import React, { Suspense, useState, useRef } from 'react';
+import { BufferGeometry, EllipseCurve, Vector3 } from 'three';
+import { Canvas, useThree } from '@react-three/fiber';
+import { Environment, Stats, AdaptiveDpr } from '@react-three/drei';
+import cameraConfigs from '@/lib/cameraConfigs';
+import { portfolio } from '@/lib/globals';
+import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
+// import AdaptivePixelRatio from './AdaptivePixelRatio';
+import { CameraRig2 } from './CameraRig';
+// import { Ground } from '@/public/Ground';
+import Group from './Group';
+// import Light from './Light';
+import * as THREE from 'three';
+import { BlendFunction, Resizer, KernelSize } from 'postprocessing';
 import {
-  Environment,
-  Loader,
-  Bounds,
-  SoftShadows,
-  Html,
-} from "@react-three/drei";
-import {
+  Bloom,
+  DepthOfField,
   EffectComposer,
-  N8AO,
-  Selection,
+  Noise,
+  Vignette,
   Outline,
-} from "@react-three/postprocessing";
-import { portfolio } from "../../../lib/globals";
-import { scaleMeshAtBreakpoint } from "../../../lib/utils";
-import cameraConfigs from "../../../lib/cameraConfigs";
-import { Ground } from "../../../../public/Env_ground_3";
-import Group from "./Group";
-import useSelection from "../../store/selection";
-import { CameraRig } from "./CameraRig";
+} from '@react-three/postprocessing';
 
-ColorManagement.enabled = true;
-const SceneBuilder = () => {
-  const setSelection = useSelection((state) => state.setSelection);
-  //   const s = useSelection((state) => state.selection);
-  const router = useRouter();
-  const [currentSelection, select] = useState();
+THREE.ColorManagement.enabled = true;
+
+const SceneBuilder = ({ showMenu }) => {
+  const selectedRef = useRef();
+  const { size, scene } = useThree();
+  const [clicked, onSelect] = useState(null);
+  const selected = clicked ? [clicked] : undefined;
+
   const [pointerTarget, setPointerTarget] = useState({
-    eventObject: "",
-    name: "",
+    eventObject: '',
+    name: '',
     position: null,
   });
-  const { size } = useThree();
+
+  if (
+    pointerTarget?.name?.length > 0 &&
+    scene.getObjectByName(pointerTarget.name)
+  ) {
+    selectedRef.current = scene.getObjectByName(pointerTarget.name);
+  }
+
   const { projects } = portfolio;
   const groupPositions = [];
+  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
 
-  const handleUpdateSelection = (data) => {
-    if (!data) {
-      //   setSelection();
-      select();
-    } else {
-      setSelection(data);
-      select(data);
-    }
-  };
-
-  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 290;
   const ellipseCurve = new EllipseCurve(
     0,
     0,
@@ -64,12 +61,12 @@ const SceneBuilder = () => {
   ellipseCurve.closed = true;
 
   const ellipseCurvePoints = ellipseCurve.getPoints(projects.length);
-  // getPoints() always returns one additioal point.
+  // getPoints always returns one additional point.
   ellipseCurvePoints.shift();
 
   const positionAttribute = new BufferGeometry()
     .setFromPoints(ellipseCurvePoints)
-    .getAttribute("position");
+    .getAttribute('position');
 
   const vertex = new Vector3();
   for (let i = 0; i < positionAttribute.count; i++) {
@@ -77,196 +74,204 @@ const SceneBuilder = () => {
     groupPositions.push(new Vector3(pt.x, 0, pt.y));
   }
 
-  let cameraTarget =
-    currentSelection?.name.length &&
-    currentSelection.name === pointerTarget?.eventObject &&
-    pointerTarget?.position
-      ? pointerTarget?.position
-      : null;
+  // let cameraTarget =
+  //   pointerTarget?.eventObject && pointerTarget?.position
+  //     ? pointerTarget
+  //     : null;
 
   return (
     <>
-      <CameraRig
-        positionVectors={groupPositions}
-        targetPosition={cameraTarget}
-      />
-      <Selection>
-        <EffectComposer multisampling={0} autoClear={false}>
-          <N8AO
-            radius={0.05}
-            intensity={100}
-            xray={true}
-            luminanceInfluence={0.5}
-            color="white"
-          />
-          <Outline
-            visibleEdgeColor="white"
-            hiddenEdgeColor="white"
-            width={1000}
-            edgeStrength={50}
-            blur={true}
-            pulseSpeed={0.3}
-          />
-        </EffectComposer>
-        <Bounds fit clip margin={1.2} damping={10}>
-          <group>
-            {projects.map((data, index) => {
-              const newProps = {
-                ...data,
-                sceneData: {
-                  ...data.sceneData,
-                  position: groupPositions[index],
-                  autoRotateSpeed: index % 2 == 0 ? -1 : 1,
-                  isPointerOver: pointerTarget.name,
-                },
-              };
+      <CameraRig2 positionVectors={groupPositions} target={pointerTarget} />
+      <EffectComposer autoClear={false} disableNormalPass multisampling={8}>
+        <DepthOfField
+          focusDistance={0}
+          focalLength={0.02}
+          bokehScale={2}
+          height={Resizer.AUTO_SIZE} // render height
+        />
+        <Bloom luminanceThreshold={10} luminanceSmoothing={1} height={200} />
+        <Noise opacity={0.02} />
+        <Vignette eskil={false} offset={0.1} darkness={0.8} />
+        <Outline
+          selection={selected} // selection of objects that will be outlined
+          // selectionLayer={10} // selection layer
+          blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
+          patternTexture={null} // a pattern texture
+          edgeStrength={7} // the edge strength
+          pulseSpeed={0.3} // a pulse speed. A value of zero disables the pulse effect
+          visibleEdgeColor={0xffffff} // the color of visible edges
+          hiddenEdgeColor={0xffffff} // the color of hidden edges
+          width={Resizer.AUTO_SIZE} // render width
+          height={Resizer.AUTO_SIZE} // render height
+          kernelSize={KernelSize.LARGE} // blur kernel size
+          blur={true} // whether the outline should be blurred
+          xRay={true} // indicates whether X-Ray outlines are enabled
+        />
+      </EffectComposer>
+      {projects.map((data, index) => {
+        const groupProps = {
+          onSelect: onSelect,
+          ...data,
+          sceneData: {
+            description: data.description,
+            shortDescription: data.shortDescription,
+            ...data.sceneData,
+            groupName: data.name,
+            position: groupPositions[index],
+            autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
+            isPointerOver: pointerTarget.name,
+          },
+        };
+        return (
+          <group
+            key={groupProps?.name}
+            name={`${groupProps?.name}`}
+            onClick={(e) => {
+              setPointerTarget({
+                eventObject: e.eventObject.name,
+                name: e.object.name,
+                position: e.object.position,
+              });
+              onSelect(selectedRef);
+              showMenu(selectedRef);
+              // console.log('what is the current ref? ', selectedRef);
+            }}
+            onPointerMissed={(e) => {
+              setPointerTarget({});
+              onSelect(undefined);
+              showMenu(undefined);
+              e.stopPropagation();
+              // selectedRef.current = null;
+            }}
+            // onPointerOver={(e) => {
+            //   console.log(
+            //     "%cOnpointerOver",
+            //     "color:yellow; background:magenta;",
+            //     e,
+            //   );
 
-              return (
-                <group
-                  name={`${newProps?.name}`}
-                  key={index}
-                  onClick={(e) => {
-                    handleUpdateSelection(newProps);
-                    setPointerTarget({
-                      eventObject: e.eventObject.name,
-                      name: e.object.name,
-                      position: e.object.position,
-                    });
-                  }}
-                  onPointerOver={(e) => {
-                    if (e.pointerType === "mouse") {
-                      //if a model is highlighted via onClick, do not invoke handler.
-                      //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
-                      if (!currentSelection) {
-                        setPointerTarget({
-                          eventObject: e.eventObject.name,
-                          name: e.object.name,
-                          position: e.object.position,
-                        });
-                      }
-                    } else {
-                      //mobile
-                      handleUpdateSelection(newProps);
-                      setPointerTarget({
-                        eventObject: e.eventObject.name,
-                        name: e.object.name,
-                        position: e.object.position,
-                      });
-                    }
-                  }}
-                  onPointerMissed={() => {
-                    setPointerTarget({});
-                    handleUpdateSelection();
-                  }}
-                  onPointerOut={(e) => {
-                    //don't handle this event on mobile devices.
-                    if (e.pointerType === "mouse") {
-                      if (!currentSelection) {
-                        setPointerTarget({});
-                      }
-                    }
-                  }}
-                >
-                  <Group {...newProps.sceneData}>
-                    <Html
-                      occlude={
-                        !(
-                          !!currentSelection &&
-                          pointerTarget?.eventObject === currentSelection.name
-                        )
-                      }
-                      transform
-                      scale={[10, 10, 10]}
-                      position={[
-                        groupPositions[index].x,
-                        groupPositions[index].y + 40,
-                        groupPositions[index].z,
-                      ]}
-                    >
-                      <div
-                        className={`flex flex-grow cursor-pointer uppercase text-nowrap w-fit h-full text-center p-4 place-self-center place-items-center rounded-full bg-zinc-300 text-clay_dark text-5xl transition-all duration-500 ease-in-out ${!!currentSelection && pointerTarget?.eventObject === currentSelection.name ? "w-96 opacity-90 transition-all duration-500 ease-in-out hover:text-slate-500 hover:bg-zinc-200" : "w-0 opacity-0"}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (currentSelection) {
-                            setSelection(currentSelection);
-                            router.push("/project");
-                          }
-                        }}
-                      >
-                        See More
-                      </div>
-                    </Html>
-                  </Group>
-                </group>
-              );
-            })}
+            //   if (e.pointerType === "mouse") {
+            //     //if a model is highlighted via onClick, do not invoke handler.
+            //     //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
+            //     if (!currentSelection) {
+            //       setPointerTarget({
+            //         eventObject: e.eventObject.name,
+            //         name: e.object.name,
+            //         position: e.object.position,
+            //       });
+            //     }
+            //   } else {
+            //     //mobile
+            //     handleUpdateSelection(groupProps);
+            //     setPointerTarget({
+            //       eventObject: e.eventObject.name,
+            //       name: e.object.name,
+            //       position: e.object.position,
+            //     });
+            //   }
+            // }}
+
+            // onPointerOut={(e) => {
+            //   console.log("%cOnpointerOut", "color:green;", e);
+            //   //don't handle this event on mobile devices.
+            //   if (e.pointerType === "mouse") {
+            //     if (!currentSelection) {
+            //       setPointerTarget({});
+            //     }
+            //   }
+            // }}
+          >
+            {/* <Light
+              position={[
+                groupPositions[index].x,
+                groupPositions[index].y + 900,
+                groupPositions[index].z + 50,
+              ]}
+              intensity={1}
+              target={[
+                groupPositions[index].x,
+                groupPositions[index].y,
+                groupPositions[index].z,
+              ]}
+            /> */}
+
+            <Group
+              // onSelect={onSelect}
+              ref={selectedRef}
+              {...groupProps.sceneData}
+            />
           </group>
-        </Bounds>
-      </Selection>
+        );
+      })}
     </>
   );
 };
 
-export const GlobalModelViewer = () => {
+export const GlobalModelViewer = ({ showMenu }) => {
   return (
-    <Suspense fallback={<Loader />}>
-      <Canvas
-        camera={{
-          position: cameraConfigs.POSITION,
-          near: cameraConfigs.NEAR,
-          far: cameraConfigs.FAR,
-          fov: 50,
-        }}
-        fallback={<div>Sorry no WebGL supported!</div>}
-        orthographic={false}
-        shadows
-      >
-        <Environment shadows files="./studio_small_08_4k.exr" />
-        <color args={["#bcbcbc"]} attach="background" />
-        <fog
-          attach="fog"
-          density={0.005}
-          color="#bcbcbc"
-          near={160}
-          far={290}
-        />
-        <directionalLight
-          castShadow={true}
-          position={[0, 80, -40]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={2}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        />
-        <directionalLight
-          castShadow={true}
-          position={[0, 100, 80]}
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          intensity={1}
-          shadow-camera-near={0.5}
-          shadow-camera-far={1000}
-          shadow-bias={-0.001}
-          shadow-camera-top={1500}
-          shadow-camera-bottom={-1500}
-          shadow-camera-left={-1500}
-          shadow-camera-right={1500}
-        />
-        <SoftShadows samples={8} size={10} />
-        <SceneBuilder />
-        <Ground
-          position={[0, -75, 20]}
-          scale={[2, 1.1, 1.1]}
-          rotation={Math.PI / 14}
-        />
-      </Canvas>
-    </Suspense>
+    <Canvas
+      camera={{
+        // position: cameraConfigs.POSITION,
+        position: [666, 80, 666],
+        near: cameraConfigs.NEAR,
+        far: cameraConfigs.FAR,
+        fov: 50,
+      }}
+      fallback={<div> Sorry, WebGL is not supported.c</div>}
+      orthographic={false}
+      shadows
+    >
+      <Stats />
+      {/* <SoftShadows samples={10} size={6} /> */}
+      <AdaptiveDpr pixelated />
+
+      {/* <AdaptivePixelRatio /> */}
+      <Environment shadows files="./studio_small_08_4k.exr" />
+      {/* <Ground
+        position={[-50, 150, 20]}
+        scale={[1.4, 1, 1.4]}
+        rotation={-Math.PI / 4}
+      /> */}
+      <color args={['#bcbcbc']} attach="background" />
+      <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} />
+      <directionalLight
+        castShadow={true}
+        position={[0, 80, -40]}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        intensity={1}
+        shadow-camera-near={0.05}
+        shadow-camera-far={1000}
+        shadow-bias={-0.001}
+        shadow-camera-top={1500}
+        shadow-camera-bottom={-1500}
+        shadow-camera-left={-1500}
+        shadow-camera-right={1500}
+      />
+      <directionalLight
+        castShadow={true}
+        position={[0, 100, 80]}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        intensity={1}
+        shadow-camera-near={0.05}
+        shadow-camera-far={1000}
+        shadow-bias={-0.001}
+        shadow-camera-top={1500}
+        shadow-camera-bottom={-1500}
+        shadow-camera-left={-1500}
+        shadow-camera-right={1500}
+      />
+
+      <Suspense>
+        <SceneBuilder showMenu={showMenu} />
+      </Suspense>
+      {/* <Ground
+        position={[-50, -85, 20]}
+        scale={[1.4, 1, 1.4]}
+        rotation={Math.PI / 7}
+      /> */}
+    </Canvas>
   );
 };
 
