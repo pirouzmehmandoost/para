@@ -157,7 +157,7 @@ export const portfolio = {
           '/oval_bag_matte_white_4.png',
         ],
       },
-      shortDescription: 'A small collection of 3D printed handbags.',
+      shortDescription: 'A collection of 3D printed handbags.',
       description:
         'Product description: magna congue justo non velit semper elit',
     },
@@ -194,31 +194,23 @@ export const portfolio = {
       },
 
       shortDescription:
-        'An exploration of branding and product design as a Yoga instructor.',
-      description: `I began teaching Yoga at 19, back in 2008. I had started taking classes shortly after graduating from high school, and like many of my interests it became a short lived obsession. 
-        I quit a year and a half later after transferring colleges and leaving my hometown. I didn't return to practicing or teaching until 2023, some 15 years later. Ironically enough I got back into it much in the same way I began, while recovering from an injury.
-        In May 2024, almost a year into teaching I suffered a knee injury that I still have a hard time describing... one day my leg just shot out of its knee joint and nobody, no matter how many emergency room visits I made or MRI's that specialists ordered could tell me why.
-        The scans did reveal arthritis in my back and neck though, which doctors in years prior said may develop subsequent to a car accident that inadvertently led to discovering Yoga. 
+        'An exploration of product design as a Yoga instructor.',
+      description: `I began teaching Yoga at 19, back in 2008. I had started taking classes shortly after graduating from high school. 
+        I quit a year and a half later amidst an irreconcilable clash of spiritual beliefs (mostly guilt for a lack thereof) and a silly a fear of missing out on life through my twenties. I didn't return to teaching for 15 years. 
+      
+        Not long after I suffered a knee injury that left me either u on crutches or unable to walk for half of 2024. I'm still going to physical therapy and jogged for the first time in March of this year.    
+        Anyway, while on leave from work I started designing a line of fitness accessories beginning with a stylized strap for carrying my Yoga mat.         
+        I tested 3D printing prototypes out of rubbers for durability, flexibility, and to see how well they took to color coating. 
+        I started yielding consistent quality benchmark test prints using a foaming urethane, Colorfabb VarioShore TPU. 
+        This material was intended for developing prothetics and orthotics prototypes and has a really satisfying matte finish.  
+        It's abrasion resistant, skin-safe, and lightweight, and also ideal for printing Yoga props like foam blocks. 
         
-        Fast forward two months, and knee did it's thing again, except this time I heard a loud snap and I collapsed in the middle of a crosswalk. Cars waited for me to crawl out of the way. 
-        In the past I could jerk my femur back in place and endure a day of pain, but dislocations were occuring more frequently and this time I was reduced to crawling across the floot on my butt. 
-        I put in my leave from work in July and was taken to an emergency room for the second time. X-rays in the didn't identify issues, but a third MRI (my fourth that year) revealed that the meniscus snapped in multiple spots and a part had flipped over itself. 
-        By great chance a surgeon performed a full repair. If you're unfamiliar with meniscus injuries, full repairs aren't common- roughly 3 in 4 meniscus surgeries involve removal of cartilage and it does not grow back.
-        
-        Anyway, while on leave from work I decided to learn about computer graphics by way of WebGL, three.js, and React Three Fiber. My passions tend to project onto one another, and with a growing interest in 3D printing I decided to learn more about Blender software to materialize several designs.
-        I started a designing a line of fitness accessories beginning with a stylized strap for carrying my Yoga mat. I based the model on a typographic element, my first name initial (branding this is where my skills fall quite short). 
-        However my goal was to extend over the breadth of existing textile-based and pattern-reliant product designs without compromising utility. 
-        
-        While testing aesthetics and printability of various TPU's and TPE's (rubbers) I started yielding consistent quality benchmark test prints using a foaming TPU printed with a Prusa i3 Mk3s+. 
-        I am currently using Colorfabb VarioShore TPU filament, which is intended for developing prothetics and orthotics prototypes.  
-       
-        Given acceptable levels of hygroscopy, elasticity, abrasion resistance and skin-safeness a printable foam-like material would be perfect for prototyping fitness accessories. 
-        I spent 8 weeks perfoming mechanical upkeep, ordering and upgrading parts, calibrating print settings, and testing post-production methods (sourcing an air compressor, spray gun, 
-        air-cure ceramic automotive paints, testing solvents) to achieve results with acceptable levels abrasion resistance and durability. 
-        Uncoated prototypes made with Varioshore TPU achieve visual likeness and shore-hardness of EVA foam and cork commonly used to manifacture Yoga support blocks. They are also hypoallergenic. 
+        I spent 8 weeks perfoming mechanical upkeep, ordering and upgrading parts, calibrating print settings. I bought an air compressor and an iwata LPH 80 spray gun, cerakote paints, and built a paint booth the size of a small shed. 
+        Uncoated prototypes made with Varioshore TPU achieve visual likeness and shore-hardness of EVA foam and cork commonly used to manifacture Yoga support blocks. They are also hypoallergenic and beautiful... which is nice because 
+        paint coatings don't stick to it well. 
 
-        I queue my project stages to keep moving at all times, and printed the second prototype of a handbag with a matte-black finish as the most recent quality test. 
-        Keep eyeing this project on github, find me on LinkedIn, and check out my instagram as I post updates on the design and prototyping process. I've recently returned to teaching yoga and look forward to testing it!  
+        At the moment I'm testing how more affordable TPU's take to paint coatings, since Cerakote offers such a wide range of color coats. The second prototype is about to be tested and now allows he user to adjust strap's aperture with 
+        a nifty lock design I spent 2 weeks designing and printing as a standalone component which can be dropped into the updated strap without changing it's appearance.    
 `,
     },
   ],
