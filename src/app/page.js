@@ -67,9 +67,6 @@ const variants = {
       opacity: 1,
       width: 'auto',
       height: '100vh',
-      // top: '-25px',
-      // right: '-25px',
-      // boxShadow: '0px -300px 80px 100px rgba(255,255,255,.3)',
       transition: {
         duration: 0.75,
         type: 'tween',
@@ -82,10 +79,6 @@ const variants = {
       opacity: 0,
       width: '1vw',
       height: '1vh',
-      // top: '0px',
-      // right: '0px',
-      // top: '50vh',
-      // right: '50vw',
       transition: {
         delay: 0.5,
         duration: 0.75,
@@ -97,8 +90,6 @@ const variants = {
   },
   overlay: {
     open: {
-      // backdropFilter: 'blur(100px)',
-      // filter: 'blur(10px)',
       opacity: 1,
       width: '100vw',
       height: '100vh',
@@ -108,12 +99,9 @@ const variants = {
         type: 'easeInOut',
         ease: [0.76, 0, 0.24, 1],
         opacity: { delay: 0.5 },
-        // backdropFilter: { delay: 0 },
       },
     },
     closed: {
-      // backdropFilter: 'blur(0px)',
-      // filter: 'blur(0px)',
       opacity: 0,
       width: '1vw',
       height: '1vh',
@@ -123,7 +111,6 @@ const variants = {
         type: 'easeInOut',
         ease: [0.76, 0, 0.24, 1],
         opacity: { delay: 0.5 },
-        // backdropFilter: { delay: 0 },
       },
     },
   },
@@ -270,7 +257,6 @@ const Menu = () => {
           setIsActive(!isActive);
         }}
       />
-
       {/* menu/links container */}
       <motion.div
         variants={variants.menu}
@@ -424,12 +410,12 @@ const BottomMenu = ({ showMenu }) => {
 
   const [isActive, setIsActive] = useState(showMenu);
 
-  console.log('BottomMenu. showMenu: ', showMenu);
-
   useEffect(() => {
     if (showMenu) setIsActive(showMenu);
     else setIsActive(undefined);
   }, [showMenu]);
+
+  // console.log('BottomMenu. showMenu: ', isActive?.name);
 
   const links = [
     {
@@ -438,69 +424,69 @@ const BottomMenu = ({ showMenu }) => {
     },
 
     {
-      title: `${isActive?.current?.name}`,
+      title: `title is ${isActive?.name}`,
       callBack: false,
     },
   ];
 
-  const MenuLinks = ({ callBack }) => {
-    return (
-      <div className="flex flex-col w-full h-full justify-around text-center text-4xl uppercase text-neutral-900 bg-neutral-300">
-        {/* Header */}
-        <motion.div
-          key={`b_0`}
-          custom={0}
-          variants={motionVariants.top}
-          initial="initial"
-          animate="enter"
-          exit="exit"
-          className="flex flex-row w-full h-fit justify-center text-nowrap perspective-origin-bottom bg-neutral-500/0"
-          style={{
-            maskImage:
-              'radial-gradient(ellipse 80% 100% at 50% 50% , #a3a3a3 30%, #a3a3a300 90%)',
-          }}
-        >
-          <div className="text-nowrap sm:text-4xl md:text-4xl lg:text:5xl xl:text-5xl 2xl:text-5xl md:px-1 xl:px-1 lg:px-1 2xl:px-1">
-            Some Text
-          </div>
-        </motion.div>
-        {/* top links */}
-        <div
-          className="flex flex-row w-full h-fit justify-between bg-neutral-500/0"
-          style={{
-            maskImage:
-              'radial-gradient(ellipse 70% 80% at 50% 50% , #a3a3a3 30%, #a3a3a300 70%)',
-          }}
-        >
-          {links.map((link, i) => {
-            const { title, href } = link;
-            return (
-              <div
-                key={`b_${i + 1}`}
-                className="perspective-origin-bottom my-2"
-              >
-                <motion.div
-                  custom={i + 1}
-                  variants={motionVariants.top}
-                  initial="initial"
-                  animate="enter"
-                  exit="exit"
-                >
-                  {link.callBack ? (
-                    <div className="cursor-pointer" onClick={() => callBack()}>
-                      {title}
-                    </div>
-                  ) : (
-                    <p>{title} </p>
-                  )}
-                </motion.div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
+  // const MenuLinks = ({ callBack }) => {
+  //   return (
+  //     <div className="flex flex-col w-full h-full justify-around text-center text-4xl uppercase text-neutral-900 bg-neutral-300">
+  //       {/* Header */}
+  //       <motion.div
+  //         key={`b_0`}
+  //         custom={0}
+  //         variants={motionVariants.top}
+  //         initial="initial"
+  //         animate="enter"
+  //         exit="exit"
+  //         className="flex flex-row w-full h-fit justify-center text-nowrap perspective-origin-bottom bg-neutral-500/0"
+  //         style={{
+  //           maskImage:
+  //             'radial-gradient(ellipse 80% 100% at 50% 50% , #a3a3a3 30%, #a3a3a300 90%)',
+  //         }}
+  //       >
+  //         <div className="text-nowrap sm:text-4xl md:text-4xl lg:text:5xl xl:text-5xl 2xl:text-5xl md:px-1 xl:px-1 lg:px-1 2xl:px-1">
+  //           Some Text
+  //         </div>
+  //       </motion.div>
+  //       {/* top links */}
+  //       <div
+  //         className="flex flex-row w-full h-fit justify-between bg-neutral-500/0"
+  //         style={{
+  //           maskImage:
+  //             'radial-gradient(ellipse 70% 80% at 50% 50% , #a3a3a3 30%, #a3a3a300 70%)',
+  //         }}
+  //       >
+  //         {links.map((link, i) => {
+  //           const { title, href } = link;
+  //           return (
+  //             <div
+  //               key={`b_${i + 1}`}
+  //               className="perspective-origin-bottom my-2"
+  //             >
+  //               <motion.div
+  //                 custom={i + 1}
+  //                 variants={motionVariants.top}
+  //                 initial="initial"
+  //                 animate="enter"
+  //                 exit="exit"
+  //               >
+  //                 {link.callBack ? (
+  //                   <div className="cursor-pointer" onClick={() => callBack()}>
+  //                     {title}
+  //                   </div>
+  //                 ) : (
+  //                   <p>{title} </p>
+  //                 )}
+  //               </motion.div>
+  //             </div>
+  //           );
+  //         })}
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   // const CloseButton = ({ isActive, callBack }) => {
   //   return (
@@ -521,12 +507,6 @@ const BottomMenu = ({ showMenu }) => {
           'radial-gradient(ellipse 70% 80% at 50% 50% , #a3a3a3 30%, #a3a3a300 70%)',
       }}
     >
-      {/* <CloseButton
-        isActive={isActive}
-        callBack={() => {
-          setIsActive(!isActive);
-        }}
-      /> */}
       {/* menu/links container */}
       <motion.div
         variants={motionVariants.menu}
@@ -536,13 +516,8 @@ const BottomMenu = ({ showMenu }) => {
         <AnimatePresence>
           {isActive && (
             <div className="bg-neutral-300/50 text-4xl uppercase text-neutral-900 backdrop-blur-xl ">
-              {isActive ? isActive?.current?.name : 'nothing selected'}
+              {isActive ? isActive?.name : 'nothing selected'}
             </div>
-            // <MenuLinks
-            //   callBack={() => {
-            //     setIsActive(!isActive);
-            //   }}
-            // />
           )}
         </AnimatePresence>
       </motion.div>

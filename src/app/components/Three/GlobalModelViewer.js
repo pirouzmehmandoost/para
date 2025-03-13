@@ -3,16 +3,16 @@
 import React, { Suspense, useState, useRef } from 'react';
 import { BufferGeometry, EllipseCurve, Vector3 } from 'three';
 import { Canvas, useThree } from '@react-three/fiber';
-import { Environment, Stats, AdaptiveDpr } from '@react-three/drei';
+import { Environment, AdaptiveDpr } from '@react-three/drei';
 import cameraConfigs from '@/lib/cameraConfigs';
 import { portfolio } from '@/lib/globals';
 import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
-// import AdaptivePixelRatio from './AdaptivePixelRatio';
 import { CameraRig2 } from './CameraRig';
 // import { Ground } from '@/public/Ground';
 import Group from './Group';
 // import Light from './Light';
 import * as THREE from 'three';
+import useSelection from '@/stores/selectionStore';
 import { BlendFunction, Resizer, KernelSize } from 'postprocessing';
 import {
   Bloom,
@@ -26,28 +26,29 @@ import {
 THREE.ColorManagement.enabled = true;
 
 const SceneBuilder = ({ showMenu }) => {
-  const selectedRef = useRef();
+  const setSelection = useSelection((state) => state.setSelection);
+  const resetSelection = useSelection((state) => state.reset);
+
+  const selectedRef = useRef(null);
   const { size, scene } = useThree();
   const [clicked, onSelect] = useState(null);
   const selected = clicked ? [clicked] : undefined;
-
   const [pointerTarget, setPointerTarget] = useState({
     eventObject: '',
     name: '',
     position: null,
   });
-
-  if (
-    pointerTarget?.name?.length > 0 &&
-    scene.getObjectByName(pointerTarget.name)
-  ) {
-    selectedRef.current = scene.getObjectByName(pointerTarget.name);
-  }
-
   const { projects } = portfolio;
   const groupPositions = [];
-  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
 
+  // if (
+  //   pointerTarget?.name?.length > 0 &&
+  //   scene.getObjectByName(pointerTarget.name)
+  // ) {
+  //   selectedRef.current = scene.getObjectByName(pointerTarget.name);
+  // }
+
+  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
   const ellipseCurve = new EllipseCurve(
     0,
     0,
@@ -79,6 +80,12 @@ const SceneBuilder = ({ showMenu }) => {
   //     ? pointerTarget
   //     : null;
 
+  //  onClick={(e) => {
+  //     e.stopPropagation();
+  //     handleUpdateSelection(props);
+  //     router.push('/project');
+  //  }}
+
   return (
     <>
       <CameraRig2 positionVectors={groupPositions} target={pointerTarget} />
@@ -94,7 +101,7 @@ const SceneBuilder = ({ showMenu }) => {
         <Vignette eskil={false} offset={0.1} darkness={0.8} />
         <Outline
           selection={selected} // selection of objects that will be outlined
-          // selectionLayer={10} // selection layer
+          selectionLayer={10} // selection layer
           blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
           patternTexture={null} // a pattern texture
           edgeStrength={7} // the edge strength
@@ -132,16 +139,17 @@ const SceneBuilder = ({ showMenu }) => {
                 name: e.object.name,
                 position: e.object.position,
               });
-              onSelect(selectedRef);
-              showMenu(selectedRef);
-              // console.log('what is the current ref? ', selectedRef);
+              onSelect(e.object);
+              showMenu(e.object);
+              setSelection(groupProps);
+              console.log('what is the current ref? ', selectedRef);
             }}
             onPointerMissed={(e) => {
+              e.stopPropagation();
               setPointerTarget({});
               onSelect(undefined);
               showMenu(undefined);
-              e.stopPropagation();
-              // selectedRef.current = null;
+              resetSelection();
             }}
             // onPointerOver={(e) => {
             //   console.log(
@@ -195,11 +203,7 @@ const SceneBuilder = ({ showMenu }) => {
               ]}
             /> */}
 
-            <Group
-              // onSelect={onSelect}
-              ref={selectedRef}
-              {...groupProps.sceneData}
-            />
+            <Group ref={selectedRef} {...groupProps.sceneData} />
           </group>
         );
       })}
@@ -221,17 +225,8 @@ export const GlobalModelViewer = ({ showMenu }) => {
       orthographic={false}
       shadows
     >
-      <Stats />
-      {/* <SoftShadows samples={10} size={6} /> */}
       <AdaptiveDpr pixelated />
-
-      {/* <AdaptivePixelRatio /> */}
       <Environment shadows files="./studio_small_08_4k.exr" />
-      {/* <Ground
-        position={[-50, 150, 20]}
-        scale={[1.4, 1, 1.4]}
-        rotation={-Math.PI / 4}
-      /> */}
       <color args={['#bcbcbc']} attach="background" />
       <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} />
       <directionalLight
@@ -262,7 +257,6 @@ export const GlobalModelViewer = ({ showMenu }) => {
         shadow-camera-left={-1500}
         shadow-camera-right={1500}
       />
-
       <Suspense>
         <SceneBuilder showMenu={showMenu} />
       </Suspense>
