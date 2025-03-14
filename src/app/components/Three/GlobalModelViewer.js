@@ -1,19 +1,9 @@
 'use client';
-
-import React, { Suspense, useState, useRef } from 'react';
-import { BufferGeometry, EllipseCurve, Vector3 } from 'three';
+import { Suspense, useState, useRef } from 'react';
+import * as THREE from 'three';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment, AdaptiveDpr } from '@react-three/drei';
-import cameraConfigs from '@/lib/cameraConfigs';
-import { portfolio } from '@/lib/globals';
-import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
-import { CameraRig2 } from './CameraRig';
-// import { Ground } from '@/public/Ground';
-import Group from './Group';
-// import Light from './Light';
-import * as THREE from 'three';
-import useSelection from '@/stores/selectionStore';
-import { BlendFunction, Resizer, KernelSize } from 'postprocessing';
+import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import {
   Bloom,
   DepthOfField,
@@ -22,6 +12,13 @@ import {
   Vignette,
   Outline,
 } from '@react-three/postprocessing';
+import useSelection from '@/stores/selectionStore';
+import cameraConfigs from '@/lib/cameraConfigs';
+import { portfolio } from '@/lib/globals';
+import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
+import { CameraRig2 } from './CameraRig';
+// import { Ground } from '@/public/Ground';
+import Group from './Group';
 
 THREE.ColorManagement.enabled = true;
 
@@ -30,7 +27,7 @@ const SceneBuilder = ({ showMenu }) => {
   const resetSelection = useSelection((state) => state.reset);
 
   const selectedRef = useRef(null);
-  const { size, scene } = useThree();
+  const { size } = useThree();
   const [clicked, onSelect] = useState(null);
   const selected = clicked ? [clicked] : undefined;
   const [pointerTarget, setPointerTarget] = useState({
@@ -49,7 +46,7 @@ const SceneBuilder = ({ showMenu }) => {
   // }
 
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
-  const ellipseCurve = new EllipseCurve(
+  const ellipseCurve = new THREE.EllipseCurve(
     0,
     0,
     ellipseRadius,
@@ -65,26 +62,20 @@ const SceneBuilder = ({ showMenu }) => {
   // getPoints always returns one additional point.
   ellipseCurvePoints.shift();
 
-  const positionAttribute = new BufferGeometry()
+  const positionAttribute = new THREE.BufferGeometry()
     .setFromPoints(ellipseCurvePoints)
     .getAttribute('position');
 
-  const vertex = new Vector3();
+  const vertex = new THREE.Vector3();
   for (let i = 0; i < positionAttribute.count; i++) {
     const pt = vertex.fromBufferAttribute(positionAttribute, i);
-    groupPositions.push(new Vector3(pt.x, 0, pt.y));
+    groupPositions.push(new THREE.Vector3(pt.x, 0, pt.y));
   }
 
   // let cameraTarget =
   //   pointerTarget?.eventObject && pointerTarget?.position
   //     ? pointerTarget
   //     : null;
-
-  //  onClick={(e) => {
-  //     e.stopPropagation();
-  //     handleUpdateSelection(props);
-  //     router.push('/project');
-  //  }}
 
   return (
     <>
@@ -190,7 +181,9 @@ const SceneBuilder = ({ showMenu }) => {
             //   }
             // }}
           >
-            {/* <Light
+            {/* 
+            shader error occurs when with these lights are used along with SoftShadow
+            <Light
               position={[
                 groupPositions[index].x,
                 groupPositions[index].y + 900,
