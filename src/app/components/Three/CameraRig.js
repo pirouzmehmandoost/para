@@ -1,17 +1,10 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { CatmullRomCurve3, Vector3 } from 'three';
-import { useFrame, useThree, extend } from '@react-three/fiber';
+import { easing } from 'maath';
+import { useFrame, useThree } from '@react-three/fiber';
+import { CameraControls } from '@react-three/drei';
 import cameraConfigs from '@/lib/cameraConfigs';
-import { easing, geometry } from 'maath';
-import {
-  useCursor,
-  MeshPortalMaterial,
-  CameraControls,
-  Gltf,
-  Text,
-  Preload,
-} from '@react-three/drei';
 
 export const SimpleCameraRig = (data) => {
   const { cameraPosition = [0, 10, 180] } = data;
@@ -52,15 +45,8 @@ function Rig({
   );
 }
 
-// export const CameraRig2 = (positionVectors, targetPosition) => {
-export const CameraRig2 = ({ positionVectors = [], target }) => {
-  const {
-    name = '',
-    eventObject = '',
-    position: targetPosition = null,
-  } = target;
-  const { controls, scene, camera: cam } = useThree();
-
+export const CameraRig2 = ({ positionVectors = [], target = {} }) => {
+  const { position: targetPosition = null } = target;
   const ref = useRef(undefined);
   const v = new Vector3();
   const cameraPathCurve = new CatmullRomCurve3(
@@ -139,7 +125,6 @@ export const CameraRig2 = ({ positionVectors = [], target }) => {
 
       //lerp camera target and position
       // camera.lookAt(camera.position.lerp(v, 0.06));
-
       easing.damp3(camera.position, p, 0.8, delta);
 
       // easing.damp3(camera.position, p, 0.25, delta);
