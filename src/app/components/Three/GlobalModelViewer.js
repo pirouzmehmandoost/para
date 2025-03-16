@@ -1,5 +1,5 @@
 'use client';
-import { Suspense, useState, useRef } from 'react';
+import { Suspense, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment, AdaptiveDpr } from '@react-three/drei';
@@ -25,25 +25,16 @@ THREE.ColorManagement.enabled = true;
 const SceneBuilder = ({ showMenu }) => {
   const setSelection = useSelection((state) => state.setSelection);
   const resetSelection = useSelection((state) => state.reset);
-
-  const selectedRef = useRef(null);
   const { size } = useThree();
-  const [clicked, onSelect] = useState(null);
+  const [clicked, setClicked] = useState(null);
   const selected = clicked ? [clicked] : undefined;
-  const [pointerTarget, setPointerTarget] = useState({
-    eventObject: '',
-    name: '',
-    position: null,
-  });
+  // const [pointerTarget, setPointerTarget] = useState({
+  //   eventObject: '',
+  //   name: '',
+  //   position: null,
+  // });
   const { projects } = portfolio;
   const groupPositions = [];
-
-  // if (
-  //   pointerTarget?.name?.length > 0 &&
-  //   scene.getObjectByName(pointerTarget.name)
-  // ) {
-  //   selectedRef.current = scene.getObjectByName(pointerTarget.name);
-  // }
 
   const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
   const ellipseCurve = new THREE.EllipseCurve(
@@ -79,7 +70,7 @@ const SceneBuilder = ({ showMenu }) => {
 
   return (
     <>
-      <CameraRig2 positionVectors={groupPositions} target={pointerTarget} />
+      <CameraRig2 positionVectors={groupPositions} target={selected} />
       <EffectComposer autoClear={false} disableNormalPass multisampling={8}>
         <DepthOfField
           focusDistance={0}
@@ -108,7 +99,6 @@ const SceneBuilder = ({ showMenu }) => {
       </EffectComposer>
       {projects.map((data, index) => {
         const groupProps = {
-          onSelect: onSelect,
           ...data,
           sceneData: {
             description: data.description,
@@ -117,8 +107,8 @@ const SceneBuilder = ({ showMenu }) => {
             groupName: data.name,
             position: groupPositions[index],
             autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
-            isPointerOver: pointerTarget.name,
-            // isPointerOver: selected?.name,
+            // isPointerOver: pointerTarget.name,
+            isPointerOver: selected?.name,
           },
         };
         return (
@@ -126,30 +116,23 @@ const SceneBuilder = ({ showMenu }) => {
             key={groupProps?.name}
             name={`${groupProps?.name}`}
             onClick={(e) => {
-              setPointerTarget({
-                eventObject: e.eventObject.name,
-                name: e.object.name,
-                position: e.object.position,
-              });
-              onSelect(e.object);
+              // setPointerTarget({
+              //   eventObject: e.eventObject.name,
+              //   name: e.object.name,
+              //   position: e.object.position,
+              // });
+              setClicked(e.object);
               showMenu(e.object);
               setSelection(groupProps);
-              console.log('what is the current ref? ', selectedRef);
             }}
             onPointerMissed={(e) => {
               e.stopPropagation();
-              setPointerTarget({});
-              onSelect(undefined);
+              // setPointerTarget({});
+              setClicked(undefined);
               showMenu(undefined);
               resetSelection();
             }}
             // onPointerOver={(e) => {
-            //   console.log(
-            //     "%cOnpointerOver",
-            //     "color:yellow; background:magenta;",
-            //     e,
-            //   );
-
             //   if (e.pointerType === "mouse") {
             //     //if a model is highlighted via onClick, do not invoke handler.
             //     //otherwise pointerTarget will set to a new value if mouse hovers over nearby meshes.
@@ -170,9 +153,7 @@ const SceneBuilder = ({ showMenu }) => {
             //     });
             //   }
             // }}
-
             // onPointerOut={(e) => {
-            //   console.log("%cOnpointerOut", "color:green;", e);
             //   //don't handle this event on mobile devices.
             //   if (e.pointerType === "mouse") {
             //     if (!currentSelection) {
@@ -196,8 +177,7 @@ const SceneBuilder = ({ showMenu }) => {
                 groupPositions[index].z,
               ]}
             /> */}
-
-            <Group ref={selectedRef} {...groupProps.sceneData} />
+            <Group {...groupProps.sceneData} />
           </group>
         );
       })}
