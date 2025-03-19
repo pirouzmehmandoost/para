@@ -17,7 +17,7 @@ import cameraConfigs from '@/lib/cameraConfigs';
 import { portfolio } from '@/lib/globals';
 import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
 import { CameraRig2 } from './CameraRig';
-// import { Ground } from '@/public/Ground';
+import { Ground } from '@/public/Ground';
 import Group from './Group';
 
 THREE.ColorManagement.enabled = true;
@@ -218,11 +218,11 @@ export const GlobalModelViewer = ({ showMenu }) => {
       <Suspense>
         <SceneBuilder showMenu={showMenu} />
       </Suspense>
-      {/* <Ground
+      <Ground
         position={[-50, -85, 20]}
         scale={[1.4, 1, 1.4]}
         rotation={Math.PI / 7}
-      /> */}
+      />
     </Canvas>
   );
 };
