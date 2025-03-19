@@ -46,6 +46,7 @@ function Rig({
 }
 
 export const CameraRig2 = ({ positionVectors = [], target = {} }) => {
+  console.log('target is:', target?.position);
   const { position: targetPosition = null } = target;
   const ref = useRef(undefined);
   const v = new Vector3();

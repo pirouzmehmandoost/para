@@ -26,13 +26,8 @@ const SceneBuilder = ({ showMenu }) => {
   const setSelection = useSelection((state) => state.setSelection);
   const resetSelection = useSelection((state) => state.reset);
   const { size } = useThree();
-  const [clicked, setClicked] = useState(null);
+  const [clicked, setClicked] = useState(undefined); //=useState(null);
   const selected = clicked ? [clicked] : undefined;
-  // const [pointerTarget, setPointerTarget] = useState({
-  //   eventObject: '',
-  //   name: '',
-  //   position: null,
-  // });
   const { projects } = portfolio;
   const groupPositions = [];
 
@@ -63,14 +58,9 @@ const SceneBuilder = ({ showMenu }) => {
     groupPositions.push(new THREE.Vector3(pt.x, 0, pt.y));
   }
 
-  // let cameraTarget =
-  //   pointerTarget?.eventObject && pointerTarget?.position
-  //     ? pointerTarget
-  //     : null;
-
   return (
     <>
-      <CameraRig2 positionVectors={groupPositions} target={selected} />
+      <CameraRig2 positionVectors={groupPositions} target={clicked} />
       <EffectComposer autoClear={false} disableNormalPass multisampling={8}>
         <DepthOfField
           focusDistance={0}
@@ -108,7 +98,7 @@ const SceneBuilder = ({ showMenu }) => {
             position: groupPositions[index],
             autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
             // isPointerOver: pointerTarget.name,
-            isPointerOver: selected?.name,
+            isPointerOver: clicked?.name || '',
           },
         };
         return (
@@ -116,18 +106,12 @@ const SceneBuilder = ({ showMenu }) => {
             key={groupProps?.name}
             name={`${groupProps?.name}`}
             onClick={(e) => {
-              // setPointerTarget({
-              //   eventObject: e.eventObject.name,
-              //   name: e.object.name,
-              //   position: e.object.position,
-              // });
               setClicked(e.object);
               showMenu(e.object);
               setSelection(groupProps);
             }}
             onPointerMissed={(e) => {
               e.stopPropagation();
-              // setPointerTarget({});
               setClicked(undefined);
               showMenu(undefined);
               resetSelection();
