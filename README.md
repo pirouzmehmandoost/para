@@ -24,16 +24,12 @@ My current development goals are :
 
 # Current To Do's:
 
-- Linting- Configure linter with rules for Tailwind CSS.
-- Resume page- iframe does not enable responsive styling on mobile screens, looks worse when device orientation tilts to landscape.
+- Resume page- Remove iframe and redesign this component.
 - Home page- Create a new spash page with a modal which may route to the current home page.
 - Projects page (current home page) - at first glance it isn't clear what my "recent design projects" are.
 
-- Issues when running on mobile- canvas pointer event handler logic needs refinement. meshes could be easier to select.
-- No logic to conditionally enable routing.
-- make a streamlined version of the app for interviews (different route).
-- menus should have a visible toggle expand/collapse icon, and should upen up to screen width/height
-- yarn exec prettier . --write
+- Issues when running on mobile- 
+- I'm rebuilding this app with mobile UX in mind. 
 
 Libraries Extensively Used:
 
