@@ -31,7 +31,7 @@ const ProjectPage = () => {
   const data = {
     ...selection.sceneData,
     modelUrl: selection.sceneData?.ModelUrl
-      ? election.sceneData?.ModelUrl
+      ? selection.sceneData?.ModelUrl
       : selection?.sceneData?.modelUrls[0],
     autoRotate: true,
     autoRotateSpeed: 0.4,
