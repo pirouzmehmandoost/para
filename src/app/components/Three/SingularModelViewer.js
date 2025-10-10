@@ -15,39 +15,6 @@ import Model from './Model';
 
 ColorManagement.enabled = true;
 
-// const scaleModel = (width) => {
-//   if (width <= 360) {
-//     return 0.525;
-//   }
-//   if (width <= 400) {
-//     return 0.55;
-//   }
-//   if (width <= 480) {
-//     return 0.7;
-//   }
-//   if (width <= 640) {
-//     //sm
-//     return 0.75;
-//   }
-//   if (width <= 768) {
-//     //md
-//     return 0.8;
-//   }
-//   if (width <= 1024) {
-//     //lg
-//     return 0.9;
-//   }
-//   if (width <= 1280) {
-//     //xl
-//     return 1.0;
-//   }
-//   if (width <= 1536) {
-//     //2xl
-//     return 1.1;
-//   }
-//   return 1.2;
-// };
-
 export const SingularModelViewer = ({ data }) => {
   return (
     <Canvas
