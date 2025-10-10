@@ -1,8 +1,4 @@
-// export default eslintConfig;
 /** @type {import('eslint').Linter.Config[]} */
-// import eslintConfigPrettier from "eslint-config-prettier";
-// import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-// import tailwind from "eslint-plugin-tailwindcss";
 
 import { FlatCompat } from "@eslint/eslintrc";
 import path from "path";
@@ -17,14 +13,6 @@ const compat = new FlatCompat({
 
 const configs = [
   ...compat.extends("next/core-web-vitals"),
-  //   ...compat.extends("eslint-plugin-tailwindcss"),
-  //   ...compat.extends(...tailwind.configs["flat/recommended"]),
-
-  //   ...compat.extends("prettier-plugin-tailwindcss"),
-  //   ...compat.extends("prettier"),
-  //   ...compat.extends(eslintConfigPrettier),
-  //  ...compat.extends(eslintPluginPrettierRecommended),
-  //   ...compat.extends("next/typescript"),
 ];
 
 export default configs;
