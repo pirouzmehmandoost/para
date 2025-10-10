@@ -35,18 +35,6 @@ const ProjectsPage = () => {
       <div className="fixed inset-0 bottom-10 flex-col grow w-full self-end h-full">
         <GlobalModelViewer />
       </div>
-      {/* <div
-        className={`absolute top-96 z-100 left-10 p-8 rounded-full 
-            text-neutral-600 bg-neutral-500/5 backdrop-blur-md
-            transition-all duration-400 ease-in-out hover:text-neutral-300 hover:bg-neutral-500/10 hover:backdrop-blur-sm
-            `}
-      >
-        <Link href="/" rel="noopener noreferrer">
-          <div className="flex flex-row w-full place-items-center cursor-pointer">
-            <ArrowBackIosNewIcon fontSize="large" />
-          </div>
-        </Link>
-      </div> */}
     </div>
   );
 };
