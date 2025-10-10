@@ -127,19 +127,10 @@ export const portfolio = {
           defaultMaterial: 'gloss_black',
           colorWays: ['gloss_black', 'matte_black', 'eggshell'],
         },
-        // modelUrls: [
-        //   { name: "bag_9_for_web", url: "/oval_bag_3-transformed.glb" },
-        //   { name: "bag_88", url: "/bag_xl-transformed.glb" },
-        //   { name: "bag_85", url: "/oval_bag_xl_v2-transformed.glb" },
-        // ],
         modelUrls: [
-          // { name: 'bag_9_for_web', url: '/oval_bag_3.glb' },
-          { name: 'bag_88', url: '/bag_xl-transformed.glb' },
-          // { name: 'bag_85', url: '/oval_bag_xl_v2.glb' },
-          //
-          // { name: 'subdidived_wave_sandal002', url: '/rocky_sandal_web.glb' },
+          { name: 'bag_88_v4_for_web', url: '/bag_8.8_v4_for_web-transformed.glb' },
         ],
-        scale: 0.7,
+        scale: 0.5,
       },
       name: 'Gerd',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
@@ -157,7 +148,7 @@ export const portfolio = {
           '/oval_bag_matte_white_4.png',
         ],
       },
-      shortDescription: 'A collection of 3D printed handbags.',
+      shortDescription: 'A simple shoulder bag printed with foaming TPU',
       description:
         'Product description: magna congue justo non velit semper elit',
     },
