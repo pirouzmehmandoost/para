@@ -43,7 +43,7 @@ const Model = ({ onHover, ...props }) => {
           <mesh
             ref={meshRef}
             castShadow={true}
-            recieveShadow={true}
+            receiveShadow={true}
             {...meshProps}
           />
         </Select>
