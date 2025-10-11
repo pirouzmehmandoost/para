@@ -1,5 +1,6 @@
 'use client';
-import { Suspense, useState } from 'react';
+
+import { Suspense, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Environment, AdaptiveDpr } from '@react-three/drei';
@@ -26,37 +27,37 @@ const SceneBuilder = ({ showMenu }) => {
   const setSelection = useSelection((state) => state.setSelection);
   const resetSelection = useSelection((state) => state.reset);
   const { size } = useThree();
-  const [clicked, setClicked] = useState(undefined); //=useState(null);
+  const [clicked, setClicked] = useState(undefined);
   const selected = clicked ? [clicked] : undefined;
   const { projects } = portfolio;
-  const groupPositions = [];
 
-  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
+const ellipseRadius = useMemo(() => scaleMeshAtBreakpoint(size.width) * 150, [size.width]);
+
+const groupPositions = useMemo(() => {
   const ellipseCurve = new THREE.EllipseCurve(
-    0,
-    0,
-    ellipseRadius,
-    ellipseRadius,
-    0,
-    2 * Math.PI,
-    false,
+    0, 0,
+    ellipseRadius, ellipseRadius,
+    0, 2 * Math.PI, false,
     projects.length % 2 == 0 ? 0 : Math.PI / 2,
   );
   ellipseCurve.closed = true;
 
   const ellipseCurvePoints = ellipseCurve.getPoints(projects.length);
-  // getPoints always returns one additional point.
   ellipseCurvePoints.shift();
 
   const positionAttribute = new THREE.BufferGeometry()
     .setFromPoints(ellipseCurvePoints)
     .getAttribute('position');
 
+  const positions = [];
   const vertex = new THREE.Vector3();
   for (let i = 0; i < positionAttribute.count; i++) {
     const pt = vertex.fromBufferAttribute(positionAttribute, i);
-    groupPositions.push(new THREE.Vector3(pt.x, 0, pt.y));
+    positions.push(new THREE.Vector3(pt.x, 0, pt.y));
   }
+  
+  return positions;
+}, [ellipseRadius]);
 
   return (
     <>
