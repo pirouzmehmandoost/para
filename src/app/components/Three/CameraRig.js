@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { CatmullRomCurve3, Vector3 } from 'three';
 import { easing } from 'maath';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import cameraConfigs from '@/lib/cameraConfigs';
 
 export const SimpleCameraRig = (data) => {
@@ -36,7 +36,7 @@ export const CameraRig2 = ({ positionVectors = [], target = {} }) => {
   );
 
   useFrame(({ clock, camera }, delta) => {
-    let t = clock.elapsedTime;
+    // let t = clock.elapsedTime; //unused, keeping for reference.
 
     if (targetPosition?.x) {
       v.set(
