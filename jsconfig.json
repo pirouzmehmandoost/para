@@ -2,10 +2,11 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@/public/*": ["./public/*"],
-      "@/utils/*": ["./src/lib/utils/*"],
-      "@/stores/*": ["./src/app/stores/*"],
-      "@/components/*": ["./src/app/components/*"]
+      "@public/*": ["./public/*"],
+      "@utils/*": ["./src/lib/utils/*"],
+      "@stores/*": ["./src/app/stores/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@configs/*": ["./src/lib/configs/*"],
     }
   }
 }
