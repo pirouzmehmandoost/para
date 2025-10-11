@@ -57,8 +57,8 @@ export const SingularModelViewer = ({ data }) => {
       <directionalLight
         castShadow={true}
         position={[-12, 50, -50]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
         intensity={3}
         shadow-camera-near={0.1}
         shadow-camera-far={500}
