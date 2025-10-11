@@ -62,7 +62,7 @@ const groupPositions = useMemo(() => {
   return (
     <>
       <CameraRig2 positionVectors={groupPositions} target={clicked} />
-      <EffectComposer autoClear={false} disableNormalPass multisampling={8}>
+      <EffectComposer autoClear={false} disableNormalPass multisampling={4}>
         <DepthOfField
           focusDistance={0}
           focalLength={0.02}
@@ -191,8 +191,8 @@ export const GlobalModelViewer = ({ showMenu }) => {
       <directionalLight
         castShadow={true}
         position={[0, 80, -40]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
         intensity={1}
         shadow-camera-near={0.05}
         shadow-camera-far={1000}
@@ -205,8 +205,8 @@ export const GlobalModelViewer = ({ showMenu }) => {
       <directionalLight
         castShadow={true}
         position={[0, 100, 80]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
         intensity={1}
         shadow-camera-near={0.05}
         shadow-camera-far={1000}
