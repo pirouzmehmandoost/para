@@ -13,12 +13,12 @@ import {
   Vignette,
   Outline,
 } from '@react-three/postprocessing';
-import useSelection from '@/stores/selectionStore';
-import cameraConfigs from '@/lib/cameraConfigs';
-import { portfolio } from '@/lib/globals';
-import { scaleMeshAtBreakpoint } from '@/lib/utils/meshUtils';
+import useSelection from '@stores/selectionStore';
+import cameraConfigs from '@configs/cameraConfigs';
+import { portfolio } from '@configs/globals';
+import { scaleMeshAtBreakpoint } from '@utils/meshUtils';
 import { CameraRig2 } from './CameraRig';
-import { Ground } from '@/public/Ground';
+import { Ground } from '@public/Ground';
 import Group from './Group';
 
 THREE.ColorManagement.enabled = true;

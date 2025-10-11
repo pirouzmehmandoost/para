@@ -8,7 +8,7 @@ import {
   SoftShadows,
   Html,
 } from '@react-three/drei';
-import cameraConfigs from '@/lib/cameraConfigs';
+import cameraConfigs from '@/configs/cameraConfigs';
 import { Ground } from '@/public/Ground';
 import { SimpleCameraRig } from './CameraRig';
 import Model from './Model';

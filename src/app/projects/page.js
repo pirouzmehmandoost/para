@@ -1,6 +1,6 @@
 'use client';
-import GlobalModelViewer from '@/components/Three/GlobalModelViewer';
-import DynamicMenu from '@/components/DynamicMenu';
+import GlobalModelViewer from '@components/Three/GlobalModelViewer';
+import DynamicMenu from '@components/DynamicMenu';
 
 const menuProps = {
   topLinks: [

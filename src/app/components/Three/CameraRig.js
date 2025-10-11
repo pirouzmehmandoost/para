@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { CatmullRomCurve3, Vector3 } from 'three';
 import { easing } from 'maath';
 import { useFrame } from '@react-three/fiber';
-import cameraConfigs from '@/lib/cameraConfigs';
+import cameraConfigs from '@configs/cameraConfigs';
 
 export const SimpleCameraRig = (data) => {
   const { cameraPosition = [0, 10, 180] } = data;

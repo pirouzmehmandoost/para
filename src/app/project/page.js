@@ -5,9 +5,9 @@ import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
-import useMaterial from '@/stores/materialStore';
-import useSelection from '@/stores/selectionStore';
-import SingularModelViewer from '@/components/Three/SingularModelViewer';
+import useMaterial from '@stores/materialStore';
+import useSelection from '@stores/selectionStore';
+import SingularModelViewer from '@components/Three/SingularModelViewer';
 
 const ProjectPage = () => {
   const getMaterial = useMaterial((state) => state.getMaterial);

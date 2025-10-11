@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { MeshPhysicalMaterial } from 'three';
-import { DoubleSide } from 'three';
+import { MeshPhysicalMaterial, DoubleSide} from 'three';
 
 const matteMaterial = {
   flatShading: false,

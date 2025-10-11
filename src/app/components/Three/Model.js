@@ -4,8 +4,8 @@ import { useRef } from 'react';
 import { Vector3, Cache } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import useMaterial from '@/stores/materialStore';
 import { Select } from '@react-three/postprocessing';
+import useMaterial from '@stores/materialStore';
 
 Cache.enabled = true;
 

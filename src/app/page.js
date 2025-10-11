@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { GlobalModelViewer } from '@/components/Three/GlobalModelViewer';
 import MenuIcon from '@mui/icons-material/Menu';
-import useSelection from '@/stores/selectionStore';
+import useSelection from '@stores/selectionStore';
+import { GlobalModelViewer } from '@components/Three/GlobalModelViewer';
 
 const variants = {
   top: {

@@ -4,7 +4,7 @@ import { useThree } from '@react-three/fiber';
 import {
   scaleMeshAtBreakpoint,
   calculatePositions,
-} from '@/lib/utils/meshUtils';
+} from '@utils/meshUtils';
 import Model from './Model';
 
 const Group = (data) => {
