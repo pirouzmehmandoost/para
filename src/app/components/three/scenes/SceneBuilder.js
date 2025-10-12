@@ -63,7 +63,7 @@ const SceneBuilder = ({ showMenu }) => {
     }
 
     return positions;
-  }, [ellipseRadius]);
+  }, [ellipseRadius, projects.length]);
 
   const handlePointerDown = (e) => {
     isSwipingRef.current = false;
