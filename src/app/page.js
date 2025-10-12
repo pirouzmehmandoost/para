@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
 import useSelection from '@stores/selectionStore';
-import { GlobalModelViewer } from '@components/Three/GlobalModelViewer';
+import { GlobalModelViewer } from '@three/scenes/GlobalModelViewer';
 
 const variants = {
   top: {
@@ -457,7 +457,7 @@ const BottomMenu = ({ showMenu }) => {
             animate="enter"
             exit="exit"
           >
-            <Link href="/project" rel="noopener noreferrer">
+            <Link href="/projects/project" rel="noopener noreferrer">
               <div
                 className="rounded-full bg-radial-[at_50%_50%] from-neutral-500/35 from-20% to-neutral-500/0 to-70%"
                 style={{
