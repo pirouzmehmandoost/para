@@ -3,9 +3,9 @@
 // import { Splide, SplideSlide } from "@splidejs/react-splide";
 // import "@splidejs/react-splide/css";
 // import "@splidejs/react-splide/css/core";
-// import splideConfig from "../../lib/splideConfig";
-// import { portfolio } from "../../lib/globals";
-// import useSelection from "../stores/selectionStore";
+// import splideConfig from "@configs/splideConfig";
+// import { portfolio } from "@configs/globals";
+// import useSelection from "@stores/selectionStore";
 // import ProductCard from "./ProductCard";
 
 // const ProductCarousel = () => {

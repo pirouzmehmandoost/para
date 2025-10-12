@@ -2,9 +2,9 @@
 
 // import Image from "next/image";
 // import { useState } from "react";
-// import useSelection from "../../stores/selectionStore";
-// import ProductCarousel from "../../components/ProductCarousel";
-// import Menu from "../../components/Menu";
+// import useSelection from "@stores/selectionStore";
+// import ProductCarousel from "@shop/ProductCarousel";
+// import Menu from "@shop/Menu";
 
 // const ProductViewer = () => {
 //   let count = 0;

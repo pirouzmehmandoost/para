@@ -4,9 +4,11 @@
       "@/*": ["./src/*"],
       "@public/*": ["./public/*"],
       "@utils/*": ["./src/lib/utils/*"],
+      "@configs/*": ["./src/lib/configs/*"],
       "@stores/*": ["./src/app/stores/*"],
       "@components/*": ["./src/app/components/*"],
-      "@configs/*": ["./src/lib/configs/*"],
+      "@shop/*": ["./src/app/components/shop/*"],
+      "@three/*": ["./src/app/components/three/*"],
     }
   }
 }

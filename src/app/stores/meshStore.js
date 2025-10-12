@@ -1,6 +1,6 @@
 // import { create } from 'zustand';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { portfolio } from '@/lib/globals';
+// import { portfolio } from '@configs/globals';
 // const { projects } = portfolio;
 // import { Cache } from 'three';
 // const initialState = {};
