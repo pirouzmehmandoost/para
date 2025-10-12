@@ -128,9 +128,9 @@ export const portfolio = {
           colorWays: ['gloss_black', 'matte_black', 'eggshell'],
         },
         modelUrls: [
-          { name: 'bag_88_v4_for_web', url: '/bag_8.8_v4_for_web-transformed.glb' },
+          { name: 'bag_v5_web', url: '/bag_v5_for_web-transformed.glb' },
         ],
-        scale: 0.5,
+        scale: 0.6,
       },
       name: 'Gerd',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
