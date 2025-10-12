@@ -1,39 +1,28 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { CatmullRomCurve3, Vector3 } from 'three';
 import { easing } from 'maath';
 import { useFrame } from '@react-three/fiber';
 import cameraConfigs from '@configs/cameraConfigs';
 
-export const SimpleCameraRig = (data) => {
-  const { cameraPosition = [0, 10, 180] } = data;
-  const v = new Vector3();
-
-  return useFrame(({ clock, camera }) => {
-    const t = clock.elapsedTime;
-
-    camera.position.lerp(
-      v.set(
-        0,
-        Math.cos(t / 2) * 100,
-        (Math.sin(t / 2) + 1) * cameraPosition[2],
-      ),
-      0.06,
-    );
-    camera.lookAt(0, 0, 0);
-  });
-};
-
-export const CameraRig2 = ({ positionVectors = [], target = {} }) => {
+const ControllableCameraRig = ({ positionVectors = [], target = {}, manualIndex = null }) => {
   const { position: targetPosition = null } = target;
   const ref = useRef(undefined);
+  const targetIndexRef = useRef(manualIndex ?? 0);
+
   const v = new Vector3();
   const cameraPathCurve = new CatmullRomCurve3(
     positionVectors.map((pos) => pos),
     true,
     'centripetal',
   );
+
+  useEffect(() => {
+    if (manualIndex !== null) {
+      targetIndexRef.current = manualIndex;
+    }
+  }, [manualIndex]);
 
   useFrame(({ clock, camera }, delta) => {
     // let t = clock.elapsedTime; //unused, keeping for reference.
@@ -52,7 +41,23 @@ export const CameraRig2 = ({ positionVectors = [], target = {} }) => {
       ];
 
       easing.damp3(camera.position, p, 0.8, delta);
-    } else {
+    } 
+    else if (manualIndex !== null) {
+    // Manual navigation mode
+      const targetPos = positionVectors[targetIndexRef.current];
+      if (targetPos) {
+        easing.damp3(camera.position,
+          [
+            targetPos.x,
+            cameraConfigs.POSITION[1],
+            cameraConfigs.POSITION[2]
+          ],
+          0.8,
+          delta
+        );
+      }
+    }
+    else {
       let s = (clock.elapsedTime * 0.03) % 1;
       const position = cameraPathCurve.getPoint(s);
 
@@ -74,3 +79,5 @@ export const CameraRig2 = ({ positionVectors = [], target = {} }) => {
 
   return <perspectiveCamera ref={ref} />;
 };
+
+export default ControllableCameraRig;

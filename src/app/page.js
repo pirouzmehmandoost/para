@@ -258,7 +258,7 @@ const Menu = () => {
           setIsActive(!isActive);
         }}
       />
-      {/* menu/links container */}
+      {/* menu/links */}
       <motion.div
         variants={variants.menu}
         animate={isActive ? 'open' : 'closed'}
@@ -274,7 +274,7 @@ const Menu = () => {
           )}
         </AnimatePresence>
       </motion.div>
-      {/* overlay a blurry div */}
+      {/* blurry div overlay */}
       <motion.div
         className="absolute flex flex-col grow w-full h-full -z-1 place-self-center justify-center bg-neutral-400/0 backdrop-blur-xl"
         variants={variants.overlay}
@@ -347,9 +347,6 @@ const BottomMenu = ({ showMenu }) => {
         opacity: 1,
         width: 'auto',
         height: '25vh',
-        // top: '-25px',
-        // right: '-25px',
-        // boxShadow: '0px -300px 80px 100px rgba(255,255,255,.3)',
         transition: {
           duration: 0.75,
           type: 'tween',
@@ -373,8 +370,6 @@ const BottomMenu = ({ showMenu }) => {
     },
     overlay: {
       open: {
-        // backdropFilter: 'blur(100px)',
-        // filter: 'blur(10px)',
         opacity: 1,
         width: '100vw',
         height: '100vh',
@@ -384,12 +379,9 @@ const BottomMenu = ({ showMenu }) => {
           type: 'easeInOut',
           ease: [0.76, 0, 0.24, 1],
           opacity: { delay: 0.5 },
-          // backdropFilter: { delay: 0 },
         },
       },
       closed: {
-        // backdropFilter: 'blur(0px)',
-        // filter: 'blur(0px)',
         opacity: 0,
         width: '1vw',
         height: '1vh',
