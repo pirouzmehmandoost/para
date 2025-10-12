@@ -16,8 +16,8 @@ import {
 import useSelection from '@stores/selectionStore';
 import cameraConfigs from '@configs/cameraConfigs';
 import { portfolio } from '@configs/globals';
-import { scaleMeshAtBreakpoint } from '@utils/meshUtils';
-import { CameraRig2 } from './CameraRig';
+import { scaleMeshAtBreakpoint } from '@utils/mesh/meshUtils';
+import { CameraRig2 } from '../cameras/CameraRig';
 import { Ground } from '@public/Ground';
 import Group from './Group';
 

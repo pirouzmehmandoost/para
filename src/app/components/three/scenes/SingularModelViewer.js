@@ -2,15 +2,10 @@
 
 import { ColorManagement } from 'three';
 import { Canvas } from '@react-three/fiber';
-import {
-  Environment,
-  CameraControls,
-  SoftShadows,
-  Html,
-} from '@react-three/drei';
-import cameraConfigs from '@/configs/cameraConfigs';
-import { Ground } from '@/public/Ground';
-import { SimpleCameraRig } from './CameraRig';
+import { Environment, CameraControls, SoftShadows, Html } from '@react-three/drei';
+import cameraConfigs from '@configs/cameraConfigs';
+import { Ground } from '@public/Ground';
+import { SimpleCameraRig } from '../cameras/CameraRig';
 import Model from './Model';
 
 ColorManagement.enabled = true;

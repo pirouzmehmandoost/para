@@ -7,7 +7,6 @@ import ClearIcon from '@mui/icons-material/Clear';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 
 const NavBar = () => {
-  // const [searchQuery, setsearchQuery] = useState("invisible");
   const [expanded, setExpanded] = useState(false);
   const toggleExpanded = () => setExpanded((current) => !current);
   const dropDown = (
