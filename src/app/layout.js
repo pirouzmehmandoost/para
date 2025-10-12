@@ -1,5 +1,7 @@
 import './globals.css';
 import localFont from 'next/font/local';
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 
 const myFont = localFont({
   src: './../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2',
@@ -16,6 +18,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${myFont.className} bg-cover bg-[#bcbcbc]`}>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );

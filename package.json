@@ -23,6 +23,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
     "@types/three": "^0.180.0",
+    "@vercel/speed-insights": "^1.2.0",
     "framer-motion": "^12.23.24",
     "maath": "^0.10.8",
     "next": "^15.5.4",
