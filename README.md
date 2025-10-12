@@ -24,7 +24,7 @@ My objectives are to:
   - Write more informative text about each design 
   - Update styling**
 
-## Three.js to-do list:
+## Three.js optimization to-do list:
 
 ### Completed ✅
 
@@ -103,7 +103,7 @@ My objectives are to:
 - ✅ Faster initial load times
 ---
 
-##  Even more To-dos
+##  Performance Testing To-dos
 
 1. **Frame Rate Testing, performance monitoring**: Monitor FPS in different scenarios, sdd optional metrics display with `r3f-perf` or similar
    - Idle scene
@@ -149,44 +149,52 @@ These are beyond the current scope but I'm considering:
 
 ---
 
-## Libraries Used:
+## Graphics and Animation Libraries Used:
 
-- Three.js
-https://threejs.org/
+- [Three.js](https://threejs.org/)
 JavaScript API for implementing WebGL- for rendering 2D/3D computer graphics on browsers.
 
-- React Three Fiber
-https://github.com/pmndrs/react-three-fiber
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber)
 React renderer for Threejs. For building 3D scenes as JSX components, useful hooks, performance optimization- resources with the same URL (geometries, materials) that are loaded with useLoader are cached automatically.
 
-'If you access a resource via useLoader with the same URL, throughout the component tree, then you will always refer to the same asset and thereby re-use it. This is especially useful if you run your GLTF assets through GLTFJSX because it links up geometries and materials and thereby creates re-usable models.'
-https://r3f.docs.pmnd.rs/advanced/scaling-performance
+['If you access a resource via useLoader with the same URL, throughout the component tree, then you will always refer to the same asset and thereby re-use it. This is especially useful if you run your GLTF assets through GLTFJSX because it links up geometries and materials and thereby creates re-usable models.'](https://r3f.docs.pmnd.rs/advanced/scaling-performance)
 
-React Three Fiber Post Processing
+
+- [React Post-Processing](https://react-postprocessing.docs.pmnd.rs/)
 Library of functionalities for post-processing graphics- ie special effects to rendered graphics.
-https://react-postprocessing.docs.pmnd.rs/introduction
-https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80
 
-- GLTFJSX
-CLI tool that turns GLTF assets into declarative, reusable (react-three-fiber) JSX components. Trims .glb file size which is immensely helpful when staging static assets on github.
-https://github.com/pmndrs/gltfjsx
 
-- GSAP
-A JavaScript animation library, currently only using on feature branches. Thus far I've managed some nifty camera repositioning/manipulations with only Three and R3F.  
-https://gsap.com/
-
-- JEasings
+- [JEasings](https://sbcode.net/threejs/jeasings/)
 JavaScript engine for 3d graphics animations, currently only using on feature branches.
-https://sbcode.net/threejs/jeasings/
 
-- Typefaces:
-  - Diatype https://abcdinamo.com/typefaces/diatype
-  - Halibut https://www.collletttivo.it/typefaces/halibut
+
+- [Maath](https://github.com/pmndrs/maath)
+A collection of useful math helpers, random generators
+
+
+- [Motion](https://motion.dev/)
+
+
+---
+
+## Others:
+
+- [GLTFJSX](https://github.com/pmndrs/gltfjsx)
+CLI tool that turns GLTF assets into declarative, reusable (react-three-fiber) JSX components. Trims .glb file size which is immensely helpful when staging static assets on github.
+
 
 ## Notes:
 
-- Hedvig Letters Serif
-https://fonts.google.com/specimen/Hedvig+Letters+Serif?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*
+### Typefaces Used:
+- [Diatype](https://abcdinamo.com/typefaces/diatype)
 
-- Amethysta
-https://fonts.google.com/specimen/Amethysta?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*
+- [Halibut](https://www.collletttivo.it/typefaces/halibut)
+
+
+### Others I'm looking at:
+
+- [Hedvig Letters Serif](https://fonts.google.com/specimen/Hedvig+Letters+Serif?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
+
+- [Amethysta](https://fonts.google.com/specimen/Amethysta?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
+
+https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80
