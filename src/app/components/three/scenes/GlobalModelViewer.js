@@ -24,11 +24,7 @@ export const GlobalModelViewer = ({ showMenu }) => {
       shadows
     >
       <AdaptiveDpr pixelated />
-      <Environment 
-      shadows 
-      files="./kloofendal_misty_morning_puresky_4k.hdr"
-      // files="./studio_small_08_4k.exr" 
-      />
+      <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" />
       <color args={['#bcbcbc']} attach="background" />
       <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} />
       <directionalLight
