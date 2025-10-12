@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, AdaptiveDpr } from '@react-three/drei';
+import { Environment, AdaptiveDpr, Html } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
 import { Ground } from '@public/Ground';
 import SceneBuilder from './SceneBuilder';
@@ -55,7 +55,21 @@ export const GlobalModelViewer = ({ showMenu }) => {
         shadow-camera-left={-1500}
         shadow-camera-right={1500}
       />
-      <Suspense>
+      <Suspense 
+        fallback={
+          <Html center>
+            <div style={{
+              color: 'white',
+              fontSize: '20px',
+              fontFamily: 'system-ui',
+              textAlign: 'center',
+              padding: '20px'
+            }}>
+              Loading 3D Scene...
+            </div>
+          </Html>
+        }
+      >
         <SceneBuilder showMenu={showMenu} />
       </Suspense>
       <Ground
