@@ -7,7 +7,6 @@
       "@configs/*": ["./src/lib/configs/*"],
       "@stores/*": ["./src/app/stores/*"],
       "@components/*": ["./src/app/components/*"],
-      "@shop/*": ["./src/app/components/shop/*"],
       "@three/*": ["./src/app/components/three/*"],
     }
   }
