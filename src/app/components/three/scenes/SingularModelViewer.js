@@ -23,7 +23,11 @@ export const SingularModelViewer = ({ data }) => {
       orthographic={false}
       shadows
     >
-      <Environment shadows files="./studio_small_08_4k.exr" />
+      <Environment 
+      shadows 
+      files="./kloofendal_misty_morning_puresky_4k.hdr"
+      // files="./studio_small_08_4k.exr" 
+      />
       <Ground
         position={[-50, 100, -50]}
         scale={[0.8, 0.6, 0.6]}
