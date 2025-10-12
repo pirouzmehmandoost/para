@@ -52,4 +52,7 @@ const Model = ({ onHover, ...props }) => {
   );
 };
 
+useGLTF.preload('/bag_v5_for_web-transformed.glb');
+useGLTF.preload('/yoga_mat_strap_for_web2.glb');
+
 export default Model;
