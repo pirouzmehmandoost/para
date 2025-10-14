@@ -3,12 +3,14 @@
 import { Suspense } from 'react';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, AdaptiveDpr, Html } from '@react-three/drei';
+import { Environment, AdaptiveDpr, Html, PerformanceMonitor } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
-import { Ground } from '@public/Ground';
+import Ground from './Ground';
 import SceneBuilder from './SceneBuilder';
 
 THREE.ColorManagement.enabled = true;
+const color = '#bcbcbc';
+const background = './kloofendal_misty_morning_puresky_4k.hdr';
 
 export const GlobalModelViewer = ({ showMenu }) => {
   return (
@@ -24,9 +26,9 @@ export const GlobalModelViewer = ({ showMenu }) => {
       shadows
     >
       <AdaptiveDpr pixelated />
-      <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" />
-      <color args={['#bcbcbc']} attach="background" />
-      <fog attach="fog" density={0.006} color="#bcbcbc" near={150} far={280} />
+      <Environment shadows files={background} />
+      <color args={[color]} attach="background" />
+      <fog attach="fog" density={0.006} color={color} near={150} far={280} />
       <directionalLight
         castShadow={true}
         position={[0, 80, -40]}

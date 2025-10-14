@@ -4,13 +4,14 @@ gltfjsx command: npx gltfjsx@latest env_ground_3.glb --transform --shadows -D
 'use client';
 
 import { useGLTF } from '@react-three/drei';
-import useMaterial from '../src/app/stores/materialStore';
+import useMaterial from '@stores/materialStore';
 import { DoubleSide } from 'three';
-export function Ground({
+
+const Ground = ({
   rotation = 0,
   position = [0, 0, 0],
   scale = [1, 1, 1],
-}) {
+}) => {
   const getMaterial = useMaterial((state) => state.getMaterial);
   const { nodes } = useGLTF('/env_ground_3-transformed.glb');
   const material = getMaterial('ground').material;
@@ -30,3 +31,5 @@ export function Ground({
 }
 
 useGLTF.preload('/env_ground_3-transformed.glb');
+
+export default Ground;
