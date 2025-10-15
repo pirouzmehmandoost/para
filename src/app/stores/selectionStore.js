@@ -27,20 +27,17 @@ const selectionStore = (set, get) => ({
 
   getSelection: () => get().selection,
 
-  setSelection: (selected) => {
-    set((state) => ({
-      ...state,
-      selection: selected,
-    }));
-  },
+  setSelection: (selected) => { set({ selection: selected }) },
 
   reset: () => {
-    set((state) => ({
-      ...state,
-      selection: { ...initialState, sceneData: { ...initialState.sceneData } },
-    }));
+    set({ 
+      selection: { 
+        ...initialState,
+        sceneData: { ...initialState.sceneData }
+      },
+    });
   },
-});
+}); 
 
 const useSelection = create(selectionStore);
 
