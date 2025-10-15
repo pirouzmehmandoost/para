@@ -13,6 +13,11 @@ const compat = new FlatCompat({
 
 const configs = [
   ...compat.extends("next/core-web-vitals"),
+  {
+    rules: {
+      "prefer-const": "warn",
+    }
+  },
 ];
 
 export default configs;
