@@ -4,9 +4,10 @@ import { ColorManagement } from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Environment, CameraControls, SoftShadows, Html } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
+import { groundColor, backgroundImageURL } from '@configs/globals';
 import SimpleCameraRig from '../cameras/SimpleCameraRig';
-import Ground from './Ground';
-import Model from './Model';
+import Ground from '../models/Ground';
+import Model from '../models/Model';
 
 ColorManagement.enabled = true;
 
@@ -23,13 +24,13 @@ export const SingularModelViewer = ({ data }) => {
       orthographic={false}
       shadows
     >
-      <Environment shadows files="./kloofendal_misty_morning_puresky_4k.hdr" />
+      <Environment shadows files={backgroundImageURL}/>
       <Ground
         position={[-50, 100, -50]}
         scale={[0.8, 0.6, 0.6]}
         rotation={-Math.PI / 4}
       />
-      <color args={['#bcbcbc']} attach="background" />
+      <color args={[groundColor]} attach="background" />
       <CameraControls
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
@@ -48,7 +49,7 @@ export const SingularModelViewer = ({ data }) => {
         }}
       />
       <SimpleCameraRig {...data} />
-      <fog attach="fog" density={0.007} color="#bcbcbc" near={70} far={300} />
+      <fog attach="fog" density={0.007} color={groundColor} near={70} far={300} />
       <directionalLight
         castShadow={true}
         position={[-12, 50, -50]}

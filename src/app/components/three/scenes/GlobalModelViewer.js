@@ -5,12 +5,11 @@ import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Environment, AdaptiveDpr, Html, PerformanceMonitor } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
-import Ground from './Ground';
+import { groundColor, backgroundImageURL } from '@configs/globals';
+import Ground from '../models/Ground';
 import SceneBuilder from './SceneBuilder';
 
 THREE.ColorManagement.enabled = true;
-const color = '#bcbcbc';
-const background = './kloofendal_misty_morning_puresky_4k.hdr';
 
 export const GlobalModelViewer = ({ showMenu }) => {
   return (
@@ -26,9 +25,9 @@ export const GlobalModelViewer = ({ showMenu }) => {
       shadows
     >
       <AdaptiveDpr pixelated />
-      <Environment shadows files={background} />
-      <color args={[color]} attach="background" />
-      <fog attach="fog" density={0.006} color={color} near={150} far={280} />
+      <Environment shadows files={backgroundImageURL} />
+      <color args={[groundColor]} attach="background" />
+      <fog attach="fog" density={0.006} color={groundColor} near={150} far={280} />
       <directionalLight
         castShadow={true}
         position={[0, 80, -40]}

@@ -3,25 +3,22 @@
 import { useState, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
+import { Bloom, DepthOfField, EffectComposer, Noise, Vignette, Outline } from '@react-three/postprocessing';
 import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
-import {
-  Bloom,
-  DepthOfField,
-  EffectComposer,
-  Noise,
-  Vignette,
-  Outline,
-} from '@react-three/postprocessing';
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
 import { scaleMeshAtBreakpoint } from '@utils/mesh/meshUtils';
 import ControllableCameraRig from '../cameras/ControllableCameraRig';
-import Group from './Group';
+import Group from '../groups/Group';
 
 THREE.ColorManagement.enabled = true;
 
+const { projects } = portfolio;
+const wrapAround = projects.length > 2;
+
 const SceneBuilder = ({ showMenu }) => {
   const { size } = useThree();
+  
   const setSelection = useSelection((state) => state.setSelection);
   const resetSelection = useSelection((state) => state.reset);
 
@@ -30,24 +27,23 @@ const SceneBuilder = ({ showMenu }) => {
 
   const [hasNavigated, setHasNavigated] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
   const currentIndexRef = useRef(0);
   const touchStartRef = useRef(null);
   const isSwipingRef = useRef(false);
 
-  const { projects } = portfolio;
-  const ENABLE_WRAPAROUND = projects.length > 2;
-
   const ellipseRadius = useMemo(() => scaleMeshAtBreakpoint(size.width) * 150, [size.width]);
-
+  
   const groupPositions = useMemo(() => {
-    const ellipseCurve = new THREE.EllipseCurve(
-      0, 0,
-      ellipseRadius, ellipseRadius,
-      0, 2 * Math.PI, false,
-      projects.length % 2 == 0 ? 0 : Math.PI / 2,
-    );
-    ellipseCurve.closed = true;
+    const positions = [];
+    const vertex = new THREE.Vector3();
 
+    const ellipseCurve = new THREE.EllipseCurve(
+      0, 0, ellipseRadius, ellipseRadius, 0, 2 * Math.PI, false,
+      projects.length % 2 == 0 ? 0 : Math.PI / 2
+    );
+
+    ellipseCurve.closed = true;
     const ellipseCurvePoints = ellipseCurve.getPoints(projects.length);
     ellipseCurvePoints.shift();
 
@@ -55,15 +51,13 @@ const SceneBuilder = ({ showMenu }) => {
       .setFromPoints(ellipseCurvePoints)
       .getAttribute('position');
 
-    const positions = [];
-    const vertex = new THREE.Vector3();
     for (let i = 0; i < positionAttribute.count; i++) {
       const pt = vertex.fromBufferAttribute(positionAttribute, i);
       positions.push(new THREE.Vector3(pt.x, 0, pt.y));
     }
 
     return positions;
-  }, [ellipseRadius, projects.length]);
+  }, [ellipseRadius]);
 
   const handlePointerDown = (e) => {
     isSwipingRef.current = false;
@@ -83,23 +77,19 @@ const SceneBuilder = ({ showMenu }) => {
     const deltaY = e.clientY - touchStartRef.current.y;
     const deltaTime = Date.now() - touchStartRef.current.time;
 
-
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50 && deltaTime < 500) {
       const direction = deltaX > 0 ? 'right' : 'left';
       let nextIndex;
 
-      if (ENABLE_WRAPAROUND) {
-        // Circular navigation
+      // Circular swipe navigation or bounded, based on # of projects
+      if (wrapAround) { 
         if (direction === 'right') {
           nextIndex = (currentIndexRef.current + 1) % projects.length;
         } else {
           nextIndex = (currentIndexRef.current - 1 + projects.length) % projects.length;
         }
       } else {
-        // Bounded navigation
-        nextIndex = direction === 'right'
-          ? currentIndexRef.current + 1
-          : currentIndexRef.current - 1;
+        nextIndex = direction === 'right' ? currentIndexRef.current + 1 : currentIndexRef.current - 1;
 
         if (nextIndex < 0 || nextIndex >= projects.length) {
           touchStartRef.current = null;
@@ -119,10 +109,10 @@ const SceneBuilder = ({ showMenu }) => {
         ...targetProject,
         sceneData: {
           description: targetProject.description,
-          shortDescription: targetProject.shortDescription,
-          ...targetProject.sceneData,
           groupName: targetProject.name,
           position: groupPositions[nextIndex],
+          shortDescription: targetProject.shortDescription,
+          ...targetProject.sceneData,
         },
       });
 
@@ -139,22 +129,9 @@ const SceneBuilder = ({ showMenu }) => {
         target={clicked}
         manualIndex={clicked ? null : (hasNavigated ? currentIndex : null)}
       />
-      <EffectComposer
-        autoClear={false}
-        disableNormalPass
-        multisampling={4}
-      >
-        <DepthOfField
-          focusDistance={0}
-          focalLength={0.02}
-          bokehScale={2}
-          height={Resizer.AUTO_SIZE}
-        />
-        <Bloom
-          luminanceThreshold={10}
-          luminanceSmoothing={1}
-          height={200}
-        />
+      <EffectComposer autoClear={false} disableNormalPass multisampling={4}>
+        <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={Resizer.AUTO_SIZE} />
+        <Bloom luminanceThreshold={10} luminanceSmoothing={1} height={200} />
         <Noise opacity={0.02} />
         <Vignette eskil={false} offset={0.1} darkness={0.8} />
         <Outline
@@ -178,15 +155,16 @@ const SceneBuilder = ({ showMenu }) => {
         const groupProps = {
           ...data,
           sceneData: {
+            autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
             description: data.description,
+            groupName: data.name,
+            isPointerOver: clicked?.name || '',
+            position: groupPositions[index],
             shortDescription: data.shortDescription,
             ...data.sceneData,
-            groupName: data.name,
-            position: groupPositions[index],
-            autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
-            isPointerOver: clicked?.name || '',
           },
         };
+
         return (
           <group
             key={groupProps?.name}
@@ -211,11 +189,7 @@ const SceneBuilder = ({ showMenu }) => {
           </group>
         );
       })}
-      <mesh
-        position={[0, 0, -1000]}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-      >
+      <mesh position={[0, 0, -1000]} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
         <planeGeometry args={[20000, 20000]} />
         <meshBasicMaterial transparent opacity={0} depthTest={false} />
       </mesh>
