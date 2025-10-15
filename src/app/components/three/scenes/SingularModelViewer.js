@@ -3,8 +3,8 @@
 import { ColorManagement } from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Environment, CameraControls, SoftShadows, Html } from '@react-three/drei';
-import cameraConfigs from '@configs/cameraConfigs';
 import { groundColor, backgroundImageURL } from '@configs/globals';
+import cameraConfigs from '@configs/cameraConfigs';
 import SimpleCameraRig from '../cameras/SimpleCameraRig';
 import Ground from '../models/Ground';
 import Model from '../models/Model';
