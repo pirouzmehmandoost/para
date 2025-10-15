@@ -56,7 +56,7 @@ export const GlobalModelViewer = ({ showMenu }) => {
         shadow-camera-left={-1500}
         shadow-camera-right={1500}
       />
-      <Suspense 
+      {/* <Suspense 
         fallback={
           <Html center>
             <div style={{
@@ -70,9 +70,9 @@ export const GlobalModelViewer = ({ showMenu }) => {
             </div>
           </Html>
         }
-      >
+      > */}
         <SceneBuilder showMenu={showMenu} />
-      </Suspense>
+      {/* </Suspense> */}
       <Ground
         position={[-50, -85, 20]}
         scale={[1.4, 1, 1.4]}
