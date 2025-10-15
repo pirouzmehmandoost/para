@@ -206,3 +206,6 @@ export const portfolio = {
     },
   ],
 };
+
+export const groundColor = '#bcbcbc';
+export const backgroundImageURL = './kloofendal_misty_morning_puresky_4k.hdr';
