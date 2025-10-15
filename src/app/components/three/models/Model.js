@@ -9,7 +9,7 @@ import useMaterial from '@stores/materialStore';
 
 Cache.enabled = true;
 
-const Model = ({ onHover, ...props }) => {
+const Model = (props) => {
   const meshRef = useRef(undefined);
   const getMaterial = useMaterial((state) => state.getMaterial);
   const {
@@ -20,7 +20,19 @@ const Model = ({ onHover, ...props }) => {
     position = new Vector3(0, -25, 0),
     scale,
   } = props;
-  let mesh = useGLTF(url).nodes[`${name}`];
+
+  const mesh = useGLTF(url).nodes[`${name}`];
+
+  useFrame((state, delta) => {
+    if (meshRef?.current && autoRotate) {
+      meshRef.current.rotation.y += delta / 2;
+    }
+  });
+
+  if (!mesh) {
+    console.warn(`Mesh "${name}" not found in ${url}`);
+    return null;
+  }
 
   const meshProps = {
     name,
@@ -29,12 +41,6 @@ const Model = ({ onHover, ...props }) => {
     position,
     scale,
   };
-
-  useFrame((state, delta) => {
-    if (meshRef?.current && autoRotate) {
-      meshRef.current.rotation.y += delta / 2;
-    }
-  });
 
   return (
     <>
