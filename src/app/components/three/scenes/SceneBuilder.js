@@ -18,12 +18,12 @@ const wrapAround = projects.length > 2;
 
 const SceneBuilder = ({ showMenu }) => {
   const { size } = useThree();
-  
-  const setSelection = useSelection((state) => state.setSelection);
-  const resetSelection = useSelection((state) => state.reset);
+
+  const setSelectionStore = useSelection((state) => state.setSelection);
+  const resetSelectionStore = useSelection((state) => state.reset);
 
   const [clicked, setClicked] = useState(undefined);
-  const selected = clicked ? [clicked] : undefined;
+  // const selected = clicked ? [clicked] : undefined;
 
   const [hasNavigated, setHasNavigated] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,6 +31,7 @@ const SceneBuilder = ({ showMenu }) => {
   const currentIndexRef = useRef(0);
   const touchStartRef = useRef(null);
   const isSwipingRef = useRef(false);
+  const groupRef = useRef(null);
 
   const ellipseRadius = useMemo(() => scaleMeshAtBreakpoint(size.width) * 150, [size.width]);
   
@@ -100,23 +101,25 @@ const SceneBuilder = ({ showMenu }) => {
       currentIndexRef.current = nextIndex;
       setCurrentIndex(nextIndex);
       setHasNavigated(true);
-      setClicked(undefined);
+      // setClicked(undefined);
+      // clear ref on swipe navigation, 
+      // swiping changes the ref so that it updates to the new group
+      groupRef.current = null; 
+
       isSwipingRef.current = true;
 
-      const targetProject = projects[nextIndex];
+      const cameraTargetGroup = projects[nextIndex];
 
-      setSelection({
-        ...targetProject,
+      setSelectionStore({
+        ...cameraTargetGroup,
         sceneData: {
-          description: targetProject.description,
-          groupName: targetProject.name,
+          description: cameraTargetGroup.description,
+          groupName: cameraTargetGroup.name,
           position: groupPositions[nextIndex],
-          shortDescription: targetProject.shortDescription,
-          ...targetProject.sceneData,
+          shortDescription: cameraTargetGroup.shortDescription,
+          ...cameraTargetGroup.sceneData,
         },
       });
-
-      showMenu({ name: targetProject.name });
     } 
 
     touchStartRef.current = null;
@@ -126,8 +129,10 @@ const SceneBuilder = ({ showMenu }) => {
     <>
       <ControllableCameraRig
         positionVectors={groupPositions}
-        target={clicked}
-        manualIndex={clicked ? null : (hasNavigated ? currentIndex : null)}
+        // target={clicked}
+        target={groupRef.current ?? undefined}
+        manualIndex={groupRef.current ? null : (hasNavigated ? currentIndex : null)}
+        // manualIndex={clicked ? null : (hasNavigated ? currentIndex : null)}
       />
       <EffectComposer autoClear={false} disableNormalPass multisampling={4}>
         <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={Resizer.AUTO_SIZE} />
@@ -135,7 +140,8 @@ const SceneBuilder = ({ showMenu }) => {
         <Noise opacity={0.02} />
         <Vignette eskil={false} offset={0.1} darkness={0.8} />
         <Outline
-          selection={selected}
+          // selection={selected}
+          selection={groupRef.current ? [groupRef.current] : undefined}
           selectionLayer={10}
           blendFunction={BlendFunction.SCREEN} // set to BlendFunction.ALPHA for dark outlines
           patternTexture={null}
@@ -150,45 +156,64 @@ const SceneBuilder = ({ showMenu }) => {
           xRay={true}
         />
       </EffectComposer>
-      
-      {projects.map((data, index) => {
-        const groupProps = {
-          ...data,
-          sceneData: {
-            autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
-            description: data.description,
-            groupName: data.name,
-            isPointerOver: clicked?.name || '',
-            position: groupPositions[index],
-            shortDescription: data.shortDescription,
-            ...data.sceneData,
-          },
-        };
+      {/* 
+        parent group captures pointer missed events
+        updates camera target, hides menu, and resets Zustand store
+      */}
+      <group
+        onPointerMissed={(e) => {
+          groupRef.current = null; //reset ref
+          e.stopPropagation();
+          // setClicked(undefined); // update camera target ref
+          showMenu(undefined); // hide menu
+          resetSelectionStore(); // reset Zustand store
+        }}
+      >
+        {projects.map((data, index) => {
+          const groupProps = {
+            ...data,
+            sceneData: {
+              autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
+              description: data.description,
+              groupName: data.name,
+              // tracks the last clicked group. Updates when onClick is triggered.
+              isPointerOver: groupRef.current?.name || '',  
+              // isPointerOver: clicked?.name || '',
+              position: groupPositions[index],
+              shortDescription: data.shortDescription,
+              ...data.sceneData,
+            },
+          };
 
-        return (
-          <group
-            key={groupProps?.name}
-            name={`${groupProps?.name}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setClicked(e.object);
-              setCurrentIndex(index);
-              currentIndexRef.current = index;
-              setHasNavigated(false);
-              showMenu(e.object);
-              setSelection(groupProps);
-            }}
-            onPointerMissed={(e) => {
-              e.stopPropagation();
-              setClicked(undefined);
-              showMenu(undefined);
-              resetSelection();
-            }}
-          >
-            <Group {...groupProps.sceneData} />
-          </group>
-        );
-      })}
+          return (
+            <group
+              key={groupProps?.name}
+              name={`${groupProps?.name}`}
+              onClick={(e) => {
+                const previousGroup = groupRef.current;           
+                groupRef.current = e.object;
+
+                // the group was already clicked, don't update anything
+                if (previousGroup && previousGroup.name === e.object.name ) {
+                  return;
+                }
+
+                e.stopPropagation();
+                setClicked(e.object); // update camera target ref
+                setCurrentIndex(index);
+                currentIndexRef.current = index;
+                setHasNavigated(false);
+                showMenu(e.object); // update menu data
+                setSelectionStore(groupProps); // update Zustand store
+              }}
+            >
+              <Group {...groupProps.sceneData} />
+            </group>
+          );
+        })}
+      </group>
+
+      {/* invisible background mesh captures pointer events for swipe navigation: */}
       <mesh position={[0, 0, -1000]} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
         <planeGeometry args={[20000, 20000]} />
         <meshBasicMaterial transparent opacity={0} depthTest={false} />
