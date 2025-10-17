@@ -119,17 +119,21 @@ const variants = {
 
 const topLinks = [
   {
-    title: 'Projects',
-    callBack: true,
+    title: 'Redesign in progress',
+    callBack: false,
   },
   {
-    href: '/resume',
-    title: 'Resume',
+    title: 'Come back soon',
+    callBack: false,
   },
-  {
-    href: '/about',
-    title: 'About',
-  },
+  // {
+  //   href: '/resume',
+  //   title: 'Resume',
+  // },
+  // {
+  //   href: '/about',
+  //   title: 'About',
+  // },
 ];
 
 const bottomLinks = [
@@ -191,7 +195,7 @@ const Links = ({ toggleMenu }) => {
                   <Link
                     className="cursor-pointer"
                     rel="noopener noreferrer"
-                    href={href}
+                    href={href? href : "/"}
                   >
                     {title}
                   </Link>
