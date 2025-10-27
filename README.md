@@ -5,24 +5,47 @@ I share my to-do list here as well as light notes on tools and feedback.
 
 PARA is a work in progress site that shows my 3D printing projects. For now it only shows the 3d models, and allows you to manipulate positons and materials.
 
-My objectives are to:
-- Optimize WebGL implementions i.e. optimize/memoize math calculations for geometry transformations, cache meshes and materials, post-processing effects.
-- Style for good display on mobile and web browsers
 
-## UI to-do list: 
+## Interesting Technical details: 
+  
+  **Dynamic Terrain-Aware Model Positioning**
+   - Impact: Models automatically position above a complex terrain geometry with zero per-frame overhead after initial environment setup
+   - Files: `Model.js:30-144`, `Group.js`, `meshUtils.js`
+   - Implementation: Bidirectional raycasting from model bounding box footprint
+   - Note: The positioning logic only translates positions along one dimension in ℝ³ space (Y-axis in Three.js, representing vertical height).
+   
+   **Technical Details:**
+   - **Sampling Strategy**: 
+    - Position a Circle directly below a mesh bounding box (mesh of the 3D Model project) with diameter = diagonal length of the bounding box's bottom. 
+    - Cast rays at each circle point + circle center (10 perimeter + 1 center). 
+    - The circle's dimensions ensure coverage of all corners.
+   - **Bidirectional raycasting**: 
+     - Upward rays detect terrain penetration (if a model is too low then rays will hit the terrain)
+      - highest y-coordinate hit point is used to reposition the model above that Y coordinate.
+      - The hit distance is used for a threshold filter to reject very distant terrain. 
+     - Downward rays detect floating models (to reposition models that float too high)
+     - ***Notes***:
+      - Downard raycasting may also be useful if decide to animate terrain vertex positions later.
+      - Hits against the model mesh itself are negated.
+   - **Hit Filtering**:
+     - Upward Penetration threshold (2x model height) ignores distant terrain.
+      - Prevents positioning relative to hills 100+ units away or above ceilings
+      - ***Note***: the logic could be refined to discriminate between ground and ceilings/skies. 
+   - **Dynamic Clearance**: Adds 10% of model height (minimum 5 units) for appropriate spacing
+   - **Performance**: 
+     - One-time computational cost per model on mount (bounding box calculation + ~22 raycasts)
+     - Zero per-frame overhead after initial positioning for static terrain
+     - Prevents re-execution on re-renders.
+   
+   **Why this is cool, maybe:**
+   - Works with almost any large surface geometry.
+   - No hardcoded height positions, fully dynamic.
+   - Models never intersect floor regardless of initial position
 
-1.  **Resume page**
-  - Redesign, don't use iframe
+   **What can be refined:**
+   - Will work for parent containers such as a group, but not in all cases. Upward casted rays would hit the first mesh directly under its point of origin. if the model mesh passes through more than one mesh or a thick mesh, it may not clear past all of them. 
+   - Could be refined to move meshes along x-z plane until a suitable y-position is found within a threshold range.
 
-2.  **Home page**
-  - Create new splash page**
-
-3.  **Projects page design is incomplete**
-  - it's unclear to people what they are looking at
-
-4.  **Project page: design is incomplete**
-  - Write more informative text about each design 
-  - Update styling**
 
 ## Three.js optimization to-do list:
 
@@ -59,49 +82,21 @@ My objectives are to:
    - Impact: 75% reduction in shadow map memory (4MB → 1MB per map)
    - Visual quality: Imperceptible quality loss
 
-8. **Environment texture optimization**
-  - Maybe
 
 **Total Performance Gain**: Faster initial load, reduced memory footprint: major reduction in CPU overhead, GPU rendering costs, and memory usage. Shadows render correctly, geometry creation optimized, and post-processing streamlined.
 
----
 
-## What I'm not doing and why
+**Metrics**:
+- Shadows render correctly on all models
+- Reduced geometry creation overhead (~95% reduction)
+- Eliminated unnecessary camera calculations (300/sec → 0)
+- Improved frame rates on lower-end devices (GPU multisampling optimized)
+- Reduced shadow map memory by 75% (12MB → 3MB total for 3 lights)
+- Faster initial load times
 
-### ❌ Model.js Property Lookup Memoization
-
-**Per React's official guidance**: 
-> "Optimizing with memo is only valuable when your component re-renders often with the same exact props, **and its re-rendering logic is expensive**."
-
-**Analysis**:
-- `useGLTF(url).nodes[${name}]` → O(1) property access (negligible cost)
-- `getMaterial(materialId).material` → Optimized Zustand getter (negligible cost)
-- React docs: *"There is no significant harm to doing that either... The downside is that code becomes less readable"*
 
 ---
 
-## Implementation Status
-
-1. ✅ **Camera updates** - COMPLETED
-2. ✅ **Typos fixed** - COMPLETED
-3. ✅ **Shadow bug fix** - COMPLETED
-4. ✅ **Ellipse memoization** - COMPLETED
-5. ✅ **legacy code cleanup** - COMPLETED
-6. ✅ **Multisampling reduced (8→4)** - COMPLETED
-7. ✅ **Shadow maps optimized (2048→1024)** - COMPLETED
-8. **Environment texture optimization** - MAYBE
----
-
-## Success Metrics
-
-- ✅ Shadows render correctly on all models
-- ✅ Reduced geometry creation overhead (~95% reduction)
-- ✅ Eliminated unnecessary camera calculations (300/sec → 0)
-- ✅ Improved frame rates on lower-end devices (GPU multisampling optimized)
-- ✅ Reduced shadow map memory by 75% (12MB → 3MB total for 3 lights)
-- ✅ Cleaner, more maintainable codebase
-- ✅ Faster initial load times
----
 
 ##  Performance Testing To-dos
 
@@ -126,7 +121,6 @@ My objectives are to:
    - Check for memory leaks
    - Verify shadow map reduction impact
 
----
 
 ## Future Optimizations
 
@@ -147,7 +141,28 @@ These are beyond the current scope but I'm considering:
 5. **Texture Atlases**
   - Combine multiple textures to reduce bindings
 
+
 ---
+
+
+## UI to-do list: 
+
+1.  **Resume page**
+  - Redesign, don't use iframe
+
+2.  **Home page**
+  - Create new splash page**
+
+3.  **Projects page design is incomplete**
+  - it's unclear to people what they are looking at
+
+4.  **Project page: design is incomplete**
+  - Write more informative text about each design 
+  - Update styling**
+
+
+  ---
+
 
 ## Graphics and Animation Libraries Used:
 
@@ -175,26 +190,29 @@ A collection of useful math helpers, random generators
 - [Motion](https://motion.dev/)
 
 
----
-
-## Others:
-
 - [GLTFJSX](https://github.com/pmndrs/gltfjsx)
 CLI tool that turns GLTF assets into declarative, reusable (react-three-fiber) JSX components. Trims .glb file size which is immensely helpful when staging static assets on github.
 
+Example usage: 
+```
+npx gltfjsx@latest my_mesh.glb --transform --shadows -D 
+```
 
-## Notes:
+---
+
+
+## Personal Notes:
 
 ### Typefaces Used:
 - [Diatype](https://abcdinamo.com/typefaces/diatype)
-
 - [Halibut](https://www.collletttivo.it/typefaces/halibut)
 
-
-### Others I'm looking at:
-
+## Ones to remember:
 - [Hedvig Letters Serif](https://fonts.google.com/specimen/Hedvig+Letters+Serif?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
-
 - [Amethysta](https://fonts.google.com/specimen/Amethysta?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
 
-https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80
+--- 
+
+## Reading list: 
+
+- https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80
