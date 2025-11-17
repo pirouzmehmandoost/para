@@ -1,6 +1,6 @@
 # PARA
 
-I'm developing this app to explore web development with NextJS 14 and explore a growing love computer graphics and rendering them on browsers.
+I'm developing this app to explore web development with NextJS 15 and explore a growing love computer graphics and rendering them on browsers.
 I share my to-do list here as well as light notes on tools and feedback.
 
 PARA is a work in progress site that shows my 3D printing projects. For now it only shows the 3d models, and allows you to manipulate positons and materials.
