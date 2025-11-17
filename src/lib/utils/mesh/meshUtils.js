@@ -27,19 +27,18 @@ export const scalePositionAtBreakPoint = (width) => {
   return 0.5;
 };
 
-export const calculatePositions = (scaleFactor, numPositions, center) => {
+export const calculateXZPositions = (scaleFactor, numPositions, center, yPosition=0) => {
   const positions = [];
   const xOffset = [];
-  const yOffset = -25;
 
-  if (numPositions === 1) return [new Vector3(center.x, yOffset, center.z)];
+  if (numPositions === 1) return [new Vector3(center.x, yPosition, center.z)];
 
   if (numPositions % 2 === 1) xOffset.push(0);
 
   for (let i = 1; i < numPositions; i++) {
     const offset = 
       (scalePositionAtBreakPoint(scaleFactor) * parseInt(i * scaleFactor)) / 
-      (numPositions * 2) * 
+      (numPositions * 2) *
       (i % 2 === 0 ? 1 : -1);
 
     xOffset.push(offset);
@@ -47,7 +46,7 @@ export const calculatePositions = (scaleFactor, numPositions, center) => {
   }
 
   for (let i = 0; i < numPositions; i++) {
-    const pos = new Vector3(xOffset[i] + center.x, yOffset, center.z);
+    const pos = new Vector3(xOffset[i] + center.x, yPosition, center.z);
     positions.push(pos);
   }
 
@@ -59,49 +58,3 @@ export const calculatePositions = (scaleFactor, numPositions, center) => {
 
   return positions;
 };
-
-// OLD, FOR REFERENCE
-
-  // positions.map((vec, i) => {
-  //   return positions.length > 2
-  //     ? (vec.z += i % 2 === 0 ? -50 : 0)
-  //     : (vec.z += -50);
-  // });
-
-// export const calculatePositions = (scaleFactor, numPositions, center) => {
-//   const positions = [];
-//   const xOffset = [];
-//   const yOffset = -25;
-
-//   if (numPositions === 1) {
-//     return [new Vector3(center.x, yOffset, center.z)];
-//   }
-
-//   if (numPositions % 2 === 1) {
-//     xOffset.push(0);
-//   }
-
-//   for (let i = 1; i < numPositions; i++) {
-//     let offset =
-//       ((scalePositionAtBreakPoint(scaleFactor) * (i * scaleFactor)) /
-//         (numPositions * (2 + i))) *
-//       (i % 2 === 0 ? 1 : -1);
-//     xOffset.push(offset);
-//     xOffset.push(-1 * offset);
-//   }
-
-//   for (let i = 0; i < numPositions; i++) {
-//     const pos = new Vector3(xOffset[i] + center.x, yOffset, center.z);
-//     positions.push(pos);
-//   }
-
-//   positions.sort((a, b) => a.x - b.x);
-
-//   positions.map((vec, i) => {
-//     return positions.length >= 3
-//       ? (vec.z += i % 2 === 0 ? -50 : 0)
-//       : (vec.z += -50);
-//   });
-
-//   return positions;
-// };
