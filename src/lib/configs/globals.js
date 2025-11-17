@@ -93,30 +93,6 @@ export const portfolio = {
   //     },
   //   ],
   projects: [
-    // {
-    //   sceneData: {
-    //     autoRotate: true,
-    //     autoRotateSpeed: 1,
-    //     autoUpdateMaterial: false,
-    //     groupName: 'subdidived_wave_sandal002',
-    //     materials: {
-    //       defaultMaterial: 'gloss_black',
-    //       colorWays: ['gloss_black', 'matte_black'],
-    //     },
-    //     modelUrls: [
-    //       { name: 'subdidived_wave_sandal002', url: '/rocky_sandal_web.glb' },
-    //     ],
-    //     scale: 3.4,
-    //   },
-    //   name: 'shoe',
-    //   bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
-    //   imgUrls: {
-    //     matte_black: ['/oval_bag_matte_black_1.png'],
-    //     matte_white: ['/oval_bag_matte_white_1.png'],
-    //   },
-    //   shortDescription: 'A shoe.',
-    //   description: ' Shoe.',
-    // },
     {
       sceneData: {
         autoRotate: true,
@@ -124,8 +100,8 @@ export const portfolio = {
         autoUpdateMaterial: false,
         groupName: 'Gerd',
         materials: {
-          defaultMaterial: 'gloss_black',
-          colorWays: ['gloss_black', 'matte_black', 'eggshell'],
+          defaultMaterial: 'matte_black',
+          colorWays: ['matte_black', 'gloss_black', 'eggshell'],
         },
         modelUrls: [
           { name: 'bag_v5_web', url: '/bag_v5_for_web-transformed.glb' },
@@ -133,6 +109,40 @@ export const portfolio = {
         scale: 0.6,
       },
       name: 'Gerd',
+      bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
+      imgUrls: {
+        matte_black: [
+          '/oval_bag_matte_black_1.png',
+          '/oval_bag_matte_black_2.png',
+          '/oval_bag_matte_black_3.png',
+          '/oval_bag_matte_black_4.png',
+        ],
+        matte_white: [
+          '/oval_bag_matte_white_1.png',
+          '/oval_bag_matte_white_2.png',
+          '/oval_bag_matte_white_3.png',
+          '/oval_bag_matte_white_4.png',
+        ],
+      },
+      shortDescription: `A shoulder bag`,
+      description: `Product description`,
+    },
+    {
+      sceneData: {
+        autoRotate: true,
+        autoRotateSpeed: 1,
+        autoUpdateMaterial: false,
+        groupName: 'bag_v3_for_web',
+        materials: {
+          defaultMaterial: 'matte_black',
+          colorWays: ['matte_black'],
+        },
+        modelUrls: [
+          { name: 'bag_v3_for_web', url: '/bag_v3_for_web-transformed.glb' },
+        ],
+        scale: 0.6,
+      },
+      name: 'bag_v3_for_web',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
       imgUrls: {
         matte_black: [
@@ -183,29 +193,17 @@ export const portfolio = {
           '/yoga_mat_strap_quarter.png',
         ],
       },
-
-      shortDescription:
-        'An exploration of product design as a Yoga instructor.',
-      description: `I began teaching Yoga at 19, back in 2008. I had started taking classes shortly after graduating from high school. 
-        I quit a year and a half later amidst an irreconcilable clash of spiritual beliefs (mostly guilt for a lack thereof) and a silly a fear of missing out on life through my twenties. I didn't return to teaching for 15 years. 
-      
-        Not long after I suffered a knee injury that left me either u on crutches or unable to walk for half of 2024. I'm still going to physical therapy and jogged for the first time in March of this year.    
-        Anyway, while on leave from work I started designing a line of fitness accessories beginning with a stylized strap for carrying my Yoga mat.         
-        I tested 3D printing prototypes out of rubbers for durability, flexibility, and to see how well they took to color coating. 
-        I started yielding consistent quality benchmark test prints using a foaming urethane, Colorfabb VarioShore TPU. 
-        This material was intended for developing prothetics and orthotics prototypes and has a really satisfying matte finish.  
-        It's abrasion resistant, skin-safe, and lightweight, and also ideal for printing Yoga props like foam blocks. 
-        
-        I spent 8 weeks perfoming mechanical upkeep, ordering and upgrading parts, calibrating print settings. I bought an air compressor and an iwata LPH 80 spray gun, cerakote paints, and built a paint booth the size of a small shed. 
-        Uncoated prototypes made with Varioshore TPU achieve visual likeness and shore-hardness of EVA foam and cork commonly used to manifacture Yoga support blocks. They are also hypoallergenic and beautiful... which is nice because 
-        paint coatings don't stick to it well. 
-
-        At the moment I'm testing how more affordable TPU's take to paint coatings, since Cerakote offers such a wide range of color coats. The second prototype is about to be tested and now allows he user to adjust strap's aperture with 
-        a nifty lock design I spent 2 weeks designing and printing as a standalone component which can be dropped into the updated strap without changing it's appearance.    
-`,
+      shortDescription: `Short description of the project.`,
+      description: `This 3D model is designed to be used as a strap for carrying your Yoga mat, and it's also a great way to display your mat when you're not using it. The material is lightweight, skin-safe, and has a satisfying matte finish.`
     },
   ],
 };
 
-export const groundColor = '#bcbcbc';
-export const backgroundImageURL = './kloofendal_misty_morning_puresky_4k.hdr';
+export const envImageUrl = './kloofendal_misty_morning_puresky_4k.hdr';
+export const envColor = '#bcbcbc';
+
+export const groundConfig = {
+  position: [-50, -85, 20],
+  rotation: Math.PI / 7,
+  scale: [1.4, 1, 1.4],
+};
