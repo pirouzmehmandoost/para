@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { MeshPhysicalMaterial, DoubleSide} from 'three';
+import { envColor } from '@configs/globals';
 
 const matteMaterial = {
   flatShading: false,
@@ -21,22 +22,24 @@ const glossMaterial = {
   reflectivity: 0.1,
   roughness: 0.4,
   sheen: 0.1,
-  sheenColor: '#bcbcbc',
+  sheenColor: envColor,
   sheenRoughness: 0,
+};
+
+const groundMaterial = {
+  color: '#101010',
+  flatShading: false,
+  ior: 1.5,
+  metalness: 0.8,
+  roughness: 1,
+  side: DoubleSide,
 };
 
 const initialState = {
   ground: {
     name: 'ground',
     tailwindColor: `bg-zinc-900`,
-    material: new MeshPhysicalMaterial({
-      color: '#101010',
-      flatShading: false,
-      ior: 1.5,
-      metalness: 0.8,
-      roughness: 1,
-      side: DoubleSide,
-    }),
+    material: new MeshPhysicalMaterial({...groundMaterial }),
   },
 
   matte_black: {
