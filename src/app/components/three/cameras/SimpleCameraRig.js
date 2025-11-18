@@ -9,15 +9,10 @@ const SimpleCameraRig = (data) => {
   
     return useFrame(({ clock, camera }) => {
       const t = clock.elapsedTime;
+      const sin = Math.sin(t/2);
+      const cos = Math.cos(t/2);
   
-      camera.position.lerp(
-        v.set(
-          0,
-          Math.cos(t / 2) * 100,
-          (Math.sin(t / 2) + 1) * cameraPosition[2],
-        ),
-        0.06,
-      );
+      camera.position.lerp( v.set(0, (cos * 100), (sin + 1) * cameraPosition[2]), 0.06);
       camera.lookAt(0, 0, 0);
     });
   };
