@@ -1,15 +1,16 @@
 'use client';
 
-import { ColorManagement } from 'three';
+import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, CameraControls, SoftShadows, Html } from '@react-three/drei';
+import { Environment, CameraControls, Html, SoftShadows } from '@react-three/drei';
 import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
-import SimpleCameraRig from '../cameras/SimpleCameraRig';
 import Ground from '../models/Ground';
 import Model from '../models/Model';
+import SimpleCameraRig from '../cameras/SimpleCameraRig';
 
-ColorManagement.enabled = true;
+THREE.ColorManagement.enabled = true;
+THREE.Cache.enabled = true;
 
 export const SingularModelViewer = ({ data }) => {
   return (
@@ -25,11 +26,7 @@ export const SingularModelViewer = ({ data }) => {
       shadows
     >
       <Environment shadows files={envImageUrl}/>
-      <Ground
-        position={[-50, 100, -50]}
-        scale={[0.8, 0.6, 0.6]}
-        rotation={-Math.PI / 4}
-      />
+      <Ground position={[-50, 100, -50]} rotation={-Math.PI/4} scale={[0.8, 0.6, 0.6]} />
       <color args={[envColor]} attach="background" />
       <CameraControls
         minPolarAngle={0}
@@ -49,7 +46,7 @@ export const SingularModelViewer = ({ data }) => {
         }}
       />
       <SimpleCameraRig {...data} />
-      <fog attach="fog" density={0.007} color={envColor} near={70} far={300} />
+      <fog attach="fog" density={0.006} color={envColor} near={70} far={300} />
       <directionalLight
         castShadow={true}
         position={[-12, 50, -50]}
@@ -64,21 +61,16 @@ export const SingularModelViewer = ({ data }) => {
         shadow-camera-left={-1000}
         shadow-camera-right={1000}
       />
-      {data.modelUrl?.name?.length ? (
-        <Model {...data} />
-      ) : (
-        <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
-          <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-">
-            <p> ⚒️ Please navigate back to the home page ⚒️ </p>
-          </div>
-        </Html>
+      {(!!data
+        ? <Model {...data} />
+        : <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
+            <div className="w-full h-full inset-0 left-0 uppercase place-self-center place-items-center text-5xl text-nowrap text-">
+              <p> ⚒️ Please navigate back to the home page ⚒️ </p>
+            </div>
+          </Html>
       )}
-      <SoftShadows samples={10} size={6} />
-      <Ground
-        position={[0, -45, 0]}
-        scale={[0.8, 0.6, 0.6]}
-        rotation={Math.PI / 12}
-      />
+      <SoftShadows focus={0} samples={10} size={40} />
+      <Ground position={[0, -45, 0]} rotation={Math.PI/12} scale={[0.8, 0.6, 0.6]} />
     </Canvas>
   );
 };
