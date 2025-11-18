@@ -1,32 +1,38 @@
-/*
-gltfjsx command: npx gltfjsx@latest env_ground_3.glb --transform --shadows -D 
-*/
 'use client';
 
+import { useEffect, useRef } from 'react';
+import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
 import useMaterial from '@stores/materialStore';
-import { DoubleSide } from 'three';
+import { groundConfig } from '@/lib/configs/globals';
 
-const Ground = ({
-  rotation = 0,
-  position = [0, 0, 0],
-  scale = [1, 1, 1],
-}) => {
-  const getMaterial = useMaterial((state) => state.getMaterial);
+THREE.ColorManagement.enabled = true;
+THREE.Cache.enabled = true;
+
+const Ground = ({setGroundMeshRef}) => {
+  const ref = useRef(null);
   const { nodes } = useGLTF('/env_ground_3-transformed.glb');
+  const getMaterial = useMaterial((state) => state.getMaterial);
+
+  useEffect(() => { if (ref.current && setGroundMeshRef) setGroundMeshRef(ref.current); }, [setGroundMeshRef]);
+
   const material = getMaterial('ground').material;
-  material.side = DoubleSide;
+  material.side = THREE.DoubleSide;
 
   return (
-    <group scale={scale} position={position} dispose={null}>
+    <>
       <mesh
+        ref={ref}
         castShadow={true}
+        dispose={null}
         geometry={nodes.Plane.geometry}
         material={material}
+        position={groundConfig.position}
         receiveShadow={true}
-        rotation={[rotation, 0, 0]}
+        rotation={[groundConfig.rotation, 0, 0]}
+        scale={groundConfig.scale}
       />
-    </group>
+    </>
   );
 }
 
