@@ -41,8 +41,7 @@ export const GlobalModelViewer = ({ showMenu }) => {
         <AdaptiveDpr pixelated />
         <Environment shadows files={envImageUrl} />
         <color args={[envColor]} attach="background" />
-        <fog
-          attach="fog" color={envColor} density={0.005} near={180} far={280}/>
+        <fog attach="fog" color={envColor} density={0.005} near={180} far={280} />
         {/* <Clouds material={THREE.MeshLambertMaterial} limit={400}>
           <Cloud
             concentrate="outside"
