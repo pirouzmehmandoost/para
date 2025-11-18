@@ -3,7 +3,6 @@
 // import { portfolio } from '@configs/globals';
 // const { projects } = portfolio;
 // import { Cache } from 'three';
-// const initialState = {};
 
 // Cache.enabled = true;
 // // async function loadGLBModels(urls) {
@@ -118,21 +117,40 @@
 // //     });
 // // };
 
+
+
+// const initialState = {
+//   position: {},
+//   time: 0.0
+// };
+
 // const meshStore = (set, get) => ({
-//   meshes: initialState,
+//   animationState: initialState,
 
-//   getMeshes: () => get().meshes,
+//   getAnimationState: () => get().animationState,
+//   getAnimationPosition: () => get().animationState.position,
+//   getAnimationTime: () => get().animationState.time,
 
-//   getMesh: (name) => get().meshes[`${name}`],
-
-//   setMesh: (mesh) => {
-//     set((state) => ({
-//       meshes: {
-//         ...state.meshes,
-//         [`${mesh.name}`]: mesh.geometry,
+//   setAnimationTime: (newTime) => {
+//     set({
+//       animationState: {
+//         ...animationState.position,
+//         time: newTime,
 //       },
-//     }));
+//     });
 //   },
+
+//   setAnimationPosition: (newPosition) => {
+//     set({
+//       animationState: {
+//         ...animationState.time,
+//         position: newPosition
+//       },
+//     });
+//   },
+
+//   reset: () => { set({ animationState: { ...initialState } }) },
+
 // });
 
 // const useMesh = create(meshStore);
