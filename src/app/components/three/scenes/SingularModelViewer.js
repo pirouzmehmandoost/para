@@ -3,7 +3,7 @@
 import { ColorManagement } from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Environment, CameraControls, SoftShadows, Html } from '@react-three/drei';
-import { groundColor, backgroundImageURL } from '@configs/globals';
+import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import SimpleCameraRig from '../cameras/SimpleCameraRig';
 import Ground from '../models/Ground';
@@ -24,13 +24,13 @@ export const SingularModelViewer = ({ data }) => {
       orthographic={false}
       shadows
     >
-      <Environment shadows files={backgroundImageURL}/>
+      <Environment shadows files={envImageUrl}/>
       <Ground
         position={[-50, 100, -50]}
         scale={[0.8, 0.6, 0.6]}
         rotation={-Math.PI / 4}
       />
-      <color args={[groundColor]} attach="background" />
+      <color args={[envColor]} attach="background" />
       <CameraControls
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
@@ -49,7 +49,7 @@ export const SingularModelViewer = ({ data }) => {
         }}
       />
       <SimpleCameraRig {...data} />
-      <fog attach="fog" density={0.007} color={groundColor} near={70} far={300} />
+      <fog attach="fog" density={0.007} color={envColor} near={70} far={300} />
       <directionalLight
         castShadow={true}
         position={[-12, 50, -50]}
