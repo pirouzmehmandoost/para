@@ -36,16 +36,7 @@ const perspective = {
       type: 'easeInOut',
       ease: [0.76, 0, 0.24, 1],
     },
-  }),
-  // exit: {
-  //   filter: 'blur(100px)',
-  //   opacity: 0,
-  //   transition: {
-  //     duration: 0.5,
-  //     type: 'linear',
-  //     ease: [0.76, 0, 0.24, 1],
-  //   },
-  // },
+  })
 };
 
 export const slideIn = {
@@ -100,59 +91,47 @@ const Links = ({ topLinks, bottomLinks }) => {
   return (
     <div className="flex flex-col w-full h-full justify-between p-10 text-4xl ">
       <div className="flex flex-col items-center">
-        {topLinks.map((link, i) => {
-          const { title, href } = link;
-          return (
-            <div key={`b_${i}`}>
-              <motion.div
-                custom={i}
-                variants={perspective}
-                initial="initial"
-                animate="enter"
-                exit="exit"
-              >
-                <Link
-                  className="cursor-pointer"
-                  rel="noopener noreferrer"
-                  href={href}
-                >
-                  {title}
-                </Link>
-              </motion.div>
-            </div>
-          );
-        })}
-      </div>
-      <motion.div className="flex flex-row w-full justify-between">
-        {bottomLinks.map((link, i) => {
-          const { title, href } = link;
-          return (
+        {topLinks.map((link, index) => 
+          <div key={`b_${index}`}>
             <motion.div
-              variants={slideIn}
-              custom={i}
-              initial="initial"
               animate="enter"
+              custom={index}
               exit="exit"
-              key={`f_${i}`}
+              initial="initial"
+              variants={perspective}
             >
-              <Link
-                className="border-transparent cursor-pointer"
-                rel="noopener noreferrer"
-                target="blank"
-                href={href}
-              >
-                {title}
+              <Link className="cursor-pointer" href={link?.href} rel="noopener noreferrer" >
+                {link?.title}
               </Link>
             </motion.div>
-          );
-        })}
+          </div>
+        )}
+      </div>
+      <motion.div className="flex flex-row w-full justify-between">
+        {bottomLinks.map((link, index) => 
+          <motion.div
+            animate="enter"
+            custom={index}
+            exit="exit"
+            initial="initial"
+            key={`f_${index}`}
+            variants={slideIn}
+          >
+            <Link
+              className="border-transparent cursor-pointer"
+              href={link?.href}
+              rel="noopener noreferrer"
+              target="blank"
+            >
+              {link?.title}
+            </Link>
+          </motion.div>
+        )}
       </motion.div>
       <div className=" absolute flex w-full h-full bg-neutral-200/80 rounded-3xl -z-1 inset-0 scale-100 blur-xl" />
       <div
         className="absolute flex w-full h-full"
-        style={{
-          maskImage: `linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,00,0,1) 100%)`,
-        }}
+        style={{ maskImage: `linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,00,0,1) 100%)` }}
       />
     </div>
   );
@@ -163,15 +142,10 @@ const ButtonContainer = ({ isActive, toggleMenu }) => {
     <div>
       <div className="flex grow w-full h-full">
         <div onClick={() => toggleMenu()}>
-          <div
-            className={`absolute cursor-pointer p-4 rounded-full bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700 ${isActive ? 'opacity-100' : 'opacity-0 bg-neutral-500/30'}`}
-          >
+          <div className={`absolute cursor-pointer p-4 rounded-full bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700 ${isActive ? 'opacity-100' : 'opacity-0 bg-neutral-500/30'}`} >
             <CloseFullscreenIcon fontSize="large" />
           </div>
-
-          <div
-            className={`absolute cursor-pointer p-4 rounded-full bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700  ${isActive ? 'opacity-0  bg-neutral-500/30' : 'opacity-100'}`}
-          >
+          <div className={`absolute cursor-pointer p-4 rounded-full bg-neutral-500/10 backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700  ${isActive ? 'opacity-0  bg-neutral-500/30' : 'opacity-100'}`} >
             <MenuIcon fontSize="large" />
           </div>
         </div>
@@ -188,19 +162,19 @@ const MainMenu = (props) => {
       <div>
         <motion.div
           className={`absolute flex flex-col inset-0 bottom-0 w-fit h-fit bg-neutral-200/0 rounded-3xl`}
-          variants={menu}
           animate={isActive ? 'open' : 'closed'}
           initial="closed"
+          variants={menu}
         >
-          <AnimatePresence>{isActive && <Links {...props} />}</AnimatePresence>
+          <AnimatePresence>
+            { isActive && <Links {...props} /> }
+          </AnimatePresence>
         </motion.div>
 
-        <div className="absolute flex flex-row ">
+        <div className="absolute flex flex-row">
           <ButtonContainer
             isActive={isActive}
-            toggleMenu={() => {
-              setIsActive(!isActive);
-            }}
+            toggleMenu={() => { setIsActive(!isActive); }}
           />
         </div>
       </div>
@@ -209,22 +183,3 @@ const MainMenu = (props) => {
 };
 
 export default MainMenu;
-
-// {/* // <div className="relative flex flex-col grow w-fit min-w-24 h-fit min-h-24 ">
-// //         <div>
-// //             <motion.div
-// //             className={`relative flex flex-col inset-0 bottom-0 w-fit h-fit bg-neutral-200/0 backdrop-blur-xs rounded-3xl `}
-// //             variants={menu}
-// //             animate={isActive ? "open" : "closed"}
-// //             initial="closed"
-// //             >
-// //                 <AnimatePresence>
-// //                     { isActive && <Links {...linkProps} /> }
-// //                 </AnimatePresence>
-
-// //                 <div className= "absolute">
-// //                     <ButtonContainer isActive={isActive} toggleMenu={() => {setIsActive(!isActive)}} />
-// //                 </div>
-// //             </motion.div>
-// //         </div>
-// //     </div> */}
