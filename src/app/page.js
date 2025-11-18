@@ -120,7 +120,7 @@ const variants = {
 const topLinks = [
   {
     title: 'Redesign in progress',
-    callBack: false,
+    callBack: true,
   },
   {
     title: 'Come back soon',
