@@ -33,7 +33,7 @@ const ProjectsPage = () => {
         <MainMenu {...menuProps} />
       </div>
 
-      <div className="fixed inset-0 bottom-10 flex-col grow w-full self-end h-full">
+      <div className="fixed inset-0 bottom-10 flex-col grow w-full h-full self-end">
         <GlobalModelViewer />
       </div>
     </div>
