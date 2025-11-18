@@ -124,7 +124,7 @@ export const portfolio = {
           '/oval_bag_matte_white_4.png',
         ],
       },
-      shortDescription: `A shoulder bag`,
+      shortDescription: `A sizable 3D printed tote bag.`,
       description: `Product description`,
     },
     {
@@ -138,11 +138,11 @@ export const portfolio = {
           colorWays: ['matte_black'],
         },
         modelUrls: [
-          { name: 'bag_v3_for_web', url: '/bag_v3_for_web-transformed.glb' },
+          { name: 'bag_v3_for_web001', url: '/bag_v3.5-transformed.glb' },
         ],
         scale: 0.6,
       },
-      name: 'bag_v3_for_web',
+      name: 'Sang',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
       imgUrls: {
         matte_black: [
@@ -158,7 +158,7 @@ export const portfolio = {
           '/oval_bag_matte_white_4.png',
         ],
       },
-      shortDescription: 'A simple shoulder bag printed with foaming TPU',
+      shortDescription: 'A 3D printed tote bag with rocky texture.',
       description:
         'Product description: magna congue justo non velit semper elit',
     },
@@ -193,7 +193,7 @@ export const portfolio = {
           '/yoga_mat_strap_quarter.png',
         ],
       },
-      shortDescription: `Short description of the project.`,
+      shortDescription: `A yoga mat holder with a large handle.`,
       description: `This 3D model is designed to be used as a strap for carrying your Yoga mat, and it's also a great way to display your mat when you're not using it. The material is lightweight, skin-safe, and has a satisfying matte finish.`
     },
   ],
@@ -201,7 +201,6 @@ export const portfolio = {
 
 export const envImageUrl = './kloofendal_misty_morning_puresky_4k.hdr';
 export const envColor = '#bcbcbc';
-
 export const groundConfig = {
   position: [-50, -85, 20],
   rotation: Math.PI / 7,
