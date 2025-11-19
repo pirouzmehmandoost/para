@@ -42,18 +42,6 @@ export const GlobalModelViewer = ({ showMenu }) => {
         <Environment shadows files={envImageUrl} />
         <color args={[envColor]} attach="background" />
         <fog attach="fog" color={envColor} density={0.005} near={180} far={280} />
-        {/* <Clouds material={THREE.MeshLambertMaterial} limit={400}>
-          <Cloud
-            concentrate="outside"
-            growth={200}
-            color="white"
-            opacity={0.1}
-            seed={0.3}
-            bounds={400}
-            volume={300}
-            position={[80,80,0]}
-          />
-        </Clouds> */}
           <SceneBuilder showMenu={showMenu}/>
       </Suspense>
     </Canvas>
