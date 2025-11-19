@@ -5,13 +5,20 @@ import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { SoftShadows } from '@react-three/drei'
 import {
-  Bloom,
+  // Bloom,
   DepthOfField,
   EffectComposer,
-  Noise, Vignette,
+  // Noise, 
+  Vignette,
   Outline
 } from '@react-three/postprocessing';
-import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
+import { 
+  BlendFunction,
+  // BlurPass,
+  KernelSize,
+  Resizer, 
+  // Resolution,
+} from 'postprocessing';
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
 import { scaleMeshAtBreakpoint } from '@utils/mesh/meshUtils';
@@ -124,18 +131,18 @@ const SceneBuilder = ({ showMenu }) => {
           targetRefs={meshRefs.current}
         />
       )}
-      <SoftShadows focus={0} samples={10} size={40} />
+      <SoftShadows focus={0.1} samples={12} size={40} />
       <EffectComposer autoClear={false} disableNormalPass multisampling={4}>
-        <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={Resizer.AUTO_SIZE} />
-        <Bloom luminanceThreshold={10} luminanceSmoothing={1} height={200} />
-        <Noise opacity={0.02} />
-        <Vignette eskil={false} offset={0.1} darkness={0.8} />
+        <DepthOfField focusDistance={0.5} focalLength={1} bokehScale={5} height={Resizer.AUTO_SIZE} />
+        {/* <Bloom luminanceThreshold={0} luminanceSmoothing={1} resolutionX={Resolution.AUTO_SIZE} resolutionY={Resolution.AUTO_SIZE} /> */}
+        {/* <Noise opacity={0.04} /> */}
+        <Vignette eskil={false} offset={0.01} darkness={0.8} />
         <Outline
           selection={groupRef.current ? [groupRef.current] : undefined}
           selectionLayer={10}
           blendFunction={BlendFunction.SCREEN}
           patternTexture={null}
-          edgeStrength={7} 
+          edgeStrength={8} 
           pulseSpeed={0.3}
           visibleEdgeColor={0xffffff}
           hiddenEdgeColor={0xffffff}
@@ -169,18 +176,18 @@ const SceneBuilder = ({ showMenu }) => {
           const lightPosition = [
             groupPositions[index].x,
             groupPositions[index].y + 100,
-            groupPositions[index].z + 70
+            groupPositions[index].z +80
           ];
 
           return (
             <group key = {`light_${index}`}>
               <directionalLight
                 castShadow={true}
-                intensity={1.75}
+                intensity={2}
                 position={lightPosition}
                 shadow-bias={-0.001}
-                shadow-camera-near={0.05}
-                shadow-camera-far={1000}
+                shadow-camera-near={0.1}
+                shadow-camera-far={1500}
                 shadow-camera-top={1500}
                 shadow-camera-bottom={-1500}
                 shadow-camera-left={-1500}
