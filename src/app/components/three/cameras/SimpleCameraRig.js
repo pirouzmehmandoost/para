@@ -20,7 +20,7 @@ const SimpleCameraRig = (props) => {
 
       positionVector.set(sin, (cos*100), (sin+1)*cameraPosition[2]);
       camera.position.lerp(positionVector, 0.06);
-      camera.lookAt(0,0,0);
+      camera.lookAt(0,20,0);
     });
   };
 
