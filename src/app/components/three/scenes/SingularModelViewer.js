@@ -16,8 +16,9 @@ THREE.Cache.enabled = true;
 
 export const SingularModelViewer = ( props ) => {
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
+  const [meshRef, setMeshRef] = useState(undefined);
   const selection = useSelection((state) => state.getSelection());
-
+  
   return (
     <> 
       {!! props && !!selection?.sceneData?.position?.x && (
@@ -60,7 +61,7 @@ export const SingularModelViewer = ( props ) => {
               three: cameraConfigs.NONE,
             }}
           />
-          <SimpleCameraRig {...props} />
+          <SimpleCameraRig target={meshRef} {...props} />
           <Ground position={[-50, 100, -50]} rotation={-Math.PI/4} scale={[0.8, 0.6, 0.6]} />
           <color args={[envColor]} attach="background" />
           <fog attach="fog" density={0.006} color={envColor} near={80} far={350} />
@@ -109,6 +110,7 @@ export const SingularModelViewer = ( props ) => {
           />
           <Model
             groundMeshRef={groundMeshRef}
+            onMeshReady={setMeshRef}
             {...props}
           />
           <Ground
