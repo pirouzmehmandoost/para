@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { useFrame} from '@react-three/fiber';
 import { useMemo } from 'react'
-import { easing } from 'maath';
+// import { easing } from 'maath';
 
 THREE.Cache.enabled = true;
 
@@ -37,7 +37,10 @@ const SimpleCameraRig = (props) => {
       const z = cameraTargetPosition.z+100+sin;
 
       camera.lookAt(cameraTargetPosition);
-      easing.damp3(camera.position, [x,y,z], 0.5, delta);
+      // easing.damp3(camera.position, [x,y,z], 0.5, delta);
+      const v = new THREE.Vector3(x, y, z)
+      camera.position.lerp(v, 0.06);
+
     });
   };
 
