@@ -9,6 +9,9 @@ import useMaterial from '@stores/materialStore';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
+useGLTF.preload('/bag_v5_for_web-transformed.glb');
+useGLTF.preload('/yoga_mat_strap_for_web2.glb');
+useGLTF.preload('/bag_v3.5-transformed.glb');
 
 const Model = (props) => {
   const getMaterial = useMaterial((state) => state.getMaterial);
@@ -100,7 +103,7 @@ const Model = (props) => {
       return null;
     };
 
-    const clearance = highestGroundBelowModel + Math.max(5, Math.abs(size.y * 0.05));
+    const clearance = highestGroundBelowModel + Math.max(2, Math.abs(size.y * 0.02));
     return clearance - bottomY;
   },[]);
 
@@ -151,9 +154,5 @@ const Model = (props) => {
     </>
   );
 };
-
-useGLTF.preload('/bag_v5_for_web-transformed.glb');
-useGLTF.preload('/yoga_mat_strap_for_web2.glb');
-useGLTF.preload('/bag_v3.5-transformed.glb');
 
 export default Model;
