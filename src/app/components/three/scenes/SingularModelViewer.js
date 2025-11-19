@@ -3,7 +3,7 @@
 import React, { Suspense, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, CameraControls, Html, SoftShadows } from '@react-three/drei';
+import { Clouds, Cloud, Environment, CameraControls, Html, SoftShadows } from '@react-three/drei';
 import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import Ground from '../models/Ground';
@@ -43,24 +43,6 @@ export const SingularModelViewer = ( props ) => {
           >
             <Environment shadows files={envImageUrl} />
           </Suspense>
-          <Ground position={[-50, 100, -50]} rotation={-Math.PI/4} scale={[0.8, 0.6, 0.6]} />
-          <color args={[envColor]} attach="background" />
-          <fog attach="fog" density={0.005} color={envColor} near={70} far={350} />
-          <SoftShadows focus={0} samples={12} size={40} />
-          <directionalLight
-            castShadow={true}
-            intensity={3.5}
-            position={[-12, 100, -60]}
-            shadow-bias={-0.001}
-            shadow-camera-near={50}
-            shadow-camera-far={-1500}
-            shadow-camera-top={1500}
-            shadow-camera-bottom={-1500}
-            shadow-camera-left={-1500}
-            shadow-camera-right={1500}
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
-          />
           <CameraControls
             minPolarAngle={0}
             maxPolarAngle={Math.PI / 2}
@@ -79,6 +61,52 @@ export const SingularModelViewer = ( props ) => {
             }}
           />
           <SimpleCameraRig {...props} />
+          <Ground position={[-50, 100, -50]} rotation={-Math.PI/4} scale={[0.8, 0.6, 0.6]} />
+          <color args={[envColor]} attach="background" />
+          <fog attach="fog" density={0.006} color={envColor} near={80} far={350} />
+          <Clouds material={THREE.MeshLambertMaterial} limit={200}>
+            <Cloud
+              bounds={[50, 50, 50]}
+              color='white'
+              concentrate='outside'
+              fade={100}
+              growth={100}
+              opacity={0.05}
+              position={[500, 0, 0]}
+              seed={0.35}
+              segments={30}
+              speed={0.05}
+              volume={800}
+            />
+            <Cloud
+              bounds={[50, 50, 50]}
+              color='white'
+              concentrate='outside'
+              fade={100}
+              growth={100}
+              opacity={0.05}
+              position={[-390, 0, 0]}
+              seed={0.35}
+              segments={30}
+              speed={0.05}
+              volume={800}
+            />
+          </Clouds>
+          <SoftShadows focus={0} samples={12} size={40} />
+          <directionalLight
+            castShadow={true}
+            intensity={5}
+            position={[0, 100, -50]}
+            shadow-bias={-0.001}
+            shadow-camera-near={50}
+            shadow-camera-far={1500}
+            shadow-camera-top={1500}
+            shadow-camera-bottom={-1500}
+            shadow-camera-left={-1500}
+            shadow-camera-right={1500}
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+          />
           <Model
             groundMeshRef={groundMeshRef}
             {...props}
