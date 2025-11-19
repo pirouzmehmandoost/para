@@ -59,7 +59,6 @@ const ProjectPage = () => {
 
   useLayoutEffect(()=>{
     if (selection?.sceneData?.modelUrls[0]?.url?.length === 0) {
-      console.log("ProjectPage useLayoutEffect");
       resetSelectionStore();
       router.push('/');
     }
@@ -78,7 +77,6 @@ const ProjectPage = () => {
           className='w-full h-full self-center place-self-center place-content-center items-center'
           {...data}
         />
-        {/* <div className='absolute p-8 '> <DynamicMenu {...menuProps}/> </div> */}
         <div
           id='project-page-back-button-container'
           className='fixed top-10 left-10 mt-10 p-8 rounded-full bg-white/1 text-5xl backdrop-blur-3xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700'
