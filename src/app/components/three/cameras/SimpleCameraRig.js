@@ -1,26 +1,43 @@
 'use client';
 
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
+import { useFrame} from '@react-three/fiber';
 import { useMemo } from 'react'
+import { easing } from 'maath';
 
 THREE.Cache.enabled = true;
 
 const SimpleCameraRig = (props) => {
-    const { 
-      cameraPosition = [0, 10, 180],
+    const {
+      cameraPosition = [0,0,180],
+      target,
     } = props;
 
-    const positionVector = useMemo(() => new THREE.Vector3(), []);
-  
-    useFrame(({ clock, camera }) => {
-      const t = clock.elapsedTime;
-      const sin = Math.sin(t/2);
-      const cos = Math.cos(t/2);
+  const cameraTargetPosition = useMemo(() => {
+    const positionVector = new THREE.Vector3(...cameraPosition);
 
-      positionVector.set(sin, (cos*100), (sin+1)*cameraPosition[2]);
-      camera.position.lerp(positionVector, 0.06);
-      camera.lookAt(0,20,0);
+    if (!target) return positionVector;
+
+    target.updateWorldMatrix();
+    const modelBoundingBox = new THREE.Box3().setFromObject(target);
+    positionVector.set(
+      (modelBoundingBox.max.x + modelBoundingBox.min.x)/2,
+      (modelBoundingBox.max.y + modelBoundingBox.min.y)/2,
+      (modelBoundingBox.max.z + modelBoundingBox.min.z)/2,
+    );
+    return positionVector;
+  },[target]);
+
+    useFrame(({ clock, camera }, delta) => {
+      const t = clock.elapsedTime;
+      const sin = Math.sin(t/2)*5;
+      const cos = Math.cos(t/2)*50;
+      const x = cameraTargetPosition.x+sin;
+      const y = cameraTargetPosition.y+cos;
+      const z = cameraTargetPosition.z+100+sin;
+
+      camera.lookAt(cameraTargetPosition);
+      easing.damp3(camera.position, [x,y,z], 0.5, delta);
     });
   };
 
