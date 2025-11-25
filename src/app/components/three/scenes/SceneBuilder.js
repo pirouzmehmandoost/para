@@ -37,20 +37,17 @@ const SceneBuilder = ({ showMenu }) => {
   const groupRef = useRef(null); 
   const groupRefs = useRef(projects.map(() => null));
 
-  const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
-
   const groupPositions = useMemo(() => {
+    const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
     const positions = [];
     const vertex = new THREE.Vector3();
     const ellipseCurve = new THREE.EllipseCurve(
-      0, 0, ellipseRadius, ellipseRadius, 0, 2 * Math.PI, false,
-      projects.length % 2 == 0 ? 0 : Math.PI / 2
+      0, 0, ellipseRadius, ellipseRadius, 0, 2 * Math.PI, false, projects.length % 2 == 0 ? 0 : Math.PI / 2
     );
     ellipseCurve.closed = true;
     
-    const ellipseCurvePoints = ellipseCurve.getPoints(projects.length);
-    ellipseCurvePoints.shift();
-
+    const curvePoints = ellipseCurve.getPoints(projects.length);
+    const ellipseCurvePoints = curvePoints.slice(1);
     const positionAttribute = new THREE.BufferGeometry()
       .setFromPoints(ellipseCurvePoints)
       .getAttribute('position');
@@ -61,7 +58,7 @@ const SceneBuilder = ({ showMenu }) => {
     }
 
     return positions;
-  }, [ellipseRadius]);
+  }, [size.width]);
 
   //Model mesh tracking, to control the camera rig.
   const [readyCount, setReadyCount] = useState(0);
@@ -81,7 +78,7 @@ const SceneBuilder = ({ showMenu }) => {
           setReadyCount((count) => count + 1);
         };
       })
-  ), [projects]);
+  ), []);
   
   const totalMeshes = projects.reduce((acc, el)=> acc + el.sceneData.modelUrls.length, 0);
   const meshesReady = readyCount === totalMeshes;
@@ -180,7 +177,7 @@ const SceneBuilder = ({ showMenu }) => {
           ];
 
           return (
-            <group key = {`light_${index}`}>
+            <group key = {`light_${groupProps.name}`}>
               <directionalLight
                 castShadow={true}
                 intensity={2}
@@ -198,7 +195,7 @@ const SceneBuilder = ({ showMenu }) => {
               <Group 
                 groundMeshRef={groundMeshRef}
                 groupRef = {groupRefs.current[index]}
-                key={index}
+                key={`group_${groupProps.name}`}
                 name={`${groupProps?.name}`}
                 onClick={(e) => {
                   const previousGroup = groupRef.current;           
