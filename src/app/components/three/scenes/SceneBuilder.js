@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import React, {startTransition,  useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { SoftShadows } from '@react-three/drei'
@@ -154,8 +154,11 @@ const SceneBuilder = ({ showMenu }) => {
         onPointerMissed={(e) => {
           groupRef.current = null;
           e.stopPropagation();
-          showMenu(undefined);
-          resetSelectionStore();
+
+          startTransition(() => {
+            showMenu(undefined);
+            resetSelectionStore();
+          });
         }}
       >
         {projects.map((data, index) => {
@@ -200,14 +203,18 @@ const SceneBuilder = ({ showMenu }) => {
                 onClick={(e) => {
                   const previousGroup = groupRef.current;           
                   groupRef.current = e.object;
+
                   if (previousGroup && previousGroup.name === e.object.name ) return;
 
                   e.stopPropagation();
                   setCurrentIndex(index);
                   currentIndexRef.current = index;
                   setHasNavigated(false);
-                  showMenu(e.object); 
-                  setSelectionStore(groupProps);
+
+                  startTransition(() => {
+                    showMenu(e.object); 
+                    setSelectionStore(groupProps);
+                  });
                 }}
                 onMeshReady={meshReadyHandlers[index]}
                 {...groupProps.sceneData}
