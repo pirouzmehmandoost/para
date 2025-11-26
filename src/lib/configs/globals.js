@@ -127,41 +127,41 @@ export const portfolio = {
       shortDescription: `A sizable 3D printed tote bag.`,
       description: `Product description`,
     },
-    {
-      sceneData: {
-        autoRotate: true,
-        autoRotateSpeed: 1,
-        autoUpdateMaterial: false,
-        groupName: 'bag_v3_for_web',
-        materials: {
-          defaultMaterial: 'matte_black',
-          colorWays: ['matte_black'],
-        },
-        modelUrls: [
-          { name: 'bag_v3_for_web001', url: '/bag_v3.5-transformed.glb' },
-        ],
-        scale: 0.6,
-      },
-      name: 'Sang',
-      bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
-      imgUrls: {
-        matte_black: [
-          '/oval_bag_matte_black_1.png',
-          '/oval_bag_matte_black_2.png',
-          '/oval_bag_matte_black_3.png',
-          '/oval_bag_matte_black_4.png',
-        ],
-        matte_white: [
-          '/oval_bag_matte_white_1.png',
-          '/oval_bag_matte_white_2.png',
-          '/oval_bag_matte_white_3.png',
-          '/oval_bag_matte_white_4.png',
-        ],
-      },
-      shortDescription: 'A 3D printed tote bag with rocky texture.',
-      description:
-        'Product description: magna congue justo non velit semper elit',
-    },
+    // {
+    //   sceneData: {
+    //     autoRotate: true,
+    //     autoRotateSpeed: 1,
+    //     autoUpdateMaterial: false,
+    //     groupName: 'bag_v3_for_web',
+    //     materials: {
+    //       defaultMaterial: 'matte_black',
+    //       colorWays: ['matte_black'],
+    //     },
+    //     modelUrls: [
+    //       { name: 'bag_v3_for_web001', url: '/bag_v3.5-transformed.glb' },
+    //     ],
+    //     scale: 0.6,
+    //   },
+    //   name: 'Sang',
+    //   bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
+    //   imgUrls: {
+    //     matte_black: [
+    //       '/oval_bag_matte_black_1.png',
+    //       '/oval_bag_matte_black_2.png',
+    //       '/oval_bag_matte_black_3.png',
+    //       '/oval_bag_matte_black_4.png',
+    //     ],
+    //     matte_white: [
+    //       '/oval_bag_matte_white_1.png',
+    //       '/oval_bag_matte_white_2.png',
+    //       '/oval_bag_matte_white_3.png',
+    //       '/oval_bag_matte_white_4.png',
+    //     ],
+    //   },
+    //   shortDescription: 'A 3D printed tote bag with rocky texture.',
+    //   description:
+    //     'Product description: magna congue justo non velit semper elit',
+    // },
     {
       sceneData: {
         autoRotate: true,
