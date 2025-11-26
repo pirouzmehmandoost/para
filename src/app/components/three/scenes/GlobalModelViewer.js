@@ -3,7 +3,7 @@
 import {Suspense } from 'react';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { AdaptiveDpr, Clouds, Cloud, Environment, Html} from '@react-three/drei';
+import { AdaptiveDpr, Environment, Html} from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
 import { envColor, envImageUrl } from '@configs/globals';
 import SceneBuilder from './SceneBuilder';
@@ -24,25 +24,27 @@ export const GlobalModelViewer = ({ showMenu }) => {
       orthographic={false}
       shadows
     >
-      <Suspense fallback={
-        <Html
-          center 
-          position={[0, 0, 0]}
-          scale={[40, 40, 40]}
-          style={{
-            color: 'black',
-            fontSize: '100px',
-            fontFamily: 'didot',
-            textAlign: 'center',
-          }}>
-            Loading...
-        </Html>
-      }>
+      <Suspense 
+        fallback={
+          <Html
+            center 
+            position={[0, 0, 0]}
+            scale={[40, 40, 40]}
+            style={{
+              color: 'black',
+              fontSize: '100px',
+              fontFamily: 'didot',
+              textAlign: 'center',
+            }}>
+              Loading...
+          </Html>
+        }
+      >
         <AdaptiveDpr pixelated />
         <Environment shadows files={envImageUrl} />
         <color args={[envColor]} attach="background" />
         <fog attach="fog" color={envColor} density={0.004} near={180} far={290} />
-        <Clouds material={THREE.MeshLambertMaterial} limit={100}>
+        {/* <Clouds material={THREE.MeshLambertMaterial} limit={100}>
           <Cloud
             bounds={[20, 20, 20]}
             color='white'
@@ -82,7 +84,7 @@ export const GlobalModelViewer = ({ showMenu }) => {
             speed={0.3}
             volume={400}
           />
-        </Clouds>
+        </Clouds> */}
         <SceneBuilder showMenu={showMenu}/>
       </Suspense>
     </Canvas>
