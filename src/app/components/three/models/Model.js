@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef, useState, useCallback, useEffect, useLayoutEffect } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, Bvh } from '@react-three/drei';
 import { Select } from '@react-three/postprocessing';
 import useMaterial from '@stores/materialStore';
 
@@ -17,7 +17,7 @@ const Model = (props) => {
   const getMaterial = useMaterial((state) => state.getMaterial);
   const meshRef = useRef(undefined);
   const hasPositionedRef = useRef(false);
-  
+
   const {
     autoRotate = true,
     autoRotateSpeed = 0.5,
@@ -25,19 +25,17 @@ const Model = (props) => {
     isPointerOver = '',
     materialId,
     modelUrl: { name = '', url = '' } = {},
-    onMeshReady=()=>{},
+    onMeshReady= ()=>{},
     position,
     scale,
   } = props;
-  
+
   const [newPosition, setNewPosition] = useState(0);
   const mesh = useGLTF(url).nodes[`${name}`];
 
   const positionModelAboveGround = useCallback((groundMeshRef) => {
-    if (!meshRef.current || !groundMeshRef) {
-      return null;
-    };
-  
+    if (!meshRef.current || !groundMeshRef) return null;
+    
     meshRef.current.updateWorldMatrix(true, true);
     groundMeshRef.updateWorldMatrix(true, true); 
 
@@ -147,9 +145,11 @@ const Model = (props) => {
   return (
     <>
       {mesh && (
-        <Select enabled={isPointerOver === name}>
-          <mesh ref={meshRef} castShadow={true} receiveShadow={true} {...meshProps} />
-        </Select>
+        <Bvh firstHitOnly>
+          <Select enabled={isPointerOver === name}>
+            <mesh ref={meshRef} castShadow={true} receiveShadow={true} {...meshProps} />
+          </Select>
+        </Bvh>
       )}
     </>
   );
