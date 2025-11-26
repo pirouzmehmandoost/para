@@ -18,10 +18,9 @@ const ControllableCameraRig = ({
   const ref = useRef(undefined);
   const targetIndexRef = useRef(manualIndex ?? 0);
   const traversalDistance = useRef(0);
+  const lookAtPosition = useRef(new THREE.Vector3());
   const [stopPositions, setStopPositions] = useState([]);
   const [cameraPathCurve, setCameraPathCurve] = useState(null);
-  
-  const lookAtPosition = useRef(new THREE.Vector3());
 
   useLayoutEffect(() => {
     if (manualIndex !== null) targetIndexRef.current = manualIndex; 
@@ -100,10 +99,15 @@ const ControllableCameraRig = ({
         // };
       }
       else {
-        traversalDistance.current = (traversalDistance.current + pointOnCurve)/(stopPositions.length-1);
-        const position = cameraPathCurve.getPoint(traversalDistance.current); 
-        const nextPoint = stopPositions.reduce((closest, pt) => 
-          closest.distanceTo(position) < pt.distanceTo(position) ? closest : pt);
+        // traversalDistance.current = (traversalDistance.current + pointOnCurve)/(stopPositions.length-1);
+        // const position = cameraPathCurve.getPoint(traversalDistance.current); 
+        const position = cameraPathCurve.getPoint(pointOnCurve%1);
+        let nextPoint = stopPositions[0];
+        for (let i = 0; i < stopPositions.length; i++) {
+          if (stopPositions[i].distanceTo(position) < nextPoint.distanceTo(position)) nextPoint = stopPositions[i];
+        }
+        // const nextPoint = stopPositions.reduce((closest, pt) => 
+        //   closest.distanceTo(position) < pt.distanceTo(position) ? closest : pt);
 
         lookAtPosition.current.set(
           nextPoint.x + sin,
