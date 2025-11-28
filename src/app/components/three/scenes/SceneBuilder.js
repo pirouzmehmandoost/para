@@ -1,16 +1,16 @@
 'use client';
 
-import React, {startTransition,  useMemo, useRef, useState } from 'react';
+import React, { startTransition,  useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { SoftShadows } from '@react-three/drei'
+import { Cloud, Clouds, SoftShadows } from '@react-three/drei'
 import {
   // Bloom,
   DepthOfField,
   EffectComposer,
-  // Noise, 
   Vignette,
-  Outline
+  Outline,
+  N8AO
 } from '@react-three/postprocessing';
 import { 
   BlendFunction,
@@ -130,26 +130,50 @@ const SceneBuilder = ({ showMenu }) => {
       )}
       <SoftShadows focus={0.1} samples={12} size={40} />
       <EffectComposer autoClear={false} disableNormalPass multisampling={4}>
-        <DepthOfField focusDistance={0.5} focalLength={1} bokehScale={5} height={Resizer.AUTO_SIZE} />
+        <DepthOfField focusDistance={0.3} focalLength={1} bokehScale={5} height={Resizer.AUTO_SIZE} />
+        <N8AO aoRadius={10} distanceFalloff={800} intensity={10} screenSpaceRadius halfRes />
         {/* <Bloom luminanceThreshold={0} luminanceSmoothing={1} resolutionX={Resolution.AUTO_SIZE} resolutionY={Resolution.AUTO_SIZE} /> */}
-        {/* <Noise opacity={0.04} /> */}
         <Vignette eskil={false} offset={0.01} darkness={0.8} />
         <Outline
           selection={groupRef.current ? [groupRef.current] : undefined}
           selectionLayer={10}
           blendFunction={BlendFunction.SCREEN}
           patternTexture={null}
-          edgeStrength={8} 
-          pulseSpeed={0.3}
+          edgeStrength={5} 
+          pulseSpeed={0.25}
           visibleEdgeColor={0xffffff}
           hiddenEdgeColor={0xffffff}
           width={Resizer.AUTO_SIZE}
           height={Resizer.AUTO_SIZE}
-          kernelSize={KernelSize.LARGE}
+          kernelSize={KernelSize.VERY_LARGE}
           blur={true}
           xRay={true}
         />
-      </EffectComposer>      
+      </EffectComposer>
+      <Clouds material={THREE.MeshLambertMaterial} limit={projects.length * 3}>
+        {projects.map((_, index) => {
+          const cloudPosition = [
+            groupPositions[index].x + 100,
+            groupPositions[index].y -50,
+            groupPositions[index].z + 90
+          ];
+          
+          return (
+            <Cloud
+              key={`cloud_${index}`}
+              color='black'
+              concentrate='outside'
+              growth={300}
+              opacity={0.12}
+              position={cloudPosition}
+              seed={0.4}
+              segments={3}
+              speed={0.2}
+              volume={300}
+            />
+          );
+        })}
+      </Clouds>
       <group
         onPointerMissed={(e) => {
           groupRef.current = null;
@@ -166,34 +190,34 @@ const SceneBuilder = ({ showMenu }) => {
             ...data,
             sceneData: {
               ...data.sceneData,
-              autoRotateSpeed: index % 2 == 0 ? -0.5 : 0.5,
+              autoRotateSpeed: data.sceneData.autoRotateSpeed * (index % 2 == 0 ? -0.5 : 0.5),
               groupName: data.name,
               isPointerOver: groupRef.current?.name || '',
               position: groupPositions[index],
             }
           };
-
           const lightPosition = [
             groupPositions[index].x,
             groupPositions[index].y + 100,
-            groupPositions[index].z +80
+            groupPositions[index].z
           ];
 
           return (
-            <group key = {`light_${groupProps.name}`}>
+            <group key={index}>
               <directionalLight
+                key={`light_${groupProps.name}`}
                 castShadow={true}
-                intensity={2}
+                intensity={1}
                 position={lightPosition}
                 shadow-bias={-0.001}
                 shadow-camera-near={0.1}
-                shadow-camera-far={1500}
-                shadow-camera-top={1500}
-                shadow-camera-bottom={-1500}
-                shadow-camera-left={-1500}
-                shadow-camera-right={1500}
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
+                shadow-camera-far={1600}
+                shadow-camera-top={1600}
+                shadow-camera-bottom={-1600}
+                shadow-camera-left={-1600}
+                shadow-camera-right={1600}
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
               />
               <Group 
                 groundMeshRef={groundMeshRef}
