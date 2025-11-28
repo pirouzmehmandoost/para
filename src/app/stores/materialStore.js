@@ -8,9 +8,10 @@ const matteMaterial = {
   metalness: 0,
   reflectivity: 0.1,
   roughness: 0.7,
-  sheen: 0.6,
-  sheenColor: '#707070',
+  sheen: 0.3,
+  sheenColor: envColor,
   sheenRoughness: 0.7,
+  side: DoubleSide,
 };
 
 const glossMaterial = {
@@ -24,14 +25,19 @@ const glossMaterial = {
   sheen: 0.1,
   sheenColor: envColor,
   sheenRoughness: 0,
+  side: DoubleSide,
 };
 
 const groundMaterial = {
   color: '#101010',
   flatShading: false,
   ior: 1.5,
-  metalness: 0.8,
-  roughness: 1,
+  reflectivity: 0.3,
+  metalness: 0.5,
+  roughness: 0.9,
+  sheen: 0.05,
+  sheenColor: envColor,
+  sheenRoughness: 0.5,
   side: DoubleSide,
 };
 
