@@ -96,17 +96,17 @@ export const portfolio = {
     {
       sceneData: {
         autoRotate: true,
-        autoRotateSpeed: 1,
-        autoUpdateMaterial: false,
+        autoRotateSpeed: 0.6,
+        autoUpdateMaterial: true,
         groupName: 'Gerd',
         materials: {
           defaultMaterial: 'matte_black',
-          colorWays: ['matte_black', 'gloss_black', 'eggshell'],
+          colorWays: ['matte_black', 'gloss_black'],
         },
         modelUrls: [
-          { name: 'bag_v5_web', url: '/bag_v5_for_web-transformed.glb' },
+          { name: 'bag_v5_thin_v2_latest', url: '/bag_9-transformed.glb' },
         ],
-        scale: 0.6,
+        scale: 0.55,
       },
       name: 'Gerd',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
