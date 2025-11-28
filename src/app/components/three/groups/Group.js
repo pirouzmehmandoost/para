@@ -7,6 +7,8 @@ import Model from '../models/Model';
 const Group = (data) => {
   const { size } = useThree();
   const {
+    autoRotate, 
+    autoRotateSpeed,
     materials,
     modelUrls,
     groundMeshRef,
@@ -25,6 +27,8 @@ const Group = (data) => {
       {
         modelUrls.map((modelUrl, index) => (
           <Model
+            autoRotate={autoRotate}
+            autoRotateSpeed={autoRotateSpeed}
             onMeshReady={onMeshReady[index]}
             key={modelUrl.name}
             groundMeshRef={groundMeshRef}
