@@ -1,17 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+// import { easing } from 'maath';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF, Bvh } from '@react-three/drei';
 import { Select } from '@react-three/postprocessing';
 import useMaterial from '@stores/materialStore';
+// import useSelection from '@stores/selectionStore';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
 useGLTF.preload('/bag_v5_for_web-transformed.glb');
 useGLTF.preload('/yoga_mat_strap_for_web2.glb');
 useGLTF.preload('/bag_v3.5-transformed.glb');
+useGLTF.preload('/bag_9-transformed.glb');
 
 const Model = (props) => {
   const getMaterial = useMaterial((state) => state.getMaterial);
@@ -21,6 +24,7 @@ const Model = (props) => {
   const {
     autoRotate = true,
     autoRotateSpeed = 0.5,
+    // autoUpdateMaterial = true,
     groundMeshRef,
     isPointerOver = '',
     materialId,
@@ -124,8 +128,13 @@ const Model = (props) => {
     }
   }, [hasPositionedRef.current, meshRef.current, newPosition, onMeshReady]);
 
+
   useFrame((state, delta) => {
-    if (meshRef?.current && autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
+    if (meshRef?.current ) {
+      // const time = state.clock.elapsedTime;
+      if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
+      // if (autoUpdateMaterial) meshRef.current.material.copy(getMaterial('eggshell').material);
+    }
   });
 
   if (!mesh) {
