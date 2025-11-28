@@ -64,39 +64,37 @@ export const SingularModelViewer = ( props ) => {
           <SimpleCameraRig target={meshRef} {...props} />
           <Ground position={[-50, 100, -50]} rotation={-Math.PI/4} scale={[0.8, 0.6, 0.6]} />
           <color args={[envColor]} attach="background" />
-          <fog attach="fog" density={0.006} color={envColor} near={80} far={350} />
-          <Clouds material={THREE.MeshLambertMaterial} limit={200}>
+          <fog attach="fog" density={0.008} color={envColor} near={90} far={400} />
+          <Clouds material={THREE.MeshLambertMaterial} limit={60}>
             <Cloud
-              bounds={[50, 50, 50]}
-              color='white'
+              color='black'
               concentrate='outside'
               fade={100}
               growth={100}
-              opacity={0.05}
-              position={[500, 0, 0]}
-              seed={0.35}
+              opacity={0.1}
+              position={[400, 0, 0]}
+              seed={0.4}
               segments={30}
-              speed={0.05}
-              volume={800}
+              speed={0.2}
+              volume={700}
             />
             <Cloud
-              bounds={[50, 50, 50]}
-              color='white'
+              color='black'
               concentrate='outside'
               fade={100}
               growth={100}
-              opacity={0.05}
-              position={[-390, 0, 0]}
-              seed={0.35}
+              opacity={0.1}
+              position={[-400, 0, 0]}
+              seed={0.4}
               segments={30}
-              speed={0.05}
-              volume={800}
+              speed={0.3}
+              volume={700}
             />
           </Clouds>
           <SoftShadows focus={0} samples={12} size={40} />
           <directionalLight
             castShadow={true}
-            intensity={5}
+            intensity={3}
             position={[0, 100, -50]}
             shadow-bias={-0.001}
             shadow-camera-near={50}
