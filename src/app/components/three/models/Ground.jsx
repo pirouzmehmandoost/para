@@ -8,13 +8,16 @@ import { groundConfig } from '@/lib/configs/globals';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
+useGLTF.preload('/env_ground_3-transformed.glb');
 
 const Ground = ({setGroundMeshRef}) => {
   const ref = useRef(null);
   const { nodes } = useGLTF('/env_ground_3-transformed.glb');
   const getMaterial = useMaterial((state) => state.getMaterial);
 
-  useEffect(() => { if (ref.current && setGroundMeshRef) setGroundMeshRef(ref.current); }, [setGroundMeshRef]);
+  useEffect(() => { 
+    if (ref.current && setGroundMeshRef) setGroundMeshRef(ref.current);
+  }, [setGroundMeshRef]);
 
   const material = getMaterial('ground').material;
   material.side = THREE.DoubleSide;
@@ -35,7 +38,5 @@ const Ground = ({setGroundMeshRef}) => {
     </>
   );
 }
-
-useGLTF.preload('/env_ground_3-transformed.glb');
 
 export default Ground;
