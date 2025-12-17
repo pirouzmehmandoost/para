@@ -10,10 +10,17 @@ THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 useGLTF.preload('/env_ground_3-transformed.glb');
 
-const Ground = ({setGroundMeshRef}) => {
+const Ground = (props) => {
   const ref = useRef(null);
   const { nodes } = useGLTF('/env_ground_3-transformed.glb');
   const getMaterial = useMaterial((state) => state.getMaterial);
+
+  const {
+    setGroundMeshRef,
+    position,
+    rotation,
+    scale
+  } = props;
 
   useEffect(() => { 
     if (ref.current && setGroundMeshRef) setGroundMeshRef(ref.current);
@@ -30,10 +37,10 @@ const Ground = ({setGroundMeshRef}) => {
         dispose={null}
         geometry={nodes.Plane.geometry}
         material={material}
-        position={groundConfig.position}
+        position={position? position : groundConfig.position}
         receiveShadow={true}
-        rotation={[groundConfig.rotation, 0, 0]}
-        scale={groundConfig.scale}
+        rotation={rotation? rotation : groundConfig.rotation}
+        scale={scale? scale : groundConfig.scale}
       />
     </>
   );
