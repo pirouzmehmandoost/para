@@ -1,17 +1,22 @@
 import { create } from 'zustand';
-import { MeshPhysicalMaterial, DoubleSide} from 'three';
+import * as THREE from 'three';
 import { envColor } from '@configs/globals';
 
+THREE.ColorManagement.enabled = true;
+THREE.Cache.enabled = true;
+
 const matteMaterial = {
+  clearcoat: 0.3,
+  clearcoatRoughness: 1,
   flatShading: false,
-  ior: 1.5,
+  ior: 1.6,
   metalness: 0,
-  reflectivity: 0.1,
-  roughness: 0.7,
-  sheen: 0.3,
+  reflectivity: 0.3,
+  roughness: 0.8,
+  sheen: 0.05,
   sheenColor: envColor,
-  sheenRoughness: 0.7,
-  side: DoubleSide,
+  sheenRoughness: 0,
+  side: THREE.DoubleSide,
 };
 
 const glossMaterial = {
@@ -25,7 +30,7 @@ const glossMaterial = {
   sheen: 0.1,
   sheenColor: envColor,
   sheenRoughness: 0,
-  side: DoubleSide,
+  side: THREE.DoubleSide,
 };
 
 const groundMaterial = {
@@ -38,20 +43,20 @@ const groundMaterial = {
   sheen: 0.05,
   sheenColor: envColor,
   sheenRoughness: 0.5,
-  side: DoubleSide,
+  side: THREE.DoubleSide,
 };
 
 const initialState = {
   ground: {
     name: 'ground',
     tailwindColor: `bg-zinc-900`,
-    material: new MeshPhysicalMaterial({...groundMaterial }),
+    material: new THREE.MeshPhysicalMaterial({...groundMaterial }),
   },
 
   matte_black: {
     name: 'Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-600 to-zinc-900 to-65%`,
-    material: new MeshPhysicalMaterial({
+    material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
       color: '#101010',
     }),
@@ -59,7 +64,7 @@ const initialState = {
   gloss_black: {
     name: 'Gloss Black',
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-600 via-zinc-950 via-37% to-zinc-500 to-100%`,
-    material: new MeshPhysicalMaterial({
+    material: new THREE.MeshPhysicalMaterial({
       ...glossMaterial,
       color: '#101010',
     }),
@@ -67,7 +72,7 @@ const initialState = {
   eggshell: {
     name: 'Eggshell',
     tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
-    material: new MeshPhysicalMaterial({
+    material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
       color: '#ccc0a3',
       ior: 1.6,
