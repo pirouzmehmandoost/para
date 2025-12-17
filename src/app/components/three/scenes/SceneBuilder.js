@@ -1,31 +1,19 @@
 'use client';
 
-import React, { startTransition,  useMemo, useRef, useState } from 'react';
+import React, { startTransition,  useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import {
-  // Bloom,
-  DepthOfField,
-  EffectComposer,
-  Vignette,
-  Outline,
-  N8AO
-} from '@react-three/postprocessing';
-import { 
-  BlendFunction,
-  // BlurPass,
-  KernelSize,
-  Resizer, 
-  // Resolution,
-} from 'postprocessing';
-import useSelection from '@stores/selectionStore';
+import { DepthOfField, EffectComposer, Vignette, Outline, N8AO } from '@react-three/postprocessing';
+import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
+import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/mesh/meshUtils';
 import ControllableCameraRig from '../cameras/ControllableCameraRig';
 import Ground from '../models/Ground';
 import Group from '../groups/Group';
 
+THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
 const { projects } = portfolio;
 
@@ -42,7 +30,14 @@ const SceneBuilder = ({ showMenu }) => {
     const positions = [];
     const vertex = new THREE.Vector3();
     const ellipseCurve = new THREE.EllipseCurve(
-      0, 0, ellipseRadius, ellipseRadius, 0, 2 * Math.PI, false, projects.length % 2 == 0 ? 0 : Math.PI / 2
+      0,
+      0,
+      ellipseRadius,
+      ellipseRadius,
+      0,
+      2 * Math.PI,
+      false,
+      projects.length % 2 == 0 ? 0 : Math.PI / 2
     );
     ellipseCurve.closed = true;
     
@@ -56,7 +51,6 @@ const SceneBuilder = ({ showMenu }) => {
       const pt = vertex.fromBufferAttribute(positionAttribute, i);
       positions.push(new THREE.Vector3(pt.x, 0, pt.y));
     }
-
     return positions;
   }, [size.width]);
 
@@ -82,8 +76,7 @@ const SceneBuilder = ({ showMenu }) => {
   
   const totalMeshes = projects.reduce((acc, el)=> acc + el.sceneData.modelUrls.length, 0);
   const meshesReady = readyCount === totalMeshes;
-
-  //swipe gesture tracking
+  // swipe gesture tracking (doesn't work on mobile)
   const [hasNavigated, setHasNavigated] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentIndexRef = useRef(0);
@@ -128,12 +121,10 @@ const SceneBuilder = ({ showMenu }) => {
           targetRefs={meshRefs.current}
         />
       )}
-      <SoftShadows focus={0.1} samples={12} size={40} />
-      <EffectComposer autoClear={false} disableNormalPass multisampling={4}>
-        <DepthOfField focusDistance={0.3} focalLength={1} bokehScale={5} height={Resizer.AUTO_SIZE} />
-        <N8AO aoRadius={10} distanceFalloff={800} intensity={10} screenSpaceRadius halfRes />
-        {/* <Bloom luminanceThreshold={0} luminanceSmoothing={1} resolutionX={Resolution.AUTO_SIZE} resolutionY={Resolution.AUTO_SIZE} /> */}
-        <Vignette eskil={false} offset={0.01} darkness={0.8} />
+      <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
+        <DepthOfField focusDistance={0.3} focalLength={0.5} bokehScale={2} height={Resizer.AUTO_SIZE} />
+        <N8AO aoRadius={50} distanceFalloff={500} intensity={1} screenSpaceRadius halfRes aoSamples={16} denoiseSamples={16}/>
+        <Vignette eskil={false} offset={0.01} darkness={0.7} />
         <Outline
           selection={groupRef.current ? [groupRef.current] : undefined}
           selectionLayer={10}
@@ -150,14 +141,10 @@ const SceneBuilder = ({ showMenu }) => {
           xRay={true}
         />
       </EffectComposer>
-      <Clouds material={THREE.MeshLambertMaterial} limit={projects.length * 3}>
+      <SoftShadows focus={0} samples={24} size={30} />
+      <Clouds material={THREE.MeshLambertMaterial} limit={projects.length * 4}>
         {projects.map((_, index) => {
-          const cloudPosition = [
-            groupPositions[index].x + 100,
-            groupPositions[index].y -50,
-            groupPositions[index].z + 90
-          ];
-          
+          const cloudPosition = [groupPositions[index].x + 100, groupPositions[index].y - 50, groupPositions[index].z + 90];
           return (
             <Cloud
               key={`cloud_${index}`}
@@ -167,13 +154,27 @@ const SceneBuilder = ({ showMenu }) => {
               opacity={0.12}
               position={cloudPosition}
               seed={0.4}
-              segments={3}
+              segments={4}
               speed={0.2}
               volume={300}
             />
           );
         })}
       </Clouds>
+      <directionalLight
+        castShadow={true}
+        intensity={1.5}
+        position={[0,90,0]}
+        shadow-bias={0.001}
+        shadow-camera-near={0.1}
+        shadow-camera-far={400}
+        shadow-camera-top={400}
+        shadow-camera-bottom={-400}
+        shadow-camera-left={-400}
+        shadow-camera-right={400}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
       <group
         onPointerMissed={(e) => {
           groupRef.current = null;
@@ -196,32 +197,31 @@ const SceneBuilder = ({ showMenu }) => {
               position: groupPositions[index],
             }
           };
-          const lightPosition = [
-            groupPositions[index].x,
-            groupPositions[index].y + 100,
-            groupPositions[index].z
-          ];
-
+          // const lightPosition = [
+          //   groupPositions[index].x*12,
+          //   groupPositions[index].y +150,
+          //   groupPositions[index].z +200
+          // ];
           return (
-            <group key={index}>
-              <directionalLight
-                key={`light_${groupProps.name}`}
-                castShadow={true}
-                intensity={1}
-                position={lightPosition}
-                shadow-bias={-0.001}
-                shadow-camera-near={0.1}
-                shadow-camera-far={1600}
-                shadow-camera-top={1600}
-                shadow-camera-bottom={-1600}
-                shadow-camera-left={-1600}
-                shadow-camera-right={1600}
-                shadow-mapSize-width={2048}
-                shadow-mapSize-height={2048}
-              />
+            //   <directionalLight
+            //     key={`light_${groupProps.name}`}
+            //     castShadow={true}
+            //     intensity={1}
+            //     position={lightPosition}
+                
+            //     shadow-bias={0.001}
+            //     shadow-camera-near={0.1}
+            //     shadow-camera-far={500}
+            //     shadow-camera-top={300}
+            //     shadow-camera-bottom={-300}
+            //     shadow-camera-left={-300}
+            //     shadow-camera-right={300}
+            //     shadow-mapSize-width={1024}
+            //     shadow-mapSize-height={1024}
+            //   />
               <Group 
                 groundMeshRef={groundMeshRef}
-                groupRef = {groupRefs.current[index]}
+                groupRef={groupRefs.current[index]}
                 key={`group_${groupProps.name}`}
                 name={`${groupProps?.name}`}
                 onClick={(e) => {
@@ -243,7 +243,7 @@ const SceneBuilder = ({ showMenu }) => {
                 onMeshReady={meshReadyHandlers[index]}
                 {...groupProps.sceneData}
               />
-            </group>
+            // </group>
           );
         })}
       </group>
@@ -251,7 +251,7 @@ const SceneBuilder = ({ showMenu }) => {
         <planeGeometry args={[20000, 20000]} />
         <meshBasicMaterial transparent opacity={0} depthTest={false} />
       </mesh>
-      <Ground setGroundMeshRef={setGroundMeshRef} />
+      <Ground setGroundMeshRef={setGroundMeshRef}  rotation={[Math.PI/9, 0, 0]}/>
     </>
   );
 };
