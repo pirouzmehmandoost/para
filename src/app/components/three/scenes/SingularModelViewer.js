@@ -1,15 +1,14 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Clouds, Cloud, Environment, CameraControls, Html, SoftShadows } from '@react-three/drei';
-import { envColor, envImageUrl } from '@configs/globals';
+import { envColor } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import Ground from '../models/Ground';
 import Model from '../models/Model';
 import SimpleCameraRig from '../cameras/SimpleCameraRig';
-import useSelection from '@stores/selectionStore';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
@@ -17,105 +16,94 @@ THREE.Cache.enabled = true;
 export const SingularModelViewer = ( props ) => {
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
   const [meshRef, setMeshRef] = useState(undefined);
-  const selection = useSelection((state) => state.getSelection());
-  
+  const cameraControlsRef = useRef();
+  const [cameraReady, setCameraReady] = useState(false);
+
+  const cloudProps = (i) => { 
+    return {
+      color:'black',
+      concentrate: 'inside',
+      fade: 100,
+      growth: 100,
+      opacity: 0.1,
+      position:[(i % 2 === 0 ? 390 : -390), 0, 0],
+      seed: 0.4,
+      segments: 50,
+      speed: 0.2,
+      volume: 700,
+    }
+  };
+  // console.log("SingularModelViewer. Props are: ", props)
   return (
     <> 
-      {!! props && !!selection?.sceneData?.position?.x && (
+      {!!props?.modelUrl?.url && (
         <Canvas
-          camera={{
-            position: cameraConfigs.POSITION,
-            near: cameraConfigs.NEAR,
-            far: cameraConfigs.FAR + 150,
-            fov: 50,
-          }}
+          camera={{ position: [0, 60, 230], near: cameraConfigs.NEAR, far: cameraConfigs.FAR + 150, fov: 50, }}
           fallback={<div> Sorry no WebGL supported! </div>}
           orthographic={false}
           shadows
         >
-          <Suspense
+          <Suspense 
             fallback={
-              <Html transform scale={[4, 4, 4]} position={[0, 0, 0]}>
-                <div className="flex flex-col fixed w-full h-full inset-0 left-0 uppercase text-center text-5xl text-nowrap">
-                  <p> ⚒️ Error, failed to mount Canvas Environment ⚒️ </p>
-                </div>
+              <Html center position={[0, 0, 0]} scale={[40, 40, 40]} style={{ color: 'black', fontSize: '100px', fontFamily: 'didot', textAlign: 'center' }}>
+                Loading...
               </Html>
             }
           >
-            <Environment shadows files={envImageUrl} />
+            <Environment shadows files={"/kloofendal_misty_morning_puresky_4k.hdr"} />
+            {meshRef && groundMeshRef && (
+              <>
+                {cameraReady && (
+                  <CameraControls
+                    ref={cameraControlsRef}
+                    minPolarAngle={0}
+                    maxPolarAngle={Math.PI/2}
+                    minAzimuthAngle={-Math.PI/3}
+                    maxAzimuthAngle={Math.PI/3}
+                    mouseButtons={{
+                      left: cameraConfigs.ROTATE,
+                      middle: cameraConfigs.NONE,
+                      right: cameraConfigs.NONE,
+                      wheel: cameraConfigs.NONE,
+                    }}
+                    touches={{
+                      one: cameraConfigs.NONE,
+                      two: cameraConfigs.NONE,
+                      three: cameraConfigs.NONE,
+                    }}
+                  />
+                )}
+                <SimpleCameraRig target={meshRef} onTargetReady={() => setCameraReady(true)} {...props} />
+              </>
+            )}
+            <color args={[envColor]} attach="background" />
+            <fog attach="fog" density={0.008} color={envColor} near={100} far={410} />
+            <Clouds material={THREE.MeshLambertMaterial} limit={100}>
+              <Cloud {...cloudProps(0)}/>
+              <Cloud {...cloudProps(1)}/>
+            </Clouds>
+            <SoftShadows focus={0.1} samples={12} size={40} />
+            <directionalLight
+              castShadow={true}
+              intensity={1}
+              position={[0, 80, 100]}
+              shadow-bias={0.001}
+              shadow-camera-near={0.1}
+              shadow-camera-far={600}
+              shadow-camera-top={600}
+              shadow-camera-bottom={-600}
+              shadow-camera-left={-600}
+              shadow-camera-right={600}
+              shadow-mapSize-width={1024}
+              shadow-mapSize-height={1024}
+            />
+            <Model groundMeshRef={groundMeshRef} onMeshReady={setMeshRef} {...props} />
+            <Ground rotation={[Math.PI, 0, 0]} scale={[1, 1, 1]} position={[-50, -80, 20]} setGroundMeshRef={setGroundMeshRef} />
+            <Ground rotation={[Math.PI/-4, Math.PI/4, Math.PI/2.5]} position={[180, -50, -180]} scale={[1, 1, 1]} />
+            <Ground rotation={[Math.PI/-4, -Math.PI/4, -Math.PI/2.5]} position={[-180, -50, -180]} scale={[1, 1, 1]} />
+
+
           </Suspense>
-          <CameraControls
-            minPolarAngle={0}
-            maxPolarAngle={Math.PI / 2}
-            minAzimuthAngle={-Math.PI / 3}
-            maxAzimuthAngle={Math.PI / 3}
-            mouseButtons={{
-              left: cameraConfigs.ROTATE,
-              middle: cameraConfigs.NONE,
-              right: cameraConfigs.NONE,
-              wheel: cameraConfigs.NONE,
-            }}
-            touches={{
-              one: cameraConfigs.TOUCH_ROTATE,
-              two: cameraConfigs.NONE,
-              three: cameraConfigs.NONE,
-            }}
-          />
-          <SimpleCameraRig target={meshRef} {...props} />
-          <Ground position={[-50, 100, -50]} rotation={-Math.PI/4} scale={[0.8, 0.6, 0.6]} />
-          <color args={[envColor]} attach="background" />
-          <fog attach="fog" density={0.008} color={envColor} near={90} far={400} />
-          <Clouds material={THREE.MeshLambertMaterial} limit={60}>
-            <Cloud
-              color='black'
-              concentrate='outside'
-              fade={100}
-              growth={100}
-              opacity={0.1}
-              position={[400, 0, 0]}
-              seed={0.4}
-              segments={30}
-              speed={0.2}
-              volume={700}
-            />
-            <Cloud
-              color='black'
-              concentrate='outside'
-              fade={100}
-              growth={100}
-              opacity={0.1}
-              position={[-400, 0, 0]}
-              seed={0.4}
-              segments={30}
-              speed={0.3}
-              volume={700}
-            />
-          </Clouds>
-          <SoftShadows focus={0} samples={12} size={40} />
-          <directionalLight
-            castShadow={true}
-            intensity={3}
-            position={[0, 100, -50]}
-            shadow-bias={-0.001}
-            shadow-camera-near={50}
-            shadow-camera-far={1500}
-            shadow-camera-top={1500}
-            shadow-camera-bottom={-1500}
-            shadow-camera-left={-1500}
-            shadow-camera-right={1500}
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
-          />
-          <Model
-            groundMeshRef={groundMeshRef}
-            onMeshReady={setMeshRef}
-            {...props}
-          />
-          <Ground
-            setGroundMeshRef={setGroundMeshRef}
-            position={[0, -45, 0]} rotation={Math.PI/12}
-            scale={[0.8, 0.6, 0.6]}
-          />
         </Canvas>
       )}
     </>
