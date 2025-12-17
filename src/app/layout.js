@@ -1,6 +1,6 @@
 import './globals.css';
 import localFont from 'next/font/local';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { envColor } from '@configs/globals';
 
 const myFont = localFont({
@@ -15,11 +15,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={`${myFont.className} bg-cover bg-[${envColor}]`}>
         {children}
         <SpeedInsights />
       </body>
     </html>
-  );
-}
+  )
+};
