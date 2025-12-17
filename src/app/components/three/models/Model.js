@@ -1,13 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-// import { easing } from 'maath';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF, Bvh } from '@react-three/drei';
 import { Select } from '@react-three/postprocessing';
 import useMaterial from '@stores/materialStore';
-// import useSelection from '@stores/selectionStore';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -24,7 +22,6 @@ const Model = (props) => {
   const {
     autoRotate = true,
     autoRotateSpeed = 0.5,
-    // autoUpdateMaterial = true,
     groundMeshRef,
     isPointerOver = '',
     materialId,
@@ -35,7 +32,7 @@ const Model = (props) => {
   } = props;
 
   const [newPosition, setNewPosition] = useState(0);
-  const mesh = useGLTF(url).nodes[`${name}`];
+  const mesh = url ? useGLTF(url).nodes?.[name] : null;
 
   const positionModelAboveGround = useCallback((groundMeshRef) => {
     if (!meshRef.current || !groundMeshRef) return null;
@@ -81,7 +78,7 @@ const Model = (props) => {
           highestGroundBelowModel = groundY;
         };
         downwardHits++;
-      }
+      };
       
       // Cast upward to detect if model intersects with ground
       raycaster.set(point, new THREE.Vector3(0, 1, 0));
@@ -105,7 +102,7 @@ const Model = (props) => {
       return null;
     };
 
-    const clearance = highestGroundBelowModel + Math.max(2, Math.abs(size.y * 0.02));
+    const clearance = highestGroundBelowModel + Math.max(1, Math.abs(size.y * 0.01));
     return clearance - bottomY;
   },[]);
 
@@ -113,27 +110,23 @@ const Model = (props) => {
   useLayoutEffect(() => {
     if (meshRef.current && groundMeshRef && !hasPositionedRef.current) {
       const adjustment = positionModelAboveGround(groundMeshRef);
-
       if (adjustment !== null) {
         hasPositionedRef.current = true;
         setNewPosition(adjustment);
       }
     }
-  }, [groundMeshRef, position, onMeshReady]);
+  }, [groundMeshRef, onMeshReady, position, positionModelAboveGround]);
 
   useEffect(() => {
     if (hasPositionedRef.current && meshRef.current) {
       meshRef.current.updateWorldMatrix(true, true);
       onMeshReady(meshRef.current);
     }
-  }, [hasPositionedRef.current, meshRef.current, newPosition, onMeshReady]);
-
+  }, [newPosition, onMeshReady]);
 
   useFrame((state, delta) => {
     if (meshRef?.current ) {
-      // const time = state.clock.elapsedTime;
       if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
-      // if (autoUpdateMaterial) meshRef.current.material.copy(getMaterial('eggshell').material);
     }
   });
 
