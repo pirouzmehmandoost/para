@@ -15,6 +15,7 @@ export const GlobalModelViewer = ({ showMenu }) => {
   return (
     <Canvas
       gl={{ antialias: true }}
+      className='global-model-viewer-canvas'
       camera={{
         position: [666, 666, 666],
         near: cameraConfigs.NEAR,
@@ -29,21 +30,17 @@ export const GlobalModelViewer = ({ showMenu }) => {
         fallback={
           <Html
             center 
+            className='text-center text-4xl text-neutral-800 bg-neutral-500'
             position={[0, 0, 0]}
             scale={[40, 40, 40]}
-            style={{
-              color: 'black',
-              fontSize: '100px',
-              fontFamily: 'didot',
-              textAlign: 'center',
-            }}>
+          >
               Loading...
           </Html>
         }
       >
         <Environment shadows files={envImageUrl} />
         <color args={[envColor]} attach='background' />
-        <fog attach='fog' color={envColor} density={0.004} near={180} far={290} />
+        <fog attach='fog' color={envColor} near={180} far={290} />
         <SceneBuilder showMenu={showMenu}/>
       </Suspense>
     </Canvas>
