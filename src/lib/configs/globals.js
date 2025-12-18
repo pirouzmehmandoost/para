@@ -199,7 +199,7 @@ export const portfolio = {
   ],
 };
 
-export const envImageUrl = './kloofendal_misty_morning_puresky_4k.hdr';
+export const envImageUrl = '/kloofendal_misty_morning_puresky_4k.hdr';
 export const envColor = '#bcbcbc';
 export const groundConfig = {
   position: [-50, -85, 20],
