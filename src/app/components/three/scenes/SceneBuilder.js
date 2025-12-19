@@ -54,28 +54,27 @@ const SceneBuilder = ({ showMenu }) => {
     return positions;
   }, [size.width]);
 
-  //Model mesh tracking, to control the camera rig.
-  const [readyCount, setReadyCount] = useState(0);
+  const readyCount = useRef(0);
+  const [meshesReady, setMeshesReady] = useState(false);
   const meshRefs = useRef( projects.map((project) => new Array(project.sceneData.modelUrls.length).fill(null)) );
   const meshReadyFlags = useRef( projects.map((project) => new Array(project.sceneData.modelUrls.length).fill(false)) );
+  const totalMeshes = projects.reduce((acc, el)=> acc + el.sceneData.modelUrls.length, 0);
 
   const meshReadyHandlers = useMemo(() => 
     projects.map((project, i) =>
       project.sceneData.modelUrls.map((_, j) => {
-        //mesh is a THREE.Mesh. Fires after a Model mounts and is positioned above Ground.
         return (mesh) => {  
           if (!mesh || meshReadyFlags.current[i][j]) return;
 
           meshRefs.current[i][j] = mesh;
-          meshRefs.current = meshRefs.current.map((row) => [...row]);
           meshReadyFlags.current[i][j] = true;
-          setReadyCount((count) => count + 1);
+          readyCount.current += 1;
+
+          if (readyCount.current === totalMeshes) setMeshesReady(true);
         };
       })
-  ), []);
-  
-  const totalMeshes = projects.reduce((acc, el)=> acc + el.sceneData.modelUrls.length, 0);
-  const meshesReady = readyCount === totalMeshes;
+  ), [totalMeshes]);
+
   // swipe gesture tracking (doesn't work on mobile)
   const [hasNavigated, setHasNavigated] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -122,8 +121,8 @@ const SceneBuilder = ({ showMenu }) => {
         />
       )}
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        <DepthOfField focusDistance={0.3} focalLength={0.5} bokehScale={2} height={Resizer.AUTO_SIZE} />
-        <N8AO aoRadius={50} distanceFalloff={500} intensity={1} screenSpaceRadius halfRes aoSamples={16} denoiseSamples={16}/>
+        {/* <DepthOfField focusDistance={0.3} focalLength={0.5} bokehScale={2} height={Resizer.AUTO_SIZE} /> */}
+        {/* <N8AO aoRadius={50} distanceFalloff={500} intensity={1} screenSpaceRadius halfRes aoSamples={16} denoiseSamples={16}/> */}
         <Vignette eskil={false} offset={0.01} darkness={0.7} />
         <Outline
           selection={groupRef.current ? [groupRef.current] : undefined}
@@ -141,7 +140,7 @@ const SceneBuilder = ({ showMenu }) => {
           xRay={true}
         />
       </EffectComposer>
-      <SoftShadows focus={0} samples={24} size={30} />
+      <SoftShadows focus={0.1} samples={16} size={30} />
       <Clouds material={THREE.MeshLambertMaterial} limit={projects.length * 4}>
         {projects.map((_, index) => {
           const cloudPosition = [groupPositions[index].x + 100, groupPositions[index].y - 50, groupPositions[index].z + 90];
@@ -151,7 +150,7 @@ const SceneBuilder = ({ showMenu }) => {
               color='black'
               concentrate='outside'
               growth={300}
-              opacity={0.12}
+              opacity={0.14}
               position={cloudPosition}
               seed={0.4}
               segments={4}
@@ -163,7 +162,7 @@ const SceneBuilder = ({ showMenu }) => {
       </Clouds>
       <directionalLight
         castShadow={true}
-        intensity={1.5}
+        intensity={5}
         position={[0,90,0]}
         shadow-bias={0.001}
         shadow-camera-near={0.1}
@@ -208,7 +207,6 @@ const SceneBuilder = ({ showMenu }) => {
             //     castShadow={true}
             //     intensity={1}
             //     position={lightPosition}
-                
             //     shadow-bias={0.001}
             //     shadow-camera-near={0.1}
             //     shadow-camera-far={500}
