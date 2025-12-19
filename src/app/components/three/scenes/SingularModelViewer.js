@@ -77,7 +77,7 @@ export const SingularModelViewer = ( props ) => {
               </>
             )}
             <color args={[envColor]} attach="background" />
-            <fog attach="fog" density={0.008} color={envColor} near={100} far={410} />
+            <fog attach="fog" color={envColor} near={100} far={410} />
             <Clouds material={THREE.MeshLambertMaterial} limit={100}>
               <Cloud {...cloudProps(0)}/>
               <Cloud {...cloudProps(1)}/>
