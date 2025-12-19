@@ -12,6 +12,7 @@ useGLTF.preload('/env_ground_3-transformed.glb');
 
 const Ground = (props) => {
   const ref = useRef(null);
+  const hasPositioned = useRef(false);
   const { nodes } = useGLTF('/env_ground_3-transformed.glb');
   const getMaterial = useMaterial((state) => state.getMaterial);
 
@@ -23,7 +24,12 @@ const Ground = (props) => {
   } = props;
 
   useEffect(() => { 
-    if (ref.current && setGroundMeshRef) setGroundMeshRef(ref.current);
+    if (hasPositioned.current) return;
+
+    if (ref.current && setGroundMeshRef) {
+      setGroundMeshRef(ref.current);
+      hasPositioned.current = true;
+    }
   }, [setGroundMeshRef]);
 
   const material = getMaterial('ground').material;
