@@ -24,6 +24,18 @@ body {
   }
 }
 
-canvas.global-model-viewer-canvas {
-  touch-action: pan-x; /* Allows horizontal panning, prevents vertical scrolling. horizontal panning on mobile */
+canvas {
+  touch-action: pan-x; /* Allows horizontal panning, prevents vertical scrolling */
+  /* OR */
+  touch-action: none; /* Prevents all default touch behaviors */
 }
+
+/* @theme {
+  --color-clay_light:
+    #bcbcbc, --color-clay_dark: #3d3d3d, --color-rust: #b7410e,
+    --color-rose_dark: #ac6e6d, --color-rose_light: #c57f7d,
+    --color-mustard: #daaa00, --color-gold_dark: #fbda44,
+    --color-gold_light: #ffe600, --color-army_green: #475320,
+    --color-algae: #54b148, --color-breadfruit: #93fb44, --color-denim: #6589b0,
+    --color-tahiti: #ece8e2;
+} */
