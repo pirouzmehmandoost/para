@@ -1,10 +1,11 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
 import { calculateXZPositions, scaleMeshAtBreakpoint } from '@utils/mesh/meshUtils';
 import Model from '../models/Model';
 
-const Group = (data) => {
+const Group = (props) => {
   const { size } = useThree();
   const {
     autoRotate, 
@@ -17,11 +18,11 @@ const Group = (data) => {
     position: groupPosition,
     scale,
     ...rest
-  } = data;
+  } = props;
 
-  const positions = calculateXZPositions(size.width, modelUrls.length, groupPosition);
-  const modelScale = modelUrls.length === 1 ? scale * 0.45 : (scaleMeshAtBreakpoint(size.width)/modelUrls.length);
-  
+  const positions = useMemo(()=> calculateXZPositions(size.width, modelUrls.length, groupPosition), [modelUrls.length, groupPosition, size.width]);
+  const modelScale = useMemo(()=> modelUrls.length === 1 ? scale * 0.45 : (scaleMeshAtBreakpoint(size.width)/modelUrls.length), [modelUrls.length, size.width]);
+
   return (
     <group ref={groupRef} {...rest}>
       {
