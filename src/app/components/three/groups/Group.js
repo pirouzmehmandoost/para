@@ -20,8 +20,8 @@ const Group = (props) => {
     ...rest
   } = props;
 
-  const positions = useMemo(()=> calculateXZPositions(size.width, modelUrls.length, groupPosition), [modelUrls.length, groupPosition, size.width]);
-  const modelScale = useMemo(()=> modelUrls.length === 1 ? scale * 0.45 : (scaleMeshAtBreakpoint(size.width)/modelUrls.length), [modelUrls.length, size.width]);
+  const positions = calculateXZPositions(size.width, modelUrls.length, groupPosition);
+  const modelScale = useMemo(()=> modelUrls.length === 1 ? scale * 0.4 : (scaleMeshAtBreakpoint(size.width)/modelUrls.length), [modelUrls.length, size.width]);
 
   return (
     <group ref={groupRef} {...rest}>
