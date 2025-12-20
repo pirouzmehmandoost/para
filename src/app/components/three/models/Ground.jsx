@@ -16,6 +16,11 @@ const Ground = (props) => {
   const { nodes } = useGLTF('/env_ground_3-transformed.glb');
   const getMaterial = useMaterial((state) => state.getMaterial);
 
+  const groundMaterial = getMaterial('ground')?.material;
+  const geometry = nodes?.Plane?.geometry;
+
+  if (!groundMaterial || !geometry) return null;
+
   const {
     setGroundMeshRef,
     position,
@@ -32,23 +37,19 @@ const Ground = (props) => {
     }
   }, [setGroundMeshRef]);
 
-  const material = getMaterial('ground').material;
-  material.side = THREE.DoubleSide;
-
   return (
-    <>
-      <mesh
-        ref={ref}
-        castShadow={true}
-        dispose={null}
-        geometry={nodes.Plane.geometry}
-        material={material}
-        position={position? position : groundConfig.position}
-        receiveShadow={true}
-        rotation={rotation? rotation : groundConfig.rotation}
-        scale={scale? scale : groundConfig.scale}
-      />
-    </>
+    <mesh
+      name={"Ground"}
+      ref={ref}
+      castShadow={true}
+      dispose={null}
+      geometry={geometry}
+      material={groundMaterial}
+      position={position? position : groundConfig.position}
+      receiveShadow={true}
+      rotation={rotation? rotation : groundConfig.rotation}
+      scale={scale? scale : groundConfig.scale}
+    />
   );
 }
 
