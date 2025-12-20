@@ -15,7 +15,6 @@ export const GlobalModelViewer = ({ showMenu }) => {
   return (
     <Canvas
       gl={{ antialias: true }}
-      className='global-model-viewer-canvas'
       camera={{
         position: [666, 666, 666],
         near: cameraConfigs.NEAR,

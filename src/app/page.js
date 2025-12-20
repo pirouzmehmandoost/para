@@ -245,7 +245,7 @@ const SelectionDisplayModal = ({ visible, variants }) => {
             initial='hidden'
             variants={variants.modal}
           >
-            <motion.div variants={variants.modalItem} className='text-4xl perspective-origin-bottom'>
+            <motion.div variants={variants.modalItem} className='place-self-center text-4xl perspective-origin-bottom'>
               {selection?.name}
             </motion.div>
 
