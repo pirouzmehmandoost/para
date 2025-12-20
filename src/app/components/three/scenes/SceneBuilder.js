@@ -1,10 +1,10 @@
 'use client';
 
-import React, { startTransition,  useEffect, useMemo, useRef, useState } from 'react';
+import React, { startTransition, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import { DepthOfField, EffectComposer, Vignette, Outline, N8AO } from '@react-three/postprocessing';
+import { EffectComposer, Vignette, Outline } from '@react-three/postprocessing';
 import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
 import useSelection from '@stores/selectionStore';
@@ -21,6 +21,7 @@ const SceneBuilder = ({ showMenu }) => {
   const { size } = useThree();
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
   const setSelectionStore = useSelection((state) => state.setSelection);
+  const setIsFocused = useSelection((state) => state.setIsFocused);
   const resetSelectionStore = useSelection((state) => state.reset);
   const groupRef = useRef(null); 
   const groupRefs = useRef(projects.map(() => null));
@@ -110,19 +111,37 @@ const SceneBuilder = ({ showMenu }) => {
     touchStartRef.current = null;
   };
 
+  // const handleGroupClick = useCallback((e) => {
+  //   const clickedName = e.object.name;
+  //   const previous = groupRef.current;
+  //   groupRef.current = e.object;
+
+  //   if (previous?.name === clickedName) return;
+  
+  //   e.stopPropagation();
+
+  //   const index = projects.findIndex((p) => p.sceneData.modelUrls[0].name === clickedName);
+  //   setCurrentIndex(index);
+  //   currentIndexRef.current = index;
+  //   setHasNavigated(false);
+  
+  //   setIsFocused(clickedName);
+  
+  //   startTransition(() => {
+  //     showMenu(e.object);
+  //     setSelectionStore(projects[index]);
+  //   });
+  // }, [setHasNavigated, setCurrentIndex, setIsFocused, setSelectionStore, showMenu]);
+
   return (
     <>
-      {meshesReady && (
-        <ControllableCameraRig
-          manualIndex={hasNavigated ? currentIndex : null}
-          positionVectors={groupPositions}
-          target={groupRef.current ?? undefined}
-          targetRefs={meshRefs.current}
-        />
-      )}
+      <ControllableCameraRig
+        manualIndex={hasNavigated ? currentIndex : null}
+        positionVectors={groupPositions}
+        target={groupRef.current ?? undefined}
+        targetRefs={meshesReady ? meshRefs.current : []}
+      />
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        {/* <DepthOfField focusDistance={0.3} focalLength={0.5} bokehScale={2} height={Resizer.AUTO_SIZE} /> */}
-        {/* <N8AO aoRadius={50} distanceFalloff={500} intensity={1} screenSpaceRadius halfRes aoSamples={16} denoiseSamples={16}/> */}
         <Vignette eskil={false} offset={0.01} darkness={0.7} />
         <Outline
           selection={groupRef.current ? [groupRef.current] : undefined}
@@ -140,10 +159,10 @@ const SceneBuilder = ({ showMenu }) => {
           xRay={true}
         />
       </EffectComposer>
-      <SoftShadows focus={0.1} samples={16} size={30} />
+      <SoftShadows focus={0.1} samples={16} size={40} />
       <Clouds material={THREE.MeshLambertMaterial} limit={projects.length * 4}>
         {projects.map((_, index) => {
-          const cloudPosition = [groupPositions[index].x + 100, groupPositions[index].y - 50, groupPositions[index].z + 90];
+          const cloudPosition = [groupPositions[index].x + 90, groupPositions[index].y - 50, groupPositions[index].z + 90];
           return (
             <Cloud
               key={`cloud_${index}`}
@@ -163,20 +182,21 @@ const SceneBuilder = ({ showMenu }) => {
       <directionalLight
         castShadow={true}
         intensity={5}
-        position={[0,90,0]}
+        position={[0,40,0]}
         shadow-bias={0.001}
         shadow-camera-near={0.1}
-        shadow-camera-far={400}
-        shadow-camera-top={400}
-        shadow-camera-bottom={-400}
-        shadow-camera-left={-400}
-        shadow-camera-right={400}
+        shadow-camera-far={500}
+        shadow-camera-top={500}
+        shadow-camera-bottom={-500}
+        shadow-camera-left={-500}
+        shadow-camera-right={500}
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
       <group
         onPointerMissed={(e) => {
           groupRef.current = null;
+          setIsFocused(null);
           e.stopPropagation();
 
           startTransition(() => {
@@ -185,67 +205,41 @@ const SceneBuilder = ({ showMenu }) => {
           });
         }}
       >
-        {projects.map((data, index) => {
-          const groupProps = {
-            ...data,
-            sceneData: {
-              ...data.sceneData,
-              autoRotateSpeed: data.sceneData.autoRotateSpeed * (index % 2 == 0 ? -0.5 : 0.5),
-              groupName: data.name,
-              isPointerOver: groupRef.current?.name || '',
-              position: groupPositions[index],
-            }
-          };
-          // const lightPosition = [
-          //   groupPositions[index].x*12,
-          //   groupPositions[index].y +150,
-          //   groupPositions[index].z +200
-          // ];
+        {projects.map(({sceneData}, index) => {
           return (
-            //   <directionalLight
-            //     key={`light_${groupProps.name}`}
-            //     castShadow={true}
-            //     intensity={1}
-            //     position={lightPosition}
-            //     shadow-bias={0.001}
-            //     shadow-camera-near={0.1}
-            //     shadow-camera-far={500}
-            //     shadow-camera-top={300}
-            //     shadow-camera-bottom={-300}
-            //     shadow-camera-left={-300}
-            //     shadow-camera-right={300}
-            //     shadow-mapSize-width={1024}
-            //     shadow-mapSize-height={1024}
-            //   />
-              <Group 
-                groundMeshRef={groundMeshRef}
-                groupRef={groupRefs.current[index]}
-                key={`group_${groupProps.name}`}
-                name={`${groupProps?.name}`}
-                onClick={(e) => {
-                  const previousGroup = groupRef.current;           
-                  groupRef.current = e.object;
+            <Group
+              key={`group_${sceneData.groupName}`}
+              autoRotate={sceneData.autoRotate}
+              autoRotateSpeed={sceneData.autoRotateSpeed * (index % 2 == 0 ? -0.5 : 0.5)} 
+              groundMeshRef={groundMeshRef}
+              groupRef={groupRefs.current[index]}
+              materials={sceneData.materials}
+              modelUrls={sceneData.modelUrls}
+              onMeshReady={meshReadyHandlers[index]}
+              position={groupPositions[index]}
+              scale={sceneData.scale}
+              // onClick={handleGroupClick}
+              onClick={(e) => {
+                const previousGroup = groupRef.current;           
+                groupRef.current = e.object;
 
-                  if (previousGroup && previousGroup.name === e.object.name ) return;
+                if (previousGroup && previousGroup.name === e.object.name ) return;
 
-                  e.stopPropagation();
-                  setCurrentIndex(index);
-                  currentIndexRef.current = index;
-                  setHasNavigated(false);
-
-                  startTransition(() => {
-                    showMenu(e.object); 
-                    setSelectionStore(groupProps);
-                  });
-                }}
-                onMeshReady={meshReadyHandlers[index]}
-                {...groupProps.sceneData}
-              />
-            // </group>
+                e.stopPropagation();
+                setCurrentIndex(index);
+                currentIndexRef.current = index;
+                setHasNavigated(false);
+                setIsFocused(groupRef.current?.name);
+                startTransition(() => {
+                  showMenu(e.object); 
+                  setSelectionStore(projects[index]);
+                });
+              }}
+            />
           );
         })}
       </group>
-      <mesh position={[0, 0, -1000]} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
+      <mesh name = "Planey McPlane" position={[0, 0, -1000]} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
         <planeGeometry args={[20000, 20000]} />
         <meshBasicMaterial transparent opacity={0} depthTest={false} />
       </mesh>

@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF, Bvh } from '@react-three/drei';
 import { Select } from '@react-three/postprocessing';
 import useMaterial from '@stores/materialStore';
+import useSelection from '@/app/stores/selectionStore';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -15,22 +16,22 @@ useGLTF.preload('/bag_v3.5-transformed.glb');
 useGLTF.preload('/bag_9-transformed.glb');
 
 const Model = (props) => {
-  const getMaterial = useMaterial((state) => state.getMaterial);
-  const meshRef = useRef(undefined);
-  const hasPositionedRef = useRef(false);
-
   const {
     autoRotate = true,
     autoRotateSpeed = 0.5,
     groundMeshRef,
-    isPointerOver = '',
-    materialId,
+    materialId = '',
     modelUrl: { name = '', url = '' } = {},
-    onMeshReady= ()=>{},
-    position,
-    scale,
+    onMeshReady = () => {},
+    position = {x: 0, y: 0, z: 0},
+    scale = 0.5,
   } = props;
+  // const instanceId = useRef(Math.random().toString(16).slice(2)).current;
 
+  const meshRef = useRef(undefined);
+  const hasPositionedRef = useRef(false);
+  const getMaterial = useMaterial((state) => state.getMaterial);
+  const isFocused = useSelection((state) => state.selection.isFocused === name);
   const [newPosition, setNewPosition] = useState(0);
   const mesh = url ? useGLTF(url).nodes?.[name] : null;
 
@@ -63,8 +64,6 @@ const Model = (props) => {
     
     const raycaster = new THREE.Raycaster();
     let highestGroundBelowModel = null; // ground below or at model level
-    let upwardHits = 0;
-    let downwardHits = 0;
 
     samplePoints.forEach((point) => {
       // Cast downward to find ground below
@@ -77,7 +76,6 @@ const Model = (props) => {
         if (highestGroundBelowModel === null || groundY > highestGroundBelowModel) {
           highestGroundBelowModel = groundY;
         };
-        downwardHits++;
       };
       
       // Cast upward to detect if model intersects with ground
@@ -92,30 +90,26 @@ const Model = (props) => {
         if (distance < penetrationThreshold) {
           if (highestGroundBelowModel === null || groundY > highestGroundBelowModel) {
             highestGroundBelowModel = groundY;
-          }
-          upwardHits++;
-        }
+          };
+        };
       }
     });
 
     if (highestGroundBelowModel === null) {
-      return null;
+      return position.y;
     };
 
     const clearance = highestGroundBelowModel + Math.max(1, Math.abs(size.y * 0.01));
     return clearance - bottomY;
-  },[]);
-
+  }, [position.y]);
 
   useLayoutEffect(() => {
-    if (meshRef.current && groundMeshRef && !hasPositionedRef.current) {
-      const adjustment = positionModelAboveGround(groundMeshRef);
-      if (adjustment !== null) {
-        hasPositionedRef.current = true;
-        setNewPosition(adjustment);
-      }
-    }
-  }, [groundMeshRef, onMeshReady, position, positionModelAboveGround]);
+    if (hasPositionedRef.current || !groundMeshRef || !meshRef.current) return;
+  
+    const adjustment = positionModelAboveGround(groundMeshRef);
+    hasPositionedRef.current = true;
+    setNewPosition(adjustment ?? position.y);
+  }, [groundMeshRef, positionModelAboveGround, position.y]);
 
   useEffect(() => {
     if (hasPositionedRef.current && meshRef.current) {
@@ -124,32 +118,34 @@ const Model = (props) => {
     }
   }, [newPosition, onMeshReady]);
 
-  useFrame((state, delta) => {
-    if (meshRef?.current ) {
-      if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
-    }
+  useFrame((_, delta) => {
+    if (meshRef?.current && autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
   });
 
   if (!mesh) {
     return null;
   }
 
-  const meshProps = {
-    geometry: mesh.geometry,
-    material: getMaterial(materialId).material,
-    name,
-    position: hasPositionedRef.current 
-      ? new THREE.Vector3(position.x, newPosition, position.z)
-      : position,
-    scale,
-  };
-
   return (
     <>
       {mesh && (
         <Bvh firstHitOnly>
-          <Select enabled={isPointerOver === name}>
-            <mesh ref={meshRef} castShadow={true} receiveShadow={true} {...meshProps} />
+          <Select enabled={isFocused}>
+            <mesh 
+              ref={meshRef}
+              castShadow={true}
+              geometry={mesh?.geometry}
+              material={getMaterial(materialId)?.material} 
+              name={name}
+              position={
+                hasPositionedRef.current 
+                ? new THREE.Vector3(position.x, newPosition, position.z)
+                : position
+              }
+              receiveShadow={true}
+              scale={scale}
+              // {...meshProps}
+            />
           </Select>
         </Bvh>
       )}

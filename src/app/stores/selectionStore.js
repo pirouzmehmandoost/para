@@ -1,22 +1,28 @@
 import { create } from 'zustand';
 
 const initialState = {
-  name: '',
+
   bannerUrl: '',
   description: '',
-  shortDescription: '',
   imgUrls: {},
+  isFocused: null,
+  name: '',
+  shortDescription: '',
   sceneData: {
     autoRotate: true,
     autoRotateSpeed: 1,
     autoUpdateMaterial: false,
     groupName: '',
-    isPointerOver: '',
     materials: {
       defaultMaterial: {},
       colorWays: {},
     },
-    modelUrls: [{ name: '', url: '' }],
+    modelUrls: [
+      { 
+        name: '',
+        url: ''
+      },
+    ],
     position: {},
     scale: 1,
   },
@@ -29,14 +35,21 @@ const selectionStore = (set, get) => ({
 
   setSelection: (selected) => { set({ selection: selected }) },
 
-  reset: () => {
+  setIsFocused: (name) => 
+    set((state) => ({ 
+      selection: {
+        ...state.selection,
+        isFocused: name,
+      }
+    })),
+
+  reset: () =>
     set({ 
       selection: { 
         ...initialState,
         sceneData: { ...initialState.sceneData }
-      },
-    });
-  },
+      }
+    }),
 }); 
 
 const useSelection = create(selectionStore);
