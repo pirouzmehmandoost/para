@@ -6,19 +6,19 @@ I share my to-do list here as well as light notes on tools and feedback.
 PARA is a work in progress site that shows my 3D printing projects. For now it only shows the 3d models, and allows you to manipulate positons and materials.
 
 
-## Interesting Technical details: 
+## Notable Technical Implementations: 
   
-  **Dynamic Terrain-Aware Model Positioning**
-   - Impact: Models automatically position above a complex terrain geometry with zero per-frame overhead after initial environment setup
+  **Dynamic Model Positioning**
+   - Meshes of 3D Models are dynamically positioned to avoid intersection with designated meshes, such as the Ground. Zero per-frame overhead after initial environment setup, ie reposition happens only once, since the Ground's position remains constant.
    - Files: `Model.js:30-144`, `Group.js`, `meshUtils.js`
-   - Implementation: Bidirectional raycasting from model bounding box footprint
-   - Note: The positioning logic only translates positions along one dimension in ℝ³ space (Y-axis in Three.js, representing vertical height).
    
-   **Technical Details:**
+   **Implementation:**
+   - Bidirectional raycasting: 2 rays cast up and down from the vertices of simple circle geometry positioned under the model mesh's bounding box. The model is translated up or down the Y-axis in Three.js space. The circle's dimensions ensure that the mesh will not intersect the ground while the model mesh rotates.
+
    - **Sampling Strategy**: 
-    - Position a Circle directly below a mesh bounding box (mesh of the 3D Model project) with diameter = diagonal length of the bounding box's bottom. 
-    - Cast rays at each circle point + circle center (10 perimeter + 1 center). 
-    - The circle's dimensions ensure coverage of all corners.
+    - Instantiate a circle geometry with diameter equal to the diagonal length of the underside of bounding box (like the length of the slash in this square ⧅). 
+    - Position the circle under the bounding box.
+    - Cast rays from each circle vertex and it's center (11 vertices). 
    - **Bidirectional raycasting**: 
      - Upward rays detect terrain penetration (if a model is too low then rays will hit the terrain)
       - highest y-coordinate hit point is used to reposition the model above that Y coordinate.
