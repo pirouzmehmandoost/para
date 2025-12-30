@@ -1,21 +1,20 @@
 import { create } from 'zustand';
 import * as THREE from 'three';
 import { envColor } from '@configs/globals';
+import { Wireframe } from '@react-three/drei';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
 const matteMaterial = {
-  clearcoat: 0.3,
-  clearcoatRoughness: 1,
   flatShading: false,
-  ior: 1.6,
+  ior: 1.4,
   metalness: 0,
   reflectivity: 0.3,
   roughness: 0.8,
   sheen: 0.05,
   sheenColor: envColor,
-  sheenRoughness: 0,
+  sheenRoughness: 0.1,
   side: THREE.DoubleSide,
 };
 
@@ -58,7 +57,7 @@ const initialState = {
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-600 to-zinc-900 to-65%`,
     material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
-      color: '#101010',
+      color: '#282828',
     }),
   },
   gloss_black: {
