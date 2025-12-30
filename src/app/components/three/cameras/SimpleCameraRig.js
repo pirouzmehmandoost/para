@@ -10,7 +10,6 @@ THREE.Cache.enabled = true;
 
 const SimpleCameraRig = ({ target, onTargetReady }) => {
   const { camera } = useThree();
-  const ref = useRef(undefined);
 
   const cameraTargetPosition = useMemo(()=> {
     const positionVector = new THREE.Vector3(cameraConfigs);
@@ -24,6 +23,8 @@ const SimpleCameraRig = ({ target, onTargetReady }) => {
     return positionVector;
   }, [target]);
 
+  const lookAtPosition = useRef(new THREE.Vector3());
+
   useLayoutEffect(() => {
     if (target) {
       camera.position.set( cameraTargetPosition.x, cameraTargetPosition.y, cameraTargetPosition.z + 220);
@@ -36,15 +37,17 @@ const SimpleCameraRig = ({ target, onTargetReady }) => {
   useFrame(({ clock, camera }, delta) => {
     camera.lookAt(cameraTargetPosition);
     camera.updateMatrixWorld();
-    const t = clock.elapsedTime;
-    const xOffset = 50 * Math.sin(t);
-    const yOffset = 50 * Math.cos(t);
+    const elapsedTime = clock.elapsedTime;
+    const xOffset = 50 * Math.sin(elapsedTime);
+    const yOffset = 50 * Math.cos(elapsedTime);
     const zOffset = cameraConfigs.POSITION[2] + yOffset;
-    const v = new THREE.Vector3(cameraTargetPosition.x + xOffset, cameraTargetPosition.y + yOffset,  cameraTargetPosition.z + zOffset)
-    easing.damp3(camera.position, v, 1, 0.06)
+    lookAtPosition.current.set(
+      cameraTargetPosition.x + xOffset,
+      cameraTargetPosition.y + yOffset,
+      cameraTargetPosition.z + zOffset
+    );
+    easing.damp3(camera.position, lookAtPosition.current, 1, 0.06)
   });
-
-  return <perspectiveCamera ref={ref} />;
 };
 
 export default SimpleCameraRig;
