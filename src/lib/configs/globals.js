@@ -11,7 +11,7 @@ export const portfolio = {
           colorWays: ['matte_black', 'gloss_black'],
         },
         modelUrls: [
-          { name: 'bag_v5_thin_v2_latest', url: '/bag_9-transformed.glb' },
+          { name: 'gerd', url: '/bag_9_BAT-transformed.glb' },
         ],
         scale: 0.55,
       },
