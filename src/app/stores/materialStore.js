@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import * as THREE from 'three';
 import { envColor } from '@configs/globals';
-import { Wireframe } from '@react-three/drei';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
