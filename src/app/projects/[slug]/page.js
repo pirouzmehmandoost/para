@@ -9,7 +9,7 @@ import { portfolio } from '@configs/globals';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { getProjectFromSlug } from '@utils/slug';
-import SingularModelViewer from '@three/scenes/SingularModelViewer';
+import ProjectScene from '@three/scenes/ProjectScene';
 import * as THREE from 'three';
 
 const { projects } = portfolio;
@@ -88,7 +88,7 @@ const ProjectPage = ({ params }) => {
     <div id='project-page-container' className='flex flex-col w-full h-screen'>
       <div id='project-page-canvas-container' className='fixed flex flex-col w-full h-full place-self-center place-content-center'>
         {data && ( 
-          <SingularModelViewer
+          <ProjectScene
             className='w-full h-full self-center place-self-center place-content-center items-center'
             {...data}
           />
