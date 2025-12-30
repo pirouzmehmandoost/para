@@ -33,6 +33,7 @@ const AnimatedRig = ({
   positionVectors = [],
   targetRef = null,
   targetRefs = [],
+  // swipeDirectionRef = null,
 }) => {
   const targetIndex = useRef(0);
   const cameraPosition = useRef(new THREE.Vector3());
@@ -41,6 +42,7 @@ const AnimatedRig = ({
   const lastManualInputTimeRef = useRef(-Infinity);
   const lastManualIndexRef = useRef(null);
   const [stopPositions, setStopPositions] = useState([]);
+  // const testCounterRef = useRef(0);
 
   useEffect(()=> {
     const positions = targetRefs.map((meshes, i) => {
@@ -76,7 +78,6 @@ const AnimatedRig = ({
     const zOffset = cameraConfigs.POSITION[2] + xOffset;
     const hasSelection = !!targetRef?.current;
 
-  
     if (hasNavigatedRef?.current) {
       const idx = manualIndexRef?.current ?? null;
       if (idx !== lastManualIndexRef.current) {
@@ -90,8 +91,7 @@ const AnimatedRig = ({
       lastManualIndexRef.current = null;
       // restart dwell so camera doesn’t immediately move
       lastSwitchTimeRef.current = elapsedTime;
-    }
-
+    };
 
     if (targetRef?.current && stopPositions[manualIndexRef?.current]) {
       targetIndex.current = manualIndexRef.current;
@@ -100,6 +100,8 @@ const AnimatedRig = ({
     else if (manualIndex !== null && stopPositions[manualIndex]) {
       targetIndex.current = manualIndex;
       nextPosition = stopPositions[targetIndex.current];
+      // const nextIndex = (manualIndexRef.current + swipeDirectionRef.current + stopPositions.length) % stopPositions.length;
+      // testCounterRef.current = nextIndex;
     }
     else { 
       cameraPosition.current.copy(stopPositions[targetIndex.current]);
