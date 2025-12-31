@@ -29,9 +29,9 @@ const cloudProps = (i) => {
 };
 
 export const ProjectScene = ( props ) => {
+  const cameraControlsRef = useRef();
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
   const [meshRef, setMeshRef] = useState(undefined);
-  const cameraControlsRef = useRef();
   const [cameraReady, setCameraReady] = useState(false);
 
   return (
