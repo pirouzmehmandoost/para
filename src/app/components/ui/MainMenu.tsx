@@ -1,13 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  type Easing,
-  type Variants
-} from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion, type Easing, type Variants } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import useMenu from '@stores/menuStore';
@@ -113,12 +107,15 @@ const MainMenu = () => {
   const setVisible = useMenu(state => state.setVisible);
   const firstPageVisited = useMenu((s) => s.firstPageVisited);
   const setPageVisited = useMenu((s) => s.setPageVisited);
+  const hasHydrated = useMenu((s) => s.hasHydrated);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (firstPageVisited) return;
+
     setPageVisited();
     setVisible(true);
-  }, [firstPageVisited, setPageVisited, setVisible]);
+  }, [hasHydrated, firstPageVisited, setPageVisited, setVisible]);
 
 
   return (

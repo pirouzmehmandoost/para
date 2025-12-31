@@ -15,12 +15,12 @@ type MenuState = {
 type MenuStore = {
   menuState: MenuState;
   firstPageVisited: boolean;
-
+  hasHydrated: boolean;
   getMenuState: () => MenuState;
   setMenuState: (partial: Partial<MenuState>) => void;
   setVisible: (visible: boolean) => void;
   setPageVisited: () => void;
-
+  setHasHydrated: (v: boolean) => void;
   reset: () => void;
 };
 
@@ -38,6 +38,7 @@ const useMenu = create<MenuStore>()(
     (set, get) => ({
       menuState: initialMenuState,
       firstPageVisited: false,
+      hasHydrated: false,
 
       getMenuState: () => get().menuState,
 
@@ -52,6 +53,7 @@ const useMenu = create<MenuStore>()(
         })),
 
       setPageVisited: () => set({ firstPageVisited: true }),
+      setHasHydrated: (v) => set({ hasHydrated: v }),
 
       reset: () => set({ menuState: { ...initialMenuState } }),
     }),
@@ -59,6 +61,7 @@ const useMenu = create<MenuStore>()(
       name: 'para.userSession',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ firstPageVisited: state.firstPageVisited }),
+      onRehydrateStorage: () => (state) => { state?.setHasHydrated(true) },
     }
   )
 );
