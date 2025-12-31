@@ -33,7 +33,19 @@ const selectionStore = (set, get) => ({
 
   getSelection: () => get().selection,
 
-  setSelection: (selected) => { set({ selection: selected }) },
+  setSelection: (selected) => {
+    set((state) => {
+      const prevFocused = state.selection?.isFocused ?? null;
+      const nextFocused = selected?.isFocused ?? prevFocused;
+
+      return {
+        selection: {
+          ...selected,
+          isFocused: nextFocused,
+        },
+      };
+    });
+  },
 
   setIsFocused: (name) => 
     set((state) => ({ 
