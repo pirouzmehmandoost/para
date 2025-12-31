@@ -74,7 +74,7 @@ const { projects } = portfolio;
 
 
 const HomeScene = ({ showModal }) => {
-  const { size, invalidate } = useThree();
+  const { size } = useThree();
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
   const setSelectionStore = useSelection((state) => state.setSelection);
   // const setIsFocused = useSelection((state) => state.setIsFocused);
@@ -221,10 +221,7 @@ const HomeScene = ({ showModal }) => {
     });
   }, [resetSelectionStore, showModal]);
 
-  useFrame((state) => {
-    // request the next frame
-    invalidate()
-  })
+  useFrame((state) => { state.invalidate() });
 
   return (
     <>
