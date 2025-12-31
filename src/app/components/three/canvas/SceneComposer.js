@@ -6,15 +6,16 @@ import { Canvas } from '@react-three/fiber';
 import { Environment, Html} from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
 import { envColor, envImageUrl } from '@configs/globals';
-import SceneBuilder from './SceneBuilder';
+import HomeScene from '../scenes/HomeScene';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
-export const GlobalModelViewer = ({ showMenu }) => {
+export const SceneComposer = ({ showModal }) => {
   return (
     <Canvas
-      gl={{ antialias: true }}
+      frameloop="demand"
+      gl={{ antialias: false, powerPreference: 'high-performance' }}
       camera={{
         position: [666, 666, 666],
         near: cameraConfigs.NEAR,
@@ -27,23 +28,18 @@ export const GlobalModelViewer = ({ showMenu }) => {
     >
       <Suspense 
         fallback={
-          <Html
-            center 
-            className='text-center text-4xl text-neutral-800 bg-neutral-500'
-            position={[0, 0, 0]}
-            scale={[40, 40, 40]}
-          >
-              Loading...
+          <Html center position={[0, 0, 0]} scale={[40, 40, 40]} style={{ color: 'black', fontSize: '100px', fontFamily: 'didot', textAlign: 'center' }}>
+            Loading...
           </Html>
         }
       >
         <Environment shadows files={envImageUrl} />
         <color args={[envColor]} attach='background' />
         <fog attach='fog' color={envColor} near={180} far={290} />
-        <SceneBuilder showMenu={showMenu}/>
+        <HomeScene showModal={showModal}/>
       </Suspense>
     </Canvas>
   );
 };
 
-export default GlobalModelViewer;
+export default SceneComposer;

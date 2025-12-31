@@ -7,7 +7,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
-import { GlobalModelViewer } from '@three/scenes/GlobalModelViewer';
+import { SceneComposer } from '@three/canvas/SceneComposer';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
@@ -219,16 +219,6 @@ const MainMenuContent = ({ toggleMenu, variants }) => {
   );
 };
 
-{/*
-  * Displays the currently selected project's name/description and a link when a scene object is selected (visible is set from a clicked Three.js object).
-  * The modal shows when visible is truthy: showMenu(e.object: Object3D)
-  * Flow: 
-  *  HomePage(reads state from Zustand store) -> 
-  *  GlobalModelViewer.js (renders Canvas and SceneBuilder) -> 
-  *  SceneBuilder.js (click events trigger Zustand state updates) -> 
-  *  Group.js (child of SceneBuilder) -> 
-  *  Model.js (child of Group, renders selectable Object3D).
-*/}
 const SelectionDisplayModal = ({ visible, variants }) => {
   const selection = useSelection((state) => state.selection);
   const isActive = Boolean(visible);
@@ -292,8 +282,12 @@ const SelectionDisplayModal = ({ visible, variants }) => {
 const HomePage = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
+  const hasSelection = useSelection(
+    (state) => Boolean(state.selection?.sceneData?.modelUrls?.[0]?.name)
+  );
   const [modal, showModal] = useState(null);
-  const [menu, showMenu] = useState(true);
+  // const [menu, showMenu] = useState(true);
+  const [menu, showMenu] = useState(() => !hasSelection);
 
   return (
     <main className='flex flex-col w-full h-full'>
@@ -340,7 +334,7 @@ const HomePage = () => {
       </div>
 
       <div className='fixed inset-0 bottom-10 flex flex-col grow w-full h-full'>
-        <GlobalModelViewer showMenu={showModal} />
+        <SceneComposer showModal={showModal} />
       </div>
 
       {/* Modal wrapper */}
