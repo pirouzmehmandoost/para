@@ -6,6 +6,15 @@ import { useFrame } from '@react-three/fiber';
 import cameraConfigs from '@configs/cameraConfigs';
 import { easing } from 'maath';
 
+/** ControllableCameraRig
+* NOTES: 
+*   Delta clamping in useFrame(): 
+*   When a user switches to a different browser tab, refreshes that tab and returns back, 
+*   the camera's positioning becomes odd.
+*   when requesting animation frames delta is clamped before passing to lerp(), resolving the issue. 
+*   Using a fixed value instead of delta does not cause the same behavior but is frame-rate dependent.
+**/
+
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
@@ -21,10 +30,10 @@ const ControllableCameraRig = ({
   manualIndex = null,
   positionVectors = [],
   target: { position: clickTargetPosition = null } = {},
-  targetRefs,
+  targetRefs = [],
 }) => {
-  const ref = useRef(undefined);
   const targetIndexRef = useRef(manualIndex ?? 0);
+  const cameraPositionRef = useRef(new THREE.Vector3());
   const lookAtPosition = useRef(new THREE.Vector3());
   const [stopPositions, setStopPositions] = useState([]);
   const [cameraPathCurve, setCameraPathCurve] = useState(null);
@@ -51,23 +60,22 @@ const ControllableCameraRig = ({
       return count > 0 ? sum.divideScalar(count) : positionVectors[i];
     });
 
-    setStopPositions(positions);
-    setCameraPathCurve(new THREE.CatmullRomCurve3(positions, true, 'centripetal'));
+    const stops = targetRefs.length ? positions : positionVectors;
+    setStopPositions(stops);
+    setCameraPathCurve(stops.length > 1 ? new THREE.CatmullRomCurve3(stops, true, 'centripetal') : null);
   }, [targetRefs, positionVectors]);
 
   useFrame(({camera, clock}, delta) => {
     if (!cameraPathCurve || stopPositions.length === 0) return;
-    // When a user switches to a different browser tab and refreshes it and then returns, the camera move from below Ground to the correct position. 
-    // Clamping delta before passing it to lerp() resolves that issue. So does using a fixed value but then the animation is frame-rate dependent.
-    // The clamping only occurs if delta is very large, such as in the aforementioned scenario. 
-    const clampedDelta = Math.min(delta, 0.08);  // Max 80ms per frame
-    let elapsedTime = clock.elapsedTime;
-    let nextPoint = stopPositions[0];
-    const xOffset = 3 * Math.sin(elapsedTime);
-    const yOffset = 5 * Math.cos(delta);
-    const zOffset = cameraConfigs.POSITION[2] + yOffset;
 
-    if (clickTargetPosition?.x) {
+    const clampedDelta = Math.min(delta, 0.08);  // Max 80ms per frame
+    const elapsedTime = clock.elapsedTime;
+    const xOffset = Math.sin(elapsedTime);
+    const yOffset = 3 * Math.cos(elapsedTime);
+    const zOffset = cameraConfigs.POSITION[2] + 20 + xOffset;
+    let nextPoint = stopPositions[0];
+
+    if (clickTargetPosition?.isVector3) {
       nextPoint = getNextCameraPosition(clickTargetPosition, stopPositions);
     }
     else if (manualIndex !== null && stopPositions[targetIndexRef.current]) {
@@ -78,10 +86,9 @@ const ControllableCameraRig = ({
       const pointOnCurve = (elapsedTime * 0.03) % 1;
       nextPoint = getNextCameraPosition(cameraPathCurve.getPoint(pointOnCurve), stopPositions);
     }
-    //the camera looks at its own position first
-    const x = new THREE.Vector3();
-    x.copy(camera.position);
-    camera.lookAt(x);
+
+    cameraPositionRef.current.copy(camera.position);
+    camera.lookAt(cameraPositionRef.current);
 
     lookAtPosition.current.set(
       nextPoint.x + xOffset,
@@ -91,8 +98,6 @@ const ControllableCameraRig = ({
 
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
   });
-
-  return <perspectiveCamera ref={ref} />;
 };
 
 export default ControllableCameraRig;
