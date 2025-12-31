@@ -29,15 +29,16 @@ const Group = (props) => {
   , [modelUrls.length, position, size.width]);
 
   return (
-    <group ref={groupRef} onClick={onClick}>
+    <group ref={groupRef}>
       {modelUrls.map((modelUrl, index) => (
         <Model
           key={`${modelUrl?.name ?? modelUrl?.url ?? 'model'}_${index}`}
           autoRotate={autoRotate}
           autoRotateSpeed={autoRotateSpeed}
           groundMeshRef={groundMeshRef}
-          materialId={modelUrls.length === 1 ? materials.defaultMaterial : Object.values(materials.colorWays)[index] }
+          materialId={materials.defaultMaterial}
           modelUrl={modelUrl}
+          onClick={onClick}
           onMeshReady={onMeshReady[index]}
           position={positions[index] ?? position}
           scale={modelScale}
