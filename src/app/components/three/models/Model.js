@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF, Bvh } from '@react-three/drei';
+import { 
+  useGLTF,
+  //  meshBounds 
+} from '@react-three/drei';
 import { Select } from '@react-three/postprocessing';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@/app/stores/selectionStore';
@@ -13,7 +16,7 @@ THREE.ColorManagement.enabled = true;
 useGLTF.preload('/bag_v5_for_web-transformed.glb');
 useGLTF.preload('/yoga_mat_strap_for_web2.glb');
 useGLTF.preload('/bag_v3.5-transformed.glb');
-useGLTF.preload('/bag_9-transformed.glb');
+useGLTF.preload('/bag_9_BAT-transformed.glb');
 
 const Model = (props) => {
   const {
@@ -22,17 +25,17 @@ const Model = (props) => {
     groundMeshRef,
     materialId = '',
     modelUrl: { name = '', url = '' } = {},
+    onClick = undefined,
     onMeshReady = () => {},
     position = {x: 0, y: 0, z: 0},
     scale = 0.5,
   } = props;
-  // const instanceId = useRef(Math.random().toString(16).slice(2)).current;
 
   const meshRef = useRef(undefined);
   const hasPositionedRef = useRef(false);
   const getMaterial = useMaterial((state) => state.getMaterial);
   const isFocused = useSelection((state) => state.selection.isFocused === name);
-  const [newPosition, setNewPosition] = useState(0);
+  const [newPosition, setNewPosition] = useState(position.y);
   const mesh = url ? useGLTF(url).nodes?.[name] : null;
 
   const positionModelAboveGround = useCallback((groundMeshRef) => {
@@ -129,25 +132,20 @@ const Model = (props) => {
   return (
     <>
       {mesh && (
-        <Bvh firstHitOnly>
-          <Select enabled={isFocused}>
-            <mesh 
-              ref={meshRef}
-              castShadow={true}
-              geometry={mesh?.geometry}
-              material={getMaterial(materialId)?.material} 
-              name={name}
-              position={
-                hasPositionedRef.current 
-                ? new THREE.Vector3(position.x, newPosition, position.z)
-                : position
-              }
-              receiveShadow={true}
-              scale={scale}
-              // {...meshProps}
-            />
-          </Select>
-        </Bvh>
+        <Select enabled={isFocused}>
+          <mesh 
+            ref={meshRef}
+            castShadow={true}
+            geometry={mesh?.geometry}
+            material={getMaterial(materialId)?.material} 
+            name={name}
+            onClick={onClick}
+            position={[position.x, newPosition, position.z]}
+            receiveShadow={true}
+            // raycast={meshBounds}
+            scale={scale}
+          />
+        </Select>
       )}
     </>
   );
