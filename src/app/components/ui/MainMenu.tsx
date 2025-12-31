@@ -1,5 +1,5 @@
 'use client';
-
+import { useEffect } from 'react';
 import Link from 'next/link';
 import {
   AnimatePresence,
@@ -111,6 +111,15 @@ const MainMenu = () => {
   const variants = createVariants(shouldReduceMotion);
   const menuVisible = useMenu(state => state.menuState.visible);
   const setVisible = useMenu(state => state.setVisible);
+  const firstPageVisited = useMenu((s) => s.firstPageVisited);
+  const setPageVisited = useMenu((s) => s.setPageVisited);
+
+  useEffect(() => {
+    if (firstPageVisited) return;
+    setPageVisited();
+    setVisible(true);
+  }, [firstPageVisited, setPageVisited, setVisible]);
+
 
   return (
     <div className='flex flex-col w-full h-full'>

@@ -1,11 +1,12 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-type OpenReason = '' | 'user-toggle' | 'route-change' | 'startup';
+type OpenReason = '' | 'user-toggle' | 'route-change' | 'firstPageVisit';
 
 type MenuState = {
   activeSection: string;
   isBackgroundEnabled: boolean;
-  lastInteractionAt: number; // ms since epoch, or 0 if never
+  lastInteractionAt: number;
   openReason: OpenReason;
   pathname: string;
   visible: boolean;
@@ -13,16 +14,17 @@ type MenuState = {
 
 type MenuStore = {
   menuState: MenuState;
+  firstPageVisited: boolean;
 
   getMenuState: () => MenuState;
-
   setMenuState: (partial: Partial<MenuState>) => void;
   setVisible: (visible: boolean) => void;
+  setPageVisited: () => void;
 
   reset: () => void;
 };
 
-const initialState: MenuState = {
+const initialMenuState: MenuState = {
   activeSection: '',
   isBackgroundEnabled: true,
   lastInteractionAt: 0,
@@ -31,28 +33,34 @@ const initialState: MenuState = {
   visible: false,
 };
 
-const useMenu = create<MenuStore>((set, get) => ({
-  menuState: initialState,
+const useMenu = create<MenuStore>()(
+  persist(
+    (set, get) => ({
+      menuState: initialMenuState,
+      firstPageVisited: false,
 
-  getMenuState: () => get().menuState,
+      getMenuState: () => get().menuState,
 
-  setMenuState: (partial) =>
-    set((state) => ({
-      menuState: {
-        ...state.menuState,
-        ...partial,
-      },
-    })),
+      setMenuState: (partial) =>
+        set((state) => ({
+          menuState: { ...state.menuState, ...partial },
+        })),
 
-  setVisible: (visible) =>
-    set((state) => ({
-      menuState: {
-        ...state.menuState,
-        visible,
-      },
-    })),
+      setVisible: (visible) =>
+        set((state) => ({
+          menuState: { ...state.menuState, visible },
+        })),
 
-  reset: () => set({ menuState: { ...initialState } }),
-}));
+      setPageVisited: () => set({ firstPageVisited: true }),
+
+      reset: () => set({ menuState: { ...initialMenuState } }),
+    }),
+    {
+      name: 'para.userSession',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ firstPageVisited: state.firstPageVisited }),
+    }
+  )
+);
 
 export default useMenu;
