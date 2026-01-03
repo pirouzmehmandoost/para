@@ -13,10 +13,20 @@ THREE.Cache.enabled = true;
 const MIN_DWELL_SECONDS = 10; // dwell time at each position
 const MANUAL_OVERRIDE_SECONDS = 5; // dwell an additional 5 if swipe gesture moves the rig
 // clicks force camera to dwell near clicked object position until manualIndexRef and hasNavigatedRef, or selectionStore.isFocused change.
+
+// fallbackPositions and targerRefs can be any length, and fallback behavior handles mismatched array lengths: 
+// when fallbackPositions has more elements than targetRefs, the extra positions are used as stop positions. 
+// This lets you provide additional or fallback positions for indices without corresponding refs
+// if the length of both arrays are equal, then fallbackPositions[i] will be used unless it evaluates to falsy (defaults to Vector3(0,0,0)) 
+// If fallbackPositions.length > targetRefs.length, then the camera will stop at all ref Object3D computed positions 
+// If fallbackPositions.length < targetRefs.length, targetRefs that evaluate to truthy will be used for corresponding indices, 
+// positionVector if falsy, and if both then they are gracefully omitted. 
+// AnimatedRig may be shared between multiple scenes, with graceful repositioning as props change value.
+// if no props are passed, the camera hovers softly at Vector3(0,0,0).
 const AnimatedRig = ({
   manualIndexRef = null,
   hasNavigatedRef = null,
-  positionVectors = [], // an array of Vector3. Can be used as fallback positions when targetRefs omitted or is an empty array. 
+  fallbackPositions = [], // an array of Vector3. Can be used as fallback positions when targetRefs omitted or is an empty array. 
   targetRefs = [], // objects the camera will look at
 }) => {
   const isFocused = useSelection((state) => state.selection.isFocused);
@@ -33,12 +43,12 @@ const AnimatedRig = ({
   const nameToIndexMapRef = useRef({});
 
   useEffect(() => {
-    const length = Math.max(targetRefs?.length ?? 0, positionVectors?.length ?? 0);
+    const length = Math.max(targetRefs?.length ?? 0, fallbackPositions?.length ?? 0);
     for (let i = 0; i < length; i++) {
       if (!stopPositions.current[i]?.isVector3) stopPositions.current[i] = new THREE.Vector3();
       // if truthy but not Object3D... for some future case when I decide that targetRefs[i] doesnt have to be Object3D 
       if (!targetRefs[i] || typeof targetRefs[i].updateWorldMatrix !== 'function') {
-        stopPositions.current[i].copy(positionVectors[i]?.isVector3 ? positionVectors[i] : fallbackPositionRef.current);
+        stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : fallbackPositionRef.current);
         continue;
       }
       targetRefs[i].updateWorldMatrix(true, true);
@@ -62,7 +72,7 @@ const AnimatedRig = ({
     nameToIndexMapRef.current = map;
   
     if (targetIndex.current < 0 || targetIndex.current >= stopPositions.current.length) targetIndex.current = 0;
-  }, [targetRefs, positionVectors]);
+  }, [targetRefs, fallbackPositions]);
 
   useFrame(({ camera, clock }, delta) => {
     if (targetIndex.current >= stopPositions.current.length || targetIndex.current < 0) targetIndex.current = 0;
