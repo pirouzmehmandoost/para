@@ -10,10 +10,11 @@ export const portfolio = {
           defaultMaterial: 'matte_black',
           colorWays: ['matte_black', 'gloss_black'],
         },
-        modelUrls: [
-          { name: 'gerd', url: '/bag_9_BAT-transformed.glb' },
-        ],
-        scale: 0.55,
+        fileData: {
+          nodeName: 'gerd',
+          url: '/bag_9_BAT-transformed.glb'
+        },
+        scale: 0.65,
       },
       name: 'Gerd',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
@@ -44,9 +45,10 @@ export const portfolio = {
           defaultMaterial: 'matte_black',
           colorWays: ['matte_black'],
         },
-        modelUrls: [
-          { name: 'bag_v3_for_web001', url: '/bag_v3.5-transformed.glb' },
-        ],
+        fileData: {
+          nodeName: 'bag_v3_for_web001',
+          url: '/bag_v3.5-transformed.glb'
+        },
         scale: 0.6,
       },
       name: 'Sang',
@@ -66,8 +68,7 @@ export const portfolio = {
         ],
       },
       shortDescription: 'A 3D printed tote bag with rocky texture.',
-      description:
-        'Product description: magna congue justo non velit semper elit',
+      description: 'Product description: magna congue justo non velit semper elit',
     },
     {
       sceneData: {
@@ -79,9 +80,10 @@ export const portfolio = {
           defaultMaterial: 'gloss_black',
           colorWays: ['gloss_black', 'matte_black', 'eggshell'],
         },
-        modelUrls: [
-          { name: 'Yoga_Mat_Strap', url: '/yoga_mat_strap_for_web2.glb' },
-        ],
+        fileData: {
+          nodeName: 'Yoga_Mat_Strap',
+          url: '/yoga_mat_strap_for_web2.glb'
+        },
         scale: 1,
       },
       name: 'PÍ',

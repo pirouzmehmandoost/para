@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 
 const initialState = {
-
   bannerUrl: '',
   description: '',
   imgUrls: {},
@@ -17,12 +16,10 @@ const initialState = {
       defaultMaterial: {},
       colorWays: {},
     },
-    modelUrls: [
-      { 
-        name: '',
-        url: ''
-      },
-    ],
+    fileData: { 
+      nodeName: '',
+      url: ''
+    },
     position: {},
     scale: 1,
   },
@@ -59,7 +56,11 @@ const selectionStore = (set, get) => ({
     set({ 
       selection: { 
         ...initialState,
-        sceneData: { ...initialState.sceneData }
+        sceneData: { 
+          ...initialState.sceneData,
+          fileData: {...initialState.sceneData.fileData},
+          materials: {...initialState.sceneData.materials},
+        }
       }
     }),
 }); 
