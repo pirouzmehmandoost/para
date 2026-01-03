@@ -1,11 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
-import { SceneComposer } from '@three/canvas/SceneComposer';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
@@ -48,77 +47,59 @@ const createVariants = (reduceMotion) => {
   };
 };
 
-const SelectionDisplayModal = ({ visible, variants }) => {
-  const selection = useSelection((state) => state.selection);
-  const isActive = Boolean(visible);
-
-  return (
-    <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
-      <AnimatePresence mode='wait'>
-        {isActive && (
-          <motion.div
-            key='menu-content'
-            className='flex flex-col w-fit h-full text-neutral-800 place-items-start'
-            animate='visible'
-            exit='hidden'
-            initial='hidden'
-            variants={variants.modal}
-          >
-            <motion.div variants={variants.modalItem} className='place-self-center text-4xl perspective-origin-bottom'>
-              {selection?.name}
-            </motion.div>
-
-            <motion.div variants={variants.modalItem} className='text-2xl text-pretty perspective-origin-bottom'>
-              {selection?.shortDescription}
-            </motion.div>
-
-            <motion.div variants={variants.modalItem} className='place-self-center text-3xl text-neutral-800 perspective-origin-bottom'>
-              <Link
-                href={`/projects/${getSlugFromName(selection?.name)}`}
-                rel='noopener noreferrer'
-                className='pointer-events-auto'
-              >
-                <div
-                  className='rounded-full bg-radial-[at_50%_50%] from-neutral-500/35 from-20% to-neutral-500/0 to-70%'
-                  style={{
-                    maskImage:
-                      'radial-gradient(ellipse 90% 90% at 50% 50%, #a3a3a3 10%, #a3a3a300 90%)',
-                  }}
-                >
-                  Click to see more
-                </div>
-              </Link>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {/* Backdrop overlay: fade only (no blur animation, no width/height animation) */}
-      <motion.div
-        className='absolute inset-0 -z-10 bg-neutral-300/0 backdrop-blur-md md:backdrop-blur-xl contrast-150 hue-rotate-30 pointer-events-none'
-        style={{
-          maskImage:
-            'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)',
-        }}
-        variants={variants.overlay}
-        animate={isActive ? 'open' : 'closed'}
-        initial='closed'
-      />
-    </div>
-  );
-};
-
 const HomePage = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
-  const [modal, showModal] = useState(null);
+  const selection = useSelection((state) => state.selection);
+  const modal = Boolean(selection?.name?.length);
 
   return (
     <main className='flex flex-col w-full h-full'>
-      <div className='fixed inset-0 bottom-10 flex flex-col grow w-full h-full'>
-        <SceneComposer showModal={showModal} />
-      </div>
       <div className={`fixed flex flex-col grow top-[30px] md:left-10 lg:left-10 xl:left-10 2xl:left-10 w-full sm:w-full md:w-fit lg:w-fit xl:w-fit 2xl:w-fit h-1/5 place-self-center justify-center transition-all duration-500 ease-in-out ${modal ? 'h-1/5' : 'h-fit'}`}>
-        <SelectionDisplayModal visible={modal} variants={variants} />
+        <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
+          <AnimatePresence mode='wait'>
+            {modal && (
+              <motion.div
+                key='menu-content'
+                className='flex flex-col w-fit h-full text-neutral-800 place-items-start'
+                animate='visible'
+                exit='hidden'
+                initial='hidden'
+                variants={variants.modal}
+              >
+                <motion.div variants={variants.modalItem} className='place-self-center text-4xl perspective-origin-bottom'>
+                  {selection?.name}
+                </motion.div>
+
+                <motion.div variants={variants.modalItem} className='text-2xl text-pretty perspective-origin-bottom'>
+                  {selection?.shortDescription}
+                </motion.div>
+
+                <motion.div variants={variants.modalItem} className='place-self-center text-3xl text-neutral-800 perspective-origin-bottom'>
+                  <Link
+                    href={`/projects/${getSlugFromName(selection?.name)}`}
+                    // href={'/about'}
+                    rel='noopener noreferrer'
+                    className='pointer-events-auto'
+                  >
+                    Test Canvas interactions in about page
+                  </Link>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/* Backdrop overlay: fade only (no blur animation, no width/height animation) */}
+          <motion.div
+            className='absolute inset-0 -z-10 bg-neutral-300/0 backdrop-blur-md md:backdrop-blur-xl contrast-150 hue-rotate-30 pointer-events-none'
+            style={{
+              maskImage:
+                'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)',
+            }}
+            variants={variants.overlay}
+            animate={modal === true ? 'open' : 'closed'}
+            initial='closed'
+          />
+        </div>
       </div>
     </main>
   );

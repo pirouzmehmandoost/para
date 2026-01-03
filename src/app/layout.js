@@ -2,6 +2,7 @@ import './globals.css';
 import localFont from 'next/font/local';
 import { envColor } from '@configs/globals';
 import  MainMenu from '@ui/MainMenu';
+import RootCanvas from '@three/canvas/RootCanvas';
 
 const myFont = localFont({
   src: './../../public/fonts/halibutSerif/web/HalibutSerif-Condensed.woff2',
@@ -19,6 +20,9 @@ export default function RootLayout({ children }) {
       <body className={`${myFont.className} bg-cover bg-[${envColor}]`}>
         <MainMenu />
         {children}
+        <div className='fixed -z-10 inset-0 flex flex-col grow w-full h-full'>
+          <RootCanvas />
+        </div>
       </body>
     </html>
   )
