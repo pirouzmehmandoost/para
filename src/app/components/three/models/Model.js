@@ -3,11 +3,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { 
-  useGLTF,
-  //  meshBounds 
-} from '@react-three/drei';
-import { Select } from '@react-three/postprocessing';
+import { useGLTF } from '@react-three/drei';
+// import { Select } from '@react-three/postprocessing';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@/app/stores/selectionStore';
 
@@ -24,19 +21,22 @@ const Model = (props) => {
     autoRotateSpeed = 0.5,
     groundMeshRef,
     materialId = '',
-    modelUrl: { name = '', url = '' } = {},
+    fileData: { nodeName = '', url = '' } = {},
     onClick = undefined,
     onMeshReady = () => {},
     position = {x: 0, y: 0, z: 0},
-    scale = 0.5,
+    scale = 1,
   } = props;
 
+  const mesh = url ? useGLTF(url).nodes?.[nodeName] : null;
+  const scaleRef = useRef(scale);
   const meshRef = useRef(undefined);
   const hasPositionedRef = useRef(false);
   const getMaterial = useMaterial((state) => state.getMaterial);
-  const isFocused = useSelection((state) => state.selection.isFocused === name);
+  // const materialRef = useRef(useMaterial.getState().materials[`${materialId}`]?.material); 
+  const materialRef = useRef(getMaterial(materialId)?.material); 
+  // const isFocused = useSelection((state) => state.selection.isFocused === nodeName);
   const [newPosition, setNewPosition] = useState(position.y);
-  const mesh = url ? useGLTF(url).nodes?.[name] : null;
 
   const positionModelAboveGround = useCallback((groundMeshRef) => {
     if (!meshRef.current || !groundMeshRef) return null;
@@ -121,31 +121,39 @@ const Model = (props) => {
     }
   }, [newPosition, onMeshReady]);
 
-  useFrame((_, delta) => {
-    if (meshRef?.current && autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
+  useFrame(({clock, viewport}, delta) => {
+    // const blendPercentage = Math.abs(Math.sin(clock.elapsedTime/2)) % 1
+    // console.log(blendPercentage)
+    if (meshRef?.current) {
+      if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
+
+      // console.log(scaleMeshAtBreakpoint(viewport.width))
+      // const measurement = scaleMeshAtBreakpoint(viewport.width)
+      // const oldScale = scaleRef.current;
+      // const newScale =  oldScale *  measurement
+      // console.log("\noldScale: ", oldScale, "\nnewScale: ", newScale)
+    }
   });
 
-  if (!mesh) {
-    return null;
-  }
+  if (!mesh) return null;
 
   return (
     <>
       {mesh && (
-        <Select enabled={isFocused}>
+        // <Select enabled={isFocused}>
           <mesh 
             ref={meshRef}
             castShadow={true}
             geometry={mesh?.geometry}
-            material={getMaterial(materialId)?.material} 
-            name={name}
+            // material={getMaterial(materialId)?.material} 
+            material={materialRef.current}
+            name={nodeName}
             onClick={onClick}
             position={[position.x, newPosition, position.z]}
             receiveShadow={true}
-            // raycast={meshBounds}
-            scale={scale}
+            scale={scaleRef.current}
           />
-        </Select>
+        // </Select>
       )}
     </>
   );
