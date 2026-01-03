@@ -56,7 +56,7 @@ const initialState = {
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-600 to-zinc-900 to-65%`,
     material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
-      color: '#282828',
+      color: '#2f2f2f',
     }),
   },
   gloss_black: {
