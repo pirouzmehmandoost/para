@@ -20,7 +20,7 @@ type MainMenuTopLink = { title: string; disabled?: boolean; href: string };
 
 const mainMenuTopLinks: MainMenuTopLink[] = [
   { title: 'Redesign in progress', disabled: true, href: '/' },
-  { title: 'About', disabled: false, href: '/about' },
+  { title: 'Come back tomorrow', href: '/' },
 ];
 
 type MainMenuBottomLink = { title: string; href: string };
@@ -100,7 +100,7 @@ const createVariants = (reduceMotion: boolean): MenuVariants => {
   };
 };
 
-const MainMenu = () => {
+const OverlayModal = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
   const menuVisible = useMenu(state => state.menuState.visible);
@@ -222,4 +222,4 @@ const MainMenu = () => {
   );
 };
 
-export default MainMenu;
+export default OverlayModal;
