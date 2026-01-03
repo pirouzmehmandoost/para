@@ -6,13 +6,13 @@ import { useFrame } from '@react-three/fiber';
 import cameraConfigs from '@configs/cameraConfigs';
 import { easing } from 'maath';
 import useSelection from '@stores/selectionStore';
+import dampCameraLookAt  from '@utils/cameraRig/dampCameraLookAt';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
-const MIN_DWELL_SECONDS = 5; // rig dwells camera for 5 seconds at each position
-const MANUAL_OVERRIDE_SECONDS = 5; // dwells for 5+5 if swipe gestures move the rig
+const MIN_DWELL_SECONDS = 10; // dwell time at each position
+const MANUAL_OVERRIDE_SECONDS = 5; // dwell an additional 5 if swipe gesture moves the rig
 // clicks force camera to dwell near clicked object position until manualIndexRef and hasNavigatedRef, or selectionStore.isFocused change.
-
 const AnimatedRig = ({
   manualIndexRef = null,
   hasNavigatedRef = null,
@@ -75,7 +75,7 @@ const AnimatedRig = ({
     const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
     const elapsedTime = clock.elapsedTime;
     const xOffset = Math.sin(elapsedTime);
-    const yOffset = 3 * Math.cos(elapsedTime);
+    const yOffset = -2 * xOffset;
     const zOffset = cameraConfigs.POSITION[2] + xOffset;
     const focusedIndex = isFocused !== null ? (nameToIndexMapRef.current[isFocused] ?? -1) : -1;
 
@@ -126,24 +126,11 @@ const AnimatedRig = ({
       nextPosition.z + zOffset
     );
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
-    easing.dampLookAt(camera, nextPosition, 1, clampedDelta);
+    // easing.dampLookAt(camera, nextPosition, 1, clampedDelta);
+    dampCameraLookAt(camera, nextPosition, 1, clampedDelta, 0, Math.PI/6, 0);
+
     camera.updateMatrixWorld();
   });
 };
 
 export default AnimatedRig;
-
-// const lookAtMatrixRef = useRef(new THREE.Matrix4());
-// const targetQuatRef = useRef(new THREE.Quaternion());
-// function dampCameraLookAt(camera, targetPoint, smoothTime, delta) {
-//   // smoothTime: bigger = slower/smoother (same idea as maath damp)
-//   const st = Math.max(1e-4, smoothTime); // avoid divide-by-zero
-//   // exponential smoothing factor (0..1), derived from omega = 2/smoothTime style damping
-//   const t = 1 - Math.exp((-2 * delta) / st);
-//   // compute "look at" rotation matrix for a camera: from camera.position to targetPoint
-//   lookAtMatrixRef.current.lookAt(camera.position, targetPoint, camera.up);
-//   // convert to quaternion
-//   targetQuatRef.current.setFromRotationMatrix(lookAtMatrixRef.current);
-//   // smoothly rotate toward it
-//   camera.quaternion.slerp(targetQuatRef.current, t);
-// }
