@@ -137,7 +137,7 @@ const AnimatedRig = ({
     );
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
     // easing.dampLookAt(camera, nextPosition, 1, clampedDelta);
-    dampCameraLookAt(camera, nextPosition, 1, clampedDelta, 0, Math.PI/6, 0);
+    dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, Math.PI/6, 0);
 
     camera.updateMatrixWorld();
   });
