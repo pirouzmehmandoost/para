@@ -4,7 +4,7 @@ import React, { startTransition, useCallback, useMemo, useRef, useState } from '
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import { EffectComposer, Outline, Vignette} from '@react-three/postprocessing';
+import { EffectComposer, Outline, Vignette } from '@react-three/postprocessing';
 import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
 import useSelection from '@stores/selectionStore';
@@ -248,6 +248,7 @@ const HomeScene = () => {
           return (
             <Model
               key={nodeName}
+              name={nodeName}
               autoRotate={sceneData.autoRotate}
               autoRotateSpeed={sceneData.autoRotateSpeed * 0.5}
               groundMeshRef={groundMeshRef}
