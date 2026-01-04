@@ -4,9 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-// import { Select } from '@react-three/postprocessing';
 import useMaterial from '@stores/materialStore';
-import useSelection from '@/app/stores/selectionStore';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -140,20 +138,17 @@ const Model = (props) => {
   return (
     <>
       {mesh && (
-        // <Select enabled={isFocused}>
-          <mesh 
-            ref={meshRef}
-            castShadow={true}
-            geometry={mesh?.geometry}
-            // material={getMaterial(materialId)?.material} 
-            material={materialRef.current}
-            name={nodeName}
-            onClick={onClick}
-            position={[position.x, newPosition, position.z]}
-            receiveShadow={true}
-            scale={scaleRef.current}
-          />
-        // </Select>
+        <mesh 
+          ref={meshRef}
+          castShadow={true}
+          geometry={mesh?.geometry}
+          material={materialRef.current}
+          name={nodeName}
+          onClick={onClick}
+          position={[position.x, newPosition, position.z]}
+          receiveShadow={true}
+          scale={scaleRef.current}
+        />
       )}
     </>
   );
