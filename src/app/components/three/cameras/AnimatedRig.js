@@ -6,47 +6,91 @@ import { useFrame } from '@react-three/fiber';
 import cameraConfigs from '@configs/cameraConfigs';
 import { easing } from 'maath';
 import useSelection from '@stores/selectionStore';
-import dampCameraLookAt  from '@utils/cameraRig/dampCameraLookAt';
+import dampCameraLookAt from '@utils/cameraRig/dampCameraLookAt';
 
-THREE.ColorManagement.enabled = true;
-THREE.Cache.enabled = true;
-const MIN_DWELL_SECONDS = 10; // dwell time at each position
+/*
+Inputs:
+- targetRefs: array of Three.js Object3D instances (or falsy/invalid entries)
+- fallbackPositions: array of THREE.Vector3 (or falsy entries)
+- manualIndexRef: ref<number> (index) provided by the parent (input-only)
+- hasNavigatedRef: ref<boolean> shared control flag (see below)
+
+Stop positions are computed in useEffect with:
+  length = max(targetRefs.length, fallbackPositions.length)
+For each i in [0..length-1]:
+- If targetRefs[i] is a valid Object3D (has updateWorldMatrix), stopPositions[i] = world-space center of its bounding box.
+- Otherwise, if fallbackPositions[i] is a Vector3, stopPositions[i] = fallbackPositions[i].
+- Otherwise, stopPositions[i] = (0,0,0).
+If both arrays are empty, there is still one stop position at (0,0,0).
+
+Per-frame priority order (useFrame):
+1) Focused target (selectionStore.selection.isFocused by name) overrides everything.
+2) Manual override (ONLY when hasNavigatedRef.current === true):
+   - reads manualIndexRef.current, validates/clamps, and uses it if valid.
+   - manual override automatically expires after MANUAL_OVERRIDE_SECONDS of no manual index change,
+     and AnimatedRig sets hasNavigatedRef.current = false to resume auto-cycling.
+3) Auto-cycle between stop positions every MIN_DWELL_SECONDS.
+
+Contract note:
+- HomeScene sets hasNavigatedRef.current = true on swipe.
+- AnimatedRig sets hasNavigatedRef.current = false after the manual override timeout.
+- AnimatedRig does NOT write back to manualIndexRef.current.
+*/
+const MIN_DWELL_SECONDS = 5; // dwell time at each position
 const MANUAL_OVERRIDE_SECONDS = 5; // dwell an additional 5 if swipe gesture moves the rig
 // clicks force camera to dwell near clicked object position until manualIndexRef and hasNavigatedRef, or selectionStore.isFocused change.
 
-// fallbackPositions and targerRefs can be any length, and fallback behavior handles mismatched array lengths: 
-// when fallbackPositions has more elements than targetRefs, the extra positions are used as stop positions. 
-// This lets you provide additional or fallback positions for indices without corresponding refs
-// if the length of both arrays are equal, then fallbackPositions[i] will be used unless it evaluates to falsy (defaults to Vector3(0,0,0)) 
-// If fallbackPositions.length > targetRefs.length, then the camera will stop at all ref Object3D computed positions 
-// If fallbackPositions.length < targetRefs.length, targetRefs that evaluate to truthy will be used for corresponding indices, 
-// positionVector if falsy, and if both then they are gracefully omitted. 
-// AnimatedRig may be shared between multiple scenes, with graceful repositioning as props change value.
-// if no props are passed, the camera hovers softly at Vector3(0,0,0).
+// // For testing
+// const useScene = () => {
+//   const { scene } = useThree();
+//   const lib = useRef({});
+//   useEffect(() => { scene.traverse((object) => { if (object.isMesh) lib.current[`${object.name}`] = object }) }, []);
+//   return lib.current;
+// };
+
+// const handleSwipe = () => {
+//   let nextIndex;
+  
+//   if (swipeDirectionRef.current > 0)  nextIndex = (manualIndexRef.current + 1) % stopPositions.length
+//   else nextIndex = (manualIndexRef.current - 1 + stopPositions.length) % stopPositions.length
+
+//   console.log("nextIndex: ", nextIndex)
+//   return nextIndex
+//   // manualIndexRef.current = nextIndex;
+//   // hasNavigatedRef.current = true;
+//   // targetMeshRef.current = null;
+// };
+
 const AnimatedRig = ({
   manualIndexRef = null,
   hasNavigatedRef = null,
-  fallbackPositions = [], // an array of Vector3. Can be used as fallback positions when targetRefs omitted or is an empty array. 
-  targetRefs = [], // objects the camera will look at
+  fallbackPositions = [], 
+  targetRefs = [],
 }) => {
   const isFocused = useSelection((state) => state.selection.isFocused);
-  const targetIndex = useRef(0);
+
   const lastSwitchTimeRef = useRef(0);
   const lastManualInputTimeRef = useRef(-Infinity);
-  const lastManualIndexRef = useRef(null);
+
   const cameraPosition = useRef(new THREE.Vector3());
   const lookAtPosition = useRef(new THREE.Vector3());
+
   const stopPositions = useRef([new THREE.Vector3(0, 0, 0)]);
   const fallbackPositionRef = useRef(new THREE.Vector3(0, 0, 0));
+
   const boxRef = useRef(new THREE.Box3());
   const centerRef = useRef(new THREE.Vector3());
+
+  const targetIndex = useRef(0);
+  const lastManualIndexRef = useRef(null);
+
   const nameToIndexMapRef = useRef({});
 
   useEffect(() => {
     const length = Math.max(targetRefs?.length ?? 0, fallbackPositions?.length ?? 0);
     for (let i = 0; i < length; i++) {
       if (!stopPositions.current[i]?.isVector3) stopPositions.current[i] = new THREE.Vector3();
-      // if truthy but not Object3D... for some future case when I decide that targetRefs[i] doesnt have to be Object3D 
+      // if truthy but not Object3D - futureproofing 
       if (!targetRefs[i] || typeof targetRefs[i].updateWorldMatrix !== 'function') {
         stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : fallbackPositionRef.current);
         continue;
@@ -70,7 +114,7 @@ const AnimatedRig = ({
       }
     }
     nameToIndexMapRef.current = map;
-  
+
     if (targetIndex.current < 0 || targetIndex.current >= stopPositions.current.length) targetIndex.current = 0;
   }, [targetRefs, fallbackPositions]);
 
@@ -124,7 +168,7 @@ const AnimatedRig = ({
       if (canSwitch) {
         lastSwitchTimeRef.current = elapsedTime;
         targetIndex.current = nextIndex;
-        if (manualIndexRef) manualIndexRef.current = targetIndex.current;
+        // if (manualIndexRef) manualIndexRef.current = targetIndex.current;
       }
 
       nextPosition = stopPositions.current[targetIndex.current];
@@ -136,8 +180,7 @@ const AnimatedRig = ({
       nextPosition.z + zOffset
     );
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
-    // easing.dampLookAt(camera, nextPosition, 1, clampedDelta);
-    dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, Math.PI/6, 0);
+    dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, Math.PI / 6, 0);
 
     camera.updateMatrixWorld();
   });
