@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import useMaterial from '@stores/materialStore';
+// import { scaleMeshAtBreakpoint } from '@utils/scaleUrils';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -21,26 +22,26 @@ const Model = (props) => {
     materialId = '',
     fileData: { nodeName = '', url = '' } = {},
     onClick = undefined,
-    onMeshReady = () => {},
-    position = {x: 0, y: 0, z: 0},
+    onMeshReady = () => { },
+    position = { x: 0, y: 0, z: 0 },
     scale = 1,
   } = props;
 
   const mesh = url ? useGLTF(url).nodes?.[nodeName] : null;
+  // const vertexCount = mesh.geometry.attributes.position.count;
   const scaleRef = useRef(scale);
   const meshRef = useRef(undefined);
   const hasPositionedRef = useRef(false);
   const getMaterial = useMaterial((state) => state.getMaterial);
   // const materialRef = useRef(useMaterial.getState().materials[`${materialId}`]?.material); 
-  const materialRef = useRef(getMaterial(materialId)?.material); 
-  // const isFocused = useSelection((state) => state.selection.isFocused === nodeName);
+  const materialRef = useRef(getMaterial(materialId)?.material);
   const [newPosition, setNewPosition] = useState(position.y);
 
   const positionModelAboveGround = useCallback((groundMeshRef) => {
     if (!meshRef.current || !groundMeshRef) return null;
-    
+
     meshRef.current.updateWorldMatrix(true, true);
-    groundMeshRef.updateWorldMatrix(true, true); 
+    groundMeshRef.updateWorldMatrix(true, true);
 
     const size = new THREE.Vector3();
     const modelBoundingBox = new THREE.Box3().setFromObject(meshRef.current);
@@ -62,7 +63,7 @@ const Model = (props) => {
     }
 
     samplePoints.push(new THREE.Vector3(centerX, bottomY, centerZ));
-    
+
     const raycaster = new THREE.Raycaster();
     let highestGroundBelowModel = null; // ground below or at model level
 
@@ -72,13 +73,13 @@ const Model = (props) => {
       const downHits = raycaster.intersectObject(groundMeshRef, true).filter(hit => hit.object !== meshRef.current);
 
       if (downHits.length > 0) {
-        const groundY = downHits[0].point.y;        
+        const groundY = downHits[0].point.y;
         // Track the highest ground point found below the model
         if (highestGroundBelowModel === null || groundY > highestGroundBelowModel) {
           highestGroundBelowModel = groundY;
         };
       };
-      
+
       // Cast upward to detect if model intersects with ground
       raycaster.set(point, new THREE.Vector3(0, 1, 0));
       const upHits = raycaster.intersectObject(groundMeshRef, true).filter(hit => hit.object !== meshRef.current);
@@ -87,7 +88,7 @@ const Model = (props) => {
         const groundY = upHits[0].point.y;
         const distance = upHits[0].distance;
         const penetrationThreshold = size.y * 2; // Within 2x model height = penetration
-        
+
         if (distance < penetrationThreshold) {
           if (highestGroundBelowModel === null || groundY > highestGroundBelowModel) {
             highestGroundBelowModel = groundY;
@@ -106,7 +107,7 @@ const Model = (props) => {
 
   useLayoutEffect(() => {
     if (hasPositionedRef.current || !groundMeshRef || !meshRef.current) return;
-  
+
     const adjustment = positionModelAboveGround(groundMeshRef);
     hasPositionedRef.current = true;
     setNewPosition(adjustment ?? position.y);
@@ -119,7 +120,7 @@ const Model = (props) => {
     }
   }, [newPosition, onMeshReady]);
 
-  useFrame(({clock, viewport}, delta) => {
+  useFrame(({ clock, viewport }, delta) => {
     // const blendPercentage = Math.abs(Math.sin(clock.elapsedTime/2)) % 1
     // console.log(blendPercentage)
     if (meshRef?.current) {
@@ -138,7 +139,7 @@ const Model = (props) => {
   return (
     <>
       {mesh && (
-        <mesh 
+        <mesh
           ref={meshRef}
           castShadow={true}
           geometry={mesh?.geometry}
