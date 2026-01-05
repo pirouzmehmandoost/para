@@ -10,7 +10,7 @@ import cameraConfigs from '@configs/cameraConfigs';
 
 const AnimatedRig = ({
   onSwipe = undefined,
-  fallbackPositions = [], 
+  fallbackPositions = [],
   targets = [],
 }) => {
 
@@ -38,7 +38,7 @@ const AnimatedRig = ({
   const targetIndex = useRef(0);
   const nameToIndexMapRef = useRef({});
 
-  useEffect(()=>{
+  useEffect(() => {
     const map = {};
     for (let i = 0; i < targets.length; i++) {
       if (targets[i]?.name) {
@@ -62,13 +62,13 @@ const AnimatedRig = ({
 
     const finishPointer = (e) => {
       if (activePointerIdRef.current !== e.pointerId) return;
-    
+
       domElement.releasePointerCapture?.(e.pointerId);
       activePointerIdRef.current = null;
       pointerStartRef.current = null;
     };
 
-    const onPointerCancel = (e) => finishPointer(e);    
+    const onPointerCancel = (e) => finishPointer(e);
 
     const onPointerUp = (e) => {
       const start = pointerStartRef.current;
@@ -146,8 +146,8 @@ const AnimatedRig = ({
     const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
     const elapsedTime = clock.elapsedTime;
 
-    const focusedIndex = focusedObjectName !== null 
-      ? (nameToIndexMapRef.current[focusedObjectName] ?? -1) 
+    const focusedIndex = focusedObjectName !== null
+      ? (nameToIndexMapRef.current[focusedObjectName] ?? -1)
       : -1;
 
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
@@ -177,7 +177,7 @@ const AnimatedRig = ({
     const yOffset = -2 * sine;
     const zOffset = 180 + sine;
 
-    lookAtPosition.current.set( nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
+    lookAtPosition.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
     dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, Math.PI / 6, 0);
 
