@@ -4,11 +4,11 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
-import useSelection from '@stores/selectionStore';
 import { dampCameraLookAt } from '@utils/quaternionUtils';
 import cameraConfigs from '@configs/cameraConfigs';
 
 const AnimatedRig = ({
+  focusTarget = null,
   onSwipe = undefined,
   fallbackPositions = [],
   targets = [],
@@ -17,8 +17,6 @@ const AnimatedRig = ({
   const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS } = cameraConfigs;
   const _scratchBoxRef = useRef(new THREE.Box3());
   const _scratchCenterRef = useRef(new THREE.Vector3());
-
-  const focusedObjectName = useSelection((state) => state.selection.isFocused);
 
   const domElement = useThree((state) => state.gl.domElement);
   const clock = useThree((state) => state.clock);
@@ -146,8 +144,8 @@ const AnimatedRig = ({
     const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
     const elapsedTime = clock.elapsedTime;
 
-    const focusedIndex = focusedObjectName !== null
-      ? (nameToIndexMapRef.current[focusedObjectName] ?? -1)
+    const focusedIndex = focusTarget !== null
+      ? (nameToIndexMapRef.current[focusTarget] ?? -1)
       : -1;
 
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
