@@ -121,8 +121,6 @@ const HomeScene = () => {
 
   const onSwipe = (e) => {
     lastSwipeTimeRef.current = Date.now();
-    e.stopPropagation();
-
     startTransition(() => {
       resetSelectionStore();
       setIsFocused(null)
