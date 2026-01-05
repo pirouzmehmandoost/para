@@ -1,6 +1,6 @@
 'use client';
 
-import React, { startTransition, useCallback, useMemo, useRef, useState } from 'react';
+import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
@@ -19,25 +19,27 @@ const { projects } = portfolio;
 
 const HomeScene = () => {
   const size = useThree((state)=> state.size);
-  const [groundMeshRef, setGroundMeshRef] = useState(undefined);
+  const set = useThree((state) => state.set);
+  const get = useThree((state) => state.get);
+
   const setSelectionStore = useSelection((state) => state.setSelection);
-  const isFocused = useSelection((state) => state.selection.isFocused);
+  const isFocused = useSelection((state) => state.selection.isFocused); // in focus does not imply selected.
   const setIsFocused = useSelection((state) => state.setIsFocused)
   const resetSelectionStore = useSelection((state) => state.reset);
-  const targetMeshRef = useRef(null);
-  // swipe gesture tracking
-  const currentIndexRef = useRef(0);
-  const swipeDirectionRef = useRef(null);
-  const isSwipeRef = useRef(false);
-  const hasNavigatedRef = useRef(false);
-  const touchStartRef = useRef(null);
-  // Model mount tracking
+
+  const [groundMeshRef, setGroundMeshRef] = useState(undefined);
+  const targetMeshRef = useRef(null); // currently clicked Object3D (selected and in focus)
+  const lastSwipeTimeRef = useRef(0); // track swipe timing so missed clicks after swipe dont count.
+  // track Model component mount / when all Object3D's are in scene
   const readyCount = useRef(0);
   const [meshesReady, setMeshesReady] = useState(false);
-  const meshRefs = useRef(new Array(projects.length).fill(null));
+  const meshRefs = useRef(new Array(projects.length).fill(null)); // all model
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
-  //mesh positioning
+
+  const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
+
+  // Model mesh positioning
   const meshPositions = useMemo(() => {
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
     const positions = [];
@@ -81,54 +83,17 @@ const HomeScene = () => {
     }
     ), [totalMeshes]);
 
-  const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
+  const handlePointerMissed = useCallback((e) => {
+    if (Date.now() - lastSwipeTimeRef.current < 250) return;
 
-  const handlePointerDown = (e) => {
-    isSwipeRef.current = false;
-    touchStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
-  };
+    targetMeshRef.current = null;
+    e.stopPropagation();
 
-  const handlePointerUp = (e) => {
-    if (!touchStartRef.current) return;
-
-    const deltaX = e.clientX - touchStartRef.current.x;
-    const deltaY = e.clientY - touchStartRef.current.y;
-    const deltaTime = Date.now() - touchStartRef.current.time;
-    const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50 && deltaTime < 600;
-
-    if (isSwipe) {
-      isSwipeRef.current = true;
-      e.stopPropagation?.();
-
-      const direction = deltaX > 0 ? 'right' : 'left';
-      let nextIndex;
-      if (direction === 'right') {
-        nextIndex = (currentIndexRef.current + 1) % projects.length;
-        swipeDirectionRef.current = 1;
-      }
-      else {
-        nextIndex = (currentIndexRef.current - 1 + projects.length) % projects.length;
-        swipeDirectionRef.current = -1;
-      }
-      currentIndexRef.current = nextIndex;
-      hasNavigatedRef.current = true;
-      targetMeshRef.current = null;
-
-      startTransition(() => {
-        resetSelectionStore();
-        setIsFocused(null);
-      });
-    };
-
-    touchStartRef.current = null;
-  };
-
-  const outlineSelection = useMemo(() => {
-    if (!isFocused) return undefined;
-
-    const focusedMesh = meshRefs.current.find((m) => m?.name === isFocused);
-    return focusedMesh ? [focusedMesh] : undefined;
-  }, [isFocused, meshesReady]);
+    startTransition(() => {
+      resetSelectionStore();
+      setIsFocused(null)
+    });
+  }, [resetSelectionStore, setIsFocused]);
 
   const handleClick = useCallback((e) => {
     e.stopPropagation();
@@ -149,27 +114,34 @@ const HomeScene = () => {
       }) => nodeName === clickedName
     );
 
-    swipeDirectionRef.current = null;
-    currentIndexRef.current = index;
-    hasNavigatedRef.current = false;
-
     startTransition(() => {
       setSelectionStore({ ...projects[index] });
       setIsFocused(clickedName)
     });
   }, [setSelectionStore]);
 
-  const handleMiss = (e) => {
-    if (isSwipeRef.current) return;
-
-    targetMeshRef.current = null;
+  const onSwipe = (e) => {
+    lastSwipeTimeRef.current = Date.now();
     e.stopPropagation();
 
     startTransition(() => {
       resetSelectionStore();
       setIsFocused(null)
     });
-  };
+  }
+
+  const outlineSelection = useMemo(() => {
+    if (!isFocused) return undefined;
+
+    const focusedMesh = meshRefs.current.find((m) => m?.name === isFocused);
+    return focusedMesh ? [focusedMesh] : undefined;
+  }, [isFocused, meshesReady]);
+
+  useEffect(() => {
+    const prev = get().onPointerMissed;
+    set({ onPointerMissed: handlePointerMissed });
+    return () => set({ onPointerMissed: prev });
+  }, [set, get, handlePointerMissed]);
 
   return (
     <>
@@ -202,11 +174,9 @@ const HomeScene = () => {
         shadow-mapSize-height={1024}
       />
       <AnimatedRig
-        manualIndexRef={currentIndexRef}
-        hasNavigatedRef={hasNavigatedRef}
+        onSwipe={onSwipe}
         fallbackPositions={meshPositions}
-        targetRefs={cameraTargets}
-        swipeDirectionRef={swipeDirectionRef}
+        targets={cameraTargets}
       />
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
         <Vignette eskil={false} offset={0.01} darkness={0.7} />
@@ -264,15 +234,10 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
-      <mesh
-        position={[0, 0, -1000]}
-        onClick={handleMiss}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-      >
+      {/* <mesh position={[0, 0, -1000]} onClick={handleMiss} >
         <planeGeometry args={[20000, 20000]} />
         <meshBasicMaterial transparent opacity={0} depthTest={false} />
-      </mesh>
+      </mesh> */}
       <Ground setGroundMeshRef={setGroundMeshRef} rotation={[Math.PI / 9, 0, 0]} />
     </>
   );
