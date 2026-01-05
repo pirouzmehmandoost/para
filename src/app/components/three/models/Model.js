@@ -32,7 +32,9 @@ const Model = (props) => {
   const hasPositionedRef = useRef(false);
   const getMaterial = useMaterial((state) => state.getMaterial);
   // const materialRef = useRef(useMaterial.getState().materials[`${materialId}`]?.material); 
-  const materialRef = useRef(getMaterial(materialId)?.material);
+  // const materialRef = useRef(getMaterial(materialId)?.material);
+  const material = getMaterial(materialId)?.material;
+
   const [newPosition, setNewPosition] = useState(position.y);
 
   const positionModelAboveGround = useCallback((groundMeshRef) => {
@@ -135,7 +137,7 @@ const Model = (props) => {
           ref={meshRef}
           castShadow={true}
           geometry={mesh?.geometry}
-          material={materialRef.current}
+          material={material}
           name={nodeName}
           onClick={onClick}
           position={[position.x, newPosition, position.z]}

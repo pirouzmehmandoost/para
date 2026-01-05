@@ -38,7 +38,10 @@ const HomeScene = () => {
   const meshRefs = useRef(new Array(projects.length).fill(null)); // all model
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
+
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
+
+  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.45)
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
@@ -216,7 +219,7 @@ const HomeScene = () => {
               fileData={sceneData.fileData}
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions[index]}
-              scale={sceneData.scale * 0.5}
+              scale={meshScale * sceneData.scale}
               onClick={handleClick}
             />
           );
