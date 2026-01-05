@@ -23,6 +23,7 @@ const cameraConfigs = {
   MANUAL_OVERRIDE_SECONDS: 10, // additional dwell time if swipe gesture moves the rig
   SWIPE_DELTA_PX: 50,
   SWIPE_DELTA_TIME_MS: 600,
+  SWIPE_DELAY_MS: 250,
 };
 
 export default cameraConfigs;

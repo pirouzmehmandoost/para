@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import useMaterial from '@stores/materialStore';
-// import { scaleMeshAtBreakpoint } from '@utils/scaleUrils';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -29,7 +28,6 @@ const Model = (props) => {
 
   const mesh = url ? useGLTF(url).nodes?.[nodeName] : null;
   // const vertexCount = mesh.geometry.attributes.position.count;
-  const scaleRef = useRef(scale);
   const meshRef = useRef(undefined);
   const hasPositionedRef = useRef(false);
   const getMaterial = useMaterial((state) => state.getMaterial);
@@ -120,17 +118,11 @@ const Model = (props) => {
     }
   }, [newPosition, onMeshReady]);
 
-  useFrame(({ clock, viewport }, delta) => {
+  useFrame(({ clock }, delta) => {
     // const blendPercentage = Math.abs(Math.sin(clock.elapsedTime/2)) % 1
     // console.log(blendPercentage)
     if (meshRef?.current) {
       if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
-
-      // console.log(scaleMeshAtBreakpoint(viewport.width))
-      // const measurement = scaleMeshAtBreakpoint(viewport.width)
-      // const oldScale = scaleRef.current;
-      // const newScale =  oldScale *  measurement
-      // console.log("\noldScale: ", oldScale, "\nnewScale: ", newScale)
     }
   });
 
@@ -148,7 +140,7 @@ const Model = (props) => {
           onClick={onClick}
           position={[position.x, newPosition, position.z]}
           receiveShadow={true}
-          scale={scaleRef.current}
+          scale={scale}
         />
       )}
     </>
