@@ -21,6 +21,8 @@ const cameraConfigs = {
   TOUCH_ZOOM_ROTATE: 0,
   MIN_DWELL_SECONDS: 5, // dwell time at each position
   MANUAL_OVERRIDE_SECONDS: 10, // additional dwell time if swipe gesture moves the rig
+  SWIPE_DELTA_PX: 50,
+  SWIPE_DELTA_TIME_MS: 600,
 };
 
 export default cameraConfigs;
