@@ -14,7 +14,7 @@ const AnimatedRig = ({
   targets = [],
 }) => {
 
-  const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS } = cameraConfigs;
+  const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS } = cameraConfigs;
   const _scratchBoxRef = useRef(new THREE.Box3());
   const _scratchCenterRef = useRef(new THREE.Vector3());
 
@@ -23,6 +23,7 @@ const AnimatedRig = ({
   const domElement = useThree((state) => state.gl.domElement);
   const clock = useThree((state) => state.clock);
 
+  const activePointerIdRef = useRef(null);
   const pointerStartRef = useRef(null);
 
   const lastSwitchTimeRef = useRef(0);
@@ -52,17 +53,31 @@ const AnimatedRig = ({
     if (!domElement) return;
 
     const onPointerDown = (e) => {
+      if (!e.isPrimary) return; // ignore secondary touches
+
+      activePointerIdRef.current = e.pointerId;
+      domElement.setPointerCapture?.(e.pointerId); // capture pointerup even if pointer leaves the canvas
       pointerStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
     };
 
+    const finishPointer = (e) => {
+      if (activePointerIdRef.current !== e.pointerId) return;
+    
+      domElement.releasePointerCapture?.(e.pointerId);
+      activePointerIdRef.current = null;
+      pointerStartRef.current = null;
+    };
+
+    const onPointerCancel = (e) => finishPointer(e);    
+
     const onPointerUp = (e) => {
       const start = pointerStartRef.current;
-      if (!start) return;
+      if (!start || activePointerIdRef.current !== e.pointerId) return;
 
       const deltaX = e.clientX - start.x;
       const deltaY = e.clientY - start.y;
       const deltaTime = Date.now() - start.time;
-      const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50 && deltaTime < 600;
+      const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_DELTA_PX && deltaTime < SWIPE_DELTA_TIME_MS;
 
       if (isSwipe) {
         const count = stopPositions.current.length;
@@ -79,17 +94,19 @@ const AnimatedRig = ({
         manualOverrideTimeRef.current = -Infinity;
       }
 
-      pointerStartRef.current = null;
+      finishPointer(e);
     };
 
     domElement.addEventListener('pointerdown', onPointerDown);
     domElement.addEventListener('pointerup', onPointerUp);
-    domElement.addEventListener('pointercancel', onPointerUp);
+    domElement.addEventListener('pointercancel', onPointerCancel);
+    domElement.addEventListener('lostpointercapture', onPointerCancel);
 
     return () => {
       domElement.removeEventListener('pointerdown', onPointerDown);
       domElement.removeEventListener('pointerup', onPointerUp);
-      domElement.removeEventListener('pointercancel', onPointerUp);
+      domElement.removeEventListener('pointercancel', onPointerCancel);
+      domElement.removeEventListener('lostpointercapture', onPointerCancel);
     };
   }, [domElement, clock, onSwipe]);
 
