@@ -23,8 +23,8 @@ const HomeScene = () => {
   const get = useThree((state) => state.get);
 
   const setSelectionStore = useSelection((state) => state.setSelection);
-  const isFocused = useSelection((state) => state.selection.isFocused); // in focus does not imply selected.
-  const setIsFocused = useSelection((state) => state.setIsFocused)
+  const isFocused = useSelection((state) => state.selection.isFocused);
+  const setIsFocused = useSelection((state) => state.setIsFocused);
   const resetSelectionStore = useSelection((state) => state.reset);
 
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
@@ -123,7 +123,7 @@ const HomeScene = () => {
     lastSwipeTimeRef.current = Date.now();
     startTransition(() => {
       resetSelectionStore();
-      setIsFocused(null)
+      setIsFocused(null);
     });
   }
 
