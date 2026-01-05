@@ -6,7 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import cameraConfigs from '@configs/cameraConfigs';
 import { easing } from 'maath';
 import useSelection from '@stores/selectionStore';
-import dampCameraLookAt from '@utils/cameraRig/dampCameraLookAt';
+import { dampCameraLookAt } from '@utils/quaternionUtils';
 
 /*
 Inputs:
@@ -66,6 +66,7 @@ const AnimatedRig = ({
   hasNavigatedRef = null,
   fallbackPositions = [], 
   targetRefs = [],
+  swipeDirectionRef = null
 }) => {
   const isFocused = useSelection((state) => state.selection.isFocused);
 
@@ -82,7 +83,8 @@ const AnimatedRig = ({
   const centerRef = useRef(new THREE.Vector3());
 
   const targetIndex = useRef(0);
-  const lastManualIndexRef = useRef(null);
+  const lastManualIndexRef = useRef(0);
+  const testManualIndexRef = useRef(0);
 
   const nameToIndexMapRef = useRef({});
 
@@ -158,6 +160,12 @@ const AnimatedRig = ({
     else if (manualIndex !== null && stopPositions.current[manualIndex]) {
       targetIndex.current = manualIndex;
       nextPosition = stopPositions.current[targetIndex.current];
+
+      // else if (swipeDirectionRef.current !== null) {
+        // let nextIndex = 0;
+        // if (swipeDirectionRef.current > 0) nextIndex  = (testManualIndexRef.current + 1) %3
+        // else nextIndex = (testManualIndexRef.current - 1 + testManualIndexRef.length) %  3;
+        // testManualIndexRef.current = nextIndex
     }
     else {
       cameraPosition.current.copy(stopPositions.current[targetIndex.current]);
@@ -168,7 +176,7 @@ const AnimatedRig = ({
       if (canSwitch) {
         lastSwitchTimeRef.current = elapsedTime;
         targetIndex.current = nextIndex;
-        // if (manualIndexRef) manualIndexRef.current = targetIndex.current;
+        if (manualIndex) manualIndexRef.current = targetIndex.current;
       }
 
       nextPosition = stopPositions.current[targetIndex.current];

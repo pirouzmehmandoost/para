@@ -8,7 +8,7 @@ import { EffectComposer, Outline, Vignette } from '@react-three/postprocessing';
 import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
 import useSelection from '@stores/selectionStore';
-import { scaleMeshAtBreakpoint } from '@utils/mesh/meshUtils';
+import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
 import Ground from '../models/Ground';
 import Model from '../models/Model';
@@ -18,7 +18,7 @@ THREE.ColorManagement.enabled = true;
 const { projects } = portfolio;
 
 const HomeScene = () => {
-  const { size } = useThree();
+  const size = useThree((state)=> state.size);
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
   const setSelectionStore = useSelection((state) => state.setSelection);
   const isFocused = useSelection((state) => state.selection.isFocused);
@@ -206,6 +206,7 @@ const HomeScene = () => {
         hasNavigatedRef={hasNavigatedRef}
         fallbackPositions={meshPositions}
         targetRefs={cameraTargets}
+        swipeDirectionRef={swipeDirectionRef}
       />
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
         <Vignette eskil={false} offset={0.01} darkness={0.7} />

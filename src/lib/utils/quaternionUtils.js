@@ -1,13 +1,13 @@
-import * as THREE from 'three';
+import { Euler, Matrix4, Quaternion } from 'three';
 
-const _scratchMatrix = new THREE.Matrix4();
-const _scratchQuat = new THREE.Quaternion();
-const _scratchEuler = new THREE.Euler();
+const _scratchMatrix = new Matrix4();
+const _scratchQuat = new Quaternion();
+const _scratchEuler = new Euler();
 
 // euler.x = pitch (up/down tilt) 
 // euler.y = yaw (left/right turn)
 // euler.z = roll (tilt left/right)
-function dampCameraLookAt(camera, targetPoint, smoothTime, delta, pitchFactor = null, yawFactor = null, rollFactor = null) {
+export function dampCameraLookAt(camera, targetPoint, smoothTime, delta, pitchFactor = null, yawFactor = null, rollFactor = null) {
   const st = Math.max(1e-4, smoothTime);
   const t = 1 - Math.exp((-2 * delta) / st);
 
@@ -22,6 +22,4 @@ function dampCameraLookAt(camera, targetPoint, smoothTime, delta, pitchFactor = 
 
   _scratchQuat.setFromEuler(_scratchEuler);
   camera.quaternion.slerp(_scratchQuat, t);
-}
-
-export default dampCameraLookAt;
+};

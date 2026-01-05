@@ -3,7 +3,9 @@
 // import React, { useMemo } from 'react';
 import React from 'react';
 // import { useThree } from '@react-three/fiber';
-// import { calculateXZPositions, scaleMeshAtBreakpoint } from '@utils/mesh/meshUtils';
+// import { scaleMeshAtBreakpoint } from '@utils/scaleUrils';
+// import { calculateXZPositions } from '@utils/positionUtils';
+
 import Model from '../models/Model';
 
 const Group = (props) => {
