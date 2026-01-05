@@ -18,7 +18,7 @@ THREE.ColorManagement.enabled = true;
 const { projects } = portfolio;
 
 const HomeScene = () => {
-  const size = useThree((state)=> state.size);
+  const size = useThree((state) => state.size);
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
 
@@ -28,15 +28,16 @@ const HomeScene = () => {
   const resetSelectionStore = useSelection((state) => state.reset);
 
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
-  const targetMeshRef = useRef(null); // currently clicked Object3D (selected and in focus)
+
   const lastSwipeTimeRef = useRef(0); // track swipe timing so missed clicks after swipe dont count.
+
   // track Model component mount / when all Object3D's are in scene
   const readyCount = useRef(0);
   const [meshesReady, setMeshesReady] = useState(false);
   const meshRefs = useRef(new Array(projects.length).fill(null)); // all model
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
-
+  const targetMeshRef = useRef(null); // currently clicked Object3D (selected and in focus)
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
 
   // Model mesh positioning
@@ -234,10 +235,6 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
-      {/* <mesh position={[0, 0, -1000]} onClick={handleMiss} >
-        <planeGeometry args={[20000, 20000]} />
-        <meshBasicMaterial transparent opacity={0} depthTest={false} />
-      </mesh> */}
       <Ground setGroundMeshRef={setGroundMeshRef} rotation={[Math.PI / 9, 0, 0]} />
     </>
   );
