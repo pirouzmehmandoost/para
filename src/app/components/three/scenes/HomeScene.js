@@ -7,6 +7,7 @@ import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
 import { EffectComposer, Outline, Vignette } from '@react-three/postprocessing';
 import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
+import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
@@ -18,6 +19,7 @@ THREE.ColorManagement.enabled = true;
 const { projects } = portfolio;
 
 const HomeScene = () => {
+  const { SWIPE_DELAY_MS } = cameraConfigs;
   const size = useThree((state) => state.size);
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
@@ -30,14 +32,12 @@ const HomeScene = () => {
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
 
   const lastSwipeTimeRef = useRef(0); // track swipe timing so missed clicks after swipe dont count.
-
   // track Model component mount / when all Object3D's are in scene
   const readyCount = useRef(0);
   const [meshesReady, setMeshesReady] = useState(false);
   const meshRefs = useRef(new Array(projects.length).fill(null)); // all model
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
-  const targetMeshRef = useRef(null); // currently clicked Object3D (selected and in focus)
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
 
   // Model mesh positioning
@@ -85,39 +85,28 @@ const HomeScene = () => {
     ), [totalMeshes]);
 
   const handlePointerMissed = useCallback((e) => {
-    if (Date.now() - lastSwipeTimeRef.current < 250) return;
+    if (Date.now() - lastSwipeTimeRef.current < SWIPE_DELAY_MS) return;
 
-    targetMeshRef.current = null;
     startTransition(() => {
       resetSelectionStore();
       setIsFocused(null)
     });
-  }, [resetSelectionStore, setIsFocused]);
+  }, [resetSelectionStore, setIsFocused, SWIPE_DELAY_MS]);
 
   const handleClick = useCallback((e) => {
     e.stopPropagation();
 
     const clickedName = e.object.name;
-    const previous = targetMeshRef.current;
-    targetMeshRef.current = e.object;
+    if (isFocused === clickedName) return;
 
-    if (previous?.name === clickedName) return;
-
-    const index = projects.findIndex(
-      ({
-        sceneData: {
-          fileData: {
-            nodeName = '',
-          } = {},
-        } = {},
-      }) => nodeName === clickedName
-    );
+    const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedName );
+    if (index < 0) return;
 
     startTransition(() => {
       setSelectionStore({ ...projects[index] });
       setIsFocused(clickedName)
     });
-  }, [setSelectionStore]);
+  }, [isFocused, setIsFocused, setSelectionStore]);
 
   const onSwipe = (e) => {
     lastSwipeTimeRef.current = Date.now();
@@ -137,6 +126,7 @@ const HomeScene = () => {
   useEffect(() => {
     const prev = get().onPointerMissed;
     set({ onPointerMissed: handlePointerMissed });
+
     return () => set({ onPointerMissed: prev });
   }, [set, get, handlePointerMissed]);
 

@@ -106,7 +106,7 @@ const AnimatedRig = ({
       domElement.removeEventListener('pointercancel', onPointerCancel);
       domElement.removeEventListener('lostpointercapture', onPointerCancel);
     };
-  }, [domElement, clock, onSwipe]);
+  }, [domElement, clock, onSwipe, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS]);
 
   useEffect(() => {
     const length = Math.max(targets?.length ?? 0, fallbackPositions?.length ?? 0);
