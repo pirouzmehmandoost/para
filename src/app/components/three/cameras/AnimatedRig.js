@@ -14,7 +14,7 @@ const AnimatedRig = ({
   targets = [],
 }) => {
 
-  const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS } = cameraConfigs;
+  const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS, POSITION } = cameraConfigs;
   const _scratchBoxRef = useRef(new THREE.Box3());
   const _scratchCenterRef = useRef(new THREE.Vector3());
 
@@ -173,7 +173,7 @@ const AnimatedRig = ({
 
     const sine = Math.sin(elapsedTime);
     const yOffset = -2 * sine;
-    const zOffset = 180 + sine;
+    const zOffset = POSITION[2] + sine;
 
     lookAtPosition.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
