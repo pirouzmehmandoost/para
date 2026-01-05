@@ -108,13 +108,13 @@ const HomeScene = () => {
     });
   }, [isFocused, setIsFocused, setSelectionStore]);
 
-  const onSwipe = (e) => {
+  const onSwipe = useCallback((e) => {
     lastSwipeTimeRef.current = Date.now();
     startTransition(() => {
       resetSelectionStore();
       setIsFocused(null);
     });
-  }
+  }, [resetSelectionStore, setIsFocused]);
 
   const outlineSelection = useMemo(() => {
     if (!isFocused) return undefined;
