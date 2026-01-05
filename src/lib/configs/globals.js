@@ -14,7 +14,7 @@ export const portfolio = {
           nodeName: 'gerd',
           url: '/bag_9_BAT-transformed.glb'
         },
-        scale: 0.65,
+        scale: 0.6,
       },
       name: 'Gerd',
       bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
