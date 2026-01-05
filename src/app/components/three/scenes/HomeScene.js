@@ -88,8 +88,6 @@ const HomeScene = () => {
     if (Date.now() - lastSwipeTimeRef.current < 250) return;
 
     targetMeshRef.current = null;
-    e.stopPropagation();
-
     startTransition(() => {
       resetSelectionStore();
       setIsFocused(null)
