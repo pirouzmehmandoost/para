@@ -171,6 +171,7 @@ const HomeScene = () => {
         shadow-mapSize-height={1024}
       />
       <AnimatedRig
+        focusTarget={isFocused}
         onSwipe={onSwipe}
         fallbackPositions={meshPositions}
         targets={cameraTargets}
