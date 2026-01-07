@@ -14,7 +14,11 @@ THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
 export const Loader = () => {
-  return <Html center castShadow receiveShadow className='text-black text-nowrap text-4xl lg:text-5xl xl:text-5xl' > Loading... </Html>
+  return (
+    <Html center castShadow receiveShadow className='text-black text-nowrap text-4xl lg:text-5xl xl:text-5xl' >
+      Loading...
+    </Html>
+  );
 };
 
 export const RootCanvas = () => {
@@ -32,14 +36,14 @@ export const RootCanvas = () => {
       <Canvas
         frameloop={interactive ? 'always' : 'demand'}
         gl={{ antialias: false, powerPreference: 'high-performance' }}
-        camera={{ position: [666, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR + 200, fov: 50, }}
+        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR + 200, fov: 50, }}
         fallback={<div> Sorry, WebGL is not supported.</div>}
         orthographic={false}
         shadows
       >
         <color args={['#bcbcbc']} attach='background' />
+        <fog attach='fog' color={envColor} near={180} far={290} />
         <Suspense fallback={<Loader />}>
-          <fog attach='fog' color={envColor} near={180} far={290} />
           <Environment shadows files={envImageUrl} />
           <SceneRouter />
         </Suspense>
