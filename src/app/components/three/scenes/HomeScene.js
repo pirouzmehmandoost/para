@@ -1,22 +1,62 @@
 'use client';
 
-import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import { EffectComposer, Outline, Vignette } from '@react-three/postprocessing';
-import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
+import AnimatedLight from "../lights/AnimatedLight";
+import {
+  EffectComposer,
+  // Outline,
+  N8AO,
+  Vignette
+} from '@react-three/postprocessing';
+// import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
-import AnimatedRig from '../cameras/AnimatedRig';
+import SceneRig from '../cameras/SceneRig';
 import Ground from '../models/Ground';
 import Model from '../models/Model';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
 const { projects } = portfolio;
+
+const CloudGroup = (props) => {
+  const { meshPositions } = props;
+  const length = meshPositions?.length ?? 0
+
+  if (!length) return null;
+
+  const cloudProps = useMemo(() => meshPositions.map((p)=> {
+    const position = [
+      p.x + 10,
+      p.z < 0 ? p.y - 50 : p.y - 140,
+      p.z + 90 
+    ];
+
+    return {
+      color: 'black',
+      concentrate: 'outside',
+      fade: 100,
+      growth: 300,
+      opacity: 0.14,
+      position: position,
+      seed: 0.4,
+      segments: 4,
+      speed: 0.2,
+      volume: 300,
+    };
+  }), [meshPositions]);
+
+  return (
+    <Clouds material={THREE.MeshPhysicalMaterial} limit={projects.length * 4}>
+      {cloudProps.map((cp, index) => <Cloud key={`cloud_${index}`} {...cp} />)}
+    </Clouds>
+  );
+};
 
 const HomeScene = () => {
   const { SWIPE_DELAY_MS } = cameraConfigs;
@@ -102,7 +142,7 @@ const HomeScene = () => {
     const clickedName = e.object.name;
     if (isFocused === clickedName) return;
 
-    const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedName );
+    const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedName);
     if (index < 0) return;
 
     startTransition(() => {
@@ -119,12 +159,12 @@ const HomeScene = () => {
     });
   }, [resetSelectionStore, setIsFocused]);
 
-  const outlineSelection = useMemo(() => {
-    if (!isFocused) return undefined;
+  // const outlineSelection = useMemo(() => {
+  //   if (!isFocused) return undefined;
 
-    const focusedMesh = meshRefs.current.find((m) => m?.name === isFocused);
-    return focusedMesh ? [focusedMesh] : undefined;
-  }, [isFocused, meshesReady]);
+  //   const focusedMesh = meshRefs.current.find((m) => m?.name === isFocused);
+  //   return focusedMesh ? [focusedMesh] : undefined;
+  // }, [isFocused, meshesReady]);
 
   useEffect(() => {
     const prev = get().onPointerMissed;
@@ -135,43 +175,37 @@ const HomeScene = () => {
 
   return (
     <>
+      <SoftShadows focus={0.1} samples={10} size={30} />
       <directionalLight
         castShadow={true}
         intensity={3}
-        position={[-100, 50, 0]}
-        shadow-bias={0.01}
-        shadow-camera-near={2}
-        shadow-camera-far={1024}
-        shadow-camera-top={1024}
-        shadow-camera-bottom={-1024}
-        shadow-camera-left={-1024}
-        shadow-camera-right={1024}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        position={[0, 100, -20]}
+        shadow-bias={-0.001}
+        shadow-camera-fov={50}
+        shadow-camera-near={1}
+        shadow-camera-far={2048}
+        shadow-camera-top={2048}
+        shadow-camera-bottom={-2048}
+        shadow-camera-left={-2048}
+        shadow-camera-right={2048}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
       />
-      <directionalLight
-        castShadow={true}
-        intensity={3}
-        position={[100, 50, 0]}
-        shadow-bias={0.01}
-        shadow-camera-near={2}
-        shadow-camera-far={1024}
-        shadow-camera-top={1024}
-        shadow-camera-bottom={-1024}
-        shadow-camera-left={-1024}
-        shadow-camera-right={1024}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+      <AnimatedLight
+        castShadow={false}
+        position={[0, 100, 100]}
+        intensity={2.8}
+        target={[0,-50,0]}
+        type={'spotLight'}
+        color={'#FFF6E8'}
+        // helper={true}
       />
-      <AnimatedRig
-        focusTarget={isFocused}
-        onSwipe={onSwipe}
-        fallbackPositions={meshPositions}
-        targets={cameraTargets}
-      />
+      <CloudGroup meshPositions={meshPositions} />
+
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        <Vignette eskil={false} offset={0.01} darkness={0.7} />
-        <Outline
+        <N8AO aoRadius={100} distanceFalloff={0.2} intensity={7} screenSpaceRadius halfRes />
+        {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
+        {/* <Outline
           selection={outlineSelection}
           blendFunction={BlendFunction.SCREEN}
           patternTexture={null}
@@ -184,27 +218,8 @@ const HomeScene = () => {
           kernelSize={KernelSize.VERY_LARGE}
           blur={true}
           xRay={true}
-        />
+        /> */}
       </EffectComposer>
-      <SoftShadows focus={0.1} samples={12} size={30} />
-      <Clouds material={THREE.MeshLambertMaterial} limit={projects.length * 4}>
-        {projects.map((_, index) => {
-          return (
-            <Cloud
-              key={`cloud_${index}`}
-              color='black'
-              concentrate='outside'
-              growth={300}
-              opacity={0.13}
-              position={[meshPositions[index].x + 10, meshPositions[index].y - 50, meshPositions[index].z + 90]}
-              seed={0.4}
-              segments={4}
-              speed={0.2}
-              volume={300}
-            />
-          );
-        })}
-      </Clouds>
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
@@ -225,7 +240,13 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
-      <Ground setGroundMeshRef={setGroundMeshRef} rotation={[Math.PI / 9, 0, 0]} />
+      <Ground setGroundMeshRef={setGroundMeshRef} rotation={[Math.PI / 8, Math.PI /1.3, 0]} />
+      <SceneRig
+        focusTarget={isFocused}
+        onSwipe={onSwipe}
+        fallbackPositions={meshPositions}
+        targets={cameraTargets}
+      />
     </>
   );
 };
