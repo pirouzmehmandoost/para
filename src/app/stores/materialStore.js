@@ -18,7 +18,7 @@ const matteMaterial = {
 };
 
 const glossMaterial = {
-  clearcoat: 0.3,
+  clearcoat: 0.1,
   clearcoatRoughness: 0.9,
   flatShading: false,
   ior: 1.5,
@@ -42,6 +42,7 @@ const groundMaterial = {
   sheenColor: envColor,
   sheenRoughness: 0.5,
   side: THREE.DoubleSide,
+  transmission : 1,
 };
 
 const initialState = {
@@ -53,7 +54,7 @@ const initialState = {
 
   matte_black: {
     name: 'Matte Black',
-    tailwindColor: `bg-radial-[at_35%_35%] from-zinc-600 to-zinc-900 to-65%`,
+    tailwindColor: `bg-radial-[at_35%_35%] from-zinc-700 to-zinc-900 to-65%`,
     material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
       color: '#2f2f2f',
