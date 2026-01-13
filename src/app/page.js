@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
@@ -67,23 +66,23 @@ const HomePage = () => {
                 initial='hidden'
                 variants={variants.modal}
               >
-                <motion.div variants={variants.modalItem} className='place-self-center text-4xl perspective-origin-bottom'>
+                <motion.div variants={variants.modalItem} className='place-self-center text-center text-4xl perspective-origin-bottom'>
                   {selection?.name}
                 </motion.div>
 
-                <motion.div variants={variants.modalItem} className='text-2xl text-pretty perspective-origin-bottom'>
+                <motion.div variants={variants.modalItem} className='text-2xl text-center text-pretty perspective-origin-bottom'>
                   {selection?.shortDescription}
                 </motion.div>
 
-                <motion.div variants={variants.modalItem} className='place-self-center text-3xl text-neutral-800 perspective-origin-bottom'>
-                  <Link
+                <motion.div variants={variants.modalItem} className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'>
+                  {/* <Link
                     href={`/projects/${getSlugFromName(selection?.name)}`}
-                    // href={'/about'}
                     rel='noopener noreferrer'
                     className='pointer-events-auto'
                   >
-                    Test Canvas interactions in about page
-                  </Link>
+                    View Details
+                  </Link> */}
+                  More details coming soon
                 </motion.div>
               </motion.div>
             )}
@@ -91,10 +90,7 @@ const HomePage = () => {
           {/* Backdrop overlay: fade only (no blur animation, no width/height animation) */}
           <motion.div
             className='absolute inset-0 -z-10 bg-neutral-300/0 backdrop-blur-md md:backdrop-blur-xl contrast-150 hue-rotate-30 pointer-events-none'
-            style={{
-              maskImage:
-                'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)',
-            }}
+            style={{ maskImage: 'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)' }}
             variants={variants.overlay}
             animate={modal === true ? 'open' : 'closed'}
             initial='closed'
