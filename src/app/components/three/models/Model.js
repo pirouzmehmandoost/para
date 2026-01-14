@@ -29,37 +29,29 @@ const Model = (props) => {
     scale = 1,
   } = props;
 
-  const mesh = url ? useGLTF(url).nodes?.[nodeName] : null;
-  // const vertexCount = mesh.geometry.attributes.position.count;
+  const mesh = useGLTF(url)?.nodes?.[nodeName] || null;
   const meshRef = useRef(undefined);
+
   const animateRotationRef = useRef(new THREE.Euler());
-  const animatePositionRef = useRef(new THREE.Vector3(0,0,0));
+  const animatePositionRef = useRef(new THREE.Vector3(0, 0, 0));
+
   const hasPositionedRef = useRef(false);
+  const newPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
+  const [newPosition, setNewPosition] = useState(new THREE.Vector3(position.x, position.y, position.z));
+
   const getMaterial = useMaterial((state) => state.getMaterial);
-  const matId = materialId?.length? materialId : defaultMaterial;
+  const matId = materialId?.length ? materialId : defaultMaterial;
   const material = getMaterial(matId)?.material;
+
   const isFocused = useSelection((state) => state.selection.isFocused);
-  // const previousGround = useRef(groundMeshRef);
-  const [newYPosition, setNewYPosition] = useState(position.y);
 
-  // console.log(`%cModel.js. groundMeshRef: ${groundMeshRef?.name}`, "color: orange;");
+  const groundRef = useRef(undefined);
 
-  const positionModelAboveGround = useCallback((groundMeshRef) => {
-    // console.log(`%c${"\n"}positionModelAboveGround() called.${"\n"}groundMeshRef: ${groundMeshRef?.name}`,"color: red; font-weight: bold");
-
-    // if (!meshRef.current || !groundMeshRef) return null;     // original line: 
-    if (!meshRef.current) {
-      // console.log("%cNo mesh, returning null", "color: red;")
-      return null;
-    }
-
-    if (!groundMeshRef) {
-      // console.log("%cReturning position.y", "color: red;")
-      return position.y;
-    }
+  const positionModelAboveGround = useCallback((groundObj) => {
+    if (!meshRef.current || !groundObj) return position.y;
 
     meshRef.current.updateWorldMatrix(true, true);
-    groundMeshRef.updateWorldMatrix(true, true);
+    groundObj.updateWorldMatrix(true, true);
 
     const size = new THREE.Vector3();
     const modelBoundingBox = new THREE.Box3().setFromObject(meshRef.current);
@@ -88,7 +80,7 @@ const Model = (props) => {
     samplePoints.forEach((point) => {
       // Cast downward to find ground below
       raycaster.set(point, new THREE.Vector3(0, -1, 0));
-      const downHits = raycaster.intersectObject(groundMeshRef, true).filter(hit => hit.object !== meshRef.current);
+      const downHits = raycaster.intersectObject(groundObj, true).filter(hit => hit.object !== meshRef.current);
 
       if (downHits.length > 0) {
         const groundY = downHits[0].point.y;
@@ -100,7 +92,7 @@ const Model = (props) => {
 
       // Cast upward to detect if model intersects with ground
       raycaster.set(point, new THREE.Vector3(0, 1, 0));
-      const upHits = raycaster.intersectObject(groundMeshRef, true).filter(hit => hit.object !== meshRef.current);
+      const upHits = raycaster.intersectObject(groundObj, true).filter(hit => hit.object !== meshRef.current);
 
       if (upHits.length > 0) {
         const groundY = upHits[0].point.y;
@@ -109,53 +101,52 @@ const Model = (props) => {
 
         if (distance < penetrationThreshold) {
           if (highestGroundBelowModel === null || groundY > highestGroundBelowModel) {
-            highestGroundBelowModel = groundY;
+            highestGroundBelowModel = groundY; // repurposing variable for the time bieng 
           };
         };
       }
     });
 
     if (highestGroundBelowModel === null) {
-      // console.log("%c highestGroundBelowModel === null, returning position.y", "color: red;")
       return position.y;
     };
 
     const clearance = highestGroundBelowModel + Math.max(1, Math.abs(size.y * 0.01));
-    // console.log(`%cReturning ${clearance - bottomY}`, "color: red;")
     return clearance - bottomY;
   }, [position.y]);
 
   useLayoutEffect(() => {
-//     console.log(`\n%cuseLayoutEffect
-// groundMeshRef: ${groundMeshRef?.name}`, "color: green; font-weight: bold;");
-    // if (hasPositionedRef.current || !groundMeshRef || !meshRef.current) return;  // original line: 
-    if (!groundMeshRef || !meshRef.current) return;
+    if (groundMeshRef?.isObject3D) groundRef.current = groundMeshRef;
 
-    const adjustment = positionModelAboveGround(groundMeshRef);
-    // console.log(`%cgroundMeshRef after if statement: ${groundMeshRef?.name}${"\n"}adjustment: ${adjustment}${"\n"}`, "color: green; font-weight: bold;");
-    setNewYPosition(adjustment);
+    if (!meshRef.current || !groundRef.current || hasPositionedRef.current) return;
+
+    const adjustment = positionModelAboveGround(groundRef.current);
+
+    newPositionRef.current.set(position.x, adjustment, position.z);
+    setNewPosition(new THREE.Vector3(position.x, adjustment, position.z));
+
     hasPositionedRef.current = true;
-  }, [groundMeshRef, positionModelAboveGround, position.y]);
+  }, [groundMeshRef, positionModelAboveGround, setNewPosition]);
 
   useEffect(() => {
     if (hasPositionedRef.current && meshRef.current) {
       meshRef.current.updateWorldMatrix(true, true);
       onMeshReady(meshRef.current);
     }
-  }, [newYPosition, onMeshReady]);
+  }, [newPosition, onMeshReady]);
 
-  if (!mesh) return null;
-
-  useFrame(({pointer, clock}, delta) => {
+  useFrame(({ clock }, delta) => {
     const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
     const elapsedTime = clock.elapsedTime;
-    const sine = Math.sin(elapsedTime)/2;
+    const sine = Math.sin(elapsedTime) / 2;
 
     if (meshRef?.current && nodeName?.length) {
+      meshRef.current.updateWorldMatrix();
+
       if (autoRotate) {
         if (isFocused?.length && isFocused === nodeName) {
           animatePositionRef.current.set(meshRef.current.position.x + sine, meshRef.current.position.y + sine, meshRef.current.position.z + sine);
-          animateRotationRef.current.set(0, pointer.x * (Math.PI / 10),  0);
+          animateRotationRef.current.set(0, 0, 0);
           easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
           easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
         }
@@ -163,23 +154,27 @@ const Model = (props) => {
           animatePositionRef.current.set(...meshRef.current.position);
           animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
           meshRef.current.rotation.y += delta * autoRotateSpeed;
-        } 
+        }
       }
     }
   });
 
   return (
-    <mesh
-      ref={meshRef}
-      castShadow={true}
-      geometry={mesh?.geometry}
-      material={material}
-      name={nodeName}
-      onClick={onClick}
-      position={[position.x, newYPosition, position.z]}
-      receiveShadow={true}
-      scale={scale}
-    />
+    <>
+      {mesh && (
+        <mesh
+          ref={meshRef}
+          castShadow={true}
+          geometry={mesh?.geometry}
+          material={material}
+          name={nodeName}
+          onClick={onClick}
+          position={[newPosition.x, newPosition.y, newPosition.z]}
+          receiveShadow={true}
+          scale={scale}
+        />
+      )}
+    </>
   );
 };
 
