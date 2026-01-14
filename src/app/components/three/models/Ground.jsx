@@ -8,7 +8,8 @@ import { groundConfig } from '@/lib/configs/globals';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
-useGLTF.preload('/env_ground_3-transformed.glb');
+const url = '/env_ground_3-transformed.glb';
+useGLTF.preload(url);
 
 const Ground = (props) => {
   const {
@@ -23,7 +24,7 @@ const Ground = (props) => {
   const groundRef = useRef(undefined);
   const hasPositioned = useRef(false);
 
-  const { nodes } = useGLTF('/env_ground_3-transformed.glb');
+  const { nodes } = useGLTF(url);
   const geometry = nodes?.Plane?.geometry;
 
   const getMaterial = useMaterial((state) => state.getMaterial);
