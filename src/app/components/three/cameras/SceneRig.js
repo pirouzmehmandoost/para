@@ -40,7 +40,6 @@ const SceneRig = ({
   const mapToIndexRef = useRef({})
 
   useEffect(() => {
-    console.log("useEffect. targets: ", targets) 
     const sceneLib = {};
     scene.traverse((object) => {
       if (object.isMesh) {
@@ -126,13 +125,11 @@ const SceneRig = ({
   }, [domElement, clock, onSwipe, SWIPE_DELTA_TIME_MS, SWIPE_DELTA_PX, MANUAL_OVERRIDE_SECONDS]);
 
   useEffect(() => {
-    console.log("what is lib", lib.current)
     const length = Math.max(Object.entries(lib.current)?.length ?? 0, fallbackPositions?.length ?? 0);
     for (let i = 0; i < length; i++) {
       if (!stopPositions.current[i]?.isVector3) stopPositions.current[i] = new THREE.Vector3();
 
       if (!targets[i] || typeof lib.current[targets[i]?.name]?.target?.updateWorldMatrix !== 'function') {
-        console.log("using a fallbackPosition for ", targets[i]?.name)
         stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : fallbackPositionRef.current);
         continue;
       }
@@ -169,10 +166,10 @@ const SceneRig = ({
 
     if (focusedIndex >= 0 && stopPositions.current[focusedIndex]) {
       targetIndex.current = focusedIndex;
-      // nextPosition = stopPositions.current[targetIndex.current]; //original logic, replaced by below. 
+      // nextPosition = stopPositions.current[targetIndex.current]; 
       adjustedPosition.current.set(
         stopPositions.current[targetIndex.current].x,
-        stopPositions.current[targetIndex.current].y + 5,
+        stopPositions.current[targetIndex.current].y + 4,
         stopPositions.current[targetIndex.current].z - 20
       );
       nextPosition = adjustedPosition.current;
