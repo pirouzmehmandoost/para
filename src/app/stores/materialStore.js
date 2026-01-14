@@ -11,7 +11,7 @@ const matteMaterial = {
   metalness: 0,
   reflectivity: 0.3,
   roughness: 0.8,
-  sheen: 0.05,
+  sheen: 0.04,
   sheenColor: envColor,
   sheenRoughness: 0.1,
   side: THREE.DoubleSide,
@@ -19,13 +19,13 @@ const matteMaterial = {
 
 const glossMaterial = {
   clearcoat: 0.1,
-  clearcoatRoughness: 0.9,
+  clearcoatRoughness: 0.8,
   flatShading: false,
   ior: 1.5,
   metalness: 0,
-  reflectivity: 0.3,
+  reflectivity: 0.28,
   roughness: 0.4,
-  sheen: 0.1,
+  sheen: 0.05,
   sheenColor: envColor,
   sheenRoughness: 0,
   side: THREE.DoubleSide,
@@ -42,7 +42,7 @@ const groundMaterial = {
   sheenColor: envColor,
   sheenRoughness: 0.5,
   side: THREE.DoubleSide,
-  transmission : 1,
+  transmission: 1,
 };
 
 const initialState = {
