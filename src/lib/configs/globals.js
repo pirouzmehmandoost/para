@@ -14,6 +14,7 @@ export const portfolio = {
           nodeName: 'gerd',
           url: '/bag_9_BAT-transformed.glb'
         },
+        rotation: 0,
         scale: 0.6,
       },
       name: 'Gerd',
@@ -49,6 +50,7 @@ export const portfolio = {
           nodeName: 'bag_v3_for_web001',
           url: '/bag_v3.5-transformed.glb'
         },
+        rotation: 0,
         scale: 0.6,
       },
       name: 'Sang',
@@ -84,6 +86,7 @@ export const portfolio = {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap_for_web2.glb'
         },
+        rotation: 1,
         scale: 1,
       },
       name: 'PÍ',
@@ -112,6 +115,6 @@ export const envImageUrl = '/kloofendal_misty_morning_puresky_4k.hdr';
 export const envColor = '#bcbcbc';
 export const groundConfig = {
   POSITION: [-50, -85, 20],
-  ROTATION: [Math.PI/7, 0, 0],
+  ROTATION: [Math.PI / 7, 0, 0],
   SCALE: [1.4, 1, 1.4],
 };
