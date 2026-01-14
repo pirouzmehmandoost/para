@@ -32,11 +32,10 @@ const glossMaterial = {
 };
 
 const groundMaterial = {
-  color: '#101010',
   flatShading: false,
   ior: 1.5,
-  reflectivity: 0.3,
   metalness: 0,
+  reflectivity: 0.3,
   roughness: 1,
   sheen: 0.05,
   sheenColor: envColor,
@@ -47,29 +46,35 @@ const groundMaterial = {
 
 const initialState = {
   ground: {
-    name: 'ground',
+    displayName: 'Ground',
     tailwindColor: `bg-zinc-900`,
-    material: new THREE.MeshPhysicalMaterial({...groundMaterial }),
+    material: new THREE.MeshPhysicalMaterial(
+      {
+        ...groundMaterial,
+        color: '#101010',
+      }),
   },
 
   matte_black: {
-    name: 'Matte Black',
-    tailwindColor: `bg-radial-[at_35%_35%] from-zinc-700 to-zinc-900 to-65%`,
+    displayName: 'Matte Black',
+    tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
     material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
       color: '#2f2f2f',
     }),
   },
+
   gloss_black: {
-    name: 'Gloss Black',
-    tailwindColor: `bg-radial-[at_40%_35%] from-zinc-600 via-zinc-950 via-37% to-zinc-500 to-100%`,
+    displayName: 'Gloss Black',
+    tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
     material: new THREE.MeshPhysicalMaterial({
       ...glossMaterial,
       color: '#101010',
     }),
   },
+
   eggshell: {
-    name: 'Eggshell',
+    displayName: 'Eggshell',
     tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
     material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
@@ -88,7 +93,6 @@ const materialStore = (set, get) => ({
   materials: initialState,
 
   getMaterials: () => get().materials,
-
   getMaterial: (name) => get().materials[`${name}`],
 });
 
