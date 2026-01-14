@@ -19,7 +19,7 @@ type MenuVariants = {
 type MainMenuTopLink = { title: string; disabled?: boolean; href: string };
 
 const mainMenuTopLinks: MainMenuTopLink[] = [
-  { title: 'Redesign in progress', disabled: true, href: '/' },
+  { title: 'Redesign in progress, ', disabled: true, href: '/' },
   { title: 'About', disabled: false, href: '/about' },
 ];
 
@@ -100,6 +100,16 @@ const createVariants = (reduceMotion: boolean): MenuVariants => {
   };
 };
 
+// const DiagonalText = ({text}) => {
+//   const names = text.split(" ");
+//    console.log(names)
+//   const characters = text.split('').map((char, index) => 
+//     <div key={index} className='text-red-700 rotate-45'> {char} </div> 
+//   );
+
+//   return <div  className='-rotate-45'> {characters} </div>
+// };
+
 const MainMenu = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
@@ -110,13 +120,11 @@ const MainMenu = () => {
   const hasHydrated = useMenu((s) => s.hasHydrated);
 
   useEffect(() => {
-    if (!hasHydrated) return;
-    if (firstPageVisited) return;
+    if (!hasHydrated || firstPageVisited) return;
 
     setPageVisited();
     setVisible(true);
   }, [hasHydrated, firstPageVisited, setPageVisited, setVisible]);
-
 
   return (
     <div className='flex flex-col w-full h-full'>
