@@ -1,15 +1,15 @@
 'use client';
 
-import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
 import AnimatedLight from "../lights/AnimatedLight";
 import {
   EffectComposer,
-  // Outline,
+// Outline,
   N8AO,
-  Vignette
+  // Vignette
 } from '@react-three/postprocessing';
 // import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
@@ -18,7 +18,8 @@ import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import SceneRig from '../cameras/SceneRig';
 import Ground from '../models/Ground';
-import Model from '../models/Model';
+import BasicModel from '../models/BasicModel';
+// import Model from '../models/Model';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -33,7 +34,7 @@ const CloudGroup = (props) => {
   const cloudProps = useMemo(() => meshPositions.map((p)=> {
     const position = [
       p.x + 10,
-      p.z < 0 ? p.y - 50 : p.y - 140,
+      p.z < 0 ? p.y - 50 : p.y - 90,
       p.z + 90 
     ];
 
@@ -85,6 +86,7 @@ const HomeScene = () => {
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
+    const fixedYPositions = [42, 2, -85];
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
     const positions = [];
     const vertex = new THREE.Vector3();
@@ -108,8 +110,9 @@ const HomeScene = () => {
 
     for (let i = 0; i < positionAttribute.count; i++) {
       const pt = vertex.fromBufferAttribute(positionAttribute, i);
-      positions.push(new THREE.Vector3(pt.x, 0, pt.y));
+      positions.push(new THREE.Vector3(pt.x, fixedYPositions[i], pt.y));
     }
+
     return positions;
   }, [size.width]);
 
@@ -175,13 +178,13 @@ const HomeScene = () => {
 
   return (
     <>
-      <SoftShadows focus={0.1} samples={10} size={30} />
-      <directionalLight
+      <SoftShadows focus={0.05} samples={12} size={30} />
+      {/* <directionalLight
         castShadow={true}
         intensity={3}
         position={[0, 100, -20]}
         shadow-bias={-0.001}
-        shadow-camera-fov={50}
+        // shadow-camera-fov={50}
         shadow-camera-near={1}
         shadow-camera-far={2048}
         shadow-camera-top={2048}
@@ -190,20 +193,16 @@ const HomeScene = () => {
         shadow-camera-right={2048}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-      />
+      /> */}
       <AnimatedLight
-        castShadow={false}
-        position={[0, 100, 100]}
-        intensity={2.8}
-        target={[0,-50,0]}
-        type={'spotLight'}
+        castShadow
+        intensity={3.75}
+        type={'directionalLight'}
         color={'#FFF6E8'}
-        // helper={true}
       />
       <CloudGroup meshPositions={meshPositions} />
-
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        <N8AO aoRadius={100} distanceFalloff={0.2} intensity={7} screenSpaceRadius halfRes />
+        <N8AO aoRadius={100} distanceFalloff={0.1} intensity={7} screenSpaceRadius />
         {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
         {/* <Outline
           selection={outlineSelection}
@@ -223,7 +222,7 @@ const HomeScene = () => {
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
-            <Model
+            <BasicModel
               key={nodeName}
               name={nodeName}
               autoRotate={sceneData.autoRotate}
@@ -234,6 +233,7 @@ const HomeScene = () => {
               fileData={sceneData.fileData}
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions[index]}
+              rotation={sceneData.rotation}
               scale={meshScale * sceneData.scale}
               onClick={handleClick}
             />
