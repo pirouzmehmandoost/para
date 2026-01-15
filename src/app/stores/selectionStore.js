@@ -4,6 +4,7 @@ const initialState = {
   bannerUrl: '',
   description: '',
   imgUrls: {},
+  materialID: '',
   isFocused: null,
   name: '',
   shortDescription: '',
@@ -13,10 +14,10 @@ const initialState = {
     autoUpdateMaterial: false,
     groupName: '',
     materials: {
-      defaultMaterial: {},
-      colorWays: {},
+      defaultMateriaID: '',
+      materialIDs: [],
     },
-    fileData: { 
+    fileData: {
       nodeName: '',
       url: ''
     },
@@ -44,26 +45,34 @@ const selectionStore = (set, get) => ({
     });
   },
 
-  setIsFocused: (name) => 
-    set((state) => ({ 
+  setIsFocused: (name) =>
+    set((state) => ({
       selection: {
         ...state.selection,
         isFocused: name,
       }
     })),
 
+  setMaterialID: (id) =>
+    set((state) => ({
+      selection: {
+        ...state.selection,
+        materialID: id,
+      }
+    })),
+
   reset: () =>
-    set({ 
-      selection: { 
+    set({
+      selection: {
         ...initialState,
-        sceneData: { 
+        sceneData: {
           ...initialState.sceneData,
-          fileData: {...initialState.sceneData.fileData},
-          materials: {...initialState.sceneData.materials},
+          fileData: { ...initialState.sceneData.fileData },
+          materials: { ...initialState.sceneData.materials },
         }
       }
     }),
-}); 
+});
 
 const useSelection = create(selectionStore);
 

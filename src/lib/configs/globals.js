@@ -7,8 +7,8 @@ export const portfolio = {
         autoUpdateMaterial: true,
         groupName: 'Gerd',
         materials: {
-          defaultMaterial: 'matte_black',
-          colorWays: ['matte_black', 'gloss_black'],
+          defaultMaterialID: 'matte_black',
+          materialIDs: ['matte_black', 'gloss_black'],
         },
         fileData: {
           nodeName: 'gerd',
@@ -43,8 +43,8 @@ export const portfolio = {
         autoUpdateMaterial: false,
         groupName: 'Sang',
         materials: {
-          defaultMaterial: 'matte_black',
-          colorWays: ['matte_black'],
+          defaultMaterialID: 'matte_black',
+          materialIDs: ['matte_black'],
         },
         fileData: {
           nodeName: 'bag_v3_for_web001',
@@ -79,8 +79,8 @@ export const portfolio = {
         autoUpdateMaterial: false,
         groupName: 'PÍ',
         materials: {
-          defaultMaterial: 'gloss_black',
-          colorWays: ['gloss_black', 'matte_black', 'eggshell'],
+          defaultMaterialID: 'gloss_black',
+          materialIDs: ['gloss_black', 'matte_black', 'eggshell'],
         },
         fileData: {
           nodeName: 'Yoga_Mat_Strap',
