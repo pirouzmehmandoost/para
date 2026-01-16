@@ -48,8 +48,8 @@ const SelectionDisplayModal = () => {
       <div className={`fixed flex flex-col grow h-1/5 w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit place-self-center justify-center top-12 md:left-10 lg:left-10 xl:left-10 2xl:left-10 transition-all duration-500 ease-in-out 
         ${modal
           ? 'h-1/5'
-          : 'h-fit'}
-      `}>
+          : 'h-fit'}`}
+      >
         <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
           <AnimatePresence mode='wait'>
             {modal && (
@@ -97,7 +97,12 @@ const SelectionDisplayModal = () => {
             animate={modal === true ? 'open' : 'closed'}
             initial='closed'
           >
-            <motion.div className=' absolute inset-0 -z-10 -top-8 blur-xl opacity-50 bg-neutral-300 place-self-center w-1/2 h-full drop-shadow-xl drop-shadow-neutral-300 shadow-xl shadow-neutral-300 contrast-150 pointer-events-none animate-morph' />
+            <motion.div 
+              className={`absolute w-1/2 h-full inset-0 -top-8 -z-10 m-auto bg-neutral-300/50 blur-xl drop-shadow-xl drop-shadow-neutral-300 shadow-xl shadow-neutral-300 contrast-150 pointer-events-none
+              ${modal
+                ? 'animate-morph'
+                : ''}`}
+            />
           </motion.div>
         </div>
       </div>
