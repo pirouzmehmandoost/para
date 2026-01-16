@@ -1,6 +1,6 @@
 'use client'
 
-import React, { use, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { use, useLayoutEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
@@ -9,16 +9,15 @@ import { portfolio } from '@configs/globals';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { getProjectFromSlug } from '@utils/slug';
-import ProjectScene from '@three/scenes/ProjectScene';
-import * as THREE from 'three';
 
 const { projects } = portfolio;
 
 const ProjectPage = ({ params }) => {
   const { slug } = use(params);
-  const getMaterial = useMaterial((state) => state.getMaterial);
-  const selection = useSelection((state) => state.getSelection());
+  const materials = useMaterial((state) => state.materials);
+  const selection = useSelection((state) => state.getSelection);
   const setSelectionStore = useSelection((state) => state.setSelection);
+  const setMaterialID = useSelection((state) => state.setMaterialID)
   const [expanded, setExpanded] = useState(false);
 
   const project = useMemo(() => {
@@ -30,54 +29,47 @@ const ProjectPage = ({ params }) => {
 
   const {
     description = '',
+    materialID = '',
     sceneData: {
       groupName = '',
-      materialId = '',
-      materials: { defaultMaterial = '', colorWays = [] } = {},
+      materials: {
+        defaultMaterialID = '',
+        materialIDs = [],
+      } = {},
     } = {},
   } = projectData;
 
-  const [selectedMaterial, setMaterial] = useState(() => {
-    return materialId?.length ? materialId : (defaultMaterial || 'matte_black');
-  });
- 
-  const data = useMemo(() => {
-    if (!projectData?.sceneData?.modelUrls?.[0]?.url) return null;
-    
-    return {
-      ...projectData.sceneData,
-      autoRotate: true,
-      autoRotateSpeed: (projectData.sceneData.autoRotateSpeed || 1) * 0.5,
-      materialId: selectedMaterial || projectData.sceneData.materials.defaultMaterial,
-      modelUrl: projectData.sceneData.modelUrl ?? projectData.sceneData.modelUrls[0],
-      position: new THREE.Vector3(0, -20, -50),
-      scale: (projectData.sceneData.scale || 1) * 0.55,
-    };
-  }, [projectData, selectedMaterial]);
+  const [selectedMaterial, setSelectedMaterial] = useState(materialID?.length ? materialID : defaultMaterialID);
 
   useLayoutEffect(() => {
     if (project && (!selection?.name || selection.name !== project.name)) {
-      setSelectionStore(project);
+      const p = {
+        ...project, 
+        isFocused: project.sceneData.fileData.nodeName,
+        materialID: project.sceneData.materials.defaultMaterialID,
+      };
+      setSelectionStore(p);
     }
   }, [project, setSelectionStore, selection?.name]);
 
-  useEffect(() => {
-    if (projectData?.sceneData?.materials?.defaultMaterial) {
-      setMaterial(projectData.sceneData.materials.defaultMaterial);
+  const handleSelectMaterial = (id) => {
+    if (selectedMaterial !== id) {
+      setSelectedMaterial((x) => x = id)
+      setMaterialID(id); 
     }
-  }, [projectData?.sceneData?.materials?.defaultMaterial]);
+  }
 
   const ColorSelectButtons = (
     <div className='flex flex-row place-content-center items-center'>
       <p className='text-nowrap text-2xl'>
         Select a Color
       </p>
-      {Object.entries(colorWays).map((entry) => {
-        return ( 
-          <div 
-            key={entry[0]}
-            className={`flex ${getMaterial(entry[1]).tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry[1] ? 'outline-none' : 'outline-neutral-600 outline-2'}`}
-            onClick={() => { if (selectedMaterial !== entry[1]) setMaterial(entry[1]); }}
+      {materialIDs.map((entry) => {
+        return (
+          <button
+            key={entry}
+            className={`flex ${materials[entry].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry ? 'outline-none' : 'outline-neutral-600 outline-2'}`}
+            onClick={()=> { handleSelectMaterial(entry) }}
           />
         )
       })}
@@ -87,13 +79,6 @@ const ProjectPage = ({ params }) => {
   return (
     <div id='project-page-container' className='flex flex-col w-full h-screen'>
       <div id='project-page-canvas-container' className='fixed flex flex-col w-full h-full place-self-center place-content-center'>
-        {data && ( 
-          <ProjectScene
-            className='w-full h-full self-center place-self-center place-content-center items-center'
-            {...data}
-          />
-        )}
-        {/* Back Arrow button */}
         <div id='project-page-back-button-container' className='fixed top-10 left-10 mt-10 p-8 rounded-full bg-white/1 text-5xl backdrop-blur-3xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700'>
           <Link href='/' rel='noopener noreferrer'>
             <div className='flex flex-row w-full place-items-center cursor-pointer'>
