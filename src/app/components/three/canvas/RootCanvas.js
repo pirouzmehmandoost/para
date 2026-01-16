@@ -8,14 +8,14 @@ import { Environment, Html } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
 import { envColor, envImageUrl } from '@configs/globals';
 import HomeScene from '../scenes/HomeScene';
-import ProjectScene from '../scenes/ProjectScene';
+// import ProjectScene from '../scenes/ProjectScene';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
 export const Loader = () => {
   return (
-    <Html center castShadow receiveShadow className='text-black text-nowrap text-4xl lg:text-5xl xl:text-5xl' >
+    <Html center className='text-black text-nowrap text-5xl animate-pulse'>
       Loading...
     </Html>
   );
@@ -25,11 +25,11 @@ export const RootCanvas = () => {
   const pathname = usePathname();
   const interactive = pathname === '/' || pathname.startsWith('/projects/');
 
-  function SceneRouter() {
-    if (pathname === '/') return <HomeScene />;
-    if (pathname.startsWith('/projects/')) return <ProjectScene />;
-    return <Loader />;
-  };
+  // function SceneRouter() {
+  //   if (pathname === '/') return <HomeScene />;
+  //   if (pathname.startsWith('/projects/')) return <ProjectScene />;
+  //   return <Loader />;
+  // };
 
   return (
     <div className={`fixed inset-0 bg-[${envColor}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
@@ -45,7 +45,8 @@ export const RootCanvas = () => {
         <fog attach='fog' color={envColor} near={180} far={290} />
         <Suspense fallback={<Loader />}>
           <Environment shadows files={envImageUrl} />
-          <SceneRouter />
+          <HomeScene />
+          {/* <SceneRouter /> */}
         </Suspense>
       </Canvas>
     </div>

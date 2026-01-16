@@ -68,6 +68,7 @@ const HomeScene = () => {
   const setSelectionStore = useSelection((state) => state.setSelection);
   const isFocused = useSelection((state) => state.selection.isFocused);
   const setIsFocused = useSelection((state) => state.setIsFocused);
+  const setMaterialID = useSelection((state) => state.setMaterialID);
   const resetSelectionStore = useSelection((state) => state.reset);
 
   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
@@ -150,6 +151,7 @@ const HomeScene = () => {
 
     startTransition(() => {
       setSelectionStore({ ...projects[index] });
+      setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
       setIsFocused(clickedName)
     });
   }, [isFocused, setIsFocused, setSelectionStore]);
@@ -198,7 +200,7 @@ const HomeScene = () => {
         castShadow
         intensity={3.75}
         type={'directionalLight'}
-        color={'#FFF6E8'}
+        color={'#FFF6E8'} //warm light
       />
       <CloudGroup meshPositions={meshPositions} />
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
@@ -229,7 +231,6 @@ const HomeScene = () => {
               autoRotateSpeed={sceneData.autoRotateSpeed * 0.5}
               groundMeshRef={groundMeshRef}
               materials={sceneData.materials}
-              materialId={sceneData.materials.defaultMaterial}
               fileData={sceneData.fileData}
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions[index]}
@@ -240,7 +241,7 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
-      <Ground setGroundMeshRef={setGroundMeshRef} rotation={[Math.PI / 8, Math.PI /1.3, 0]} />
+      <Ground onGroundReady={setGroundMeshRef} rotation={[Math.PI / 8, Math.PI /1.3, 0]} />
       <SceneRig
         focusTarget={isFocused}
         onSwipe={onSwipe}
