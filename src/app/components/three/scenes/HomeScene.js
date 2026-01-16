@@ -5,12 +5,7 @@ import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
 import AnimatedLight from "../lights/AnimatedLight";
-import {
-  EffectComposer,
-// Outline,
-  N8AO,
-  // Vignette
-} from '@react-three/postprocessing';
+import { EffectComposer, N8AO } from '@react-three/postprocessing';
 // import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
@@ -19,10 +14,10 @@ import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import SceneRig from '../cameras/SceneRig';
 import Ground from '../models/Ground';
 import BasicModel from '../models/BasicModel';
-// import Model from '../models/Model';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
+
 const { projects } = portfolio;
 
 const CloudGroup = (props) => {
