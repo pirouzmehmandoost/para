@@ -44,7 +44,7 @@ const ProjectPage = ({ params }) => {
   useLayoutEffect(() => {
     if (project && (!selection?.name || selection.name !== project.name)) {
       const p = {
-        ...project, 
+        ...project,
         isFocused: project.sceneData.fileData.nodeName,
         materialID: project.sceneData.materials.defaultMaterialID,
       };
@@ -55,21 +55,19 @@ const ProjectPage = ({ params }) => {
   const handleSelectMaterial = (id) => {
     if (selectedMaterial !== id) {
       setSelectedMaterial((x) => x = id)
-      setMaterialID(id); 
+      setMaterialID(id);
     }
   }
 
   const ColorSelectButtons = (
     <div className='flex flex-row place-content-center items-center'>
-      <p className='text-nowrap text-2xl'>
-        Select a Color
-      </p>
+      <p className='text-nowrap text-2xl'> Select Material </p>
       {materialIDs.map((entry) => {
         return (
           <button
-            key={entry}
+            key={`color_select_button_${entry}`}
             className={`flex ${materials[entry].tailwindColor} w-6 h-6 mx-3 cursor-pointer rounded-full outline outline-offset-2 ${selectedMaterial !== entry ? 'outline-none' : 'outline-neutral-600 outline-2'}`}
-            onClick={()=> { handleSelectMaterial(entry) }}
+            onClick={() => { handleSelectMaterial(entry) }}
           />
         )
       })}
@@ -77,12 +75,21 @@ const ProjectPage = ({ params }) => {
   );
 
   return (
-    <div id='project-page-container' className='flex flex-col w-full h-screen'>
-      <div id='project-page-canvas-container' className='fixed flex flex-col w-full h-full place-self-center place-content-center'>
-        <div id='project-page-back-button-container' className='fixed top-10 left-10 mt-10 p-8 rounded-full bg-white/1 text-5xl backdrop-blur-3xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700'>
+    <div
+      id='project-page-container'
+      className='flex flex-col w-full h-screen'
+    >
+      <div
+        id='project-page-canvas-container'
+        className='fixed flex flex-col w-full h-full place-self-center place-content-center'
+      >
+        <div
+          id='project-page-back-button-container'
+          className='fixed top-22 left-5 p-3 rounded-full bg-neutral-500/10 backdrop-blur-md text-5xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700'
+        >
           <Link href='/' rel='noopener noreferrer'>
             <div className='flex flex-row w-full place-items-center cursor-pointer'>
-              <ArrowBackIosNewIcon fontSize='large' />
+              <ArrowBackIosNewIcon fontSize='medium' />
             </div>
           </Link>
         </div>
