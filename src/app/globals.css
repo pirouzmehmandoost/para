@@ -14,6 +14,23 @@
   }
 }
 
+@theme {
+  --animate-morph: morph 3s linear infinite;
+
+  @keyframes morph{
+    0%, 100% {
+    border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%;
+    }
+    25%, 75% {
+      border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%;
+    }
+    50% {
+      border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
+    }
+  }
+}
+
+
 body {
   color: rgb(var(--foreground-rgb));
 }
@@ -38,4 +55,9 @@ canvas {
     --color-gold_light: #ffe600, --color-army_green: #475320,
     --color-algae: #54b148, --color-breadfruit: #93fb44, --color-denim: #6589b0,
     --color-tahiti: #ece8e2;
+} */
+
+/* 
+.testMe {
+  animation: morph 3s linear infinite;
 } */
