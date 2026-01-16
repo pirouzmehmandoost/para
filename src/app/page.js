@@ -90,14 +90,15 @@ const SelectionDisplayModal = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          {/* Backdrop overlay - radial mask */}
+          {/* Backdrop overlay */}
           <motion.div
-            className='absolute inset-0 -z-10 bg-neutral-300/0 backdrop-blur-md md:backdrop-blur-xl contrast-150 hue-rotate-30 pointer-events-none'
-            style={{ maskImage: 'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)' }}
+            className='pointer-events-none'
             variants={variants.overlay}
             animate={modal === true ? 'open' : 'closed'}
             initial='closed'
-          />
+          >
+            <motion.div className=' absolute inset-0 -z-10 -top-8 blur-xl opacity-50 bg-neutral-300 place-self-center w-1/2 h-full drop-shadow-xl drop-shadow-neutral-300 shadow-xl shadow-neutral-300 contrast-150 pointer-events-none animate-morph' />
+          </motion.div>
         </div>
       </div>
     </main>
@@ -105,3 +106,5 @@ const SelectionDisplayModal = () => {
 };
 
 export default SelectionDisplayModal;
+
+// style={{ maskImage: 'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)' }}
