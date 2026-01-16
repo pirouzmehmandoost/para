@@ -19,8 +19,8 @@ type MenuVariants = {
 type MainMenuTopLink = { title: string; disabled?: boolean; href: string };
 
 const mainMenuTopLinks: MainMenuTopLink[] = [
-  { title: 'Redesign in progress, ', disabled: true, href: '/' },
-  { title: 'About', disabled: false, href: '/about' },
+  { title: 'View R3F Project (WIP)', disabled: true, href: '/' },
+  // { title: 'About (Also WIP)', disabled: false, href: '/about' },
 ];
 
 type MainMenuBottomLink = { title: string; href: string };
@@ -132,7 +132,7 @@ const MainMenu = () => {
         <div className='relative flex flex-col grow w-fit h-fit z-10 place-items-center'>
           <button
             aria-label='Toggle menu'
-            className='fixed w-fit h-fit z-20 inset-0 top-5 left-5 justify-center p-4 rounded-full cursor-pointer bg-neutral-500/10 backdrop-blur-md md:backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700'
+            className='fixed w-fit h-fit z-20 inset-0 top-5 left-5 justify-center p-2 rounded-full cursor-pointer bg-neutral-500/10 backdrop-blur-md md:backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700'
             onClick={() => setVisible(!menuVisible)}
             type='button'
           >
