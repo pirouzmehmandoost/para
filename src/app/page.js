@@ -18,11 +18,7 @@ const createVariants = (reduceMotion) => {
       closed: { opacity: 0, transition: { duration: dur(0.25), ease: EASE_IN_OUT } },
     },
     modal: {
-      hidden: {
-        opacity: 0,
-        y: 6,
-        transition: { duration: dur(0.2), ease: EASE_IN_OUT },
-      },
+      hidden: { opacity: 0, y: 6, transition: { duration: dur(0.2), ease: EASE_IN_OUT } },
       visible: {
         opacity: 1,
         y: 0,
@@ -36,17 +32,12 @@ const createVariants = (reduceMotion) => {
     },
     modalItem: {
       hidden: { opacity: 0, rotateX: 80, y: 40 },
-      visible: {
-        opacity: 1,
-        rotateX: 0,
-        y: 0,
-        transition: { duration: dur(0.55), ease: EASE_OUT },
-      },
+      visible: { opacity: 1, rotateX: 0, y: 0, transition: { duration: dur(0.55), ease: EASE_OUT } },
     },
   };
 };
 
-const HomePage = () => {
+const SelectionDisplayModal = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
   const selection = useSelection((state) => state.selection);
@@ -54,40 +45,52 @@ const HomePage = () => {
 
   return (
     <main className='flex flex-col w-full h-full'>
-      <div className={`fixed flex flex-col grow top-[30px] md:left-10 lg:left-10 xl:left-10 2xl:left-10 w-full sm:w-full md:w-fit lg:w-fit xl:w-fit 2xl:w-fit h-1/5 place-self-center justify-center transition-all duration-500 ease-in-out ${modal ? 'h-1/5' : 'h-fit'}`}>
+      <div className={`fixed flex flex-col grow h-1/5 w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit place-self-center justify-center top-12 md:left-10 lg:left-10 xl:left-10 2xl:left-10 transition-all duration-500 ease-in-out 
+        ${modal
+          ? 'h-1/5'
+          : 'h-fit'}
+      `}>
         <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
           <AnimatePresence mode='wait'>
             {modal && (
               <motion.div
-                key='menu-content'
+                id='modal-content'
                 className='flex flex-col w-fit h-full text-neutral-800 place-items-start'
                 animate='visible'
                 exit='hidden'
                 initial='hidden'
                 variants={variants.modal}
               >
-                <motion.div variants={variants.modalItem} className='place-self-center text-center text-4xl perspective-origin-bottom'>
+                <motion.div
+                  variants={variants.modalItem}
+                  className='place-self-center text-center text-4xl perspective-origin-bottom'
+                >
                   {selection?.name}
                 </motion.div>
 
-                <motion.div variants={variants.modalItem} className='text-2xl text-center text-pretty perspective-origin-bottom'>
+                <motion.div
+                  variants={variants.modalItem}
+                  className='text-2xl text-center text-pretty perspective-origin-bottom'
+                >
                   {selection?.shortDescription}
                 </motion.div>
 
-                <motion.div variants={variants.modalItem} className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'>
-                  {/* <Link
+                <motion.div
+                  variants={variants.modalItem}
+                  className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'
+                >
+                  <Link
                     href={`/projects/${getSlugFromName(selection?.name)}`}
                     rel='noopener noreferrer'
                     className='pointer-events-auto'
                   >
                     View Details
-                  </Link> */}
-                  More details coming soon
+                  </Link>
                 </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
-          {/* Backdrop overlay: fade only (no blur animation, no width/height animation) */}
+          {/* Backdrop overlay - radial mask */}
           <motion.div
             className='absolute inset-0 -z-10 bg-neutral-300/0 backdrop-blur-md md:backdrop-blur-xl contrast-150 hue-rotate-30 pointer-events-none'
             style={{ maskImage: 'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)' }}
@@ -101,4 +104,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default SelectionDisplayModal;
