@@ -1,174 +1,182 @@
-'use client';
+// 'use client';
 
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { useThree, useFrame } from '@react-three/fiber';
-import { easing } from 'maath';
-import { RGB_PVRTC_2BPPV1_Format } from 'three';
+// import React, { useLayoutEffect, useRef, useState } from 'react';
+// import * as THREE from 'three';
+// import { useThree, useFrame } from '@react-three/fiber';
+// import { easing } from 'maath';
 
-THREE.ColorManagement.enabled = true;
+// THREE.ColorManagement.enabled = true;
 
-const AnimatedLight = (props) => {
-  const {
-    intensity = 1,
-    castShadow = true,
-    color = 'white',
-    helper = false,
-    position = [0, 110, 0],
-    type = 'spotLight',
-  } = props;
+/* Example usage: 
+  <AnimatedLight
+    castShadow
+    intensity={3.75}
+    type='directionalLight'
+    color='#FFF6E8'
+  /> 
+*/
 
-  const { scene } = useThree();
-  const camera = useThree((state) => state.camera);
-  const lightRef = useRef(null);
-  const lightPositionRef = useRef(new THREE.Vector3(0, 0, 0));
-  const lightTargetRef = useRef(new THREE.Object3D({}));
-  const lightTargetPositionRef = useRef(new THREE.Vector3(0, 0, 0))
-  const lightHelperRef = useRef(null);
-  const [isReady, setIsReady] = useState(false);
-  const material = useRef(new THREE.MeshBasicMaterial({ color: "red" }));
+// const AnimatedLight = (props) => {
+//   const {
+//     intensity = 1,
+//     castShadow = true,
+//     color = 'white',
+//     helper = false,
+//     position = [0, 110, 0],
+//     type = 'spotLight',
+//   } = props;
 
-  useLayoutEffect(() => {
-    if (helper === true) {
-      material.current.side = THREE.DoubleSide;
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 8), material.current);
-      lightTargetRef.current.add(mesh);
-    }
+//   const { scene } = useThree();
+//   const camera = useThree((state) => state.camera);
+//   const lightRef = useRef(null);
+//   const lightPositionRef = useRef(new THREE.Vector3(0, 0, 0));
+//   const lightTargetRef = useRef(new THREE.Object3D({}));
+//   const lightTargetPositionRef = useRef(new THREE.Vector3(0, 0, 0))
+//   const lightHelperRef = useRef(null);
+//   const [isReady, setIsReady] = useState(false);
+//   const material = useRef(new THREE.MeshBasicMaterial({ color: "red" }));
 
-    lightTargetRef.current.position.copy(new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z - 180))
-    lightTargetPositionRef.current.copy(lightTargetRef.current.position.x, lightTargetRef.current.position.y, lightTargetRef.current.position.z)
+//   useLayoutEffect(() => {
+//     if (helper === true) {
+//       material.current.side = THREE.DoubleSide;
+//       const mesh = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 8), material.current);
+//       lightTargetRef.current.add(mesh);
+//     }
 
-    scene.add(lightTargetRef.current);
-    lightTargetRef.current.updateMatrixWorld(true, true);
+//     lightTargetRef.current.position.copy(new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z - 180))
+//     lightTargetPositionRef.current.copy(lightTargetRef.current.position.x, lightTargetRef.current.position.y, lightTargetRef.current.position.z)
 
-    if (lightRef?.current && lightTargetRef?.current && lightRef?.current.target) lightRef.current.target.copy(lightTargetRef.current);
+//     scene.add(lightTargetRef.current);
+//     lightTargetRef.current.updateMatrixWorld(true, true);
 
-    setIsReady(true);
-  }, [helper]);
+//     if (lightRef?.current && lightTargetRef?.current && lightRef?.current.target) lightRef.current.target.copy(lightTargetRef.current);
 
-  useFrame(({ clock, camera }, delta) => {
-    let yOffset = 110
-    let zOffset = 100
-    let x = camera.position.x
-    let y = camera.position.y + yOffset
-    let z = (camera.position.z - zOffset);
-    const clampedDelta = Math.min(delta, 0.08);
-    const elapsedTime = clock.elapsedTime
-    const newIntensity = intensity * Math.abs(Math.sin(elapsedTime / 4 * intensity) % 1)
-    const xMovement = 10 * (Math.sin(elapsedTime * 2) % 1)
-    const zMovement = 10 * (Math.cos(elapsedTime * 2) % 1)
+//     setIsReady(true);
+//   }, [helper]);
 
-    switch (type) {
-      case 'pointLight':
-        yOffset = 10;
-        zOffset = 70;
-        x += xMovement;
-        y = (camera.position.y + yOffset) + zMovement;
-        z = (camera.position.z - zOffset);
-        lightRef.current.intensity = 1 + 2 * newIntensity;
-        break;
-      case 'directionalLight':
-        zOffset = 180;
-        x += xMovement / 2;
-        z = (camera.position.z - zOffset) + zMovement / 2;
-        lightRef.current.intensity = intensity + newIntensity / 2;
-        break;
-      case 'spotLight':
-        x += xMovement;
-        z += zMovement;
-        lightRef.current.intensity = newIntensity;
-        break;
-      default:
-        break;
-    }
+//   useFrame(({ clock, camera }, delta) => {
+//     let yOffset = 110
+//     let zOffset = 100
+//     let x = camera.position.x
+//     let y = camera.position.y + yOffset
+//     let z = (camera.position.z - zOffset);
+//     const clampedDelta = Math.min(delta, 0.08);
+//     const elapsedTime = clock.elapsedTime
+//     const newIntensity = intensity * Math.abs(Math.sin(elapsedTime / 4 * intensity) % 1)
+//     const xMovement = 10 * (Math.sin(elapsedTime * 2) % 1)
+//     const zMovement = 10 * (Math.cos(elapsedTime * 2) % 1)
 
-    lightPositionRef.current.set(x, y, z);
-    lightTargetPositionRef.current.set(camera.position.x, camera.position.y, camera.position.z - 180);
+//     switch (type) {
+//       case 'pointLight':
+//         yOffset = 10;
+//         zOffset = 70;
+//         x += xMovement;
+//         y = (camera.position.y + yOffset) + zMovement;
+//         z = (camera.position.z - zOffset);
+//         lightRef.current.intensity = 1 + 2 * newIntensity;
+//         break;
+//       case 'directionalLight':
+//         zOffset = 180;
+//         x += xMovement / 2;
+//         z = (camera.position.z - zOffset) + zMovement / 2;
+//         lightRef.current.intensity = intensity + newIntensity / 2;
+//         break;
+//       case 'spotLight':
+//         x += xMovement;
+//         z += zMovement;
+//         lightRef.current.intensity = newIntensity;
+//         break;
+//       default:
+//         break;
+//     }
 
-    easing.damp3(lightRef.current.position, lightPositionRef.current, 0.1, clampedDelta);
-    easing.dampE(lightRef.current.rotation, camera.rotation, 0.1, clampedDelta);
-    easing.damp3(lightTargetRef.current.position, lightTargetPositionRef.current, 0.1, clampedDelta);
+//     lightPositionRef.current.set(x, y, z);
+//     lightTargetPositionRef.current.set(camera.position.x, camera.position.y, camera.position.z - 180);
 
-    if (typeof lightTargetRef?.current?.updateMatrixWorld === 'function') lightTargetRef.current.updateMatrixWorld();
+//     easing.damp3(lightRef.current.position, lightPositionRef.current, 0.1, clampedDelta);
+//     easing.dampE(lightRef.current.rotation, camera.rotation, 0.1, clampedDelta);
+//     easing.damp3(lightTargetRef.current.position, lightTargetPositionRef.current, 0.1, clampedDelta);
 
-    if (lightRef?.current && lightTargetRef?.current && lightRef.current?.target) lightRef.current.target.copy(lightTargetRef.current);
+//     if (typeof lightTargetRef?.current?.updateMatrixWorld === 'function') lightTargetRef.current.updateMatrixWorld();
 
-    if (helper && lightHelperRef.current) lightHelperRef.current.update();
-  })
+//     if (lightRef?.current && lightTargetRef?.current && lightRef.current?.target) lightRef.current.target.copy(lightTargetRef.current);
 
-  return (
-    <>
-      {type === 'directionalLight' && (
-        <>
-          <directionalLight
-            ref={lightRef}
-            angle={0.3}
-            castShadow={castShadow}
-            color={color}
-            intensity={intensity}
-            penumbra={0.8}
-            position={position}
-            shadow-bias={-0.001}
-            shadow-camera-fov={50}
-            shadow-camera-near={1}
-            shadow-camera-far={2048}
-            shadow-camera-top={2048}
-            shadow-camera-bottom={-2048}
-            shadow-camera-left={-2048}
-            shadow-camera-right={2048}
-            shadow-mapSize={2048}
-          />
-          {isReady && helper && <directionalLightHelper ref={lightHelperRef} args={[lightRef.current, 1, color]} />}
-        </>
-      )}
-      {type === 'pointLight' && (
-        <>
-          <pointLight
-            ref={lightRef}
-            castShadow={castShadow}
-            color={color}
-            decay={0.25}
-            distance={210}
-            intensity={intensity * 2}
-            position={position}
-            shadow-bias={-0.001}
-            shadow-camera-near={1}
-            shadow-camera-far={2048}
-            shadow-camera-top={2048}
-            shadow-camera-bottom={-2048}
-            shadow-camera-left={-2048}
-            shadow-camera-right={2048}
-            shadow-mapSize={2048}
-          />
-          {isReady && helper && <pointLightHelper ref={lightHelperRef} args={[lightRef.current, 5, color]} />}
-        </>
-      )}
-      {type === 'spotLight' && (
-        <>
-          <spotLight
-            ref={lightRef}
-            angle={Math.PI / 4}
-            castShadow={castShadow}
-            color={color}
-            decay={0.01}
-            distance={250}
-            intensity={intensity}
-            penumbra={0.5}
-            position={position}
-            shadow-bias={-0.001}
-            shadow-camera-near={1}
-            shadow-camera-far={2048}
-            shadow-camera-top={2048}
-            shadow-camera-bottom={-2048}
-            shadow-camera-left={-2048}
-            shadow-camera-right={2048}
-            shadow-mapSize={2048}
-          />
-          {isReady && helper && <spotLightHelper ref={lightHelperRef} args={[lightRef.current, color]} />}
-        </>
-      )}
-    </>
-  );
-};
+//     if (helper && lightHelperRef.current) lightHelperRef.current.update();
+//   })
 
-export default AnimatedLight;
+//   return (
+//     <>
+//       {type === 'directionalLight' && (
+//         <>
+//           <directionalLight
+//             ref={lightRef}
+//             angle={0.3}
+//             castShadow={castShadow}
+//             color={color}
+//             intensity={intensity}
+//             penumbra={0.8}
+//             position={position}
+//             shadow-bias={-0.001}
+//             shadow-camera-fov={50}
+//             shadow-camera-near={1}
+//             shadow-camera-far={2048}
+//             shadow-camera-top={2048}
+//             shadow-camera-bottom={-2048}
+//             shadow-camera-left={-2048}
+//             shadow-camera-right={2048}
+//             shadow-mapSize={2048}
+//           />
+//           {isReady && helper && <directionalLightHelper ref={lightHelperRef} args={[lightRef.current, 1, color]} />}
+//         </>
+//       )}
+//       {type === 'pointLight' && (
+//         <>
+//           <pointLight
+//             ref={lightRef}
+//             castShadow={castShadow}
+//             color={color}
+//             decay={0.25}
+//             distance={210}
+//             intensity={intensity * 2}
+//             position={position}
+//             shadow-bias={-0.001}
+//             shadow-camera-near={1}
+//             shadow-camera-far={2048}
+//             shadow-camera-top={2048}
+//             shadow-camera-bottom={-2048}
+//             shadow-camera-left={-2048}
+//             shadow-camera-right={2048}
+//             shadow-mapSize={2048}
+//           />
+//           {isReady && helper && <pointLightHelper ref={lightHelperRef} args={[lightRef.current, 5, color]} />}
+//         </>
+//       )}
+//       {type === 'spotLight' && (
+//         <>
+//           <spotLight
+//             ref={lightRef}
+//             angle={Math.PI / 4}
+//             castShadow={castShadow}
+//             color={color}
+//             decay={0.01}
+//             distance={250}
+//             intensity={intensity}
+//             penumbra={0.5}
+//             position={position}
+//             shadow-bias={-0.001}
+//             shadow-camera-near={1}
+//             shadow-camera-far={2048}
+//             shadow-camera-top={2048}
+//             shadow-camera-bottom={-2048}
+//             shadow-camera-left={-2048}
+//             shadow-camera-right={2048}
+//             shadow-mapSize={2048}
+//           />
+//           {isReady && helper && <spotLightHelper ref={lightHelperRef} args={[lightRef.current, color]} />}
+//         </>
+//       )}
+//     </>
+//   );
+// };
+
+// export default AnimatedLight;
