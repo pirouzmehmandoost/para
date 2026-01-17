@@ -4,7 +4,6 @@ import React, { startTransition, useCallback, useEffect, useMemo, useRef, useSta
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import AnimatedLight from "../lights/AnimatedLight";
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
 // import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
@@ -20,35 +19,50 @@ THREE.ColorManagement.enabled = true;
 
 const { projects } = portfolio;
 
+/*
+gerd position:  Vector3 {x: -130, y: 42, z: -75}            cloud: -120,  -8,  15
+bag_v3_for_web001 position:  Vector3 {x: 130, y: 2, z: -75} cloud:  140, -48,  15
+Yoga_Mat_Strap position:  Vector3 {x: 4.6, y: -85, z: 150}  cloud:   10, -155,240
+*/
 const CloudGroup = (props) => {
   const { meshPositions } = props;
-  const length = meshPositions?.length ?? 0
+  const length = meshPositions?.length ?? 0;
 
   if (!length) return null;
 
-  const cloudProps = useMemo(() => meshPositions.map((p)=> {
-    const position = [
-      p.x + 10,
-      p.z < 0 ? p.y - 50 : p.y - 90,
-      p.z + 90 
-    ];
+  const cloudProps = [];
+  const fixedCloudPositions = [
+    [-300, -20, 15],
+    [300, -20, 15],
+    [-210, -130, 130],
+    [210, -130, 130],
+  ];
 
-    return {
+  // const cloudProps = useMemo(() => meshPositions.map((p) => {
+  //   const position = [
+  //     p.x + 10,
+  //     p.z < 0 ? p.y - 50 : p.y - 70,
+  //     p.z + 90
+  //   ];
+  // console.log("cloudPosition: ", position)
+
+  for (let i = 0; i < fixedCloudPositions.length; i++) {
+    cloudProps.push({
       color: 'black',
-      concentrate: 'outside',
-      fade: 100,
-      growth: 300,
-      opacity: 0.14,
-      position: position,
+      concentrate: 'inside',
+      growth: 280,
+      opacity: 0.2,
+      position: fixedCloudPositions[i],
       seed: 0.4,
       segments: 4,
       speed: 0.2,
-      volume: 300,
-    };
-  }), [meshPositions]);
+      volume: 200,
+    });
+  };
+  // }), [meshPositions]);
 
   return (
-    <Clouds material={THREE.MeshPhysicalMaterial} limit={projects.length * 4}>
+    <Clouds material={THREE.MeshPhysicalMaterial} limit={150}>
       {cloudProps.map((cp, index) => <Cloud key={`cloud_${index}`} {...cp} />)}
     </Clouds>
   );
@@ -175,31 +189,26 @@ const HomeScene = () => {
 
   return (
     <>
-      <SoftShadows focus={0.05} samples={12} size={30} />
-      {/* <directionalLight
+      <SoftShadows focus={0.2} samples={15} size={30} />
+      <directionalLight
         castShadow={true}
-        intensity={3}
-        position={[0, 100, -20]}
+        color={'#FFF6E8'}
+        intensity={2}
+        position={[0, 40, 50]}
+        // target={groundMeshRef}
         shadow-bias={-0.001}
-        // shadow-camera-fov={50}
+        shadow-camera-fov={50}
         shadow-camera-near={1}
         shadow-camera-far={2048}
         shadow-camera-top={2048}
         shadow-camera-bottom={-2048}
         shadow-camera-left={-2048}
         shadow-camera-right={2048}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-      /> */}
-      <AnimatedLight
-        castShadow
-        intensity={3.75}
-        type={'directionalLight'}
-        color={'#FFF6E8'} //warm light
+        shadow-mapSize={2048}
       />
       <CloudGroup meshPositions={meshPositions} />
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        <N8AO aoRadius={100} distanceFalloff={0.1} intensity={7} screenSpaceRadius />
+        <N8AO aoRadius={350} distanceFalloff={0.1} intensity={2} />
         {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
         {/* <Outline
           selection={outlineSelection}
@@ -221,28 +230,23 @@ const HomeScene = () => {
           return (
             <BasicModel
               key={nodeName}
-              name={nodeName}
               autoRotate={sceneData.autoRotate}
               autoRotateSpeed={sceneData.autoRotateSpeed * 0.5}
+              fileData={sceneData.fileData}
               groundMeshRef={groundMeshRef}
               materials={sceneData.materials}
-              fileData={sceneData.fileData}
+              name={nodeName}
+              onClick={handleClick}
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions[index]}
               rotation={sceneData.rotation}
               scale={meshScale * sceneData.scale}
-              onClick={handleClick}
             />
           );
         })}
       </Bvh>
-      <Ground onGroundReady={setGroundMeshRef} rotation={[Math.PI / 8, Math.PI /1.3, 0]} />
-      <SceneRig
-        focusTarget={isFocused}
-        onSwipe={onSwipe}
-        fallbackPositions={meshPositions}
-        targets={cameraTargets}
-      />
+      <Ground onGroundReady={setGroundMeshRef} rotation={[Math.PI / 8, Math.PI / 1.3, 0]} />
+      <SceneRig fallbackPositions={meshPositions} focusTarget={isFocused} onSwipe={onSwipe} targets={cameraTargets} />
     </>
   );
 };
