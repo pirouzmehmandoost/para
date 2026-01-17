@@ -121,7 +121,7 @@ export const portfolio = {
 };
 
 export const envImageUrl = '/kloofendal_misty_morning_puresky_4k.hdr';
-export const envColor = '#bcbcbc';
+export const envColor = '#e2e2e2'; //'#bcbcbc';
 export const groundConfig = {
   POSITION: [-50, -85, 20],
   ROTATION: [Math.PI / 7, 0, 0],
