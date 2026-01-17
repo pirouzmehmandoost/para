@@ -98,11 +98,7 @@ const SelectionDisplayModal = () => {
             initial='closed'
           >
             <motion.div 
-              className={`absolute w-1/2 h-full inset-0 -top-8 -z-10 m-auto bg-neutral-300/50 blur-xl drop-shadow-xl drop-shadow-neutral-300 shadow-xl shadow-neutral-300 contrast-150 pointer-events-none
-              ${modal
-                ? 'animate-morph'
-                : ''}`}
-            />
+              className={`absolute w-1/2 h-full inset-0 -top-8 -z-10 m-auto bg-neutral-300/50 blur-xl drop-shadow-xl drop-shadow-neutral-300 shadow-xl shadow-neutral-300 contrast-150 pointer-events-none`}/>
           </motion.div>
         </div>
       </div>
@@ -113,3 +109,7 @@ const SelectionDisplayModal = () => {
 export default SelectionDisplayModal;
 
 // style={{ maskImage: 'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)' }}
+            //   ${modal
+            //     ? 'animate-morph'
+            //     : ''}`}
+            // />
