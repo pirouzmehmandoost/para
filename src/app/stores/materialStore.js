@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DoubleSide, MeshPhysicalMaterial, Color, Vector2, ColorManagement, Cache } from 'three';
+import { DoubleSide, MeshPhysicalMaterial, Color, ColorManagement, Cache } from 'three';
 // import { FlakesTexture } from 'three/addons/textures/FlakesTexture.js';
 
 ColorManagement.enabled = true;
@@ -46,8 +46,8 @@ const matteMaterial = {
   clearcoat: 0,
   clearcoatRoughness: 0.5,
   flatShading: false,
-  // ior: 1.5,
-  // metalness: 0,
+  ior: 1.5,
+  metalness: 0,
   reflectivity: 0.35,
   roughness: 0.75,
   sheen: 0.1,
@@ -62,57 +62,59 @@ const glossMaterial = {
   clearcoat: 0.3,
   clearcoatRoughness: 0.5,
   flatShading: false,
-  // ior: 1.5,
-  // metalness: 0,
+  ior: 1.5,
+  metalness: 0,
   reflectivity: 0.3,
   roughness: 0.4,
   sheen: 0,
   sheenColor: '#000000',
   sheenRoughness: 0,
   side: DoubleSide,
-  // thickness: 10,
 };
 
 const groundMaterial = {
   clearcoat: 0,
   clearcoatRoughness: 0,
   flatShading: false,
-  // ior: 1.5,
-  // metalness: 0,
+  ior: 1.5,
+  metalness: 0,
+  opacity: 1,
   reflectivity: 0.4,
   roughness: 1,
   sheen: 0, //0.05,
   sheenColor: '#000000', // envColor,
   sheenRoughness: 0, // 0.5,
   side: DoubleSide,
-  // transmission: 0,
-  // transparent: false,
-  // thickness: 10,
-  // opacity: 1,
+  transmission: 1,
+  transparent: true,
 };
 
-const iridescentMaterial = {
-  clearcoat: 0.3,
-  clearcoatRoughness: 0.3,
-  flatShading: false,
-  // ior: 1,
-  // iridescence: 1,
-  // iridescenceIOR: 2.0,
-  // iridescenceThicknessRange: [100,900],
-  // metalness: 0.1,
-  reflectivity: 0.5,
-  roughness: 0.35,
-  sheen: 0,
-  sheenColor: '#000000',
-  sheenRoughness: 0,
-  side: DoubleSide,
-  // specularColor: '#ffffff',
-  // specularIntensity: 0.9,
-  // thickness: 10.0,
-  // transmission: 1,
-  // transparent: true,
-  // opacity: 1,
-};
+// const iridescentMaterial = {
+//   clearcoat: 0.3,
+//   clearcoatRoughness: 0.3,
+//   flatShading: false,
+//   // ior: 1,
+//   // iridescence: 1,
+//   // iridescenceIOR: 2.0,
+//   // iridescenceThicknessRange: [100,900],
+//   // metalness: 0.1,
+//   reflectivity: 0.5,
+//   roughness: 0.35,
+//   sheen: 0,
+//   sheenColor: '#000000',
+//   sheenRoughness: 0,
+//   side: DoubleSide,
+//   // specularColor: '#ffffff',
+//   // specularIntensity: 0.9,
+//   // thickness: 10.0,
+//   // transmission: 1,
+//   // transparent: true,
+//   // opacity: 1,
+// };
+
+const blackColor = new Color('#101010');
+const darkGrayColor = new Color('#2f2f2f');
+const eggshellColor = new Color('#ccc0a3');
 
 const initialState = {
   ground: {
@@ -120,7 +122,7 @@ const initialState = {
     tailwindColor: `bg-zinc-900`,
     material: new MeshPhysicalMaterial({
         ...groundMaterial,
-        color: new Color('#000000'),
+        color: blackColor,
         //color: '#101010',
       }),
   },
@@ -130,7 +132,7 @@ const initialState = {
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
     material: new MeshPhysicalMaterial({
       ...matteMaterial,
-      color: new Color(0x2f2f2f),
+      color: darkGrayColor,
       //color: '#2f2f2f',
     }),
   },
@@ -140,7 +142,7 @@ const initialState = {
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
     material: new MeshPhysicalMaterial({
       ...glossMaterial,
-      color: new Color('#000000'),
+      color: blackColor,
       // color: '#101010',
     }),
   },
@@ -149,8 +151,8 @@ const initialState = {
     displayName: 'Eggshell',
     tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
     material: new MeshPhysicalMaterial({
-      ...iridescentMaterial,
-      color: new Color('#ccc0a3'),
+      ...glossMaterial,
+      color: eggshellColor,
       // color: '#ccc0a3',
     }),
   },
@@ -160,7 +162,7 @@ const materialStore = (set, get) => ({
   materials: initialState,
 
   getMaterials: () => get().materials,
-  getMaterial: (name) => get().materials[`${name}`],
+  getMaterial: (id) => get().materials[`${id}`],
 });
 
 const useMaterial = create(materialStore);
