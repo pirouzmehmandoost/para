@@ -91,7 +91,7 @@ const SelectionDisplayModal = () => {
             )}
           </AnimatePresence>
           {/* Backdrop overlay */}
-          <motion.div
+          {/* <motion.div
             className='pointer-events-none'
             variants={variants.overlay}
             animate={modal === true ? 'open' : 'closed'}
@@ -99,7 +99,7 @@ const SelectionDisplayModal = () => {
           >
             <motion.div 
               className={`absolute w-1/2 h-full inset-0 -top-8 -z-10 m-auto bg-neutral-300/50 blur-xl drop-shadow-xl drop-shadow-neutral-300 shadow-xl shadow-neutral-300 contrast-150 pointer-events-none`}/>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </main>

@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, Html } from '@react-three/drei';
+import { Environment, Html, Stats } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
 import { envColor, envImageUrl } from '@configs/globals';
 import HomeScene from '../scenes/HomeScene';
@@ -35,8 +35,8 @@ export const RootCanvas = () => {
     <div className={`fixed inset-0 bg-[${envColor}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       <Canvas
         frameloop={interactive ? 'always' : 'demand'}
-        gl={{ antialias: false, powerPreference: 'high-performance' }}
-        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR + 200, fov: 50, }}
+        gl={{ antialias: true, powerPreference: 'high-performance' }}
+        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV }}
         fallback={<div> Sorry, WebGL is not supported.</div>}
         orthographic={false}
         shadows
@@ -44,10 +44,11 @@ export const RootCanvas = () => {
         <color args={[envColor]} attach='background' />
         <fog attach='fog' color={envColor} near={180} far={290} />
         <Suspense fallback={<Loader />}>
-          <Environment shadows files={envImageUrl} environmentRotation={[0,Math.PI*1.5,0]} environmentIntensity={0.8} backgroundBlurriness={1}/>
+          <Environment shadows files={envImageUrl} environmentRotation={[0,Math.PI*1.5,0]} backgroundBlurriness={2}/>
           <HomeScene />
           {/* <SceneRouter /> */}
         </Suspense>
+        <Stats />
       </Canvas>
     </div>
   );

@@ -1,7 +1,8 @@
 const cameraConfigs = {
   POSITION: [0, 10, 180],
   NEAR: 1,
-  FAR: 280,
+  FAR: 480,
+  FOV: 50,
   NONE: 0,
   ROTATE: 1,
   TRUCK: 2,

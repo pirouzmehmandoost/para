@@ -14,7 +14,7 @@
   }
 }
 
-@theme {
+/* @theme {
   --animate-morph: morph 3s linear infinite;
 
   @keyframes morph{
@@ -28,7 +28,7 @@
       border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
     }
   }
-}
+} */
 
 
 body {

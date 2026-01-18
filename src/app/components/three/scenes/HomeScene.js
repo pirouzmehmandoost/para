@@ -1,10 +1,10 @@
 'use client';
 
-import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import { EffectComposer, N8AO } from '@react-three/postprocessing';
+// import { EffectComposer, N8AO } from '@react-three/postprocessing';
 // import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
@@ -20,50 +20,51 @@ THREE.ColorManagement.enabled = true;
 const { projects } = portfolio;
 
 /*
-gerd position:  Vector3 {x: -130, y: 42, z: -75}            cloud: -120,  -8,  15
-bag_v3_for_web001 position:  Vector3 {x: 130, y: 2, z: -75} cloud:  140, -48,  15
-Yoga_Mat_Strap position:  Vector3 {x: 4.6, y: -85, z: 150}  cloud:   10, -155,240
+  The old cloud positions, relative to model positions:
+    gerd:              x: -130,  y: 42,   z: -75
+      cloud 0:         x: -120,  y: -8,   z: 15
+    bag_v3_for_web001: x: 130,   y: 2,    z: -75
+      cloud 1:         x: 140,   y:-48,   z: 15
+    Yoga_Mat_Strap:    x: 4.6,   y: -85,  z: 150
+      cloud 2:         x: 10,    y: -155, z: 240
+
+  The old cloud positioning logic: 
+    const cloudProps = useMemo(() => meshPositions.map((p) => {
+      const position = [
+        p.x + 10,
+        p.z < 0 ? p.y - 50 : p.y - 70,
+        p.z + 90
+      ];
 */
-const CloudGroup = (props) => {
-  const { meshPositions } = props;
-  const length = meshPositions?.length ?? 0;
-
-  if (!length) return null;
-
+const CloudGroup = () => {
   const cloudProps = [];
   const fixedCloudPositions = [
     [-300, -20, 15],
     [300, -20, 15],
     [-210, -130, 130],
-    [210, -130, 130],
+    // [210, -130, 130],
   ];
-
-  // const cloudProps = useMemo(() => meshPositions.map((p) => {
-  //   const position = [
-  //     p.x + 10,
-  //     p.z < 0 ? p.y - 50 : p.y - 70,
-  //     p.z + 90
-  //   ];
-  // console.log("cloudPosition: ", position)
 
   for (let i = 0; i < fixedCloudPositions.length; i++) {
     cloudProps.push({
       color: 'black',
       concentrate: 'inside',
       growth: 280,
-      opacity: 0.2,
+      opacity: 0.14,
       position: fixedCloudPositions[i],
       seed: 0.4,
       segments: 4,
       speed: 0.2,
       volume: 200,
     });
-  };
-  // }), [meshPositions]);
+  }
 
   return (
-    <Clouds material={THREE.MeshPhysicalMaterial} limit={150}>
-      {cloudProps.map((cp, index) => <Cloud key={`cloud_${index}`} {...cp} />)}
+    <Clouds material={THREE.MeshPhysicalMaterial} limit={12}>
+        <Cloud key={`cloud_0`} {...cloudProps[0]} />
+        <Cloud key={`cloud_1`} {...cloudProps[1]} />
+        <Cloud key={`cloud_2`} {...cloudProps[2]} />
+        {/* <Cloud key={`cloud_3`} {...cloudProps[3]} /> */}
     </Clouds>
   );
 };
@@ -90,6 +91,7 @@ const HomeScene = () => {
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
 
+  // eslint-disable-next-line react-hooks/refs
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
 
   const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.45)
@@ -161,9 +163,9 @@ const HomeScene = () => {
     startTransition(() => {
       setSelectionStore({ ...projects[index] });
       setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
-      setIsFocused(clickedName)
+      setIsFocused(clickedName);
     });
-  }, [isFocused, setIsFocused, setSelectionStore]);
+  }, [isFocused, setIsFocused, setMaterialID, setSelectionStore]);
 
   const onSwipe = useCallback((e) => {
     lastSwipeTimeRef.current = Date.now();
@@ -189,13 +191,12 @@ const HomeScene = () => {
 
   return (
     <>
-      <SoftShadows focus={0.2} samples={15} size={30} />
+      <SoftShadows focus={0.1} samples={13} size={30} />
       <directionalLight
         castShadow={true}
-        color={'#FFF6E8'}
-        intensity={2}
-        position={[0, 40, 50]}
-        // target={groundMeshRef}
+        color={'#fff6e8'}
+        intensity={3}
+        position={[0, 120, 50]}
         shadow-bias={-0.001}
         shadow-camera-fov={50}
         shadow-camera-near={1}
@@ -206,25 +207,7 @@ const HomeScene = () => {
         shadow-camera-right={2048}
         shadow-mapSize={2048}
       />
-      <CloudGroup meshPositions={meshPositions} />
-      <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        <N8AO aoRadius={350} distanceFalloff={0.1} intensity={2} />
-        {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
-        {/* <Outline
-          selection={outlineSelection}
-          blendFunction={BlendFunction.SCREEN}
-          patternTexture={null}
-          edgeStrength={5}
-          pulseSpeed={0.25}
-          visibleEdgeColor={0xffffff}
-          hiddenEdgeColor={0xffffff}
-          width={Resizer.AUTO_SIZE}
-          height={Resizer.AUTO_SIZE}
-          kernelSize={KernelSize.VERY_LARGE}
-          blur={true}
-          xRay={true}
-        /> */}
-      </EffectComposer>
+      <CloudGroup />
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
@@ -252,3 +235,23 @@ const HomeScene = () => {
 };
 
 export default HomeScene;
+
+
+// <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
+//   <N8AO aoRadius={150} distanceFalloff={0.1} intensity={5} />
+//   {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
+//   {/* <Outline
+//     selection={outlineSelection}
+//     blendFunction={BlendFunction.SCREEN}
+//     patternTexture={null}
+//     edgeStrength={5}
+//     pulseSpeed={0.25}
+//     visibleEdgeColor={0xffffff}
+//     hiddenEdgeColor={0xffffff}
+//     width={Resizer.AUTO_SIZE}
+//     height={Resizer.AUTO_SIZE}
+//     kernelSize={KernelSize.VERY_LARGE}
+//     blur={true}
+//     xRay={true}
+//   /> */}
+// </EffectComposer>
