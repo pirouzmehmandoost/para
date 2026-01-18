@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
-import { envColor } from '@configs/globals';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 
@@ -25,9 +24,9 @@ const MATERIAL_PROPS = {
   metalness: 0,
   reflectivity: 0.3,
   roughness: 0.8,
-  sheen: 0.04,
-  sheenColor: envColor,
-  sheenRoughness: 0.1,
+  sheen: 0,
+  sheenColor: '#000000',
+  sheenRoughness: 0,
   side: THREE.DoubleSide,
   color: '#2f2f2f',
 }
@@ -46,34 +45,31 @@ const BasicModel = (props) => {
   } = props;
 
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
-  const meshRef = useRef(undefined);
-
-  const animateRotationRef = useRef(new THREE.Euler());
-  const animatePositionRef = useRef(new THREE.Vector3(0, 0, 0));
-
-  // parent event handlers update isFocused and selectedMaterialID
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID); 
-
   const materials = useMaterial(state => state.materials);
 
-  const selectedMaterialRef = useRef(null); // points to an instance of MeshPhysicalMaterial in materialStore. The material is a property of materialStore[id]
+  const meshRef = useRef(undefined);
+  const animateRotationRef = useRef(new THREE.Euler());
+  const animatePositionRef = useRef(new THREE.Vector3(0, 0, 0));
+  const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...MATERIAL_PROPS }));
-  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...MATERIAL_PROPS }));  // useFrame updates material properties
+  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...MATERIAL_PROPS }));
 
+  useLayoutEffect(() => {
+    if (meshRef.current) {
+      const selectedMatID = selectedMaterialID.length && isFocused?.length && (isFocused === nodeName)
+          ? selectedMaterialID
+          : defaultMaterialID;
 
-  const selectedMatID =
-    selectedMaterialID.length &&
-    isFocused?.length &&
-    isFocused === nodeName
-      ? selectedMaterialID
-      : defaultMaterialID;
+      const selectedMat = materials[selectedMatID]?.material;
+      selectedMaterialRef.current = selectedMat
 
-  const selectedMat = materials[selectedMatID]?.material;
-  selectedMaterialRef.current = selectedMat
+      const defaultMat = materials[defaultMaterialID]?.material;
+      defaultMaterialRef.current.copy(defaultMat);
+    }
+  }, [defaultMaterialID, isFocused, materials, nodeName, selectedMaterialID]);
 
-  const defaultMat = materials[defaultMaterialID]?.material;
-  defaultMaterialRef.current.copy(defaultMat);
 
   useEffect(() => {
     if (meshRef.current) {
@@ -134,7 +130,8 @@ const BasicModel = (props) => {
         <mesh
           ref={meshRef}
           castShadow={true}
-          geometry={geometry}
+          geometry={geometry} 
+          // eslint-disable-next-line react-hooks/refs
           material={blendedMaterialRef.current}
           name={nodeName}
           onClick={onClick}
