@@ -113,8 +113,8 @@ export const portfolio = {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap_for_web2.glb'
         },
-        rotation: 1,
-        scale: 0.95,
+        rotation: 1.0,
+        scale: 1.0,
       },
     },
   ],
@@ -123,7 +123,7 @@ export const portfolio = {
 export const envImageUrl = '/kloofendal_misty_morning_puresky_4k.hdr';
 export const envColor = '#bcbcbc'; // '#e2e2e2';
 export const groundConfig = {
-  POSITION: [-50, -85, 20],
+  POSITION: [-50, -90, 20], //y used to be -85
   ROTATION: [Math.PI / 7, 0, 0],
   SCALE: [1.4, 1, 1.4],
 };
