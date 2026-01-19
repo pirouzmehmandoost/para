@@ -11,7 +11,7 @@ import useSelection from '@stores/selectionStore';
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
-useGLTF.preload('/bag_v5_for_web-transformed.glb');
+// useGLTF.preload('/bag_v5_for_web-transformed.glb');
 useGLTF.preload('/yoga_mat_strap_for_web2.glb');
 useGLTF.preload('/bag_v3.5-transformed.glb');
 useGLTF.preload('/bag_9_BAT-transformed.glb');
