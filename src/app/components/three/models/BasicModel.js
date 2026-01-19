@@ -93,13 +93,13 @@ const BasicModel = (props) => {
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
         if (autoRotate) { easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta) };
 
-        easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
-        easing.damp(blendedMaterialRef.current, "clearcoat", selectedMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "clearcoatRoughness", selectedMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
+        // easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
+        // easing.damp(blendedMaterialRef.current, "clearcoat", selectedMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "clearcoatRoughness", selectedMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "metalness", selectedMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "sheen", selectedMaterialRef.current?.sheen ?? 0, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "sheenRoughness", selectedMaterialRef.current?.sheenRoughness ?? 0, 0.3, clampedDelta);
       }
@@ -108,13 +108,13 @@ const BasicModel = (props) => {
         animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
         if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
 
-        easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
-        easing.damp(blendedMaterialRef.current, "clearcoat", defaultMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "clearcoatRoughness", defaultMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
+        // easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
+        // easing.damp(blendedMaterialRef.current, "clearcoat", defaultMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "clearcoatRoughness", defaultMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "metalness", defaultMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "sheen", defaultMaterialRef.current?.sheen ?? 0, 0.3, clampedDelta);
         // easing.damp(blendedMaterialRef.current, "sheenRoughness", defaultMaterialRef.current?.sheenRoughness ?? 0, 0.3, clampedDelta);
       }
