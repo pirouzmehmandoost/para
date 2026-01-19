@@ -36,7 +36,7 @@ export const portfolio = {
           url: '/bag_9_BAT-transformed.glb'
         },
         rotation: 0,
-        scale: 0.6,
+        scale: 0.52,
       },
     },
     {
@@ -75,7 +75,7 @@ export const portfolio = {
           url: '/bag_v3.5-transformed.glb'
         },
         rotation: 0,
-        scale: 0.6,
+        scale: 0.55,
       },
     },
     {
@@ -114,7 +114,7 @@ export const portfolio = {
           url: '/yoga_mat_strap_for_web2.glb'
         },
         rotation: 1,
-        scale: 1,
+        scale: 0.95,
       },
     },
   ],
