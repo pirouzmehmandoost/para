@@ -10,7 +10,8 @@ import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
-import SceneRig from '../cameras/SceneRig';
+// import SceneRig from '../cameras/SceneRig';
+import AnimatedRig from '../cameras/AnimatedRig';
 import Ground from '../models/Ground';
 import BasicModel from '../models/BasicModel';
 
@@ -22,11 +23,11 @@ const { projects } = portfolio;
 /*
   The old cloud positions, relative to model positions:
     gerd:              x: -130,  y: 42,   z: -75
-      cloud 0:         x: -120,  y: -8,   z: 15
     bag_v3_for_web001: x: 130,   y: 2,    z: -75
-      cloud 1:         x: 140,   y:-48,   z: 15
     Yoga_Mat_Strap:    x: 4.6,   y: -85,  z: 150
-      cloud 2:         x: 10,    y: -155, z: 240
+    cloud 0:           x: -120,  y: -8,   z: 15
+    cloud 1:           x: 140,   y:-48,   z: 15
+    cloud 2:           x: 10,    y: -155, z: 240
 
   The old cloud positioning logic: 
     const cloudProps = useMemo(() => meshPositions.map((p) => {
@@ -42,7 +43,6 @@ const CloudGroup = () => {
     [-300, -20, 15],
     [300, -20, 15],
     [-210, -130, 130],
-    // [210, -130, 130],
   ];
 
   for (let i = 0; i < fixedCloudPositions.length; i++) {
@@ -61,10 +61,9 @@ const CloudGroup = () => {
 
   return (
     <Clouds material={THREE.MeshPhysicalMaterial} limit={12}>
-        <Cloud key={`cloud_0`} {...cloudProps[0]} />
-        <Cloud key={`cloud_1`} {...cloudProps[1]} />
-        <Cloud key={`cloud_2`} {...cloudProps[2]} />
-        {/* <Cloud key={`cloud_3`} {...cloudProps[3]} /> */}
+      <Cloud key={`cloud_0`} {...cloudProps[0]} />
+      <Cloud key={`cloud_1`} {...cloudProps[1]} />
+      <Cloud key={`cloud_2`} {...cloudProps[2]} />
     </Clouds>
   );
 };
@@ -80,17 +79,14 @@ const HomeScene = () => {
   const setIsFocused = useSelection((state) => state.setIsFocused);
   const setMaterialID = useSelection((state) => state.setMaterialID);
   const resetSelectionStore = useSelection((state) => state.reset);
-
-  const [groundMeshRef, setGroundMeshRef] = useState(undefined);
-
+  // const [groundMeshRef, setGroundMeshRef] = useState(undefined);
   const lastSwipeTimeRef = useRef(0); // track swipe timing so missed clicks after swipe dont count.
-  // track Model component mount / when all Object3D's are in scene
+  // track Models mount/ready state
   const readyCount = useRef(0);
   const [meshesReady, setMeshesReady] = useState(false);
   const meshRefs = useRef(new Array(projects.length).fill(null)); // all model
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
-
   // eslint-disable-next-line react-hooks/refs
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
 
@@ -98,7 +94,7 @@ const HomeScene = () => {
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [42, 2, -85];
+    const fixedYPositions = [42, 4, -80];
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
     const positions = [];
     const vertex = new THREE.Vector3();
@@ -205,7 +201,7 @@ const HomeScene = () => {
         shadow-camera-bottom={-2048}
         shadow-camera-left={-2048}
         shadow-camera-right={2048}
-        shadow-mapSize={2048}
+        shadow-mapSize={4096}
       />
       <CloudGroup />
       <Bvh firstHitOnly>
@@ -216,7 +212,7 @@ const HomeScene = () => {
               autoRotate={sceneData.autoRotate}
               autoRotateSpeed={sceneData.autoRotateSpeed * 0.5}
               fileData={sceneData.fileData}
-              groundMeshRef={groundMeshRef}
+              // groundMeshRef={groundMeshRef}
               materials={sceneData.materials}
               name={nodeName}
               onClick={handleClick}
@@ -228,8 +224,16 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
-      <Ground onGroundReady={setGroundMeshRef} rotation={[Math.PI / 8, Math.PI / 1.3, 0]} />
-      <SceneRig fallbackPositions={meshPositions} focusTarget={isFocused} onSwipe={onSwipe} targets={cameraTargets} />
+      <Ground
+        // onGroundReady={setGroundMeshRef}
+        rotation={[Math.PI / 8, Math.PI / 2, 0]}
+      />
+      <AnimatedRig
+        fallbackPositions={meshPositions}
+        focusTarget={isFocused}
+        onSwipe={onSwipe}
+        targets={cameraTargets}
+      />
     </>
   );
 };
