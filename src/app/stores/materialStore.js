@@ -38,10 +38,6 @@ Cache.enabled = true;
 
 // const iridescentMaterial = createFlakesMaterial();
 
-//used for
-  // color: 0x0000ff,
-  // color: '#ebe2c3',
-
 const matteMaterial = {
   clearcoat: 0,
   clearcoatRoughness: 0.5,
@@ -50,12 +46,10 @@ const matteMaterial = {
   metalness: 0,
   reflectivity: 0.35,
   roughness: 0.75,
-  sheen: 0.1,
+  sheen: 0, //0.1,
   sheenColor: '#000000',
-  sheenRoughness: 0.5,
+  sheenRoughness: 0, //0.5,
   side: DoubleSide,
-  // specularColor: '#ffffff',
-  // specularIntensity: 1,
 };
 
 const glossMaterial = {
@@ -112,17 +106,12 @@ const groundMaterial = {
 //   // opacity: 1,
 // };
 
-// const blackColor = new Color('#101010');
-// const darkGrayColor = new Color('#2f2f2f');
-// const eggshellColor = new Color('#ccc0a3');
-
 const initialState = {
   ground: {
     displayName: 'Ground',
     tailwindColor: `bg-zinc-900`,
     material: new MeshPhysicalMaterial({
         ...groundMaterial,
-        // color: blackColor,
         color: '#101010',
       }),
   },
@@ -132,7 +121,6 @@ const initialState = {
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
     material: new MeshPhysicalMaterial({
       ...matteMaterial,
-      // color: darkGrayColor,
       color: '#2f2f2f',
     }),
   },
@@ -142,7 +130,6 @@ const initialState = {
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
     material: new MeshPhysicalMaterial({
       ...glossMaterial,
-      // color: blackColor,
       color: '#101010',
     }),
   },
@@ -152,7 +139,6 @@ const initialState = {
     tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
     material: new MeshPhysicalMaterial({
       ...glossMaterial,
-      // color: eggshellColor,
       color: '#ccc0a3',
     }),
   },
