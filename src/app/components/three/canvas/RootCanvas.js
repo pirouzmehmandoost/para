@@ -35,7 +35,7 @@ export const RootCanvas = () => {
     <div className={`fixed inset-0 bg-[${envColor}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       <Canvas
         frameloop={interactive ? 'always' : 'demand'}
-        gl={{ antialias: true, powerPreference: 'high-performance' }}
+        gl={{ antialias: false }} // gl={{ antialias: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV }}
         fallback={<div> Sorry, WebGL is not supported.</div>}
         orthographic={false}
