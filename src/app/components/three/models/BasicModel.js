@@ -19,6 +19,7 @@ useGLTF.preload('/bag_9_BAT-transformed.glb');
 const MATERIAL_PROPS = {
   clearcoat: 0,
   clearcoatRoughness: 0,
+  color: '#2f2f2f',
   flatShading: false,
   ior: 1.5,
   metalness: 0,
@@ -28,7 +29,6 @@ const MATERIAL_PROPS = {
   sheenColor: '#000000',
   sheenRoughness: 0,
   side: THREE.DoubleSide,
-  color: '#2f2f2f',
 }
 
 const BasicModel = (props) => {
@@ -46,7 +46,7 @@ const BasicModel = (props) => {
 
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
   const isFocused = useSelection((state) => state.selection.isFocused);
-  const selectedMaterialID = useSelection((state) => state.selection.materialID); 
+  const selectedMaterialID = useSelection((state) => state.selection.materialID);
   const materials = useMaterial(state => state.materials);
 
   const meshRef = useRef(undefined);
@@ -59,8 +59,8 @@ const BasicModel = (props) => {
   useLayoutEffect(() => {
     if (meshRef.current) {
       const selectedMatID = selectedMaterialID.length && isFocused?.length && (isFocused === nodeName)
-          ? selectedMaterialID
-          : defaultMaterialID;
+        ? selectedMaterialID
+        : defaultMaterialID;
 
       const selectedMat = materials[selectedMatID]?.material;
       selectedMaterialRef.current = selectedMat
@@ -88,38 +88,36 @@ const BasicModel = (props) => {
     if (meshRef?.current && nodeName?.length) {
       meshRef.current.updateWorldMatrix();
 
-      if (autoRotate) {
-        if (isFocused?.length && isFocused === nodeName) {
-          animatePositionRef.current.set(meshRef.current.position.x + sine, meshRef.current.position.y + sine, meshRef.current.position.z + sine);
-          animateRotationRef.current.set(0, Math.PI * rotation, 0);
-          easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
-          easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
+      if (isFocused?.length && isFocused === nodeName) {
+        animatePositionRef.current.set(meshRef.current.position.x + sine, meshRef.current.position.y + sine, meshRef.current.position.z + sine);
+        animateRotationRef.current.set(0, Math.PI * rotation, 0);
+        easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
+        if (autoRotate) { easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta) };
 
-          easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
-          easing.damp(blendedMaterialRef.current, "clearcoat", selectedMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "clearcoatRoughness", selectedMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current.ior, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "metalness", selectedMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "sheen", selectedMaterialRef.current?.sheen ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "sheenRoughness", selectedMaterialRef.current?.sheenRoughness ?? 0, 0.3, clampedDelta);
-        }
-        else {
-          easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
-          easing.damp(blendedMaterialRef.current, "clearcoat", defaultMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "clearcoatRoughness", defaultMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current.ior ?? 1.5, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "metalness", defaultMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "sheen", defaultMaterialRef.current?.sheen ?? 0.04, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "sheenRoughness", defaultMaterialRef.current?.sheenRoughness ?? 0.1, 0.3, clampedDelta);
+        easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
+        easing.damp(blendedMaterialRef.current, "clearcoat", selectedMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "clearcoatRoughness", selectedMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "metalness", selectedMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "sheen", selectedMaterialRef.current?.sheen ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "sheenRoughness", selectedMaterialRef.current?.sheenRoughness ?? 0, 0.3, clampedDelta);
+      }
+      else {
+        animatePositionRef.current.set(...meshRef.current.position);
+        animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
+        if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
 
-          animatePositionRef.current.set(...meshRef.current.position);
-          animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
-          meshRef.current.rotation.y += delta * autoRotateSpeed;
-        }
+        easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
+        easing.damp(blendedMaterialRef.current, "clearcoat", defaultMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "clearcoatRoughness", defaultMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "metalness", defaultMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "sheen", defaultMaterialRef.current?.sheen ?? 0, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "sheenRoughness", defaultMaterialRef.current?.sheenRoughness ?? 0, 0.3, clampedDelta);
       }
     }
   });
@@ -130,7 +128,7 @@ const BasicModel = (props) => {
         <mesh
           ref={meshRef}
           castShadow={true}
-          geometry={geometry} 
+          geometry={geometry}
           // eslint-disable-next-line react-hooks/refs
           material={blendedMaterialRef.current}
           name={nodeName}
