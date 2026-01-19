@@ -86,7 +86,7 @@ const BasicModel = (props) => {
     const sine = Math.sin(elapsedTime) / 2;
 
     if (meshRef?.current && nodeName?.length) {
-      meshRef.current.updateWorldMatrix();
+      meshRef.current.updateWorldMatrix(true, true);
 
       if (isFocused?.length && isFocused === nodeName) {
         animatePositionRef.current.set(meshRef.current.position.x + sine, meshRef.current.position.y + sine, meshRef.current.position.z + sine);
