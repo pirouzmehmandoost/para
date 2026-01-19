@@ -94,7 +94,7 @@ const HomeScene = () => {
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [42, 4, -80];
+    const fixedYPositions = [40, 2, -75];
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
     const positions = [];
     const vertex = new THREE.Vector3();
@@ -226,7 +226,7 @@ const HomeScene = () => {
       </Bvh>
       <Ground
         // onGroundReady={setGroundMeshRef}
-        rotation={[Math.PI / 8, Math.PI / 2, 0]}
+        rotation={[Math.PI / 8, Math.PI / 1.3, 0]}
       />
       <AnimatedRig
         fallbackPositions={meshPositions}
