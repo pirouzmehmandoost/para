@@ -86,7 +86,7 @@ const BasicModel = (props) => {
 
         animateRotationRef.current.set(0, Math.PI * rotation, 0);
         if (autoRotate) easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
-    
+
         easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
         easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
