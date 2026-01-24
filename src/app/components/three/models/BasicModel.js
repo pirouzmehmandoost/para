@@ -7,6 +7,7 @@ import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
+import { materialConfig } from '@configs/materialConfigs';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
@@ -14,21 +15,6 @@ THREE.Cache.enabled = true;
 useGLTF.preload('/yoga_mat_strap_for_web2.glb');
 useGLTF.preload('/bag_v3.5-transformed.glb');
 useGLTF.preload('/bag_9_BAT-transformed.glb');
-
-const MATERIAL_PROPS = {
-  clearcoat: 0,
-  clearcoatRoughness: 0,
-  color: '#2f2f2f',
-  flatShading: false,
-  ior: 1.5,
-  metalness: 0,
-  reflectivity: 0.3,
-  roughness: 0.8,
-  sheen: 0,
-  sheenColor: '#000000',
-  sheenRoughness: 0,
-  side: THREE.DoubleSide,
-};
 
 const BasicModel = (props) => {
   const {
@@ -51,9 +37,11 @@ const BasicModel = (props) => {
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
   const animatePositionRef = useRef(new THREE.Vector3(0, 0, 0));
+  // const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
+
   const selectedMaterialRef = useRef(null);
-  const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...MATERIAL_PROPS }));
-  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...MATERIAL_PROPS }));
+  const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig }));
+  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig }));
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -88,35 +76,29 @@ const BasicModel = (props) => {
       meshRef.current.updateWorldMatrix(true, true);
 
       if (isFocused?.length && isFocused === nodeName) {
-        animatePositionRef.current.set(meshRef.current.position.x + sine, meshRef.current.position.y + sine, meshRef.current.position.z + sine);
-        animateRotationRef.current.set(0, Math.PI * rotation, 0);
-        easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
-        if (autoRotate) { easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta) };
 
-        // easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
-        // easing.damp(blendedMaterialRef.current, "clearcoat", selectedMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "clearcoatRoughness", selectedMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "metalness", selectedMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "sheen", selectedMaterialRef.current?.sheen ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "sheenRoughness", selectedMaterialRef.current?.sheenRoughness ?? 0, 0.3, clampedDelta);
+        animatePositionRef.current.set(
+          meshRef.current.position.x + sine,
+          meshRef.current.position.y + sine,
+          meshRef.current.position.z + sine
+        );
+        easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
+
+        animateRotationRef.current.set(0, Math.PI * rotation, 0);
+        if (autoRotate) easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
+    
+        easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
+        easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
       }
       else {
         animatePositionRef.current.set(...meshRef.current.position);
         animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
         if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
 
-        // easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
-        // easing.damp(blendedMaterialRef.current, "clearcoat", defaultMaterialRef.current?.clearcoat ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "clearcoatRoughness", defaultMaterialRef.current?.clearcoatRoughness ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "metalness", defaultMaterialRef.current?.metalness ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "sheen", defaultMaterialRef.current?.sheen ?? 0, 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "sheenRoughness", defaultMaterialRef.current?.sheenRoughness ?? 0, 0.3, clampedDelta);
+        easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
+        easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
       }
     }
   });
@@ -128,7 +110,6 @@ const BasicModel = (props) => {
           ref={meshRef}
           castShadow={true}
           geometry={geometry}
-          // eslint-disable-next-line react-hooks/refs
           material={blendedMaterialRef.current}
           name={nodeName}
           onClick={onClick}

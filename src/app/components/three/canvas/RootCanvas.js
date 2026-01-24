@@ -8,6 +8,7 @@ import { Environment, Html, Stats } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
 import { envColor, envImageUrl } from '@configs/globals';
 import HomeScene from '../scenes/HomeScene';
+import Ground from '../models/Ground';
 // import ProjectScene from '../scenes/ProjectScene';
 
 THREE.ColorManagement.enabled = true;
@@ -35,7 +36,8 @@ export const RootCanvas = () => {
     <div className={`fixed inset-0 bg-[${envColor}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       <Canvas
         frameloop={interactive ? 'always' : 'demand'}
-        gl={{ antialias: false }} // gl={{ antialias: true, powerPreference: 'high-performance' }}
+        gl={{ antialias: true }}
+        dpr={[1,1.5]} 
         camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV }}
         fallback={<div> Sorry, WebGL is not supported.</div>}
         orthographic={false}
@@ -44,10 +46,11 @@ export const RootCanvas = () => {
         <color args={[envColor]} attach='background' />
         <fog attach='fog' color={envColor} near={180} far={290} />
         <Suspense fallback={<Loader />}>
-          <Environment shadows files={envImageUrl} environmentRotation={[0,Math.PI*1.5,0]}/>
+          <Environment shadows files={'/para_ground_glare_fog.hdr'}  environmentIntensity={0.25}  />
           <HomeScene />
           {/* <SceneRouter /> */}
         </Suspense>
+        <Ground rotation={[Math.PI / 8, Math.PI / 1.3, 0]} />
         <Stats />
       </Canvas>
     </div>
@@ -55,3 +58,4 @@ export const RootCanvas = () => {
 };
 
 export default RootCanvas;
+//environmentRotation={[0,Math.PI*1.5,0]}
