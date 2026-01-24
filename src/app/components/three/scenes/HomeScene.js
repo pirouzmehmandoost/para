@@ -4,16 +4,14 @@ import { startTransition, useCallback, useEffect, useMemo, useRef, useState } fr
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
-// import { EffectComposer, N8AO } from '@react-three/postprocessing';
-// import { BlendFunction, KernelSize, Resizer } from 'postprocessing';
+import { EffectComposer, Vignette } from '@react-three/postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
-// import SceneRig from '../cameras/SceneRig';
 import AnimatedRig from '../cameras/AnimatedRig';
-import Ground from '../models/Ground';
 import BasicModel from '../models/BasicModel';
+import AnimatedLight from '../lights/AnimatedLight';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -36,31 +34,38 @@ const { projects } = portfolio;
         p.z < 0 ? p.y - 50 : p.y - 70,
         p.z + 90
       ];
+
+  // const fixedCloudPositions = [
+  //   [-300, -20, 15],
+  //   [300, -20, 15],
+  //   [-210, -130, 130],
+  // ];
+  
 */
 const CloudGroup = () => {
   const cloudProps = [];
   const fixedCloudPositions = [
-    [-300, -20, 15],
-    [300, -20, 15],
-    [-210, -130, 130],
+    [-130, -8, 15],
+    [130, -8, 15],
+    [10, -135, 240],
   ];
 
   for (let i = 0; i < fixedCloudPositions.length; i++) {
     cloudProps.push({
       color: 'black',
       concentrate: 'inside',
-      growth: 280,
-      opacity: 0.14,
+      growth: 300,
+      opacity: 0.13,
       position: fixedCloudPositions[i],
       seed: 0.4,
-      segments: 4,
+      segments: 7,
       speed: 0.2,
-      volume: 200,
+      volume: 300,
     });
   }
 
   return (
-    <Clouds material={THREE.MeshPhysicalMaterial} limit={12}>
+    <Clouds material={THREE.MeshPhysicalMaterial} limit={21}>
       <Cloud key={`cloud_0`} {...cloudProps[0]} />
       <Cloud key={`cloud_1`} {...cloudProps[1]} />
       <Cloud key={`cloud_2`} {...cloudProps[2]} />
@@ -94,7 +99,7 @@ const HomeScene = () => {
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [40, 2, -75];
+    const fixedYPositions = [40, 2, -79];
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
     const positions = [];
     const vertex = new THREE.Vector3();
@@ -173,7 +178,6 @@ const HomeScene = () => {
 
   // const outlineSelection = useMemo(() => {
   //   if (!isFocused) return undefined;
-
   //   const focusedMesh = meshRefs.current.find((m) => m?.name === isFocused);
   //   return focusedMesh ? [focusedMesh] : undefined;
   // }, [isFocused, meshesReady]);
@@ -187,8 +191,14 @@ const HomeScene = () => {
 
   return (
     <>
-      <SoftShadows focus={0.1} samples={13} size={30} />
-      <directionalLight
+      <SoftShadows focus={0.06} samples={14} size={36} />
+      <AnimatedLight
+        castShadow
+        intensity={3}
+        type='directionalLight'
+      // color='#white'
+      />
+      {/* <directionalLight
         castShadow={true}
         color={'#fff6e8'}
         intensity={3}
@@ -202,8 +212,26 @@ const HomeScene = () => {
         shadow-camera-left={-2048}
         shadow-camera-right={2048}
         shadow-mapSize={4096}
-      />
+      /> */}
       <CloudGroup />
+      <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
+        {/* <N8AO aoRadius={180} distanceFalloff={0.2} intensity={7} /> */}
+        <Vignette eskil={false} offset={0.01} darkness={0.5} />
+        {/* <Outline
+          selection={outlineSelection}
+          blendFunction={BlendFunction.SCREEN}
+          patternTexture={null}
+          edgeStrength={5}
+          pulseSpeed={0.25}
+          visibleEdgeColor={0xffffff}
+          hiddenEdgeColor={0xffffff}
+          width={Resizer.AUTO_SIZE}
+          height={Resizer.AUTO_SIZE}
+          kernelSize={KernelSize.VERY_LARGE}
+          blur={true}
+          xRay={true}
+        /> */}
+      </EffectComposer>
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
@@ -224,10 +252,6 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
-      <Ground
-        // onGroundReady={setGroundMeshRef}
-        rotation={[Math.PI / 8, Math.PI / 1.3, 0]}
-      />
       <AnimatedRig
         fallbackPositions={meshPositions}
         focusTarget={isFocused}
@@ -239,23 +263,3 @@ const HomeScene = () => {
 };
 
 export default HomeScene;
-
-
-// <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-//   <N8AO aoRadius={150} distanceFalloff={0.1} intensity={5} />
-//   {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
-//   {/* <Outline
-//     selection={outlineSelection}
-//     blendFunction={BlendFunction.SCREEN}
-//     patternTexture={null}
-//     edgeStrength={5}
-//     pulseSpeed={0.25}
-//     visibleEdgeColor={0xffffff}
-//     hiddenEdgeColor={0xffffff}
-//     width={Resizer.AUTO_SIZE}
-//     height={Resizer.AUTO_SIZE}
-//     kernelSize={KernelSize.VERY_LARGE}
-//     blur={true}
-//     xRay={true}
-//   /> */}
-// </EffectComposer>

@@ -176,17 +176,16 @@ const AnimatedRig = ({
     }
 
     const sine = Math.sin(elapsedTime);
-    const yOffset = -2 * sine;
+    const yOffset = -2.5 * sine;
     const zOffset = POSITION[2] + sine;
 
     lookAtPosition.current.set(
-      nextPosition.x + sine * 0.75,
+      nextPosition.x + sine,
       nextPosition.y + yOffset,
       nextPosition.z + zOffset
     );
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
     dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, (Math.PI / 6), 0);
-
     camera.updateMatrixWorld();
   });
 };
