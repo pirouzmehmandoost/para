@@ -3,10 +3,12 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import { EffectComposer, 
+import { Bvh, 
+  // Cloud, Clouds, SoftShadows 
+} from '@react-three/drei'
+// import { EffectComposer, 
   // Vignette 
-} from '@react-three/postprocessing';
+// } from '@react-three/postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
@@ -218,7 +220,7 @@ const HomeScene = () => {
         shadow-mapSize={4096}
       /> */}
       {/* <CloudGroup /> */}
-      <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
+      {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
         {/* <N8AO aoRadius={180} distanceFalloff={0.2} intensity={7} /> */}
         {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
         {/* <Outline
@@ -235,7 +237,7 @@ const HomeScene = () => {
           blur={true}
           xRay={true}
         /> */}
-      </EffectComposer>
+      {/* </EffectComposer> */}
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
