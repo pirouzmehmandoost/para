@@ -191,7 +191,8 @@ const AnimatedRig = ({
       nextPosition.z + zOffset
     );
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
-    dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, (Math.PI / 6), 0);
+    // dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, (Math.PI / 6), 0);
+    easing.dampLookAt(camera, nextPosition, 1.5, clampedDelta);
     camera.updateMatrixWorld();
   });
 };
