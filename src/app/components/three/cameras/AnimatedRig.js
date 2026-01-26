@@ -28,7 +28,6 @@ const AnimatedRig = ({
   const manualOverrideTimeRef = useRef(-Infinity); // active while elapsedTime < this value)
 
   const cameraPosition = useRef(new THREE.Vector3());
-  const adjustedPosition = useRef(new THREE.Vector3())
   const lookAtPosition = useRef(new THREE.Vector3());
 
   const stopPositions = useRef([new THREE.Vector3(0, 0, 0)]);
@@ -150,13 +149,7 @@ const AnimatedRig = ({
 
     if (focusedIndex >= 0 && stopPositions.current[focusedIndex]) {
       targetIndex.current = focusedIndex;
-      // nextPosition = stopPositions.current[targetIndex.current]; //original logic, replaced by below. 
-      adjustedPosition.current.set(
-        stopPositions.current[targetIndex.current].x,
-        stopPositions.current[targetIndex.current].y + 5,
-        stopPositions.current[targetIndex.current].z - 20
-      );
-      nextPosition = adjustedPosition.current;
+      nextPosition = stopPositions.current[targetIndex.current];
     }
     else if (isManualOverrideActive && stopPositions.current[targetIndex.current]) {
       nextPosition = stopPositions.current[targetIndex.current];
