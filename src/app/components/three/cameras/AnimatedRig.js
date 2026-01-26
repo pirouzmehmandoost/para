@@ -148,8 +148,21 @@ const AnimatedRig = ({
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
     if (focusedIndex >= 0 && stopPositions.current[focusedIndex]) {
-      targetIndex.current = focusedIndex;
-      nextPosition = stopPositions.current[targetIndex.current];
+      // experimental logic. nextPoint is current bounding box center position
+      if (targets[focusedIndex]?.isObject3D) {
+        targetIndex.current = focusedIndex;
+        targets[targetIndex.current].updateWorldMatrix(true, true);
+        _scratchBoxRef.current
+          .setFromObject(targets[targetIndex.current])
+          .getCenter(_scratchCenterRef.current);
+        nextPosition = _scratchCenterRef.current;
+      } else {
+        targetIndex.current = focusedIndex;
+        nextPosition = stopPositions.current[targetIndex.current];
+      }
+      // original logic
+      // targetIndex.current = focusedIndex;
+      // nextPosition = stopPositions.current[targetIndex.current];
     }
     else if (isManualOverrideActive && stopPositions.current[targetIndex.current]) {
       nextPosition = stopPositions.current[targetIndex.current];
