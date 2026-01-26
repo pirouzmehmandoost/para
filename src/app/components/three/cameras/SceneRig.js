@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
@@ -29,7 +29,6 @@ const SceneRig = ({
   const manualOverrideTimeRef = useRef(-Infinity); // active while elapsedTime < this value)
 
   const cameraPosition = useRef(new THREE.Vector3());
-  const adjustedPosition = useRef(new THREE.Vector3())
   const lookAtPosition = useRef(new THREE.Vector3());
 
   const stopPositions = useRef([new THREE.Vector3(0, 0, 0)]);
@@ -166,13 +165,7 @@ const SceneRig = ({
 
     if (focusedIndex >= 0 && stopPositions.current[focusedIndex]) {
       targetIndex.current = focusedIndex;
-      // nextPosition = stopPositions.current[targetIndex.current]; 
-      adjustedPosition.current.set(
-        stopPositions.current[targetIndex.current].x,
-        stopPositions.current[targetIndex.current].y + 4,
-        stopPositions.current[targetIndex.current].z - 20
-      );
-      nextPosition = adjustedPosition.current;
+      nextPosition = stopPositions.current[targetIndex.current]; 
     }
     else if (isManualOverrideActive && stopPositions.current[targetIndex.current]) {
       nextPosition = stopPositions.current[targetIndex.current];
@@ -189,14 +182,17 @@ const SceneRig = ({
       }
 
       nextPosition = stopPositions.current[targetIndex.current];
-
     }
 
     const sine = Math.sin(elapsedTime);
     const yOffset = -2 * sine;
     const zOffset = POSITION[2] + sine;
 
-    lookAtPosition.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
+    lookAtPosition.current.set(
+      nextPosition.x + sine,
+      nextPosition.y + yOffset,
+      nextPosition.z + zOffset
+    );
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
     dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, Math.PI / 6, 0);
 
