@@ -37,7 +37,7 @@ const BasicModel = (props) => {
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
   const animatePositionRef = useRef(new THREE.Vector3(0, 0, 0));
-  // const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
+  const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
 
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig }));
@@ -78,9 +78,9 @@ const BasicModel = (props) => {
       if (isFocused?.length && isFocused === nodeName) {
 
         animatePositionRef.current.set(
-          meshRef.current.position.x + sine,
-          meshRef.current.position.y + sine,
-          meshRef.current.position.z + sine
+          defaultPositionRef.current.x + sine,
+          defaultPositionRef.current.y + sine + 30,
+          defaultPositionRef.current.z + sine
         );
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
 
@@ -92,7 +92,13 @@ const BasicModel = (props) => {
         easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
       }
       else {
-        animatePositionRef.current.set(...meshRef.current.position);
+        animatePositionRef.current.set(
+          defaultPositionRef.current.x + sine,
+          defaultPositionRef.current.y + sine,
+          defaultPositionRef.current.z + sine,
+        );
+        easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
+
         animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
         if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
 
