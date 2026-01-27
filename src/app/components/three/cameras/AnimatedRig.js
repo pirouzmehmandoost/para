@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
-import { dampCameraLookAt } from '@utils/quaternionUtils';
+// import { dampCameraLookAt } from '@utils/quaternionUtils';
 import cameraConfigs from '@configs/cameraConfigs';
 
 const AnimatedRig = ({
@@ -185,6 +185,12 @@ const AnimatedRig = ({
     const yOffset = -2.5 * sine;
     const zOffset = POSITION[2] + sine;
 
+    // test using old hacky approach to locking camera rotation
+    cameraPosition.current.copy(camera.position);
+    camera.lookAt(cameraPosition.current);
+    // end test 
+
+
     lookAtPosition.current.set(
       nextPosition.x + sine,
       nextPosition.y + yOffset,
@@ -192,7 +198,7 @@ const AnimatedRig = ({
     );
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
     // dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, (Math.PI / 6), 0);
-    easing.dampLookAt(camera, nextPosition, 1.5, clampedDelta);
+    // easing.dampLookAt(camera, nextPosition, 1.5, clampedDelta);
     camera.updateMatrixWorld();
   });
 };
