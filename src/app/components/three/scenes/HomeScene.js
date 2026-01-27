@@ -3,12 +3,8 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { Bvh, 
-  // Cloud, Clouds, SoftShadows 
-} from '@react-three/drei'
-// import { EffectComposer, 
-  // Vignette 
-// } from '@react-three/postprocessing';
+import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
+import { EffectComposer, Vignette } from '@react-three/postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
@@ -45,39 +41,44 @@ const { projects } = portfolio;
   //   [-210, -130, 130],
   // ];
   
+
+
+    const fixedCloudPositions = [
+    [0, -8, 15],
+    [10, -135, 220],
+    // [-130, -8, 15],
+    // [130, -8, 15],
+    // [10, -135, 240],
+  ];
+
+
 */
-// const CloudGroup = () => {
-//   const cloudProps = [];
-//   const fixedCloudPositions = [
-//     // [0, -8, 15],
-//     // [10, -135, 220],
-//     [-130, -8, 15],
-//     [130, -8, 15],
-//     [10, -135, 240],
-//   ];
+const CloudGroup = () => {
+  const cloudProps = [];
+  const fixedCloudPositions = [[0, -8, 15], [10, -135, 220]];
 
-//   for (let i = 0; i < fixedCloudPositions.length; i++) {
-//     cloudProps.push({
-//       color: 'black',
-//       concentrate: 'inside',
-//       growth: 300,
-//       opacity: 0.12,
-//       position: fixedCloudPositions[i],
-//       seed: 0.4,
-//       segments: 5,
-//       speed: 0.2,
-//       volume: 300,
-//     });
-//   }
+  for (let i = 0; i < fixedCloudPositions.length; i++) {
+    cloudProps.push({
+      color: 'black',
+      concentrate: 'inside',
+      growth: 300,
+      opacity: 0.13,
+      position: fixedCloudPositions[i],
+      seed: 0.4,
+      segments: 5,
+      speed: 0.2,
+      volume: 280,
+    });
+  }
 
-//   return (
-//     <Clouds material={THREE.MeshPhysicalMaterial} limit={10}>
-//       <Cloud {...cloudProps[0]} />
-//       <Cloud {...cloudProps[1]} />
-//       <Cloud {...cloudProps[2]} />
-//     </Clouds>
-//   );
-// };
+  return (
+    <Clouds material={THREE.MeshPhysicalMaterial} limit={10}>
+      <Cloud {...cloudProps[0]} />
+      <Cloud {...cloudProps[1]} />
+      {/* <Cloud {...cloudProps[2]} /> */}
+    </Clouds>
+  );
+};
 
 const HomeScene = () => {
   const { SWIPE_DELAY_MS } = cameraConfigs;
@@ -197,7 +198,7 @@ const HomeScene = () => {
 
   return (
     <>
-      {/* <SoftShadows focus={0.06} samples={14} size={36} /> */}
+      <SoftShadows focus={0.06} samples={12} size={30} />
       {/* <AnimatedLight
         castShadow
         intensity={3}
@@ -218,10 +219,10 @@ const HomeScene = () => {
         shadow-camera-right={1024}
         shadow-mapSize={4096}
       />
-      {/* <CloudGroup /> */}
-      {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
+      <CloudGroup />
+      <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
         {/* <N8AO aoRadius={180} distanceFalloff={0.2} intensity={7} /> */}
-        {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
+        <Vignette eskil={false} offset={0.01} darkness={0.5} />
         {/* <Outline
           selection={outlineSelection}
           blendFunction={BlendFunction.SCREEN}
@@ -236,7 +237,7 @@ const HomeScene = () => {
           blur={true}
           xRay={true}
         /> */}
-      {/* </EffectComposer> */}
+      </EffectComposer>
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
