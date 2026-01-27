@@ -20,7 +20,7 @@ const Ground = (props) => {
     onGroundReady = undefined,
     position = [],
     rotation = [],
-    scale = [],
+    scale,
   } = props;
 
   const groundRef = useRef(undefined);
@@ -30,9 +30,23 @@ const Ground = (props) => {
   const materials = useMaterial((state) => state.materials)
   const material = materials[NODE_NAME].material;
 
+  let sc = [];
   const pos = position?.length ? position : POSITION;
   const rot = rotation?.length ? rotation : ROTATION;
-  const sc = scale?.length ? scale : SCALE;
+
+  if (Array.isArray(scale) && scale?.length > 0) {
+    sc = [...scale];
+  }
+  if (typeof scale === 'number')  {
+    sc = [
+      SCALE[0] * scale,
+      SCALE[1] * scale,
+      SCALE[2] * scale
+    ];
+  }
+  else {
+    sc = [...SCALE];
+  }
 
   useEffect(() => {
     if (hasPositioned.current) return;
@@ -68,58 +82,3 @@ const Ground = (props) => {
 }
 
 export default Ground;
-
-// const url = '/env_ground_3-transformed.glb';
-// useGLTF.preload(url);
-
-// const Ground = (props) => {
-//   const {
-//     setGroundMeshRef = undefined,
-//     position = [],
-//     rotation = [],
-//     scale = [],
-//   } = props;
-
-//   const { POSITION, ROTATION, SCALE } = groundConfig;
-
-//   const groundRef = useRef(undefined);
-//   const hasPositioned = useRef(false);
-
-//   const { nodes } = useGLTF(url);
-//   const geometry = nodes?.Plane?.geometry;
-
-//   const getMaterial = useMaterial((state) => state.getMaterial);
-//   const material = getMaterial('ground')?.material;
-
-//   const pos = position?.length? position : POSITION;
-//   const rot = rotation?.length? rotation : ROTATION;
-//   const sc = scale?.length? scale : SCALE;
-
-//   if (!geometry) return null;
-
-//   useEffect(() => { 
-//     if (hasPositioned.current) return;
-
-//     if (groundRef.current && typeof setGroundMeshRef === 'function') {
-//       setGroundMeshRef(groundRef.current);
-//       hasPositioned.current = true;
-//     }
-//   }, [setGroundMeshRef]);
-
-//   return (
-//     <mesh
-//       castShadow={true}
-//       dispose={null}
-//       geometry={geometry}
-//       material={material}
-//       name={"Ground"}
-//       position={pos}
-//       receiveShadow={true}
-//       ref={groundRef}
-//       rotation={rot}
-//       scale={sc}
-//     />
-//   );
-// }
-
-// export default Ground;

@@ -4,13 +4,14 @@ import { startTransition, useCallback, useEffect, useMemo, useRef, useState } fr
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds, SoftShadows } from '@react-three/drei'
-import { EffectComposer, Vignette } from '@react-three/postprocessing';
+import { EffectComposer, N8AO } from '@react-three/postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
+import Ground from '../models/Ground';
 // import AnimatedLight from '../lights/AnimatedLight';
 
 THREE.Cache.enabled = true;
@@ -62,17 +63,17 @@ const CloudGroup = () => {
       color: 'black',
       concentrate: 'inside',
       growth: 300,
-      opacity: 0.13,
+      opacity: 0.12,
       position: fixedCloudPositions[i],
       seed: 0.4,
-      segments: 5,
+      segments: 4,
       speed: 0.2,
-      volume: 280,
+      volume: 250,
     });
   }
 
   return (
-    <Clouds material={THREE.MeshPhysicalMaterial} limit={10}>
+    <Clouds material={THREE.MeshPhysicalMaterial} limit={8}>
       <Cloud {...cloudProps[0]} />
       <Cloud {...cloudProps[1]} />
       {/* <Cloud {...cloudProps[2]} /> */}
@@ -198,7 +199,7 @@ const HomeScene = () => {
 
   return (
     <>
-      <SoftShadows focus={0.06} samples={12} size={30} />
+      {/* <SoftShadows focus={0.06} samples={13} size={30} /> */}
       {/* <AnimatedLight
         castShadow
         intensity={3}
@@ -207,22 +208,22 @@ const HomeScene = () => {
       <directionalLight
         castShadow={true}
         color={'#fff6e8'}
-        intensity={3}
+        intensity={1.5}
         position={[0, 120, 50]}
         shadow-bias={-0.004}
         shadow-camera-fov={50}
         shadow-camera-near={1}
-        shadow-camera-far={1024}
-        shadow-camera-top={1024}
-        shadow-camera-bottom={-1024}
-        shadow-camera-left={-1024}
-        shadow-camera-right={1024}
+        shadow-camera-far={2048}
+        shadow-camera-top={2048}
+        shadow-camera-bottom={-2048}
+        shadow-camera-left={-2048}
+        shadow-camera-right={2048}
         shadow-mapSize={4096}
       />
-      <CloudGroup />
+      {/* <CloudGroup /> */}
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        {/* <N8AO aoRadius={180} distanceFalloff={0.2} intensity={7} /> */}
-        <Vignette eskil={false} offset={0.01} darkness={0.5} />
+        <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} />
+        {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
         {/* <Outline
           selection={outlineSelection}
           blendFunction={BlendFunction.SCREEN}
@@ -258,6 +259,11 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
+      <Ground
+        rotation={[Math.PI / 8, Math.PI / 1.3, 0]} 
+        scale={meshScale * 1.5}
+      />
+
       <AnimatedRig
         fallbackPositions={meshPositions}
         focusTarget={isFocused}

@@ -123,7 +123,7 @@ export const portfolio = {
 export const envImageUrl = '/kloofendal_misty_morning_puresky_4k.hdr';
 export const envColor = '#bcbcbc'; // '#e2e2e2';
 export const groundConfig = {
-  POSITION: [-50, -90, 20], //y used to be -85
+  POSITION: [0, -90, 0],
   ROTATION: [Math.PI / 7, 0, 0],
   SCALE: [1.4, 1, 1.4],
 };
