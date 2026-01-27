@@ -15,7 +15,7 @@ import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
-import AnimatedLight from '../lights/AnimatedLight';
+// import AnimatedLight from '../lights/AnimatedLight';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -198,27 +198,26 @@ const HomeScene = () => {
   return (
     <>
       {/* <SoftShadows focus={0.06} samples={14} size={36} /> */}
-      <AnimatedLight
+      {/* <AnimatedLight
         castShadow
         intensity={3}
         type='directionalLight'
-      // color='#white'
-      />
-      {/* <directionalLight
+      /> */}
+      <directionalLight
         castShadow={true}
         color={'#fff6e8'}
         intensity={3}
         position={[0, 120, 50]}
-        shadow-bias={-0.001}
+        shadow-bias={-0.004}
         shadow-camera-fov={50}
         shadow-camera-near={1}
-        shadow-camera-far={2048}
-        shadow-camera-top={2048}
-        shadow-camera-bottom={-2048}
-        shadow-camera-left={-2048}
-        shadow-camera-right={2048}
+        shadow-camera-far={1024}
+        shadow-camera-top={1024}
+        shadow-camera-bottom={-1024}
+        shadow-camera-left={-1024}
+        shadow-camera-right={1024}
         shadow-mapSize={4096}
-      /> */}
+      />
       {/* <CloudGroup /> */}
       {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
         {/* <N8AO aoRadius={180} distanceFalloff={0.2} intensity={7} /> */}

@@ -94,10 +94,10 @@ const AnimatedLight = (props) => {
     lightTargetPositionRef.current.set(camera.position.x, camera.position.y, camera.position.z - 180);
 
     easing.damp3(lightRef.current.position, lightPositionRef.current, 0.1, clampedDelta);
-    easing.dampE(lightRef.current.rotation, camera.rotation, 0.1, clampedDelta);
+    // easing.dampE(lightRef.current.rotation, camera.rotation, 0.1, clampedDelta);
     easing.damp3(lightTargetRef.current.position, lightTargetPositionRef.current, 0.1, clampedDelta);
 
-    if (typeof lightTargetRef?.current?.updateMatrixWorld === 'function') lightTargetRef.current.updateMatrixWorld();
+    if (typeof lightTargetRef?.current?.updateMatrixWorld === 'function') lightTargetRef.current.updateMatrixWorld(true, true);
 
     if (lightRef?.current && lightTargetRef?.current && lightRef.current?.target) lightRef.current.target.copy(lightTargetRef.current);
 
@@ -110,21 +110,19 @@ const AnimatedLight = (props) => {
         <>
           <directionalLight
             ref={lightRef}
-            angle={0.3}
             castShadow={castShadow}
             color={color}
             intensity={intensity}
-            penumbra={0.8}
             position={position}
-            shadow-bias={-0.001}
+            shadow-bias={-0.004}
             shadow-camera-fov={50}
             shadow-camera-near={1}
-            shadow-camera-far={2048}
-            shadow-camera-top={2048}
-            shadow-camera-bottom={-2048}
-            shadow-camera-left={-2048}
-            shadow-camera-right={2048}
-            shadow-mapSize={2048}
+            shadow-camera-far={4096}
+            shadow-camera-top={4096}
+            shadow-camera-bottom={-4096}
+            shadow-camera-left={-4096}
+            shadow-camera-right={4096}
+            shadow-mapSize={4096}
           />
           {isReady && helper && <directionalLightHelper ref={lightHelperRef} args={[lightRef.current, 1, color]} />}
         </>
