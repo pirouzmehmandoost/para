@@ -6,9 +6,9 @@ import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Environment, Html, Stats } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
-import { envColor } from '@configs/globals';
+import { envColor, invImageUrl } from '@configs/globals';
 import HomeScene from '../scenes/HomeScene';
-// import Ground from '../models/Ground';
+import { envImageUrl } from '../../../../lib/configs/globals';
 // import ProjectScene from '../scenes/ProjectScene';
 
 THREE.ColorManagement.enabled = true;
@@ -36,19 +36,18 @@ export const RootCanvas = () => {
     <div className={`fixed inset-0 bg-[${envColor}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       <Canvas
         frameloop={interactive ? 'always' : 'demand'}
-        // gl={{ antialias: true }}
-        // dpr={[1,1.5]} 
-        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV }}
-        fallback={<div> Sorry, WebGL is not supported.</div>}
+        gl={{ antialias: true }}
+        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 5 }}
+        fallback={<div> Sorry, WebGL is not supported. </div>}
         orthographic={false}
         shadows
       >
         <color args={[envColor]} attach='background' />
-        <fog attach='fog' color={envColor} near={180} far={280} />
-        <Suspense fallback={<Loader />}>
-          <Environment shadows files={'/para_ground_glare_fog.hdr'}  environmentIntensity={0.3}  />
-          <HomeScene />
-          {/* <SceneRouter /> */}
+        <fog attach='fog' color={envColor} near={180} far={270} />
+          <Environment shadows files={envImageUrl} environmentIntensity={0.3}  />
+          <Suspense fallback={<Loader />}>
+            <HomeScene />
+            {/* <SceneRouter /> */}
         </Suspense>
         <Stats />
       </Canvas>
@@ -57,4 +56,3 @@ export const RootCanvas = () => {
 };
 
 export default RootCanvas;
-//environmentRotation={[0,Math.PI*1.5,0]}
