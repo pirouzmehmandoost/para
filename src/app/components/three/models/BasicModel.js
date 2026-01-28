@@ -2,12 +2,13 @@
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
+import { invalidate, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { materialConfig } from '@configs/materialConfigs';
+import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
@@ -28,6 +29,9 @@ const BasicModel = (props) => {
     rotation = 0,
     scale = 1,
   } = props;
+
+  const size = useThree((state) => state.size);
+  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.475)
 
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
   const isFocused = useSelection((state) => state.selection.isFocused);
@@ -78,14 +82,16 @@ const BasicModel = (props) => {
       if (isFocused?.length && isFocused === nodeName) {
 
         animatePositionRef.current.set(
-          defaultPositionRef.current.x + sine,
-          defaultPositionRef.current.y + sine + 30,
-          defaultPositionRef.current.z + sine
+          defaultPositionRef.current.x * 0.1 + sine,
+          defaultPositionRef.current.y + 200 + sine,
+          defaultPositionRef.current.z * 0.5 + 10*sine
         );
-        easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
+        easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        animateRotationRef.current.set(0, Math.PI * rotation, 0);
-        if (autoRotate) easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
+        if (autoRotate) {
+          animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
+          meshRef.current.rotation.y += delta * autoRotateSpeed;
+        } 
 
         easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
         easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
@@ -93,18 +99,24 @@ const BasicModel = (props) => {
       }
       else {
         animatePositionRef.current.set(
-          defaultPositionRef.current.x + sine,
-          defaultPositionRef.current.y + sine,
+          defaultPositionRef.current.x - sine,
+          defaultPositionRef.current.y - sine,
           defaultPositionRef.current.z + sine,
         );
-        easing.damp3(meshRef.current.position, animatePositionRef.current, 1, clampedDelta);
+        easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
-        if (autoRotate) meshRef.current.rotation.y += delta * autoRotateSpeed;
+        if (autoRotate) {
+          animateRotationRef.current.set(
+            (sine * 0.02),
+            (Math.PI * rotation) + (sine * 0.08),
+            (sine * -0.02)
+          );
+          easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
+        }
 
         easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
         easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0.5, 0.3, clampedDelta);
       }
     }
   });
@@ -122,7 +134,7 @@ const BasicModel = (props) => {
           position={position}
           receiveShadow={true}
           rotation={[0, Math.PI * rotation, 0]}
-          scale={scale}
+          scale={scale * meshScale}
         />
       )}
     </>
