@@ -38,7 +38,7 @@ const AnimatedLight = (props) => {
 
   useLayoutEffect(() => {
     if (helper === true) {
-      material.current.side = THREE.DoubleSide;
+      material.current.side = THREE.FrontSide;
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 8), material.current);
       lightTargetRef.current.add(mesh);
     }
