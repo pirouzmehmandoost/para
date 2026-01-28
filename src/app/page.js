@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
+import { portfolio } from '@configs/globals';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
+const { projects } = portfolio;
 
 const createVariants = (reduceMotion) => {
   const dur = (ms) => (reduceMotion ? 0 : ms);
@@ -40,8 +42,16 @@ const createVariants = (reduceMotion) => {
 const SelectionDisplayModal = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
-  const selection = useSelection((state) => state.selection);
-  const modal = Boolean(selection?.name?.length);
+  // new code
+  const isFocused = useSelection((state) => state.selection.isFocused);
+  const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = ''} = {} } = {} }) => nodeName === isFocused);
+  const setSelectionStore = useSelection((state) => state.setSelection);
+  const modal = Boolean(focusedProject?.name?.length);
+  //old code
+  // const selection = useSelection((state) => state.selection);
+  // const modal = Boolean(selection?.name?.length);
+
+  const handleClick = () => { if (focusedProject) setSelectionStore({ ...focusedProject }) }; //new code
 
   return (
     <main className='flex flex-col w-full h-full'>
@@ -65,14 +75,14 @@ const SelectionDisplayModal = () => {
                   variants={variants.modalItem}
                   className='place-self-center text-center text-4xl perspective-origin-bottom'
                 >
-                  {selection?.name}
+                  {focusedProject?.name}
                 </motion.div>
 
                 <motion.div
                   variants={variants.modalItem}
                   className='text-2xl text-center text-pretty perspective-origin-bottom'
                 >
-                  {selection?.shortDescription}
+                  {focusedProject?.shortDescription}
                 </motion.div>
 
                 <motion.div
@@ -80,9 +90,10 @@ const SelectionDisplayModal = () => {
                   className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'
                 >
                   <Link
-                    href={`/projects/${getSlugFromName(selection?.name)}`}
+                    href={`/projects/${getSlugFromName(focusedProject?.name)}`}
                     rel='noopener noreferrer'
                     className='pointer-events-auto'
+                    onClick = {handleClick}
                   >
                     View Details
                   </Link>

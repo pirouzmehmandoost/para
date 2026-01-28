@@ -12,7 +12,7 @@ import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
 import Ground from '../models/Ground';
-import AnimatedLight from '../lights/AnimatedLight';
+// import AnimatedLight from '../lights/AnimatedLight';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -28,30 +28,38 @@ const { projects } = portfolio;
     cloud 1:           x: 140,   y:-48,   z: 15
     cloud 2:           x: 10,    y: -155, z: 240
 */
-const CloudGroup = () => {
+const CloudGroup = (props) => {
+  const { positions: [p1, p2] = [] } = props
+  const size = useThree((state) => state.size);
+  const scale = Math.min(1.5, scaleMeshAtBreakpoint(size.width)*1.5)
+
   return (
     <Clouds material={THREE.MeshPhysicalMaterial} limit={6}>
       <Cloud
-        color={'#101010'}
-        concentrate={'random'}
-        growth={280}
-        opacity={0.13}
-        position={[0, 20, -120]}
+        color={'black'}
+        concentrate={'inside'}
+        growth={250}
+        opacity={1}
+        position={[10, p1.y + 10, p1.z - 65]}
         seed={0.4}
         segments={3}
         speed={0.2}
-        volume={290}
+        volume={300}
+        scale={scale}
+        fade={5}
       />
       <Cloud
-        color={'#101010'}
-        concentrate={'outside'}
-        growth={300}
-        opacity={0.12}
-        position={[0, -125, 110]}
+        color={'black'}
+        concentrate={'random'}
+        growth={100}
+        opacity={0.15}
+        position={[0, p2.y - 50 , p2.z - 20]}
         seed={0.4}
         segments={3}
         speed={0.2}
-        volume={280}
+        volume={300}
+        scale={scale}
+        fade={5}
       />
     </Clouds>
   );
@@ -76,14 +84,13 @@ const HomeScene = () => {
   const meshRefs = useRef(new Array(projects.length).fill(null)); // all model
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
-  // eslint-disable-next-line react-hooks/refs
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
 
-  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.45)
+  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5)
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [40, -10, -80];
+    const fixedYPositions = [44, -8, -85];
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
     const positions = [];
     const vertex = new THREE.Vector3();
@@ -95,7 +102,7 @@ const HomeScene = () => {
       0,
       2 * Math.PI,
       false,
-      projects.length % 2 == 0 ? 0 : Math.PI / 2
+      0.5 * Math.PI
     );
     ellipseCurve.closed = true;
 
@@ -146,7 +153,7 @@ const HomeScene = () => {
     if (index < 0) return;
 
     startTransition(() => {
-      setSelectionStore({ ...projects[index] });
+      // setSelectionStore({ ...projects[index] });
       setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
       setIsFocused(clickedName);
     });
@@ -175,15 +182,10 @@ const HomeScene = () => {
 
   return (
     <>
-      <AnimatedLight
-        castShadow={false}
-        intensity={3}
-        type='spotLight'
-      />
       <directionalLight
         castShadow={true}
         color={'#fff6e8'}
-        intensity={2}
+        intensity={2.5}
         position={[0, 120, 75]}
         shadow-bias={-0.004}
         shadow-camera-fov={50}
@@ -195,7 +197,7 @@ const HomeScene = () => {
         shadow-camera-right={4096}
         shadow-mapSize={4096}
       />
-      <CloudGroup />
+      <CloudGroup positions={[meshPositions[0], meshPositions[2]]} />
       {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
         {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
         {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
@@ -235,7 +237,7 @@ const HomeScene = () => {
       </Bvh>
       <Ground 
         rotation={[Math.PI / 6, Math.PI, 0]}
-        scale={meshScale * 1.3}
+        scale={meshScale * 1.25}
       />
       <AnimatedRig
         fallbackPositions={meshPositions}

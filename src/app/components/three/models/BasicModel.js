@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { invalidate, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
 import useMaterial from '@stores/materialStore';
@@ -31,12 +31,12 @@ const BasicModel = (props) => {
   } = props;
 
   const size = useThree((state) => state.size);
-  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.475)
+  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5)
 
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
-  const materials = useMaterial(state => state.materials);
+  const materials = useMaterial.getState().materials;
 
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
@@ -49,7 +49,7 @@ const BasicModel = (props) => {
 
   useLayoutEffect(() => {
     if (meshRef.current) {
-      const selectedMatID = selectedMaterialID.length && isFocused?.length && (isFocused === nodeName)
+      const selectedMatID = selectedMaterialID?.length && isFocused?.length && (isFocused === nodeName)
         ? selectedMaterialID
         : defaultMaterialID;
 
@@ -74,24 +74,24 @@ const BasicModel = (props) => {
   useFrame(({ clock }, delta) => {
     const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
     const elapsedTime = clock.elapsedTime;
-    const sine = Math.sin(elapsedTime) / 2;
+    const sine = Math.sin(elapsedTime);
+    const cos = Math.cos(elapsedTime);
 
     if (meshRef?.current && nodeName?.length) {
       meshRef.current.updateWorldMatrix(true, true);
 
       if (isFocused?.length && isFocused === nodeName) {
-
         animatePositionRef.current.set(
-          defaultPositionRef.current.x * 0.1 + sine,
-          defaultPositionRef.current.y + 200 + sine,
-          defaultPositionRef.current.z * 0.5 + 10*sine
+          defaultPositionRef.current.x,
+          defaultPositionRef.current.y + 5,
+          defaultPositionRef.current.z
         );
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
         if (autoRotate) {
           animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
           meshRef.current.rotation.y += delta * autoRotateSpeed;
-        } 
+        }
 
         easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
         easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
@@ -99,17 +99,17 @@ const BasicModel = (props) => {
       }
       else {
         animatePositionRef.current.set(
-          defaultPositionRef.current.x - sine,
-          defaultPositionRef.current.y - sine,
+          defaultPositionRef.current.x - sine / 2,
+          defaultPositionRef.current.y + cos * 1.5,
           defaultPositionRef.current.z + sine,
         );
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
         if (autoRotate) {
           animateRotationRef.current.set(
-            (sine * 0.02),
-            (Math.PI * rotation) + (sine * 0.08),
-            (sine * -0.02)
+            (0.015 * sine) % 1,
+            Math.PI * rotation + ((0.025 * sine) % 1),
+            (0.015 * cos) % 1
           );
           easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
         }
