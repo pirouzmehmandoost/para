@@ -4,9 +4,9 @@
 // import * as THREE from 'three';
 // import { Clouds, Cloud, Environment, SoftShadows } from '@react-three/drei';
 // import { envColor } from '@configs/globals';
-// // import cameraConfigs from '@configs/cameraConfigs';
+// import cameraConfigs from '@configs/cameraConfigs';
 // import Ground from '../models/Ground';
-// import Model from '../models/Model';
+// import BasicModel from '../models/BasicModel';
 // // import SimpleCameraRig from '../cameras/SimpleCameraRig';
 // import useSelection from '@stores/selectionStore';
 
@@ -84,11 +84,7 @@
 //         shadow-mapSize-width={1024}
 //         shadow-mapSize-height={1024}
 //       />
-//       <Clouds material={THREE.MeshLambertMaterial} limit={100}>
-//         <Cloud {...cloudProps(0)} />
-//         <Cloud {...cloudProps(1)} />
-//       </Clouds>
-//       <Model groundMeshRef={groundMeshRef} onMeshReady={setMeshRef} fileData={fileData} {...selection.sceneData} />
+//       <BasicModel groundMeshRef={groundMeshRef} onMeshReady={setMeshRef} fileData={fileData} {...selection.sceneData} />
 //       <Ground rotation={[Math.PI, 0, 0]} scale={[1, 1, 1]} position={[-50, -80, 20]} setGroundMeshRef={setGroundMeshRef} />
 //       <Ground rotation={[Math.PI / -4, Math.PI / 4, Math.PI / 2.5]} position={[180, -50, -180]} scale={[1, 1, 1]} />
 //       <Ground rotation={[Math.PI / -4, -Math.PI / 4, -Math.PI / 2.5]} position={[-180, -50, -180]} scale={[1, 1, 1]} />
