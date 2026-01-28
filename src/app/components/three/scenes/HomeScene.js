@@ -5,9 +5,9 @@ import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, Cloud, Clouds } from '@react-three/drei'
 // import { EffectComposer, N8AO } from '@react-three/postprocessing';
+import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
-import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
@@ -20,7 +20,7 @@ THREE.ColorManagement.enabled = true;
 const { projects } = portfolio;
 
 /*
-  The old cloud positions, relative to model positions:
+  The old model and cloud positions:
     gerd:              x: -130,  y: 42,   z: -75
     bag_v3_for_web001: x: 130,   y: 2,    z: -75
     Yoga_Mat_Strap:    x: 4.6,   y: -85,  z: 150
@@ -29,9 +29,9 @@ const { projects } = portfolio;
     cloud 2:           x: 10,    y: -155, z: 240
 */
 const CloudGroup = (props) => {
-  const { positions: [p1, p2] = [] } = props
+  const { positions: [p1, p2] = [] } = props;
   const size = useThree((state) => state.size);
-  const scale = Math.min(1.5, scaleMeshAtBreakpoint(size.width)*1.5)
+  const scale = Math.min(1.5, scaleMeshAtBreakpoint(size.width) * 1.5);
 
   return (
     <Clouds material={THREE.MeshPhysicalMaterial} limit={6}>
@@ -53,7 +53,7 @@ const CloudGroup = (props) => {
         concentrate={'random'}
         growth={100}
         opacity={0.15}
-        position={[0, p2.y - 50 , p2.z - 20]}
+        position={[0, p2.y - 50, p2.z - 20]}
         seed={0.4}
         segments={3}
         speed={0.2}
@@ -153,7 +153,7 @@ const HomeScene = () => {
     if (index < 0) return;
 
     startTransition(() => {
-      // setSelectionStore({ ...projects[index] });
+      // setSelectionStore({ ...projects[index] }); //temporarily test setting selection from the selection display modal. 
       setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
       setIsFocused(clickedName);
     });
@@ -199,9 +199,9 @@ const HomeScene = () => {
       />
       <CloudGroup positions={[meshPositions[0], meshPositions[2]]} />
       {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
-        {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
-        {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
-        {/* <Outline
+      {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
+      {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
+      {/* <Outline
           selection={outlineSelection}
           blendFunction={BlendFunction.SCREEN}
           patternTexture={null}
@@ -235,7 +235,7 @@ const HomeScene = () => {
           );
         })}
       </Bvh>
-      <Ground 
+      <Ground
         rotation={[Math.PI / 6, Math.PI, 0]}
         scale={meshScale * 1.25}
       />
