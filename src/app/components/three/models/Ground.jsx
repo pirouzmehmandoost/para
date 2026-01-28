@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
 import useMaterial from '@stores/materialStore';
-import { groundConfig } from '@/lib/configs/globals';
+import { groundConfig } from '@/lib/configs/groundConfig';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;

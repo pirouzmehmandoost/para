@@ -3,9 +3,7 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { Bvh, Cloud, Clouds, 
-  // SoftShadows 
-} from '@react-three/drei'
+import { Bvh, Cloud, Clouds } from '@react-three/drei'
 // import { EffectComposer, N8AO } from '@react-three/postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
@@ -14,7 +12,7 @@ import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
 import Ground from '../models/Ground';
-// import AnimatedLight from '../lights/AnimatedLight';
+import AnimatedLight from '../lights/AnimatedLight';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -29,59 +27,35 @@ const { projects } = portfolio;
     cloud 0:           x: -120,  y: -8,   z: 15
     cloud 1:           x: 140,   y:-48,   z: 15
     cloud 2:           x: 10,    y: -155, z: 240
-
-  The old cloud positioning logic: 
-    const cloudProps = useMemo(() => meshPositions.map((p) => {
-      const position = [
-        p.x + 10,
-        p.z < 0 ? p.y - 50 : p.y - 70,
-        p.z + 90
-      ];
-
-  // const fixedCloudPositions = [
-  //   [-300, -20, 15],
-  //   [300, -20, 15],
-  //   [-210, -130, 130],
-  // ];
-  
-
-
-    const fixedCloudPositions = [
-    [0, -8, 15],
-    [10, -135, 220],
-    // [-130, -8, 15],
-    // [130, -8, 15],
-    // [10, -135, 240],
-  ];
-
-
 */
-// const CloudGroup = () => {
-//   const cloudProps = [];
-//   const fixedCloudPositions = [[0, -8, 15], [10, -135, 220]];
-
-//   for (let i = 0; i < fixedCloudPositions.length; i++) {
-//     cloudProps.push({
-//       color: 'black',
-//       concentrate: 'inside',
-//       growth: 300,
-//       opacity: 0.12,
-//       position: fixedCloudPositions[i],
-//       seed: 0.4,
-//       segments: 4,
-//       speed: 0.2,
-//       volume: 250,
-//     });
-//   }
-
-//   return (
-//     <Clouds material={THREE.MeshPhysicalMaterial} limit={8}>
-//       <Cloud {...cloudProps[0]} />
-//       <Cloud {...cloudProps[1]} />
-//       {/* <Cloud {...cloudProps[2]} /> */}
-//     </Clouds>
-//   );
-// };
+const CloudGroup = () => {
+  return (
+    <Clouds material={THREE.MeshPhysicalMaterial} limit={6}>
+      <Cloud
+        color={'#101010'}
+        concentrate={'random'}
+        growth={280}
+        opacity={0.13}
+        position={[0, 20, -120]}
+        seed={0.4}
+        segments={3}
+        speed={0.2}
+        volume={290}
+      />
+      <Cloud
+        color={'#101010'}
+        concentrate={'outside'}
+        growth={300}
+        opacity={0.12}
+        position={[0, -125, 110]}
+        seed={0.4}
+        segments={3}
+        speed={0.2}
+        volume={280}
+      />
+    </Clouds>
+  );
+};
 
 const HomeScene = () => {
   const { SWIPE_DELAY_MS } = cameraConfigs;
@@ -109,8 +83,8 @@ const HomeScene = () => {
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [40, 2, -80];
-    const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 150;
+    const fixedYPositions = [40, -10, -80];
+    const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
     const positions = [];
     const vertex = new THREE.Vector3();
     const ellipseCurve = new THREE.EllipseCurve(
@@ -201,28 +175,27 @@ const HomeScene = () => {
 
   return (
     <>
-      {/* <SoftShadows focus={0.06} samples={13} size={30} /> */}
-      {/* <AnimatedLight
-        castShadow
+      <AnimatedLight
+        castShadow={false}
         intensity={3}
-        type='directionalLight'
-      /> */}
+        type='spotLight'
+      />
       <directionalLight
         castShadow={true}
         color={'#fff6e8'}
-        intensity={1.5}
-        position={[0, 120, 50]}
+        intensity={2}
+        position={[0, 120, 75]}
         shadow-bias={-0.004}
         shadow-camera-fov={50}
         shadow-camera-near={1}
-        shadow-camera-far={2048}
-        shadow-camera-top={2048}
-        shadow-camera-bottom={-2048}
-        shadow-camera-left={-2048}
-        shadow-camera-right={2048}
+        shadow-camera-far={4096}
+        shadow-camera-top={4096}
+        shadow-camera-bottom={-4096}
+        shadow-camera-left={-4096}
+        shadow-camera-right={4096}
         shadow-mapSize={4096}
       />
-      {/* <CloudGroup /> */}
+      <CloudGroup />
       {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
         {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
         {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
@@ -247,22 +220,23 @@ const HomeScene = () => {
             <BasicModel
               key={nodeName}
               autoRotate={sceneData.autoRotate}
-              autoRotateSpeed={sceneData.autoRotateSpeed * 0.5}
+              autoRotateSpeed={sceneData.autoRotateSpeed}
               fileData={sceneData.fileData}
-              // groundMeshRef={groundMeshRef}
               materials={sceneData.materials}
               name={nodeName}
               onClick={handleClick}
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions[index]}
               rotation={sceneData.rotation}
-              scale={meshScale * sceneData.scale}
+              scale={sceneData.scale}
             />
           );
         })}
       </Bvh>
-      <Ground rotation={[Math.PI / 8, Math.PI / 1.3, 0]} scale={meshScale * 1.5} />
-
+      <Ground 
+        rotation={[Math.PI / 6, Math.PI, 0]}
+        scale={meshScale * 1.3}
+      />
       <AnimatedRig
         fallbackPositions={meshPositions}
         focusTarget={isFocused}

@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { DoubleSide, MeshPhysicalMaterial, ColorManagement, Cache } from 'three';
+import * as THREE from 'three';
 // import { FlakesTexture } from 'three/addons/textures/FlakesTexture.js';
 
-ColorManagement.enabled = true;
-Cache.enabled = true;
+THREE.ColorManagement.enabled = true;
+THREE.Cache.enabled = true;
 
 // const normalMap3 = new CanvasTexture(new FlakesTexture());
 // normalMap3.wrapS = RepeatWrapping;
@@ -23,7 +23,7 @@ Cache.enabled = true;
 //   texture.repeat.y = 10;
 //   // texture.colorSpace = SRGBColorSpace; // May be needed depending on three.js version and renderer settings
 
-//   const material = new MeshPhysicalMaterial({
+//   const material = new THREE.MeshPhysicalMaterial({
 //       clearcoat: 1.0,
 //       clearcoatRoughness: 0.1,
 //       metalness: 0.9,
@@ -39,78 +39,34 @@ Cache.enabled = true;
 // const iridescentMaterial = createFlakesMaterial();
 
 const matteMaterial = {
-  // clearcoat: 0,
-  // clearcoatRoughness: 0.5,
   flatShading: false,
-  // ior: 1.5,
-  // metalness: 0,
   reflectivity: 0.35,
   roughness: 0.75,
-  // sheen: 0, //0.1,
-  // sheenColor: '#000000',
-  // sheenRoughness: 0, //0.5,
-  side: DoubleSide,
+  side: THREE.DoubleSide,
 };
 
 const glossMaterial = {
-  // clearcoat: 0.1,
-  // clearcoatRoughness: 0.8,
   flatShading: false,
-  // ior: 1.5,
-  // metalness: 0,
   reflectivity: 0.35,
   roughness: 0.4,
-  // sheen: 0,
-  // sheenColor: '#000000',
-  // sheenRoughness: 0,
-  side: DoubleSide,
+  side: THREE.DoubleSide,
 };
 
 const groundMaterial = {
-  // clearcoat: 0,
-  // clearcoatRoughness: 0,
   flatShading: false,
-  // ior: 1.5,
-  // metalness: 0,
   reflectivity: 0.4,
   roughness: 1,
-  // sheen: 0, //0.05,
-  // sheenColor: '#000000', // envColor,
-  // sheenRoughness: 0, // 0.5,
-  side: DoubleSide,
-  opacity:1,
+  side: THREE.DoubleSide,
+  opacity: 1,
   transmission: 1,
   transparent: true,
 };
-
-// const iridescentMaterial = {
-//   clearcoat: 0.3,
-//   clearcoatRoughness: 0.3,
-//   flatShading: false,
-//   // ior: 1,
-//   // iridescence: 1,
-//   // iridescenceIOR: 2.0,
-//   // iridescenceThicknessRange: [100,900],
-//   // metalness: 0.1,
-//   reflectivity: 0.5,
-//   roughness: 0.35,
-//   sheen: 0,
-//   sheenColor: '#000000',
-//   sheenRoughness: 0,
-//   side: DoubleSide,
-//   // specularColor: '#ffffff',
-//   // specularIntensity: 0.9,
-//   // thickness: 10.0,
-//   // transmission: 1,
-//   // transparent: true,
-//   // opacity: 1,
-// };
 
 const initialState = {
   ground: {
     displayName: 'Ground',
     tailwindColor: `bg-zinc-900`,
-    material: new MeshPhysicalMaterial({
+    material: new THREE.MeshPhysicalMaterial({
         ...groundMaterial,
         color: '#101010',
       }),
@@ -119,7 +75,7 @@ const initialState = {
   matte_black: {
     displayName: 'Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
-    material: new MeshPhysicalMaterial({
+    material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
       color: '#2f2f2f',
     }),
@@ -128,7 +84,7 @@ const initialState = {
   gloss_black: {
     displayName: 'Gloss Black',
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
-    material: new MeshPhysicalMaterial({
+    material: new THREE.MeshPhysicalMaterial({
       ...glossMaterial,
       color: '#101010',
     }),
@@ -137,7 +93,7 @@ const initialState = {
   eggshell: {
     displayName: 'Eggshell',
     tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
-    material: new MeshPhysicalMaterial({
+    material: new THREE.MeshPhysicalMaterial({
       ...glossMaterial,
       color: '#ccc0a3',
     }),

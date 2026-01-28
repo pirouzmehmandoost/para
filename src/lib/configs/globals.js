@@ -21,10 +21,10 @@ export const portfolio = {
       description: `Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.`,
       details: '',
       dimensions: '',
-      care: '',
       sceneData: {
         autoRotate: true,
-        autoRotateSpeed: 0.6,
+        autoRotateSpeed: 0.3,
+        rotation: 0,
         autoUpdateMaterial: true,
         groupName: 'Gerd',
         materials: {
@@ -35,7 +35,6 @@ export const portfolio = {
           nodeName: 'gerd',
           url: '/bag_9_BAT-transformed.glb'
         },
-        rotation: 0,
         scale: 0.55,
       },
     },
@@ -60,10 +59,10 @@ export const portfolio = {
       description: 'Large enough to fit essentials, small enough second as a table decoration',
       details: '',
       dimensions: '',
-      care: '',
       sceneData: {
         autoRotate: true,
-        autoRotateSpeed: 1,
+        autoRotateSpeed: 0.5,
+        rotation: 0,
         autoUpdateMaterial: false,
         groupName: 'Sang',
         materials: {
@@ -74,7 +73,6 @@ export const portfolio = {
           nodeName: 'bag_v3_for_web001',
           url: '/bag_v3.5-transformed.glb'
         },
-        rotation: 0,
         scale: 0.6,
       },
     },
@@ -99,10 +97,10 @@ export const portfolio = {
       description: `A Yoga mat holder with a large handle for easy carrying. Lightweight to allow sitting rolled mats upright, adding sculptural qualities to idle exercise equipment.`,
       details: '',
       dimensions: '',
-      care: '',
       sceneData: {
         autoRotate: true,
-        autoRotateSpeed: 1,
+        autoRotateSpeed: 0.5,
+        rotation: 1.0,
         autoUpdateMaterial: false,
         groupName: 'PÍ',
         materials: {
@@ -113,17 +111,11 @@ export const portfolio = {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap_for_web2.glb'
         },
-        rotation: 1.0,
-        scale: 1,
+        scale: 1.05,
       },
     },
   ],
 };
 
-export const envImageUrl = '/kloofendal_misty_morning_puresky_4k.hdr';
+export const envImageUrl = '/para_ground_glare_fog.hdr' // kloofendal_misty_morning_puresky_4k.hdr';
 export const envColor = '#bcbcbc'; // '#e2e2e2';
-export const groundConfig = {
-  POSITION: [0, -90, 0],
-  ROTATION: [Math.PI / 7, 0, 0],
-  SCALE: [1.4, 1, 1.4],
-};
