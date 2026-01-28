@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree, useFrame } from '@react-three/fiber';
 import { easing } from 'maath';
@@ -55,44 +55,39 @@ const AnimatedLight = (props) => {
   }, [helper]);
 
   useFrame(({ clock, camera }, delta) => {
-    let yOffset = 110
-    let zOffset = 100
-    let x = camera.position.x
-    let y = camera.position.y + yOffset
-    let z = (camera.position.z - zOffset);
     const clampedDelta = Math.min(delta, 0.08);
-    const elapsedTime = clock.elapsedTime
-    const newIntensity = intensity * Math.abs(Math.sin(elapsedTime / 4 * intensity) % 1)
-    const xMovement = 10 * (Math.sin(elapsedTime * 2) % 1)
-    const zMovement = 10 * (Math.cos(elapsedTime * 2) % 1)
+    const elapsedTime = clock.elapsedTime;
+    let yOffset = 130;
+    let zOffset = 100;
+    let x = camera.position.x;
+    let y = camera.position.y + yOffset;
+    let z = (camera.position.z - zOffset);
+    const sinMovement = 10 * (Math.sin(elapsedTime * 2) % 1);
+    const cosMovement = 10 * (Math.cos(elapsedTime * 2) % 1);
+    // const variableLightIntensity = intensity * Math.abs(Math.sin(elapsedTime / 4 * intensity) % 1);
 
     switch (type) {
       case 'pointLight':
         yOffset = 10;
         zOffset = 70;
-        x += xMovement;
-        y = (camera.position.y + yOffset) + zMovement;
+        x += sinMovement;
+        y = (camera.position.y + yOffset) + cosMovement;
         z = (camera.position.z - zOffset);
-        lightRef.current.intensity = 1 + 2 * newIntensity;
         break;
       case 'directionalLight':
         zOffset = 180;
-        x += xMovement / 2;
-        z = (camera.position.z - zOffset) + zMovement / 2;
-        lightRef.current.intensity = intensity + newIntensity / 2;
+        x += sinMovement / 2;
+        z = (camera.position.z - zOffset) + cosMovement / 2;
         break;
       case 'spotLight':
-        x += xMovement;
-        z += zMovement;
-        lightRef.current.intensity = newIntensity;
-        break;
       default:
+        x += sinMovement;
+        z += sinMovement;
         break;
     }
 
     lightPositionRef.current.set(x, y, z);
     lightTargetPositionRef.current.set(camera.position.x, camera.position.y, camera.position.z - 180);
-
     easing.damp3(lightRef.current.position, lightPositionRef.current, 0.1, clampedDelta);
     // easing.dampE(lightRef.current.rotation, camera.rotation, 0.1, clampedDelta);
     easing.damp3(lightTargetRef.current.position, lightTargetPositionRef.current, 0.1, clampedDelta);
@@ -133,9 +128,9 @@ const AnimatedLight = (props) => {
             ref={lightRef}
             castShadow={castShadow}
             color={color}
-            decay={0.25}
-            distance={210}
-            intensity={intensity * 2}
+            decay={0.1}
+            distance={300}
+            intensity={intensity}
             position={position}
             shadow-bias={-0.001}
             shadow-camera-near={1}
@@ -156,19 +151,19 @@ const AnimatedLight = (props) => {
             angle={Math.PI / 4}
             castShadow={castShadow}
             color={color}
-            decay={0.01}
-            distance={250}
+            decay={0.1}
+            distance={300}
             intensity={intensity}
             penumbra={0.5}
             position={position}
-            shadow-bias={-0.001}
+            shadow-bias={-0.004}
             shadow-camera-near={1}
-            shadow-camera-far={2048}
-            shadow-camera-top={2048}
-            shadow-camera-bottom={-2048}
-            shadow-camera-left={-2048}
-            shadow-camera-right={2048}
-            shadow-mapSize={2048}
+            shadow-camera-far={4096}
+            shadow-camera-top={4096}
+            shadow-camera-bottom={-4096}
+            shadow-camera-left={-4096}
+            shadow-camera-right={4096}
+            shadow-mapSize={4096}
           />
           {isReady && helper && <spotLightHelper ref={lightHelperRef} args={[lightRef.current, color]} />}
         </>
