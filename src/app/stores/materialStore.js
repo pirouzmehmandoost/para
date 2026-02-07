@@ -1,42 +1,8 @@
 import { create } from 'zustand';
 import * as THREE from 'three';
-// import { FlakesTexture } from 'three/addons/textures/FlakesTexture.js';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
-
-// const normalMap3 = new CanvasTexture(new FlakesTexture());
-// normalMap3.wrapS = RepeatWrapping;
-// normalMap3.wrapT = RepeatWrapping;
-// normalMap3.repeat.x = 10;
-// normalMap3.repeat.y = 6;
-// normalMap3.anisotropy = 16;
-
-// function createFlakesMaterial() {
-//   const flakesImage = new FlakesTexture(); // Generates a canvas element
-//   const texture = new CanvasTexture(flakesImage);
-  
-//   // Optional: configure texture wrapping and color space
-//   texture.wrapS = RepeatWrapping;
-//   texture.wrapT = RepeatWrapping;
-//   texture.repeat.x = 10;
-//   texture.repeat.y = 10;
-//   // texture.colorSpace = SRGBColorSpace; // May be needed depending on three.js version and renderer settings
-
-//   const material = new THREE.MeshPhysicalMaterial({
-//       clearcoat: 1.0,
-//       clearcoatRoughness: 0.1,
-//       metalness: 0.9,
-//       roughness: 0.5,
-//       color: 0x8418ca, // Example color
-//       normalMap: texture, // Use the generated texture as a normal map
-//       normalScale: new Vector2(0.15, 0.15),
-//   });
-
-//   return material;
-// }
-
-// const iridescentMaterial = createFlakesMaterial();
 
 const matteMaterial = {
   flatShading: false,
@@ -78,7 +44,13 @@ const initialState = {
     material: new THREE.MeshPhysicalMaterial({
       ...matteMaterial,
       color: '#2f2f2f',
+      // color: '#333333',
+
     }),
+    textures: {
+      roughnessMap: '/textured_bag_roughness.jpg',
+      colorMap: '/textured_bag_color.jpg' 
+    }
   },
 
   gloss_black: {

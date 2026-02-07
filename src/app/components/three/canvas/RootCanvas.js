@@ -44,10 +44,10 @@ export const RootCanvas = () => {
       >
         <color args={[envColor]} attach='background' />
         <fog attach='fog' color={envColor} near={180} far={270} />
-          <Environment shadows files={envImageUrl} environmentIntensity={0.3}  />
-          <Suspense fallback={<Loader />}>
-            <HomeScene />
-            {/* <SceneRouter /> */}
+        <Environment shadows files={envImageUrl} environmentIntensity={0.3} />
+        <Suspense fallback={<Loader />}>
+          <HomeScene />
+          {/* <SceneRouter /> */}
         </Suspense>
         <Stats />
       </Canvas>

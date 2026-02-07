@@ -7,4 +7,8 @@ export const materialConfig = {
   reflectivity: 0.3,
   roughness: 0.8,
   side: THREE.DoubleSide,
+  specularIntensity: 1,
+  specularColor: '#ffffff',
+  clearcoat: 0, 
+  clearcoatRoughness: 0, 
 };

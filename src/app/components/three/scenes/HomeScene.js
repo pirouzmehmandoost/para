@@ -185,7 +185,7 @@ const HomeScene = () => {
       <directionalLight
         castShadow={true}
         color={'#fff6e8'}
-        intensity={2.5}
+        intensity={4}
         position={[0, 120, 75]}
         shadow-bias={-0.004}
         shadow-camera-fov={50}
@@ -197,7 +197,7 @@ const HomeScene = () => {
         shadow-camera-right={4096}
         shadow-mapSize={4096}
       />
-      <CloudGroup positions={[meshPositions[0], meshPositions[2]]} />
+      <CloudGroup positions={[meshPositions[0], meshPositions[1]]} />
       {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
       {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
       {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
