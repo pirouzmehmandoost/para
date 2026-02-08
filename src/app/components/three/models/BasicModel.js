@@ -68,6 +68,7 @@ const BasicModel = (props) => {
   // }
 
   useLayoutEffect(() => {
+    console.log(materials)
     if (meshRef.current) {
       const selectedMatID = selectedMaterialID?.length && isFocused?.length && (isFocused === nodeName)
         ? selectedMaterialID
