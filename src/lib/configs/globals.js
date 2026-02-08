@@ -28,55 +28,56 @@ export const portfolio = {
         autoUpdateMaterial: true,
         groupName: 'Gerd',
         materials: {
-          defaultMaterialID: 'matte_black',
-          materialIDs: ['matte_black', 'gloss_black'],
+          defaultMaterialID: 'textured_black',
+          materialIDs: ['textured_black', 'matte_black', 'gloss_black'],
         },
         fileData: {
           nodeName: 'textured_bag_simplified001',
           url: '/textured_bag.glb'
-          // url: '/bag_9_BAT-transformed.glb'
         },
         scale: 0.55,
       },
     },
-    // {
-    //   name: 'Sang',
-    //   imgUrls: {
-    //     bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
-    //     matte_black: [
-    //       '/oval_bag_matte_black_1.png',
-    //       '/oval_bag_matte_black_2.png',
-    //       '/oval_bag_matte_black_3.png',
-    //       '/oval_bag_matte_black_4.png',
-    //     ],
-    //     matte_white: [
-    //       '/oval_bag_matte_white_1.png',
-    //       '/oval_bag_matte_white_2.png',
-    //       '/oval_bag_matte_white_3.png',
-    //       '/oval_bag_matte_white_4.png',
-    //     ],
-    //   },
-    //   shortDescription: 'A textured 3D printed handbag.',
-    //   description: 'Large enough to fit essentials, small enough second as a table decoration',
-    //   details: '',
-    //   dimensions: '',
-    //   sceneData: {
-    //     autoRotate: true,
-    //     autoRotateSpeed: 0.5,
-    //     rotation: 0,
-    //     autoUpdateMaterial: false,
-    //     groupName: 'Sang',
-    //     materials: {
-    //       defaultMaterialID: 'matte_black',
-    //       materialIDs: ['matte_black'],
-    //     },
-    //     fileData: {
-    //       nodeName: 'bag_v3_for_web001',
-    //       url: '/bag_v3.5-transformed.glb'
-    //     },
-    //     scale: 0.6,
-    //   },
-    // },
+    {
+      name: 'Sang',
+      imgUrls: {
+        bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
+        matte_black: [
+          '/oval_bag_matte_black_1.png',
+          '/oval_bag_matte_black_2.png',
+          '/oval_bag_matte_black_3.png',
+          '/oval_bag_matte_black_4.png',
+        ],
+        matte_white: [
+          '/oval_bag_matte_white_1.png',
+          '/oval_bag_matte_white_2.png',
+          '/oval_bag_matte_white_3.png',
+          '/oval_bag_matte_white_4.png',
+        ],
+      },
+      shortDescription: 'A textured 3D printed handbag.',
+      description: 'Large enough to fit essentials, small enough second as a table decoration',
+      details: '',
+      dimensions: '',
+      sceneData: {
+        autoRotate: true,
+        autoRotateSpeed: 0.5,
+        rotation: 0,
+        autoUpdateMaterial: false,
+        groupName: 'Sang',
+        materials: {
+          defaultMaterialID: 'matte_black',
+          materialIDs: ['matte_black'],
+        },
+        fileData: {
+          nodeName: 'gerd',
+          url: '/bag_9_BAT-transformed.glb'
+          // nodeName: 'bag_v3_for_web001',
+          // url: '/bag_v3.5-transformed.glb'
+        },
+        scale: 0.6,
+      },
+    },
     {
       name: 'PÍ',
       imgUrls: {

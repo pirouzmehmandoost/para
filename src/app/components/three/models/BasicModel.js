@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useTexture } from '@react-three/drei';
@@ -15,7 +15,6 @@ THREE.Cache.enabled = true;
 
 useGLTF.preload('/yoga_mat_strap_for_web2.glb');
 useGLTF.preload('/bag_v3.5-transformed.glb');
-// useGLTF.preload('/bag_9_BAT-transformed.glb');
 useGLTF.preload('/textured_bag.glb');
 
 const BasicModel = (props) => {
@@ -34,30 +33,14 @@ const BasicModel = (props) => {
   const size = useThree((state) => state.size);
   const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5)
 
-  // const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
-  const { nodes, materials: mats } = useGLTF(url);
-  const geometry = nodes?.[nodeName]?.geometry || null;
+  const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
+  // const { nodes, materials: mats } = useGLTF(url);
+  // const geometry = nodes?.[nodeName]?.geometry || null;
   // const testMat = mats.stained_matte_black;
 
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
   const materials = useMaterial.getState().materials;
-
-  const [colorMap, roughnessMap, clearcoatMap, clearcoatRoughnessMap] = useTexture([
-    '/textured_bag_color.jpg',
-    '/textured_bag_roughness.jpg',
-    '/textured_bag_clearcoat_map_2.jpg',
-    '/textured_bag_clearcoat_roughness.jpg'
-  ]);
-  
-  if (nodeName === 'textured_bag_simplified001') {
-    colorMap.flipY = false;
-    roughnessMap.flipY = false;
-    // clearcoatMap.flipY = false;
-    // clearcoatRoughnessMap.flipY = false;
-    colorMap.colorSpace = THREE.SRGBColorSpace;
-    clearcoatMap.colorSpace = THREE.SRGBColorSpace;
-  }
 
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
@@ -65,19 +48,23 @@ const BasicModel = (props) => {
   const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
 
   const selectedMaterialRef = useRef(null);
-  const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({
-    ...materialConfig,
-    map: map,
-    roughnessMap: clearcoatRoughnessMap,
-    roughness: 1,
-  }));
+  const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
+  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
 
-  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({
-    ...materialConfig,
-    map: map,
-    roughnessMap: roughnessMap,
-    roughness: 1,
-  }));
+  // const textures = {};
+
+  // const selectedMatID = selectedMaterialID?.length && isFocused?.length && (isFocused === nodeName)
+  //   ? selectedMaterialID
+  //   : defaultMaterialID;
+
+  // if (materials[selectedMatID]?.textures) {
+  //   const textureMaps = useTexture(materials[selectedMatID].textures)
+  //   for (const textureMap in textureMaps) {
+  //     // console.log("textureMap: ", textureMap, "the textureMap: ", textureMaps[textureMap])
+  //     textures[textureMap] = textureMaps[textureMap]
+  //     textures[textureMap].flipY = false;
+  //   }
+  // }
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -86,16 +73,17 @@ const BasicModel = (props) => {
         : defaultMaterialID;
 
       const selectedMat = materials[selectedMatID]?.material;
+      // if (materials[selectedMatID]?.textures) {
+      //   selectedMat.map = textures.map;
+      //   selectedMat.roughnessMap = textures.roughnessMap;
+      // };
       selectedMaterialRef.current = selectedMat
 
       const defaultMat = materials[defaultMaterialID]?.material;
-
-      if (nodeName === 'textured_bag_simplified001') {
-        defaultMat.map = map;
-        defaultMat.roughnessMap = roughnessMap;
-        defaultMat.roughness = 1
-      }
-
+      // if (materials[defaultMaterialID]?.textures) {
+      //   defaultMat.map = textures.map;
+      //   defaultMat.roughnessMap = textures.roughnessMap;
+      // };
       defaultMaterialRef.current.copy(defaultMat);
     }
   }, [defaultMaterialID, isFocused, materials, nodeName, selectedMaterialID]);

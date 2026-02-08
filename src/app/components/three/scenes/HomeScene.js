@@ -1,10 +1,11 @@
 'use client';
 
-import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { Bvh, Cloud, Clouds } from '@react-three/drei'
+import { Bvh, Cloud, Clouds, useTexture } from '@react-three/drei'
 // import { EffectComposer, N8AO } from '@react-three/postprocessing';
+import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
@@ -28,48 +29,50 @@ const { projects } = portfolio;
     cloud 1:           x: 140,   y:-48,   z: 15
     cloud 2:           x: 10,    y: -155, z: 240
 */
-const CloudGroup = (props) => {
-  const { positions: [p1, p2] = [] } = props;
-  const size = useThree((state) => state.size);
-  const scale = Math.min(1.5, scaleMeshAtBreakpoint(size.width) * 1.5);
+// const CloudGroup = (props) => {
+//   const { positions: [p1, p2] = [] } = props;
+//   const size = useThree((state) => state.size);
+//   const scale = Math.min(1.5, scaleMeshAtBreakpoint(size.width) * 1.5);
 
-  return (
-    <Clouds material={THREE.MeshPhysicalMaterial} limit={6}>
-      <Cloud
-        color={'black'}
-        concentrate={'inside'}
-        growth={250}
-        opacity={1}
-        position={[10, p1.y + 10, p1.z - 65]}
-        seed={0.4}
-        segments={3}
-        speed={0.2}
-        volume={300}
-        scale={scale}
-        fade={5}
-      />
-      <Cloud
-        color={'black'}
-        concentrate={'random'}
-        growth={100}
-        opacity={0.15}
-        position={[0, p2.y - 50, p2.z - 20]}
-        seed={0.4}
-        segments={3}
-        speed={0.2}
-        volume={300}
-        scale={scale}
-        fade={5}
-      />
-    </Clouds>
-  );
-};
+//   return (
+//     <Clouds material={THREE.MeshPhysicalMaterial} limit={4}>
+//       <Cloud
+//         color={'black'}
+//         concentrate={'inside'}
+//         growth={200}
+//         opacity={0.6}
+//         position={[10, p1.y + 10, p1.z - 66]}
+//         seed={0.4}
+//         segments={2}
+//         speed={0.2}
+//         volume={20}
+//         scale={scale}
+//         fade={5}
+//       />
+//       <Cloud
+//         color={'black'}
+//         concentrate={'random'}
+//         growth={100}
+//         opacity={0.15}
+//         position={[0, p2.y - 50, p2.z - 20]}
+//         seed={0.4}
+//         segments={2}
+//         speed={0.2}
+//         volume={300}
+//         scale={scale}
+//         fade={5}
+//       />
+//     </Clouds>
+//   );
+// };
 
 const HomeScene = () => {
   const { SWIPE_DELAY_MS } = cameraConfigs;
   const size = useThree((state) => state.size);
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
+  const setTextures = useMaterial((state) => state.setTextures);
+  const materials = useMaterial((state) => state.materials);
 
   const setSelectionStore = useSelection((state) => state.setSelection);
   const isFocused = useSelection((state) => state.selection.isFocused);
@@ -86,11 +89,36 @@ const HomeScene = () => {
   const totalMeshes = projects.length;
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
 
-  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5)
+  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
+
+  let temp = {};
+  const temp2 = {};
+    for (const materialID in materials) {
+      const textureUrls = materials[materialID]?.textures;
+      if (textureUrls) {
+        temp = { ...temp, ...materials[materialID].textures };
+        temp2[materialID] = {}
+      }
+    }
+
+  const textures = useTexture(temp);
+
+  for (const texture in textures) {
+    textures[texture].flipY = false;
+    textures[texture].name = texture;
+    if (texture.toLowerCase().includes('color')) textures[texture].colorSpace = THREE.SRGBColorSpace;
+
+    const matchingMaterialKey = Object.keys(temp2).find(key => textures[texture].name.includes(key));
+    let key = texture.replace(matchingMaterialKey+'_', '')
+    if (key.includes('color_')) key = key.replace('color_', '');
+    temp2[matchingMaterialKey][key] = textures[texture]
+  }
 
   // Model mesh positioning
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [44, -8, -85];
+    // const fixedYPositions = [44, -8, -85];
+    const fixedYPositions = [-12, 44, -85];
+
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
     const positions = [];
     const vertex = new THREE.Vector3();
@@ -173,6 +201,8 @@ const HomeScene = () => {
   //   return focusedMesh ? [focusedMesh] : undefined;
   // }, [isFocused, meshesReady]);
 
+  useLayoutEffect(() => { setTextures(temp2) }, []);
+
   useEffect(() => {
     const prev = get().onPointerMissed;
     set({ onPointerMissed: handlePointerMissed });
@@ -185,7 +215,7 @@ const HomeScene = () => {
       <directionalLight
         castShadow={true}
         color={'#fff6e8'}
-        intensity={4}
+        intensity={2}
         position={[0, 120, 75]}
         shadow-bias={-0.004}
         shadow-camera-fov={50}
@@ -197,7 +227,8 @@ const HomeScene = () => {
         shadow-camera-right={4096}
         shadow-mapSize={4096}
       />
-      <CloudGroup positions={[meshPositions[0], meshPositions[1]]} />
+
+      {/* <CloudGroup positions={[meshPositions[0], meshPositions[2]]} /> */}
       {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
       {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
       {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
