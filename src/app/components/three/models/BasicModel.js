@@ -40,7 +40,8 @@ const BasicModel = (props) => {
 
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
-  const materials = useMaterial.getState().materials;
+  // const materials = useMaterial.getState().materials;
+  const materials = useMaterial(state => state.materials);
 
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
