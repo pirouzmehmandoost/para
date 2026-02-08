@@ -201,7 +201,7 @@ const HomeScene = () => {
   //   return focusedMesh ? [focusedMesh] : undefined;
   // }, [isFocused, meshesReady]);
 
-  useLayoutEffect(() => { setTextures(temp2) }, []);
+  useLayoutEffect(() => { setTextures(temp2) }, [textures]);
 
   useEffect(() => {
     const prev = get().onPointerMissed;
