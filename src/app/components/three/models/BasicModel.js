@@ -49,7 +49,8 @@ const BasicModel = (props) => {
   const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
 
   const selectedMaterialRef = useRef(null);
-  const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
+  const defaultMaterialRef = useRef(null);
+  // const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
   const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
 
   // const textures = {};
@@ -68,7 +69,6 @@ const BasicModel = (props) => {
   // }
 
   useLayoutEffect(() => {
-    console.log(materials)
     if (meshRef.current) {
       const selectedMatID = selectedMaterialID?.length && isFocused?.length && (isFocused === nodeName)
         ? selectedMaterialID
@@ -86,7 +86,9 @@ const BasicModel = (props) => {
       //   defaultMat.map = textures.map;
       //   defaultMat.roughnessMap = textures.roughnessMap;
       // };
-      defaultMaterialRef.current.copy(defaultMat);
+      // defaultMaterialRef.current.copy(defaultMat);
+      defaultMaterialRef.current = defaultMat;
+
     }
   }, [defaultMaterialID, isFocused, materials, nodeName, selectedMaterialID]);
 
