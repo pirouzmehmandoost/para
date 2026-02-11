@@ -66,8 +66,8 @@ const Ground = (props) => {
       {geometry && (
         <mesh
           ref={groundRef}
-          castShadow={true}
-          dispose={null}
+          castShadow={false}
+          // dispose={null}
           geometry={geometry}
           material={material}
           name={"Ground"}
