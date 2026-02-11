@@ -2,7 +2,9 @@ import { create } from 'zustand';
 
 const initialState = {
   bannerUrl: '',
+  dimensions: '',
   description: '',
+  details: '',
   imgUrls: {},
   materialID: '',
   isFocused: null,
@@ -14,7 +16,7 @@ const initialState = {
     autoUpdateMaterial: false,
     groupName: '',
     materials: {
-      defaultMateriaID: '',
+      defaultMaterialID: '',
       materialIDs: [],
     },
     fileData: {
