@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, useTexture } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
@@ -31,42 +31,21 @@ const BasicModel = (props) => {
   } = props;
 
   const size = useThree((state) => state.size);
-  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5)
+  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
 
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
-  // const { nodes, materials: mats } = useGLTF(url);
-  // const geometry = nodes?.[nodeName]?.geometry || null;
-  // const testMat = mats.stained_matte_black;
-
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
-  // const materials = useMaterial.getState().materials;
-  const materials = useMaterial(state => state.materials);
+  const materials = useMaterial.getState().materials;
+  // const materials = useMaterial(state => state.materials);
 
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
   const animatePositionRef = useRef(new THREE.Vector3(0, 0, 0));
   const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
-
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
-  // const defaultMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
   const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
-
-  // const textures = {};
-
-  // const selectedMatID = selectedMaterialID?.length && isFocused?.length && (isFocused === nodeName)
-  //   ? selectedMaterialID
-  //   : defaultMaterialID;
-
-  // if (materials[selectedMatID]?.textures) {
-  //   const textureMaps = useTexture(materials[selectedMatID].textures)
-  //   for (const textureMap in textureMaps) {
-  //     // console.log("textureMap: ", textureMap, "the textureMap: ", textureMaps[textureMap])
-  //     textures[textureMap] = textureMaps[textureMap]
-  //     textures[textureMap].flipY = false;
-  //   }
-  // }
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -75,20 +54,9 @@ const BasicModel = (props) => {
         : defaultMaterialID;
 
       const selectedMat = materials[selectedMatID]?.material;
-      // if (materials[selectedMatID]?.textures) {
-      //   selectedMat.map = textures.map;
-      //   selectedMat.roughnessMap = textures.roughnessMap;
-      // };
-      selectedMaterialRef.current = selectedMat
-
+      selectedMaterialRef.current = selectedMat;
       const defaultMat = materials[defaultMaterialID]?.material;
-      // if (materials[defaultMaterialID]?.textures) {
-      //   defaultMat.map = textures.map;
-      //   defaultMat.roughnessMap = textures.roughnessMap;
-      // };
-      // defaultMaterialRef.current.copy(defaultMat);
       defaultMaterialRef.current = defaultMat;
-
     }
   }, [defaultMaterialID, isFocused, materials, nodeName, selectedMaterialID]);
 
@@ -124,9 +92,15 @@ const BasicModel = (props) => {
           meshRef.current.rotation.y += delta * autoRotateSpeed;
         }
 
-        easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta)
+        easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "bumpScale", selectedMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+
+        blendedMaterialRef.current.map = selectedMaterialRef.current?.map ?? null;
+        blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap ?? null;
+        blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap ?? null;
       }
       else {
         animatePositionRef.current.set(
@@ -148,6 +122,13 @@ const BasicModel = (props) => {
         easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
         easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0.5, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "bumpScale", defaultMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+
+        blendedMaterialRef.current.map = defaultMaterialRef.current?.map ?? null;
+        blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap ?? null;
+        blendedMaterialRef.current.bumpMap = defaultMaterialRef.current?.bumpMap ?? null;
+
       }
     }
   });
