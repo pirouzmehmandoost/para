@@ -119,5 +119,5 @@ export const portfolio = {
   ],
 };
 
-export const envImageUrl = '/para_ground_glare_fog.hdr' // kloofendal_misty_morning_puresky_4k.hdr';
-export const envColor = '#bcbcbc'; // '#e2e2e2';
+export const envImageUrl = '/para_ground_glare_fog.hdr';
+export const envColor = '#bcbcbc';
