@@ -36,8 +36,8 @@ const BasicModel = (props) => {
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
-  const materials = useMaterial.getState().materials;
-  // const materials = useMaterial(state => state.materials);
+  // const materials = useMaterial.getState().materials;
+  const materials = useMaterial(state => state.materials);
 
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
