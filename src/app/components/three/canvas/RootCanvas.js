@@ -6,10 +6,8 @@ import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Environment, Html, Stats } from '@react-three/drei';
 import cameraConfigs from '@configs/cameraConfigs';
-import { envColor, invImageUrl } from '@configs/globals';
-import HomeScene from '../scenes/HomeScene';
-import { envImageUrl } from '../../../../lib/configs/globals';
-// import ProjectScene from '../scenes/ProjectScene';
+import { envColor, envImageUrl } from '@configs/globals';
+import BasicScene from '../scenes/BasicScene';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
@@ -44,9 +42,9 @@ export const RootCanvas = () => {
       >
         <color args={[envColor]} attach='background' />
         <fog attach='fog' color={envColor} near={180} far={270} />
-        <Environment shadows files={envImageUrl} environmentIntensity={0.3} />
+        <Environment shadows files={envImageUrl} environmentIntensity={0.5} />
         <Suspense fallback={<Loader />}>
-          <HomeScene />
+          <BasicScene />
           {/* <SceneRouter /> */}
         </Suspense>
         <Stats />
