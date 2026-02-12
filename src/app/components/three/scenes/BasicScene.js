@@ -37,55 +37,36 @@ const BasicScene = () => {
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
-  // const texturesMapsLoaded = useRef(false);
+  const texturesLoaded = useRef(null);
 
   const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
 
-  const { texturesToLoad, textureToMaterialMap } = useMemo(() => {
-    let texturesToLoad = {};
-    const textureToMaterialMap = {};
+  const texturesToLoad = useMemo(() => {
+    const texturesToLoad = {};
     for (const materialID in materials) {
       const materialTextureProps = materials[materialID]?.textures;
+
       if (materialTextureProps) {
         for (const materialProperty in materialTextureProps) {
-          const key = materialTextureProps[materialProperty];
-          texturesToLoad[key] = materialTextureProps[materialProperty];
-          const colorSpace = (materialProperty === "map" || materialProperty === "diffuse") ? THREE.SRGBColorSpace : THREE.NoColorSpace;
-          const materialIDs = textureToMaterialMap[key]?.materialIDs?.length ? [...textureToMaterialMap[key].materialIDs, materialID] : [materialID];
-
-          textureToMaterialMap[key] = {
-            colorSpace,
-            key, // key is the URL so the this property is redundant for the time being.  
-            materialIDs,
-            materialProperty,
-            url: materialTextureProps[materialProperty],
-          };
+          texturesToLoad[materialTextureProps[materialProperty]] = materialTextureProps[materialProperty];
         }
       }
     }
-    return { texturesToLoad, textureToMaterialMap };
+    return texturesToLoad;
   }, [materials]);
 
   const textures = useTexture(texturesToLoad);
+  const signature = useMemo(() => Object.keys(texturesToLoad).sort().join(''), [texturesToLoad]);
 
   useLayoutEffect(() => {
-    // if (texturesMapsLoaded.current === true) return;
-
-    for (const textureID in textures) {
-      if (textures[textureID]) {
-        const { colorSpace, ...userData } = textureToMaterialMap[textureID]
-        textures[textureID].flipY = false;
-        textures[textureID].colorSpace = colorSpace;
-        textures[textureID].userData = { ...userData }
-        textureToMaterialMap[textureID].texture = textures[textureID];
-      }
-    }
-    setMaterialTextures(textureToMaterialMap);
-    // texturesMapsLoaded.current = true;
-  }, []);
+    if (texturesLoaded.current === signature) return;
+    for (const url of Object.keys(texturesToLoad)) { if (!textures[url]) return }
+    setMaterialTextures(textures);
+    texturesLoaded.current = signature;
+  }, [signature, textures, setMaterialTextures, texturesToLoad]);
 
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [-10, 44, -95];
+    const fixedYPositions = [-10, 40, -95];
 
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
     const positions = [];
@@ -179,7 +160,7 @@ const BasicScene = () => {
         shadow-bias={-0.004}
         shadow-camera-fov={50}
         shadow-camera-near={1}
-        shadow-camera-far={290}
+        shadow-camera-far={270}
         shadow-camera-top={250}
         shadow-camera-bottom={-250}
         shadow-camera-left={-250}

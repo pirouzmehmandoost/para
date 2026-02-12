@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
@@ -14,8 +14,8 @@ THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
 useGLTF.preload('/yoga_mat_strap_for_web2.glb');
-useGLTF.preload('/bag_v3.5-transformed.glb');
 useGLTF.preload('/textured_bag.glb');
+useGLTF.preload('/bag_9_BAT-transformed.glb');
 
 const BasicModel = (props) => {
   const {
@@ -36,7 +36,6 @@ const BasicModel = (props) => {
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
-  // const materials = useMaterial.getState().materials;
   const materials = useMaterial(state => state.materials);
 
   const meshRef = useRef(undefined);
@@ -45,14 +44,12 @@ const BasicModel = (props) => {
   const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
-  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig, }));
+  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig }));
 
   useLayoutEffect(() => {
     if (meshRef.current) {
-      const selectedMatID = selectedMaterialID?.length && isFocused?.length && (isFocused === nodeName)
-        ? selectedMaterialID
-        : defaultMaterialID;
-
+      const selectedAndFocused = isFocused?.length && (isFocused === nodeName);
+      const selectedMatID = selectedMaterialID?.length && selectedAndFocused ? selectedMaterialID : defaultMaterialID;
       const selectedMat = materials[selectedMatID]?.material;
       selectedMaterialRef.current = selectedMat;
       const defaultMat = materials[defaultMaterialID]?.material;
@@ -65,7 +62,6 @@ const BasicModel = (props) => {
     if (meshRef.current) {
       meshRef.current.updateWorldMatrix(true, true);
       blendedMaterialRef.current.copy(defaultMaterialRef.current);
-
       if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
     }
   }, [onMeshReady]);
@@ -77,14 +73,11 @@ const BasicModel = (props) => {
     const cos = Math.cos(elapsedTime);
 
     if (meshRef?.current && nodeName?.length) {
+      const selectedAndFocused = isFocused?.length && isFocused === nodeName;
       meshRef.current.updateWorldMatrix(true, true);
 
-      if (isFocused?.length && isFocused === nodeName) {
-        animatePositionRef.current.set(
-          defaultPositionRef.current.x,
-          defaultPositionRef.current.y + 5,
-          defaultPositionRef.current.z
-        );
+      if (selectedAndFocused) {
+        animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y + 5, defaultPositionRef.current.z);
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
         if (autoRotate) {
@@ -92,43 +85,38 @@ const BasicModel = (props) => {
           meshRef.current.rotation.y += delta * autoRotateSpeed;
         }
 
+        easing.damp(blendedMaterialRef.current, "bumpScale", selectedMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
         easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current.color, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "dispersion", selectedMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "iridescence", selectedMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "iridescenceIOR", selectedMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "bumpScale", selectedMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
-
-        blendedMaterialRef.current.map = selectedMaterialRef.current?.map ?? null;
-        blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap ?? null;
-        blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap ?? null;
+        blendedMaterialRef.current.map = selectedMaterialRef.current?.map;
+        blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap;
+        blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap;
       }
       else {
-        animatePositionRef.current.set(
-          defaultPositionRef.current.x - sine / 2,
-          defaultPositionRef.current.y + cos * 1.5,
-          defaultPositionRef.current.z + sine,
-        );
+        animatePositionRef.current.set(defaultPositionRef.current.x - sine / 2, defaultPositionRef.current.y + cos * 1.5, defaultPositionRef.current.z + sine);
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
         if (autoRotate) {
-          animateRotationRef.current.set(
-            (0.015 * sine) % 1,
-            Math.PI * rotation + ((0.025 * sine) % 1),
-            (0.015 * cos) % 1
-          );
+          animateRotationRef.current.set(((0.015 * sine) % 1), (Math.PI * rotation + ((0.025 * sine) % 1)), ((0.015 * cos) % 1));
           easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
         }
 
+        easing.damp(blendedMaterialRef.current, "bumpScale", defaultMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
         easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current.color, 0.3, clampedDelta)
+        easing.damp(blendedMaterialRef.current, "dispersion", defaultMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "iridescence", defaultMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
+        easing.damp(blendedMaterialRef.current, "iridescenceIOR", defaultMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0.5, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "bumpScale", defaultMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
-
-        blendedMaterialRef.current.map = defaultMaterialRef.current?.map ?? null;
-        blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap ?? null;
-        blendedMaterialRef.current.bumpMap = defaultMaterialRef.current?.bumpMap ?? null;
-
+        blendedMaterialRef.current.map = defaultMaterialRef.current?.map
+        blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap;
+        blendedMaterialRef.current.bumpMap = defaultMaterialRef.current?.bumpMap;
       }
     }
   });

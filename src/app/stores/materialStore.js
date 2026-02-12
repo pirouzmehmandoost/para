@@ -1,57 +1,113 @@
 import { create } from 'zustand';
 import * as THREE from 'three';
+import { getColorSpace } from '@utils/materialUtils';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
+// Uint8Array with pixel data (R, G, B, A for each pixel)
+const width = 32;
+const height = 32;
+const size = width * height;
+const diffusedata = new Uint8Array(4 * size);
+const roughnessData = new Uint8Array(4 * size);
+const bumpData = new Uint8Array(4 * size);
+bumpData.fill(0);
+
+for (let i = 0; i < size; i++) {
+  const stride = i * 4;
+  diffusedata[stride] = 255; // red
+  diffusedata[stride + 1] = 255; // green
+  diffusedata[stride + 2] = 255; // blue
+  diffusedata[stride + 3] = 255; // alpha (opacity)
+
+  roughnessData[stride] = 255; // red
+  roughnessData[stride + 1] = 255; // greenread
+  roughnessData[stride + 2] = 255; // blue
+  roughnessData[stride + 3] = 255; // alpha (opacity)
+}
+const _scratchDiffuseTexture = new THREE.DataTexture(diffusedata, width, height);
+_scratchDiffuseTexture.name = '_scratchDiffuseTexture';
+_scratchDiffuseTexture.colorSpace = THREE.SRGBColorSpace;
+_scratchDiffuseTexture.needsUpdate = true;
+
+const _scratchRoughnessTexture = new THREE.DataTexture(roughnessData, width, height);
+_scratchRoughnessTexture.name = '_scratchRoughnessTexture';
+_scratchRoughnessTexture.colorSpace = THREE.NoColorSpace;
+_scratchRoughnessTexture.needsUpdate = true;
+
+const _scratchBumpTexture = new THREE.DataTexture(bumpData, width, height);
+_scratchBumpTexture.name = '_scratchBumpTexture';
+_scratchBumpTexture.colorSpace = THREE.NoColorSpace;
+_scratchBumpTexture.needsUpdate = true;
+
 const texturedBlackMaterial = {
-  bumpScale: -0.5,
+  bumpScale: -1,
   color: '#4f4f4f',
   flatShading: false,
+  name: 'textured_black',
   reflectivity: 0.35,
   ior: 1.8,
   roughness: 1,
   side: THREE.DoubleSide,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+  bumpMap: _scratchBumpTexture,
 };
 
-const matteMaterial = {
+const matteBlackMaterial = {
+  bumpScale: 10,
   color: '#2f2f2f',
   flatShading: false,
   ior: 1.5,
+  name: 'matte_black',
   reflectivity: 0.35,
   roughness: 0.75,
   side: THREE.DoubleSide,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+  bumpMap: _scratchBumpTexture,
 };
 
 const glossBlackMaterial = {
   color: '#101010',
   flatShading: false,
   ior: 1.5,
+  name: 'gloss_black',
   reflectivity: 0.35,
-  roughness: 0.4,
+  roughness: 0.375,
   side: THREE.DoubleSide,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+  bumpMap: _scratchBumpTexture,
 };
 
 const eggshellMaterial = {
+  bumpScale: 50,
   color: '#ccc0a3',
+  dispersion: 1,
   flatShading: false,
   ior: 1.5,
-  reflectivity: 0.35,
-  roughness: 0.75,
+  iridescence: 1,
+  iridescenceIOR: 1.5,
+  name: 'eggshell',
+  reflectivity: 0.4,
+  roughness: 0.4,
   side: THREE.DoubleSide,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+  bumpMap: _scratchBumpTexture,
 };
 
 const groundMaterial = {
   color: '#101010',
   flatShading: false,
-  // ior: 1,
-  opacity: 1,
-  // reflectivity: 0.3,
-  roughness: 1,
   metalness: 0.8,
+  opacity: 1,
+  roughness: 1,
   side: THREE.DoubleSide,
-  // transmission: 1,
   transparent: true,
+  name: 'ground',
 };
 
 const materialState = {
@@ -65,8 +121,8 @@ const materialState = {
   matte_black: {
     displayName: 'Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
-    material: new THREE.MeshPhysicalMaterial({ ...matteMaterial }),
-    materialProps: matteMaterial,
+    material: new THREE.MeshPhysicalMaterial({ ...matteBlackMaterial }),
+    materialProps: matteBlackMaterial,
   },
 
   textured_black: {
@@ -78,12 +134,7 @@ const materialState = {
       roughnessMap: '/textured_bag_roughness.jpg',
       bumpMap: '/textured_bag_bump.jpg',
     },
-    materialProps: {
-      ...texturedBlackMaterial,
-      map: '/textured_bag_color.jpg',
-      roughnessMap: '/textured_bag_roughness.jpg',
-      bumpMap: '/textured_bag_bump.jpg',
-    },
+    materialProps: texturedBlackMaterial,
   },
 
   gloss_black: {
@@ -122,23 +173,26 @@ const materialStore = (set, get) => ({
 
   getTexture: (id, materialID) => {
     let textures = get().textures;
-    const searchCondition = (texture) =>
-      (texture.url === id) ||
-      (texture.key === id) ||
-      (texture.materialProperty === id);
+    const searchCondition = (texture) => (texture.url === id) || (texture.materialProperty === id);
 
-      if (textures[`${id}`]) return textures[`${id}`]?.texture;
-      if (id && materialID) return Object.values(textures).find(texture => (texture.materialIDs.includes(materialID) && texture.materialProperty === id))?.texture;
-      return Object.values(textures).find(texture => searchCondition(texture))?.texture;
+    if (textures[`${id}`]) return textures[`${id}`]?.texture;
+    if (id && materialID) return Object.values(textures).find(texture => (texture.materialIDs.includes(materialID) && texture.materialProperty === id))?.texture;
+    return Object.values(textures).find(texture => searchCondition(texture))?.texture;
   },
 
   setMaterialTextures: (textures) => {
-    const tempMaterials = get().materials;
-    for (const texture in textures) {
-      const materialIDs = textures[texture].materialIDs
-      for (const materialID of materialIDs) {
-        const materialProperty = textures[texture].materialProperty;
-        tempMaterials[materialID].material[materialProperty] = textures[texture].texture
+    const materials = get().materials;
+
+    for (const material in materials) {
+      const designatedTextures = materials[material]?.textures;
+      if (designatedTextures) {
+        const materialToUpdate = materials[material].material;
+        for (const materialProperty in designatedTextures) {
+          const textureToAssign = textures[designatedTextures[materialProperty]];
+          textureToAssign.flipY = false;
+          materialToUpdate[materialProperty] = textureToAssign.clone();
+          materialToUpdate[materialProperty].colorSpace = getColorSpace(materialProperty);
+        }
       }
     }
 
@@ -149,7 +203,7 @@ const materialStore = (set, get) => ({
       },
       materials: {
         ...state.materials,
-        ...tempMaterials
+        ...materials
       },
     }));
   },
@@ -158,23 +212,3 @@ const materialStore = (set, get) => ({
 const useMaterial = create(materialStore);
 
 export default useMaterial;
-
-// old - preserved for person record
-// setTextures: (textures) => {
-//   const temp = get().materials;
-//   for (const materialId in textures) {
-//     for (const materialProperty in textures[materialId]) {
-//       temp[materialId].material[materialProperty] = textures[materialId][materialProperty]
-//     }
-//   }
-
-//   set((state) => ({
-//     textures: {
-//       ...state.textures,
-//     },
-//     materials: {
-//       ...state.materials,
-//       ...temp,
-//     },
-//   }));
-// },
