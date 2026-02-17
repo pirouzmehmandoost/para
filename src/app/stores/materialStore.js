@@ -83,7 +83,6 @@ const glossBlackMaterial = {
 };
 
 const eggshellMaterial = {
-  bumpScale: 50,
   color: '#ccc0a3',
   dispersion: 1,
   flatShading: false,
@@ -142,6 +141,9 @@ const materialState = {
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
     material: new THREE.MeshPhysicalMaterial({ ...glossBlackMaterial }),
     materialProps: glossBlackMaterial,
+    textures: {
+      bumpMap: '/gloss_material_roughness.jpg',
+    },
   },
 
   eggshell: {

@@ -61,7 +61,7 @@ export const portfolio = {
       dimensions: '',
       sceneData: {
         autoRotate: true,
-        autoRotateSpeed: 0.5,
+        autoRotateSpeed: 0.45,
         rotation: 0,
         autoUpdateMaterial: false,
         groupName: 'Sang',
@@ -101,7 +101,7 @@ export const portfolio = {
       dimensions: '',
       sceneData: {
         autoRotate: true,
-        autoRotateSpeed: 0.5,
+        autoRotateSpeed: 0.45,
         rotation: 1.0,
         autoUpdateMaterial: false,
         groupName: 'PÍ',
@@ -111,9 +111,9 @@ export const portfolio = {
         },
         fileData: {
           nodeName: 'Yoga_Mat_Strap',
-          url: '/yoga_mat_strap_for_web2.glb'
+          url: '/yoga_mat_strap.glb'
         },
-        scale: 1.05,
+        scale: 0.55,
       },
     },
   ],
