@@ -70,6 +70,7 @@ const matteBlackMaterial = {
 };
 
 const glossBlackMaterial = {
+  bumpScale: 2,
   color: '#101010',
   flatShading: false,
   ior: 1.5,
