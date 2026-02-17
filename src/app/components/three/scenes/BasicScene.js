@@ -66,7 +66,7 @@ const BasicScene = () => {
   }, [signature, textures, setMaterialTextures, texturesToLoad]);
 
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [-10, 40, -100];
+    const fixedYPositions = [-10, 40, -105];
 
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
     const positions = [];
