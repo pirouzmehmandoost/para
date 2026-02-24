@@ -100,16 +100,6 @@ const createVariants = (reduceMotion: boolean): MenuVariants => {
   };
 };
 
-// const DiagonalText = ({text}) => {
-//   const names = text.split(" ");
-//    console.log(names)
-//   const characters = text.split('').map((char, index) => 
-//     <div key={index} className='text-red-700 rotate-45'> {char} </div> 
-//   );
-
-//   return <div  className='-rotate-45'> {characters} </div>
-// };
-
 const MainMenu = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
@@ -231,3 +221,9 @@ const MainMenu = () => {
 };
 
 export default MainMenu;
+
+// const DiagonalText = ({text}) => {
+//   const names = text.split(" ");
+//   const characters = text.split('').map((char, index) => <div key={index} className='text-red-700 rotate-45'> {char} </div> );
+//   return <div  className='-rotate-45'> {characters} </div>
+// };

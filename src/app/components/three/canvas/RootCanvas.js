@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, Html, Stats } from '@react-three/drei';
+import { Environment, Html } from '@react-three/drei';
 import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import BasicScene from '../scenes/BasicScene';
@@ -47,7 +47,6 @@ export const RootCanvas = () => {
           <BasicScene />
           {/* <SceneRouter /> */}
         </Suspense>
-        <Stats className='ml-24 mt-5'/>
       </Canvas>
     </div>
   );
