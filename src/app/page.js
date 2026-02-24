@@ -39,88 +39,90 @@ const createVariants = (reduceMotion) => {
   };
 };
 
+const ControlsDisplayModal = () => {
+  return (
+    <div className='fixed mt-5 ml-24 text-sm text-neutral-800'>
+      <ul>
+        <li> Browse → swipe left/right </li>
+        <li> Focus model → click model </li>
+        <li> Open details → Focus model → click “View Details” </li>
+        <li> Close details → Esc or back arrow </li>
+        <li> Exit focus → Esc </li>
+      </ul>
+    </div>
+  );
+}
+
 const SelectionDisplayModal = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
-  // new code
   const isFocused = useSelection((state) => state.selection.isFocused);
-  const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = ''} = {} } = {} }) => nodeName === isFocused);
+  const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === isFocused);
   const setSelectionStore = useSelection((state) => state.setSelection);
   const modal = Boolean(focusedProject?.name?.length);
-  //old code
-  // const selection = useSelection((state) => state.selection);
-  // const modal = Boolean(selection?.name?.length);
-
-  const handleClick = () => { if (focusedProject) setSelectionStore({ ...focusedProject }) }; //new code
+  const handleClick = () => { if (focusedProject) setSelectionStore({ ...focusedProject }) };
 
   return (
-    <main className='flex flex-col w-full h-full'>
-      <div className={`fixed flex flex-col grow h-1/5 w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit place-self-center justify-center top-12 md:left-10 lg:left-10 xl:left-10 2xl:left-10 transition-all duration-500 ease-in-out 
-        ${modal
-          ? 'h-1/5'
-          : 'h-fit'}`}
-      >
-        <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
-          <AnimatePresence mode='wait'>
-            {modal && (
+    <div className={`fixed flex flex-col grow h-1/5 w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit top-32 md:left-10 lg:left-10 xl:left-10 2xl:left-10 place-self-center justify-center transition-all duration-500 ease-in-out 
+        ${modal ? 'h-1/5' : 'h-fit'}`}
+    >
+      <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
+        <AnimatePresence mode='wait'>
+          {modal && (
+            <motion.div
+              id='modal-content'
+              className='flex flex-col w-fit h-full text-neutral-800 place-items-start'
+              animate='visible'
+              exit='hidden'
+              initial='hidden'
+              variants={variants.modal}
+            >
               <motion.div
-                id='modal-content'
-                className='flex flex-col w-fit h-full text-neutral-800 place-items-start'
-                animate='visible'
-                exit='hidden'
-                initial='hidden'
-                variants={variants.modal}
+                variants={variants.modalItem}
+                className='place-self-center text-center text-4xl perspective-origin-bottom'
               >
-                <motion.div
-                  variants={variants.modalItem}
-                  className='place-self-center text-center text-4xl perspective-origin-bottom'
-                >
-                  {focusedProject?.name}
-                </motion.div>
-
-                <motion.div
-                  variants={variants.modalItem}
-                  className='text-2xl text-center text-pretty perspective-origin-bottom'
-                >
-                  {focusedProject?.shortDescription}
-                </motion.div>
-
-                <motion.div
-                  variants={variants.modalItem}
-                  className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'
-                >
-                  <Link
-                    href={`/projects/${getSlugFromName(focusedProject?.name)}`}
-                    rel='noopener noreferrer'
-                    className='pointer-events-auto'
-                    onClick = {handleClick}
-                  >
-                    View Details
-                  </Link>
-                </motion.div>
+                {focusedProject?.name}
               </motion.div>
-            )}
-          </AnimatePresence>
-          {/* Backdrop overlay */}
-          {/* <motion.div
-            className='pointer-events-none'
-            variants={variants.overlay}
-            animate={modal === true ? 'open' : 'closed'}
-            initial='closed'
-          >
-            <motion.div 
-              className={`absolute w-1/2 h-full inset-0 -top-8 -z-10 m-auto bg-neutral-300/50 blur-xl drop-shadow-xl drop-shadow-neutral-300 shadow-xl shadow-neutral-300 contrast-150 pointer-events-none`}/>
-          </motion.div> */}
-        </div>
+              <motion.div
+                variants={variants.modalItem}
+                className='text-2xl text-center text-pretty perspective-origin-bottom'
+              >
+                {focusedProject?.shortDescription}
+              </motion.div>
+              <motion.div
+                variants={variants.modalItem}
+                className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'
+              >
+                <Link
+                  href={`/projects/${getSlugFromName(focusedProject?.name)}`}
+                  rel='noopener noreferrer'
+                  className='pointer-events-auto'
+                  onClick={handleClick}
+                >
+                  View Details
+                </Link>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+    </div>
+  );
+};
+
+const MainDisplayModal = () => {
+  return (
+    <main className='flex flex-col w-full h-full'>
+      <ControlsDisplayModal />
+      <SelectionDisplayModal />
     </main>
   );
 };
 
-export default SelectionDisplayModal;
+export default MainDisplayModal;
 
 // style={{ maskImage: 'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)' }}
-            //   ${modal
-            //     ? 'animate-morph'
-            //     : ''}`}
-            // />
+//   ${modal
+//     ? 'animate-morph'
+//     : ''}`}
+// />

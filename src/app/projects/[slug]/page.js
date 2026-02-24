@@ -15,7 +15,7 @@ const { projects } = portfolio;
 const ProjectPage = ({ params }) => {
   const { slug } = use(params);
   const materials = useMaterial((state) => state.materials);
-  const selection = useSelection((state) => state.getSelection);
+  const selection = useSelection((state) => state.selection);
   const setSelectionStore = useSelection((state) => state.setSelection);
   const setMaterialID = useSelection((state) => state.setMaterialID)
   const [expanded, setExpanded] = useState(false);
