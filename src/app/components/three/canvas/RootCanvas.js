@@ -47,7 +47,7 @@ export const RootCanvas = () => {
           <BasicScene />
           {/* <SceneRouter /> */}
         </Suspense>
-        <Stats className='ml-5 mt-24'/>
+        <Stats className='ml-24 mt-5'/>
       </Canvas>
     </div>
   );
