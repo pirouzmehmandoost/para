@@ -1,10 +1,9 @@
 'use client';
 
-import { startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { Bvh, useTexture } from '@react-three/drei'
-import useMaterial from '@stores/materialStore';
+import { Bvh } from '@react-three/drei'
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
@@ -12,6 +11,7 @@ import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
 import Ground from '../models/Ground';
+import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -23,8 +23,6 @@ const BasicScene = () => {
   const size = useThree((state) => state.size);
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
-  const setMaterialTextures = useMaterial(state => state.setMaterialTextures);
-  const materials = useMaterial.getState().materials;
   const setSelectionStore = useSelection((state) => state.setSelection);
   const isFocused = useSelection((state) => state.selection.isFocused);
   const setIsFocused = useSelection((state) => state.setIsFocused);
@@ -37,33 +35,8 @@ const BasicScene = () => {
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
-  const texturesLoaded = useRef(null);
 
   const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
-
-  const texturesToLoad = useMemo(() => {
-    const texturesToLoad = {};
-    for (const materialID in materials) {
-      const materialTextureProps = materials[materialID]?.textures;
-
-      if (materialTextureProps) {
-        for (const materialProperty in materialTextureProps) {
-          texturesToLoad[materialTextureProps[materialProperty]] = materialTextureProps[materialProperty];
-        }
-      }
-    }
-    return texturesToLoad;
-  }, [materials]);
-
-  const textures = useTexture(texturesToLoad);
-  const signature = useMemo(() => Object.keys(texturesToLoad).sort().join('|'), [texturesToLoad]);
-
-  useLayoutEffect(() => {
-    if (texturesLoaded.current === signature) return;
-    for (const url of Object.keys(texturesToLoad)) { if (!textures[url]) return }
-    setMaterialTextures(textures);
-    texturesLoaded.current = signature;
-  }, [signature, textures, setMaterialTextures, texturesToLoad]);
 
   const meshPositions = useMemo(() => {
     const fixedYPositions = [-10, 40, -105];
@@ -152,6 +125,7 @@ const BasicScene = () => {
 
   return (
     <>
+      <MaterialTextureInitializer />
       <directionalLight
         castShadow={true}
         color={'#fff6e8'}

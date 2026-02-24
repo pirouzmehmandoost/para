@@ -155,11 +155,14 @@ const materialState = {
   },
 };
 
+const createIdempotentFlag = (texturesToLoad) => Object.keys(texturesToLoad).sort().join('|');
+
 const textureState = {}
 
 const materialStore = (set, get) => ({
   materials: materialState,
   textures: textureState,
+  texturesInitialized: '',
 
   getMaterials: () => get().materials,
 
@@ -178,6 +181,10 @@ const materialStore = (set, get) => ({
 
   setMaterialTextures: (textures) => {
     const materials = get().materials;
+    const texturesInitialized = get().texturesInitialized;
+    const initialized = createIdempotentFlag(textures);
+
+    if (texturesInitialized === initialized) return;
 
     for (const material in materials) {
       const designatedTextures = materials[material]?.textures;
@@ -193,6 +200,7 @@ const materialStore = (set, get) => ({
     }
 
     set((state) => ({
+      texturesInitialized: initialized,
       textures: {
         ...state.textures,
         ...textures
