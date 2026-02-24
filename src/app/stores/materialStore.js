@@ -174,14 +174,7 @@ const materialStore = (set, get) => ({
 
   getTextures: () => get().textures,
 
-  getTexture: (id, materialID) => {
-    let textures = get().textures;
-    const searchCondition = (texture) => (texture.url === id) || (texture.materialProperty === id);
-
-    if (textures[`${id}`]) return textures[`${id}`]?.texture;
-    if (id && materialID) return Object.values(textures).find(texture => (texture.materialIDs.includes(materialID) && texture.materialProperty === id))?.texture;
-    return Object.values(textures).find(texture => searchCondition(texture))?.texture;
-  },
+  getTexture: (id) => get().textures[`${id}`],
 
   setMaterialTextures: (textures) => {
     const materials = get().materials;
@@ -192,8 +185,8 @@ const materialStore = (set, get) => ({
         const materialToUpdate = materials[material].material;
         for (const materialProperty in designatedTextures) {
           const textureToAssign = textures[designatedTextures[materialProperty]];
-          textureToAssign.flipY = false;
           materialToUpdate[materialProperty] = textureToAssign.clone();
+          materialToUpdate[materialProperty].flipY = false;
           materialToUpdate[materialProperty].colorSpace = getColorSpace(materialProperty);
         }
       }

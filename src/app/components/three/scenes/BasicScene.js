@@ -56,7 +56,7 @@ const BasicScene = () => {
   }, [materials]);
 
   const textures = useTexture(texturesToLoad);
-  const signature = useMemo(() => Object.keys(texturesToLoad).sort().join(''), [texturesToLoad]);
+  const signature = useMemo(() => Object.keys(texturesToLoad).sort().join('|'), [texturesToLoad]);
 
   useLayoutEffect(() => {
     if (texturesLoaded.current === signature) return;
