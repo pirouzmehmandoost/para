@@ -24,7 +24,7 @@
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.180.0",
-    "framer-motion": "^12.23.24",
+    "framer-motion": "^12.34.3",
     "maath": "^0.10.8",
     "next": "^16.1.6",
     "postcss": "^8.5.6",

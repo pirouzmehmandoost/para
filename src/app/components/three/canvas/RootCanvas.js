@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import { Environment, Html, Stats } from '@react-three/drei';
-import cameraConfigs from '@configs/cameraConfigs';
 import { envColor, envImageUrl } from '@configs/globals';
+import cameraConfigs from '@configs/cameraConfigs';
 import BasicScene from '../scenes/BasicScene';
 
 THREE.ColorManagement.enabled = true;
@@ -47,7 +47,7 @@ export const RootCanvas = () => {
           <BasicScene />
           {/* <SceneRouter /> */}
         </Suspense>
-        <Stats />
+        <Stats className='ml-5 mt-24'/>
       </Canvas>
     </div>
   );
