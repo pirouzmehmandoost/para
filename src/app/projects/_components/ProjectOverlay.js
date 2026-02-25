@@ -64,13 +64,13 @@ export default function ProjectOverlay({ slug, entryPoint = 'page' }) {
     if (entryPoint === 'modal') {
       router.back();
       setTimeout(() => {
-        // If modal was opened via direct-load, `back()` can exit the app.
+        // If visiting url directly, `back()` can exit the app.
         if (window.location.pathname.startsWith('/projects/')) router.push('/');
       }, 150);
       return;
     }
 
-    // Canonical route close is deterministic.
+    // if visiting url directly (.../projects/[xyz]) close always goes to /, it doesn’t depend on browser history.
     router.push('/');
   };
 
@@ -98,42 +98,26 @@ export default function ProjectOverlay({ slug, entryPoint = 'page' }) {
   );
 
   return (
-    <div
-      id='project-page-container'
-      className='flex flex-col w-full h-screen'
-      data-route={pathname}
-    >
-      <div
-        id='project-page-canvas-container'
-        className='fixed flex flex-col w-full h-full place-self-center place-content-center'
-      >
-        <div
-          id='project-page-back-button-container'
-          className='fixed top-24 left-5 p-3 rounded-full bg-neutral-500/10 backdrop-blur-md text-5xl transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700'
+    <div className='fixed flex flex-col w-full h-screen' data-route={pathname}>
+      <div className='fixed top-24 left-5 p-3 rounded-full bg-neutral-500/10 backdrop-blur-md transition-all duration-500 ease-in-out text-5xl text-neutral-900 hover:text-neutral-700'>
+        <button
+          aria-label='Close details'
+          className='flex flex-row w-full place-items-center cursor-pointer'
+          onClick={close}
+          type='button'
         >
-          <button
-            className='flex flex-row w-full place-items-center cursor-pointer'
-            onClick={close}
-            type='button'
-            aria-label='Close details'
-          >
-            <ArrowBackIosNewIcon fontSize='medium' />
-          </button>
-        </div>
+          <ArrowBackIosNewIcon fontSize='medium' />
+        </button>
       </div>
-
-      <div
-        id='project-page-bottom-menu-container'
-        className={`fixed w-full bottom-0 z-20 right-0 place-self-end transition-all duration-700 ease-in-out ${expanded ? 'mt-96' : 'mt-0'}`}
+      <div className={`fixed w-full bottom-0 z-20 right-0 place-self-end transition-all duration-700 ease-in-out ${expanded ? 'mt-96' : 'mt-0'}`}
       >
         <div className='flex z-20 w-full h-full bottom-0 right-0'>
           <div className={`flex flex-col w-full h-full backdrop-blur-3xl backdrop-invert-40 transition-all duration-700 ease-in-out ${expanded ? 'backdrop-opacity-90 backdrop-blur-xl' : 'backdrop-opacity-50'}`}>
-            <div className={`px-6 pt-0 justify-items-center transition-all transition-discrete duration-700 ease-in-out ${expanded ? 'overflow-auto max-h-96' : 'overflow-hidden max-h-0'}`}>
+            <div className={`px-6 pt-0 justify-items-center transition-all duration-700 ease-in-out ${expanded ? 'overflow-auto max-h-96' : 'overflow-hidden max-h-0'}`}>
               <p className={`mt-5 text-neutral-900 transition-all duration-700 ease-in-out delay-75 ${expanded ? 'opacity-100' : 'opacity-0'}`}>
                 {description}
               </p>
             </div>
-
             <div className='flex flex-row max-w-full my-3 items-center text-neutral-900'>
               <button
                 className='ml-5 justify-self-center items-center cursor-pointer basis-1/3'
