@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
@@ -111,6 +112,13 @@ const SelectionDisplayModal = () => {
 };
 
 const MainDisplayModal = () => {
+  const pathname = usePathname();
+
+  // When `/projects/[slug]` is presented as an intercepting modal route,
+  // the home page remains mounted underneath. Hide the home overlays to
+  // avoid stacked/conflicting UI.
+  if (pathname?.startsWith('/projects/')) return null;
+
   return (
     <main className='flex flex-col w-full h-full'>
       <ControlsDisplayModal />

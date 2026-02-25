@@ -39,7 +39,7 @@ const BasicScene = () => {
   const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
 
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [-10, 40, -105];
+    const fixedYPositions = [-8, 40, -105];
 
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
     const positions = [];
