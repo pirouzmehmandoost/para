@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
-// import { dampCameraLookAt } from '@utils/quaternionUtils';
 import cameraConfigs from '@configs/cameraConfigs';
 
 const AnimatedRig = ({
@@ -35,6 +34,7 @@ const AnimatedRig = ({
 
   const targetIndex = useRef(0);
   const nameToIndexMapRef = useRef({});
+  // const prevFocusTargetRef = useRef(null);
 
   useEffect(() => {
     const map = {};
@@ -46,6 +46,26 @@ const AnimatedRig = ({
     nameToIndexMapRef.current = map;
 
   }, [targets]);
+
+  // useEffect(() => {
+  //   const prev = prevFocusTargetRef.current;
+  //   prevFocusTargetRef.current = focusTarget;
+
+  //   // When focus clears, hold the camera at the previously focused target
+  //   // so the user can visually re-orient after dismissing the details UI.
+  //   const shouldHoldOnFocusClear =
+  //     typeof window !== 'undefined' && window.location?.pathname?.startsWith('/projects/');
+
+  //   // Do NOT interfere with swipe-driven browsing on `/`.
+  //   const isManualOverrideActive = clock.elapsedTime < manualOverrideTimeRef.current;
+
+  //   if (shouldHoldOnFocusClear && !isManualOverrideActive && prev !== null && focusTarget === null) {
+  //     const prevIndex = nameToIndexMapRef.current?.[prev] ?? -1;
+  //     if (typeof prevIndex === 'number' && prevIndex >= 0) targetIndex.current = prevIndex;
+  //     manualOverrideTimeRef.current = clock.elapsedTime + MANUAL_OVERRIDE_SECONDS;
+  //     lastSwitchTimeRef.current = clock.elapsedTime;
+  //   }
+  // }, [focusTarget, clock, MANUAL_OVERRIDE_SECONDS]);
 
   useEffect(() => {
     if (!domElement) return;
@@ -160,9 +180,6 @@ const AnimatedRig = ({
         targetIndex.current = focusedIndex;
         nextPosition = stopPositions.current[targetIndex.current];
       }
-      // original logic
-      // targetIndex.current = focusedIndex;
-      // nextPosition = stopPositions.current[targetIndex.current];
     }
     else if (isManualOverrideActive && stopPositions.current[targetIndex.current]) {
       nextPosition = stopPositions.current[targetIndex.current];
@@ -188,14 +205,8 @@ const AnimatedRig = ({
     // test using old hacky approach to locking camera rotation
     cameraPosition.current.copy(camera.position);
     camera.lookAt(cameraPosition.current);
-    // end test 
 
-
-    lookAtPosition.current.set(
-      nextPosition.x + sine,
-      nextPosition.y + yOffset,
-      nextPosition.z + zOffset
-    );
+    lookAtPosition.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
     // dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, (Math.PI / 6), 0);
     // easing.dampLookAt(camera, nextPosition, 1.5, clampedDelta);
