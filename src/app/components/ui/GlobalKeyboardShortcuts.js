@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import useSelection from '@stores/selectionStore';
 
 const clearFocus = () => {
@@ -11,28 +11,30 @@ const clearFocus = () => {
 export default function GlobalKeyboardShortcuts() {
   const pathname = usePathname();
   const router = useRouter();
+  const segment = useSelectedLayoutSegment('modal');
 
   useEffect(() => {
     const onKeyDown = (e) => {
+      let flag = false;
       if (e.key !== 'Escape') return;
 
-      if (pathname?.startsWith('/projects/')) {
-        clearFocus();
+      if (segment?.length) {
         router.back();
-        // If the user direct-loaded `/projects/[slug]`, `back()` can exit the app.
-        // This fallback keeps close deterministic.
-        setTimeout(() => {
-          if (window.location.pathname.startsWith('/projects/')) router.push('/');
-        }, 150);
-        return;
+        flag = true;
+      }
+      else if (pathname.startsWith('/projects/')) {
+        router.replace('/');
+        flag = true;
       }
 
-      clearFocus();
+      if (flag) clearFocus();
+
+      return;
     };
 
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [pathname, router]);
+    return () => { window.removeEventListener('keydown', onKeyDown); }
+  }, [pathname, router, segment]);
 
   return null;
 }

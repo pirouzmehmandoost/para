@@ -14,7 +14,7 @@ const { projects } = portfolio;
 
 const clearFocus = () => useSelection.getState().setIsFocused(null);
 
-export default function ProjectOverlay({ slug, entryPoint = 'page' }) {
+export default function ProjectOverlay({ slug, entryPoint }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -60,18 +60,7 @@ export default function ProjectOverlay({ slug, entryPoint = 'page' }) {
 
   const close = () => {
     clearFocus();
-
-    if (entryPoint === 'modal') {
-      router.back();
-      setTimeout(() => {
-        // If visiting url directly, `back()` can exit the app.
-        if (window.location.pathname.startsWith('/projects/')) router.push('/');
-      }, 150);
-      return;
-    }
-
-    // if visiting url directly (.../projects/[xyz]) close always goes to /, it doesn’t depend on browser history.
-    router.push('/');
+    router.replace('/');
   };
 
   const handleSelectMaterial = (id) => {
