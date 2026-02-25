@@ -8,138 +8,38 @@ PARA is a work in progress site that shows my 3D printing projects. For now it o
 
 ## Notable Technical Implementations: 
   
-  **Dynamic Model Positioning**
-   - Meshes of 3D Models are dynamically positioned to avoid intersection with designated meshes, such as the Ground. Zero per-frame overhead after initial environment setup, ie reposition happens only once, since the Ground's position remains constant.
+ 1. **Dynamic Model Positioning**
+   - Meshes of 3D Models are dynamically positioned, translating along the y-axis to avoid intersection with a designated Ground mesh. Zero per-frame overhead. Repositioning happens only once, the Ground's position remains constant.
    - Files: `Model.js:30-144`, `Group.js`, `meshUtils.js`
    
    **Implementation:**
-   - Bidirectional raycasting: 2 rays cast up and down from the vertices of simple circle geometry positioned under the model mesh's bounding box. The model is translated up or down the Y-axis in Three.js space. The circle's dimensions ensure that the mesh will not intersect the ground while the model mesh rotates.
+   - Raycasting: A circle geometry is positioned under each model mesh's bounding box. 2 rays are cast up and down each vertex of the circle. The model is translated up or down the Y-axis. The circle's dimensions ensure that the mesh will not intersect the ground while the model mesh rotates.
 
    - **Sampling Strategy**: 
-    - Instantiate a circle geometry with diameter equal to the diagonal length of the underside of bounding box (like the length of the slash in this square ⧅). 
-    - Position the circle under the bounding box.
-    - Cast rays from each circle vertex and it's center (11 vertices). 
+   - Calculate the diagonal length of the underside of bounding box. As if the rectangle is triangulated, and you want the longest edge's length.
+    - Instantiate a circle geometry, radius = diagonal length, position is centered under the bounding box. Vertex count is 11 (10 edges + center)
+    - Raycast from each vertex (22 rays total). 
    - **Bidirectional raycasting**: 
-     - Upward rays detect terrain penetration (if a model is too low then rays will hit the terrain)
-      - highest y-coordinate hit point is used to reposition the model above that Y coordinate.
-      - The hit distance is used for a threshold filter to reject very distant terrain. 
-     - Downward rays detect floating models (to reposition models that float too high)
-     - ***Notes***:
-      - Downard raycasting may also be useful if decide to animate terrain vertex positions later.
-      - Hits against the model mesh itself are negated.
+    - **Hits against the model mesh itself are negated.**
+    - Upward rays detect if a model is too low, since an intersection means the ground is above the circle.
+    - The intersecting ray that travels the farthest matters most. If there is an intersection, the y-coordinate hit point is used to calculate how the model must move up the y axis.
+    - Downward rays detect high-floating models. **This is not implemented yet, a nice feature if the ground is a giant cube or sphere**
    - **Hit Filtering**:
-     - Upward Penetration threshold (2x model height) ignores distant terrain.
-      - Prevents positioning relative to hills 100+ units away or above ceilings
-      - ***Note***: the logic could be refined to discriminate between ground and ceilings/skies. 
-   - **Dynamic Clearance**: Adds 10% of model height (minimum 5 units) for appropriate spacing
-   - **Performance**: 
-     - One-time computational cost per model on mount (bounding box calculation + ~22 raycasts)
-     - Zero per-frame overhead after initial positioning for static terrain
-     - Prevents re-execution on re-renders.
-   
-   **Why this is cool, maybe:**
-   - Works with almost any large surface geometry.
-   - No hardcoded height positions, fully dynamic.
-   - Models never intersect floor regardless of initial position
-
-   **What can be refined:**
-   - Will work for parent containers such as a group, but not in all cases. Upward casted rays would hit the first mesh directly under its point of origin. if the model mesh passes through more than one mesh or a thick mesh, it may not clear past all of them. 
-   - Could be refined to move meshes along x-z plane until a suitable y-position is found within a threshold range.
+     - Upward Penetration threshold (2x model height) ignores distant terrain until further refinement revises this logic.
+   - **Dynamic Clearance**: The longest ray cast travel distance + 5% of model height.
+   - **Performance**: One-time computational cost per model on mount (bounding box calculation + 22 raycasts). It isn't expected that the user will be changing their browser's height and width unless they tilt a mobile device, in which case which the component re-renders and raycasts.
 
 
-## Three.js optimization to-do list:
+2.  **On-Demand Rendering**
+  - Canvas frameloop toggles beween `demand`  and `interactive` depending on next.js routing, so that in the future I can implement an `About` page and halt animations. 
 
-### Completed ✅
-
-1. **Camera updateProjectionMatrix() calls removed**
-   - Impact: 300 unnecessary calculations/sec eliminated
-   - Files: `CameraRig.js`
-
-2. **Typo fixed in project/page.js**
-   - Impact: Runtime error prevented
-   - File: `project/page.js:34` (election → selection)
-
-3. **Shadow rendering bug fixed**
-   - Impact: Shadows now render correctly on all models
-   - File: `Model.js:46` (recieveShadow → receiveShadow)
-
-4. **Ellipse calculations memoized**
-   - Impact: ~95% reduction in geometry creation overhead
-   - File: `GlobalModelViewer.js:34-63`
-   - Implementation: Wrapped expensive calculations in `useMemo` with proper dependency chain
-   - Reactivity maintained: Window resizes still trigger recalculations
-
-5. **Legacy Code cleanup**
-  - **Removed GLSL implementation, will make this a separate project.
-  - **Removed web store until I take more photos.
-
-6. **Post-processing multisampling reduced**
-   - Impact: ~50% performance improvement in GPU-bound scenarios
-   - File: `GlobalModelViewer.js:65` (multisampling 8 → 4)
-   - Visual quality: Minimal perceptible difference. 
-
-7. **Shadow map resolution revised**
-   - Impact: 75% reduction in shadow map memory (4MB → 1MB per map)
-   - Visual quality: Imperceptible quality loss
-
-
-**Total Performance Gain**: Faster initial load, reduced memory footprint: major reduction in CPU overhead, GPU rendering costs, and memory usage. Shadows render correctly, geometry creation optimized, and post-processing streamlined.
-
-
-**Metrics**:
-- Shadows render correctly on all models
-- Reduced geometry creation overhead (~95% reduction)
-- Eliminated unnecessary camera calculations (300/sec → 0)
-- Improved frame rates on lower-end devices (GPU multisampling optimized)
-- Reduced shadow map memory by 75% (12MB → 3MB total for 3 lights)
-- Faster initial load times
-
-
----
-
-
-##  Performance Testing To-dos
-
-1. **Frame Rate Testing, performance monitoring**: Monitor FPS in different scenarios, sdd optional metrics display with `r3f-perf` or similar
-   - Idle scene
-   - Camera movement
-   - Model selection/highlighting
-   - Window resize
-
-2. **Device Testing**: Test on various hardware, browsers other than Chrome and Firefox
-   - High-end desktop
-   - Mid-range laptop
-   - Mobile devices (iOS/Android)
-
-3. **Load Time Testing**: Measure initial load performance
-   - Network throttling (3G, 4G)
-   - First contentful paint
-   - Time to interactive
-
-4. **Memory Profiling**: Use browser DevTools
-   - Monitor heap size
-   - Check for memory leaks
-   - Verify shadow map reduction impact
-
-
-## Future Optimizations
-
-These are beyond the current scope but I'm considering:
-
-1. **On-Demand Rendering**
-  - Implement `frameloop="demand"` for static scenes
-
-2. **Instancing**
-  - For repeated identical objects
 
 3. **Frustum Culling**
-  - Already handled by Three.js, but verify it's working
+  - Shadow map size is optimized for optimal frame rate, cast shadows only render for meshes within frustum bounds. Shadow computations are the most computationally costly factor of the app.
 
-4. **LOD (Level of Detail)**
-  - For complex models at distance. I have several which are not currently shown in the app.
 
-5. **Texture Atlases**
-  - Combine multiple textures to reduce bindings
+4. **Materials and Textures**`
+  - Visit `src/app/stores/materialStore.js` to see how to I manage textures and Materials with Zustand. I'll add more explanation to the readme soon.  
 
 
 ---
@@ -148,23 +48,18 @@ These are beyond the current scope but I'm considering:
 ## UI to-do list: 
 
 1.  **Resume page**
-  - Redesign, don't use iframe
+  - WIP
 
 2.  **Home page**
-  - Create new splash page**
+  - Create new splash page
+  - display instructions for user interactions (swipe gestures, navigation with ESC, etc).
 
-3.  **Projects page design is incomplete**
-  - it's unclear to people what they are looking at
-
-4.  **Project page: design is incomplete**
+3.  **Model Technical Specs**
   - Write more informative text about each design 
-  - Update styling**
-
 
   ---
 
-
-## Graphics and Animation Libraries Used:
+## Graphics/Animation Libraries Used:
 
 - [Three.js](https://threejs.org/)
 JavaScript API for implementing WebGL- for rendering 2D/3D computer graphics on browsers.
@@ -179,10 +74,6 @@ React renderer for Threejs. For building 3D scenes as JSX components, useful hoo
 Library of functionalities for post-processing graphics- ie special effects to rendered graphics.
 
 
-- [JEasings](https://sbcode.net/threejs/jeasings/)
-JavaScript engine for 3d graphics animations, currently only using on feature branches.
-
-
 - [Maath](https://github.com/pmndrs/maath)
 A collection of useful math helpers, random generators
 
@@ -190,29 +81,44 @@ A collection of useful math helpers, random generators
 - [Motion](https://motion.dev/)
 
 
-- [GLTFJSX](https://github.com/pmndrs/gltfjsx)
-CLI tool that turns GLTF assets into declarative, reusable (react-three-fiber) JSX components. Trims .glb file size which is immensely helpful when staging static assets on github.
+- [GLTFJSX](https://github.com/pmndrs/gltfjsx) CLI tool that I use to optimize file size. It's primarily advertised for generating R3F components, I use it for file compression and write my own. 
 
-Example usage: 
-```
-npx gltfjsx@latest my_mesh.glb --transform --shadows -D 
-```
 
 ---
 
 
 ## Personal Notes:
 
-### Typefaces Used:
+
+### Fonts Used:
 - [Diatype](https://abcdinamo.com/typefaces/diatype)
 - [Halibut](https://www.collletttivo.it/typefaces/halibut)
 
-## Ones to remember:
+
+### Fonts to remember:
 - [Hedvig Letters Serif](https://fonts.google.com/specimen/Hedvig+Letters+Serif?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
 - [Amethysta](https://fonts.google.com/specimen/Amethysta?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
+- [Handjet](https://fonts.google.com/specimen/Handjet?preview.text=Pirouz%20Mehmandoost&categoryFilters=Feeling:%2FExpressive%2FFuturistic;Technology:%2FTechnology%2FVariable&specimen.preview.text=Pirouz+Mehmandoost&preview.script=Latn&preview.lang=en_Latn)
+- [Ysabeau](https://fonts.google.com/specimen/Ysabeau?preview.text=Pirouz%20Mehmandoost&categoryFilters=Technology:%2FTechnology%2FVariable;Feeling:%2FExpressive%2FStiff&specimen.preview.text=Pirouz+Mehmandoost)
+- [Cormorant Infant](https://fonts.google.com/specimen/Cormorant+Infant?preview.text=Pirouz%20Mehmandoost&categoryFilters=Technology:%2FTechnology%2FVariable;Feeling:%2FExpressive%2FVintage&specimen.preview.text=Pirouz+Mehmandoost)
+- [Cormorant](https://fonts.google.com/specimen/Cormorant?preview.text=Pirouz%20Mehmandoost&categoryFilters=Technology:%2FTechnology%2FVariable;Feeling:%2FExpressive%2FVintage&specimen.preview.text=Pirouz+Mehmandoost)
+- [Medieval Sharp](https://fonts.google.com/specimen/MedievalSharp?preview.text=Pirouz%20Mehmandoost&categoryFilters=Appearance:%2FTheme%2FMedieval&specimen.preview.text=Pirouz+Mehmandoost)
+- [Jacquard 12](https://fonts.google.com/specimen/Jacquard+12?preview.text=Pirouz%20Mehmandoost&categoryFilters=Appearance:%2FTheme%2FMedieval&specimen.preview.text=Pirouz+Mehmandoost)
 
---- 
+
+## Next.js routing: 
+
+- **A Parallel route** gives you an extra place to render UI (modal slot). [docs](https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes)
+- **An Intercepting route** decides when a URL should render into that extra place (modal on in-app navigation) vs render normally (canonical page on refresh/deep link). [docs](https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes)
+
 
 ## Reading list: 
 
-- https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80
+- [Post processing with WebGL](https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80)
+- [The Study of Shaders with React Three Fiber](https://blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/)
+- [Inigo Quilez- Raymarching distance fields](https://iquilezles.org/articles/raymarchingdf/)
+- [Metallic Flakes Material in Three.js and Next.js](https://www.sil3ntrunning.net/blog/metallic-flakes-material-in-three-js-and-next-js)
+- [The Book of Shaders](https://thebookofshaders.com/)
+
+
+---
