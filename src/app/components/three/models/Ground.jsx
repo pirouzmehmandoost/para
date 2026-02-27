@@ -23,29 +23,23 @@ const Ground = (props) => {
     scale,
   } = props;
 
+  let groundScale = [];
   const groundRef = useRef(undefined);
   const hasPositioned = useRef(false);
-
   const geometry = useGLTF(URL).nodes?.Plane?.geometry ?? null;
-  const materials = useMaterial((state) => state.materials)
+  const materials = useMaterial.getState().materials;
   const material = materials[NODE_NAME].material;
+  const groundPosition = position?.length ? position : POSITION;
+  const groundRotation = rotation?.length ? rotation : ROTATION;
 
-  let sc = [];
-  const pos = position?.length ? position : POSITION;
-  const rot = rotation?.length ? rotation : ROTATION;
-
-  if (Array.isArray(scale) && scale?.length > 0) {
-    sc = [...scale];
+  if (Array.isArray(scale) && scale?.length) {
+    groundScale = [...scale];
   }
-  if (typeof scale === 'number')  {
-    sc = [
-      SCALE[0] * scale,
-      SCALE[1] * scale,
-      SCALE[2] * scale
-    ];
+  else if (typeof scale === 'number') {
+    groundScale = [SCALE[0] * scale, SCALE[1] * scale, SCALE[2] * scale];
   }
   else {
-    sc = [...SCALE];
+    groundScale = [...SCALE];
   }
 
   useEffect(() => {
@@ -67,14 +61,13 @@ const Ground = (props) => {
         <mesh
           ref={groundRef}
           castShadow={false}
-          // dispose={null}
           geometry={geometry}
           material={material}
           name={"Ground"}
-          position={pos}
+          position={groundPosition}
           receiveShadow={true}
-          rotation={rot}
-          scale={sc}
+          rotation={groundRotation}
+          scale={groundScale}
         />
       )}
     </>
