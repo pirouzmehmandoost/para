@@ -33,7 +33,10 @@ export default function GlobalKeyboardShortcuts() {
     };
 
     window.addEventListener('keydown', onKeyDown);
-    return () => { window.removeEventListener('keydown', onKeyDown); }
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, [pathname, router, segment]);
 
   return null;
