@@ -16,15 +16,15 @@ bumpData.fill(0);
 
 for (let i = 0; i < size; i++) {
   const stride = i * 4;
-  diffusedata[stride] = 255; // red
-  diffusedata[stride + 1] = 255; // green
-  diffusedata[stride + 2] = 255; // blue
-  diffusedata[stride + 3] = 255; // alpha (opacity)
+  diffusedata[stride] = 255; // r
+  diffusedata[stride + 1] = 255; // g
+  diffusedata[stride + 2] = 255; // b
+  diffusedata[stride + 3] = 255; // a
 
-  roughnessData[stride] = 255; // red
-  roughnessData[stride + 1] = 255; // greenread
-  roughnessData[stride + 2] = 255; // blue
-  roughnessData[stride + 3] = 255; // alpha (opacity)
+  roughnessData[stride] = 255;
+  roughnessData[stride + 1] = 255;
+  roughnessData[stride + 2] = 255;
+  roughnessData[stride + 3] = 255;
 }
 const _scratchDiffuseTexture = new THREE.DataTexture(diffusedata, width, height);
 _scratchDiffuseTexture.name = '_scratchDiffuseTexture';
@@ -40,6 +40,8 @@ const _scratchBumpTexture = new THREE.DataTexture(bumpData, width, height);
 _scratchBumpTexture.name = '_scratchBumpTexture';
 _scratchBumpTexture.colorSpace = THREE.NoColorSpace;
 _scratchBumpTexture.needsUpdate = true;
+
+const createIdempotentFlag = (obj) => Object.keys(obj).sort().join('|');
 
 const texturedBlackMaterial = {
   bumpScale: -1,
@@ -155,9 +157,7 @@ const materialState = {
   },
 };
 
-const createIdempotentFlag = (texturesToLoad) => Object.keys(texturesToLoad).sort().join('|');
-
-const textureState = {}
+const textureState = {};
 
 const materialStore = (set, get) => ({
   materials: materialState,
