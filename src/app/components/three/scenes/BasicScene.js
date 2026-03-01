@@ -3,7 +3,7 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { Bvh } from '@react-three/drei'
+import { Bvh, } from '@react-three/drei'
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
@@ -12,6 +12,8 @@ import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
 import Ground from '../models/Ground';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
+import { EffectComposer, N8AO } from '@react-three/postprocessing';
+// import { BlendFunction, Resizer, KernelSize } from 'postprocessing'
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -141,6 +143,12 @@ const BasicScene = () => {
         shadow-camera-right={250}
         shadow-mapSize={2048}
       />
+
+      <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
+        <N8AO aoRadius={50} distanceFalloff={0.3} intensity={7} />
+        {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
+      </EffectComposer>
+
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
