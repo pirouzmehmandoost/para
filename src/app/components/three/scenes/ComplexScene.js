@@ -1,142 +1,51 @@
 // 'use client';
 
-// import { startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+// import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // import * as THREE from 'three';
 // import { useThree } from '@react-three/fiber';
-// import { Bvh, Cloud, Clouds, useTexture } from '@react-three/drei'
-// // import { EffectComposer, N8AO } from '@react-three/postprocessing';
-// import useMaterial from '@stores/materialStore';
+// import { Bvh } from '@react-three/drei'
+// import { EffectComposer, Outline } from '@react-three/postprocessing';
+// import { BlendFunction, Resizer, KernelSize } from 'postprocessing'
 // import useSelection from '@stores/selectionStore';
 // import { portfolio } from '@configs/globals';
 // import cameraConfigs from '@configs/cameraConfigs';
 // import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 // import AnimatedRig from '../cameras/AnimatedRig';
-// import BasicModel from '../models/BasicModel';
+// import DynamicPositioningModel from '../models/DynamicPositioningModel';
 // import Ground from '../models/Ground';
-// // import AnimatedLight from '../lights/AnimatedLight';
+// import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 
 // THREE.Cache.enabled = true;
 // THREE.ColorManagement.enabled = true;
 
 // const { projects } = portfolio;
 
-// /*
-//   The old model and cloud positions:
-//     gerd:              x: -130,  y: 42,   z: -75
-//     bag_v3_for_web001: x: 130,   y: 2,    z: -75
-//     Yoga_Mat_Strap:    x: 4.6,   y: -85,  z: 150
-//     cloud 0:           x: -120,  y: -8,   z: 15
-//     cloud 1:           x: 140,   y:-48,   z: 15
-//     cloud 2:           x: 10,    y: -155, z: 240
-// */
-// // const CloudGroup = (props) => {
-// //   const { positions: [p1, p2] = [] } = props;
-// //   const size = useThree((state) => state.size);
-// //   const scale = Math.min(1.5, scaleMeshAtBreakpoint(size.width) * 1.5);
-
-// //   return (
-// //     <Clouds material={THREE.MeshPhysicalMaterial} limit={4}>
-// //       <Cloud
-// //         color={'black'}
-// //         concentrate={'inside'}
-// //         growth={200}
-// //         opacity={0.6}
-// //         position={[10, p1.y + 10, p1.z - 66]}
-// //         seed={0.4}
-// //         segments={2}
-// //         speed={0.2}
-// //         volume={20}
-// //         scale={scale}
-// //         fade={5}
-// //       />
-// //       <Cloud
-// //         color={'black'}
-// //         concentrate={'random'}
-// //         growth={100}
-// //         opacity={0.15}
-// //         position={[0, p2.y - 50, p2.z - 20]}
-// //         seed={0.4}
-// //         segments={2}
-// //         speed={0.2}
-// //         volume={300}
-// //         scale={scale}
-// //         fade={5}
-// //       />
-// //     </Clouds>
-// //   );
-// // };
-
-// const HomeScene = () => {
+// const ComplexScene = () => {
 //   const { SWIPE_DELAY_MS } = cameraConfigs;
 //   const size = useThree((state) => state.size);
 //   const set = useThree((state) => state.set);
 //   const get = useThree((state) => state.get);
-//   const setTextures = useMaterial((state) => state.setTextures);
-//   // const materials = useMaterial((state) => state.materials);
-//   const materials = useMaterial.getState().materials;
 
 //   const setSelectionStore = useSelection((state) => state.setSelection);
+//   const resetSelectionStore = useSelection((state) => state.reset);
 //   const isFocused = useSelection((state) => state.selection.isFocused);
 //   const setIsFocused = useSelection((state) => state.setIsFocused);
 //   const setMaterialID = useSelection((state) => state.setMaterialID);
-//   const resetSelectionStore = useSelection((state) => state.reset);
-//   // const [groundMeshRef, setGroundMeshRef] = useState(undefined);
-//   const lastSwipeTimeRef = useRef(0); // track swipe timing so missed clicks after swipe dont count.
-//   // track Models mount/ready state
+
+//   const lastSwipeTimeRef = useRef(0);
+//   const [groundMeshRef, setGroundMeshRef] = useState(undefined);
+
 //   const readyCount = useRef(0);
 //   const [meshesReady, setMeshesReady] = useState(false);
-//   const meshRefs = useRef(new Array(projects.length).fill(null)); // all model
+//   const meshRefs = useRef(new Array(projects.length).fill(null));
 //   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
 //   const totalMeshes = projects.length;
 //   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
-//   const texturesMapsLoaded = useRef(false);
-//   const textureMapsCount = useRef(0);
 
 //   const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
 
-//   const { temp, temp2 } = useMemo(() => {
-//     let count = 0;
-//     let temp = {};
-//     const temp2 = {};
-//     for (const materialID in materials) {
-//       const textureUrls = materials[materialID]?.textures;
-//       if (textureUrls) {
-//         temp = { ...temp, ...materials[materialID].textures };
-//         temp2[materialID] = {};
-//         count += Object.keys(materials[materialID].textures).length;
-//       }
-//     }
-
-//     textureMapsCount.current = count;
-//     return { temp, temp2 };
-//   }, [materials]);
-
-//   const textures = useTexture(temp);
-
-
-//   useLayoutEffect(() => {
-
-//     console.log(textureMapsCount.current)
-
-//     for (const textureID in textures) {
-//       if (textures[textureID]) {
-//         textures[textureID].flipY = false;
-//         textures[textureID].name = textureID;
-//         if (textureID.toLowerCase().includes('color')) textures[textureID].colorSpace = THREE.SRGBColorSpace;
-
-//         const matchingMaterialKey = Object.keys(temp2).find(key => textures[textureID].name.includes(key));
-//         let key = textureID.replace(matchingMaterialKey + '_', '')
-//         if (key.includes('color_')) key = key.replace('color_', '');
-//         temp2[matchingMaterialKey][key] = textures[textureID];
-//       }
-//     }
-//     setTextures(temp2);
-//   }, []);
-
-//   // Model mesh positioning
 //   const meshPositions = useMemo(() => {
-//     // const fixedYPositions = [44, -8, -85];
-//     const fixedYPositions = [-12, 44, -85];
+//     const fixedYPositions = [-8, 40, -105];
 
 //     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
 //     const positions = [];
@@ -200,7 +109,6 @@
 //     if (index < 0) return;
 
 //     startTransition(() => {
-//       // setSelectionStore({ ...projects[index] }); //temporarily test setting selection from the selection display modal. 
 //       setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
 //       setIsFocused(clickedName);
 //     });
@@ -214,21 +122,21 @@
 //     });
 //   }, [resetSelectionStore, setIsFocused]);
 
-//   // const outlineSelection = useMemo(() => {
-//   //   if (!isFocused) return undefined;
-//   //   const focusedMesh = meshRefs.current.find((m) => m?.name === isFocused);
-//   //   return focusedMesh ? [focusedMesh] : undefined;
-//   // }, [isFocused, meshesReady]);
+//   const outlineSelection = useMemo(() => {
+//     if (!isFocused) return undefined;
+//     const focusedMesh = meshRefs.current.find((m) => m?.name === isFocused);
+//     return focusedMesh ? [focusedMesh] : undefined;
+//   }, [isFocused, meshesReady]);
 
 //   useEffect(() => {
 //     const prev = get().onPointerMissed;
 //     set({ onPointerMissed: handlePointerMissed });
-
 //     return () => set({ onPointerMissed: prev });
 //   }, [set, get, handlePointerMissed]);
 
 //   return (
 //     <>
+//       <MaterialTextureInitializer />
 //       <directionalLight
 //         castShadow={true}
 //         color={'#fff6e8'}
@@ -237,19 +145,17 @@
 //         shadow-bias={-0.004}
 //         shadow-camera-fov={50}
 //         shadow-camera-near={1}
-//         shadow-camera-far={4096}
-//         shadow-camera-top={4096}
-//         shadow-camera-bottom={-4096}
-//         shadow-camera-left={-4096}
-//         shadow-camera-right={4096}
-//         shadow-mapSize={4096}
+//         shadow-camera-far={270}
+//         shadow-camera-top={250}
+//         shadow-camera-bottom={-250}
+//         shadow-camera-left={-250}
+//         shadow-camera-right={250}
+//         shadow-mapSize={2048}
 //       />
-
-//       {/* <CloudGroup positions={[meshPositions[0], meshPositions[2]]} /> */}
-//       {/* <EffectComposer autoClear={false} disableNormalPass multisampling={0}> */}
-//       {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
-//       {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
-//       {/* <Outline
+//       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
+//         {/* <N8AO aoRadius={50} distanceFalloff={0.2} intensity={7} /> */}
+//         {/* <Vignette eskil={false} offset={0.01} darkness={0.5} /> */}
+//         <Outline
 //           selection={outlineSelection}
 //           blendFunction={BlendFunction.SCREEN}
 //           patternTexture={null}
@@ -262,16 +168,17 @@
 //           kernelSize={KernelSize.VERY_LARGE}
 //           blur={true}
 //           xRay={true}
-//         /> */}
-//       {/* </EffectComposer> */}
+//         />
+//       </EffectComposer>
 //       <Bvh firstHitOnly>
 //         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
 //           return (
-//             <BasicModel
+//             <DynamicPositioningModel
 //               key={nodeName}
 //               autoRotate={sceneData.autoRotate}
 //               autoRotateSpeed={sceneData.autoRotateSpeed}
 //               fileData={sceneData.fileData}
+//               groundMeshRef={groundMeshRef}
 //               materials={sceneData.materials}
 //               name={nodeName}
 //               onClick={handleClick}
@@ -286,6 +193,7 @@
 //       <Ground
 //         rotation={[Math.PI / 6, Math.PI, 0]}
 //         scale={meshScale * 1.25}
+//         onGroundReady={setGroundMeshRef}
 //       />
 //       <AnimatedRig
 //         fallbackPositions={meshPositions}
@@ -297,4 +205,4 @@
 //   );
 // };
 
-// export default HomeScene;
+// export default ComplexScene;
