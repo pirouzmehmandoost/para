@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
 import { portfolio } from '@configs/globals';
+import CommandPalette from '@ui/CommandPalette';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
@@ -40,19 +41,21 @@ const createVariants = (reduceMotion) => {
   };
 };
 
-const ControlsDisplayModal = () => {
-  return (
-    <div className='fixed mt-5 ml-24 text-sm text-neutral-800'>
-      <ul>
-        <li> Browse → swipe left/right </li>
-        <li> Focus model → click model </li>
-        <li> Open details → Focus model → click “View Details” </li>
-        <li> Close details → Esc or back arrow </li>
-        <li> Exit focus → Esc </li>
-      </ul>
-    </div>
-  );
-}
+// const ControlsDisplayModal = ({pathname}) => {
+
+//   const cond = pathname?.startsWith('/projects/')
+//   return (
+//     <div className='fixed mt-5 ml-24 text-sm text-neutral-800'>
+//       <ul>
+//         {!cond && <li> Browse → swipe left/right </li> }
+//         {!cond && <li> Focus model → click model </li> }
+//         {!cond && <li> Open details → Focus model → click “View Details” </li> }
+//         <li> Close details → Esc or Back Arrow Button </li>
+//         <li> Exit focus → Esc </li>
+//       </ul>
+//     </div>
+//   );
+// };
 
 const SelectionDisplayModal = () => {
   const shouldReduceMotion = useReducedMotion();
@@ -113,24 +116,17 @@ const SelectionDisplayModal = () => {
 
 const MainDisplayModal = () => {
   const pathname = usePathname();
-
   // When `/projects/[slug]` is presented as an intercepting modal route,
   // the home page remains mounted underneath. Hide the home overlays to
   // avoid stacked/conflicting UI.
-  if (pathname?.startsWith('/projects/')) return null;
+  // if (pathname?.startsWith('/projects/')) return null;
 
   return (
     <main className='flex flex-col w-full h-full'>
-      <ControlsDisplayModal />
-      <SelectionDisplayModal />
+      <CommandPalette pathname={pathname} />
+      {!pathname?.startsWith('/projects/') && <SelectionDisplayModal /> } 
     </main>
   );
 };
 
 export default MainDisplayModal;
-
-// style={{ maskImage: 'radial-gradient(ellipse 50% 50% at 50% 50%, #a3a3a3 30%, #a3a3a300 70%)' }}
-//   ${modal
-//     ? 'animate-morph'
-//     : ''}`}
-// />
