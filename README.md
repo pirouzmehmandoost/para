@@ -5,10 +5,26 @@ I share my to-do list here as well as light notes on tools and feedback.
 
 PARA is a work in progress site that shows my 3D printing projects. For now it only shows the 3d models, and allows you to manipulate positons and materials.
 
+Interact with the live app [here](https://para-pi.vercel.app/). 
 
 ## Notable Technical Implementations: 
   
- 1. **Dynamic Model Positioning**
+
+ 1 **Materials and Textures** 
+
+ 4. **Materials and Textures**
+  - The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
+
+  - Instead, I store predefined material definitions in a Zustand registry (`src/app/stores/materialStore.js`). Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed, and choose a default.
+
+  - This gives material properties and texture assignments a single home, keeps project data separate from rendering logic, and makes it easier to share the same material definitions across multiple meshes.
+
+  - Texture maps are loaded separately by `MaterialTextureInitializer`, then written into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
+
+  - Material changes are event-driven. When a user selects a mesh to view detailed information. When a user changes materials by toggling buttons, Zustand updates the active material selection and `BasicModel` interpolates the mesh toward the selected material state. For the user, that means each project only shows its intended material options and transitions between finishes feel smooth instead of abrupt.
+
+
+ 2. **Dynamic Model Positioning**
    - Meshes of 3D Models are dynamically positioned, translating along the y-axis to avoid intersection with a designated Ground mesh. Zero per-frame overhead. Repositioning happens only once, the Ground's position remains constant.
    - Files: `Model.js:30-144`, `Group.js`, `meshUtils.js`
    
@@ -30,16 +46,13 @@ PARA is a work in progress site that shows my 3D printing projects. For now it o
    - **Performance**: One-time computational cost per model on mount (bounding box calculation + 22 raycasts). It isn't expected that the user will be changing their browser's height and width unless they tilt a mobile device, in which case which the component re-renders and raycasts.
 
 
-2.  **On-Demand Rendering**
+3.  **On-Demand Rendering**
   - Canvas frameloop toggles beween `demand`  and `interactive` depending on next.js routing, so that in the future I can implement an `About` page and halt animations. 
 
 
-3. **Frustum Culling**
+4. **Frustum Culling**
   - Shadow map size is optimized for optimal frame rate, cast shadows only render for meshes within frustum bounds. Shadow computations are the most computationally costly factor of the app.
-
-
-4. **Materials and Textures**`
-  - Visit `src/app/stores/materialStore.js` to see how to I manage textures and Materials with Zustand. I'll add more explanation to the readme soon.  
+ 
 
 
 ---
