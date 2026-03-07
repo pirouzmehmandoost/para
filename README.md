@@ -11,18 +11,15 @@ Interact with the live app [here](https://para-pi.vercel.app/).
   
 
  1 **Materials and Textures** 
-
- 4. **Materials and Textures**
   - The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
 
-  - Instead, I store predefined material definitions in a Zustand registry (`src/app/stores/materialStore.js`). Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed, and choose a default.
+  - I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`BasicModel`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
 
-  - This gives material properties and texture assignments a single home, keeps project data separate from rendering logic, and makes it easier to share the same material definitions across multiple meshes.
+  - Instead, predefined material definitions live in the Zustand store `src/app/stores/materialStore.js`. That store acts as a registry for reusable material instances, texture assignments, and related material metadata. Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed for a given mesh, and choose a default.
 
-  - Texture maps are loaded separately by `MaterialTextureInitializer`, then written into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
+  - `selectionStore.js` is responsible for the active UI selection state, including which `materialID` is currently selected for the focused mesh. When a user changes materials in the UI, `selectionStore` updates that active `materialID`, and `BasicModel` resolves it against the predefined materials in `materialStore` before interpolating the rendered mesh material toward the selected finish.
 
-  - Material changes are event-driven. When a user selects a mesh to view detailed information. When a user changes materials by toggling buttons, Zustand updates the active material selection and `BasicModel` interpolates the mesh toward the selected material state. For the user, that means each project only shows its intended material options and transitions between finishes feel smooth instead of abrupt.
-
+  - This structure gives material properties and texture assignments a single home, keeps project configuration separate from rendering logic, keeps texture-loading logic out of the scene's mesh components, and allows users to switch between intended finishes with smooth transitions instead of abrupt material swaps. Material definitions could also be shared across scenes if needed.
 
  2. **Dynamic Model Positioning**
    - Meshes of 3D Models are dynamically positioned, translating along the y-axis to avoid intersection with a designated Ground mesh. Zero per-frame overhead. Repositioning happens only once, the Ground's position remains constant.
@@ -53,7 +50,6 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 4. **Frustum Culling**
   - Shadow map size is optimized for optimal frame rate, cast shadows only render for meshes within frustum bounds. Shadow computations are the most computationally costly factor of the app.
  
-
 
 ---
 
