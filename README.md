@@ -5,59 +5,75 @@ I share my to-do list here as well as light notes on tools and feedback.
 
 PARA is a work in progress site that shows my 3D printing projects. For now it only shows the 3d models, and allows you to manipulate positons and materials.
 
+Interact with the live app [here](https://para-pi.vercel.app/). 
 
 ## Notable Technical Implementations: 
-  
- 1. **Dynamic Model Positioning**
-   - Meshes of 3D Models are dynamically positioned, translating along the y-axis to avoid intersection with a designated Ground mesh. Zero per-frame overhead. Repositioning happens only once, the Ground's position remains constant.
-   - Files: `Model.js:30-144`, `Group.js`, `meshUtils.js`
-   
-   **Implementation:**
-   - Raycasting: A circle geometry is positioned under each model mesh's bounding box. 2 rays are cast up and down each vertex of the circle. The model is translated up or down the Y-axis. The circle's dimensions ensure that the mesh will not intersect the ground while the model mesh rotates.
 
-   - **Sampling Strategy**: 
-   - Calculate the diagonal length of the underside of bounding box. As if the rectangle is triangulated, and you want the longest edge's length.
-    - Instantiate a circle geometry, radius = diagonal length, position is centered under the bounding box. Vertex count is 11 (10 edges + center)
-    - Raycast from each vertex (22 rays total). 
-   - **Bidirectional raycasting**: 
-    - **Hits against the model mesh itself are negated.**
-    - Upward rays detect if a model is too low, since an intersection means the ground is above the circle.
-    - The intersecting ray that travels the farthest matters most. If there is an intersection, the y-coordinate hit point is used to calculate how the model must move up the y axis.
-    - Downward rays detect high-floating models. **This is not implemented yet, a nice feature if the ground is a giant cube or sphere**
-   - **Hit Filtering**:
-     - Upward Penetration threshold (2x model height) ignores distant terrain until further refinement revises this logic.
-   - **Dynamic Clearance**: The longest ray cast travel distance + 5% of model height.
-   - **Performance**: One-time computational cost per model on mount (bounding box calculation + 22 raycasts). It isn't expected that the user will be changing their browser's height and width unless they tilt a mobile device, in which case which the component re-renders and raycasts.
+### 1 Materials and Textures** 
+  - The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
 
+  - I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`BasicModel`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
 
-2.  **On-Demand Rendering**
+  - Instead, predefined material definitions live in the Zustand store `src/app/stores/materialStore.js`. That store acts as a registry for reusable material instances, texture assignments, and related material metadata. Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed for a given mesh, and choose a default.
+
+  - `selectionStore.js` is responsible for the active UI selection state, including which `materialID` is currently selected for the focused mesh. When a user changes materials in the UI, `selectionStore` updates that active `materialID`, and `BasicModel` resolves it against the predefined materials in `materialStore` before interpolating the rendered mesh material toward the selected finish.
+
+  - This structure gives material properties and texture assignments a single home, keeps project configuration separate from rendering logic, keeps texture-loading logic out of the scene's mesh components, and allows users to switch between intended finishes with smooth transitions instead of abrupt material swaps. Material definitions could also be shared across scenes if needed.
+
+### 2.Dynamic Mesh Positioning
+  - After initial render, the position of the meshes are validated to ensure that they do not intersect with a designated "ground" mesh, if it's defined. If there is intersection, it's translated up along the y-axis. There is no per-frame overhead since calculations only perform once. After rendering, the React Three Fiber component is forced to re-render if the mesh must be repositioned. This is implementation is WIP in `DynamicPositioningModel.js` and for now `BasicModel.js` is used instead.
+
+  **Implementation:**
+    - Dimensions of a mesh's bounding box are derived. 
+    - 3D Vectors are positioned like points on circle under a mesh's bounding box. 
+    - From each Vector 2 rays are cast along the y axis, one up and down.
+    - If a ray cast upward intersects with the ground, then the vector is positioned below the ground. 
+    - If a ray cast downward intersects with the ground, then the vector is positioned above the ground.
+    - The model is translated upward on the Y-axis to ensure that it will not intersect during animation. 
+
+  **Raycasting and sampling strategy**: 
+    - Calculate the diagonal length of the underside of bounding box:
+    $$ 
+      x,z = bounding box size (3D Vector) x and z values
+
+      r = \sqrt{x^2 + z^2} \over 2
+    $$
+
+   - Calculate 11 points on a circle using the angle method. The center is the x and z coordinates of the boundign box center (Vector3)
+    $$
+      c = (c_x,c_y)
+      a = {0 ≤ a ≤ 9, k ∈ ℤ}
+      θ = 2πa
+      x = c_x + rcos(θ)
+      z = c_y + rsin(θ)
+    $$
+
+    - A 3D Vector is positioned at each point, from which a ray will be cast.
+
+    -  rays are cast upward along the y-axis from each vector, to detect intersection with the designated ground object, a total of 11 rays cast.
+
+    - If a ray intersects with the ground than the vector is positioned below the ground.
+
+    - All rays that travel a distance greater than 2x bounding box height are ignored. 
+
+    - Intersections with any mesh other than the ground are ignored.
+
+    - If there are no intersections then a no mesh repositioning occurs. 
+    
+    - The longest travel distance for an intersection + a provided fraction of bounding box height are used as the new the mesh position y-coordinate.
+
+    - Frame loop logic in `DynamicPositioningModel.js` enforce interpolating position values per frame. The visible effect is that the mesh floats upward to its new position.  
+ 
+    ** This implementation was implemented in order to be a fun way to learn about raycasting, as well as handling some buck wild edge cases for using certain React Hooks. It wasn't meant to be useful, as there are a several 3D animation and physics libraries that implement more performant solutions.** 
+
+    ** This implementation is also a conservative approach to deriving a lower limit for mesh positions. If I refactor this logic, I'll likely update the logic that governs the y-position of all points/vectors.
+
+3.  ** Next.js Route Based, On-Demand Rendering**
   - Canvas frameloop toggles beween `demand`  and `interactive` depending on next.js routing, so that in the future I can implement an `About` page and halt animations. 
-
-
-3. **Frustum Culling**
-  - Shadow map size is optimized for optimal frame rate, cast shadows only render for meshes within frustum bounds. Shadow computations are the most computationally costly factor of the app.
-
-
-4. **Materials and Textures**`
-  - Visit `src/app/stores/materialStore.js` to see how to I manage textures and Materials with Zustand. I'll add more explanation to the readme soon.  
 
 
 ---
 
-
-## UI to-do list: 
-
-1.  **Resume page**
-  - WIP
-
-2.  **Home page**
-  - Create new splash page
-  - display instructions for user interactions (swipe gestures, navigation with ESC, etc).
-
-3.  **Model Technical Specs**
-  - Write more informative text about each design 
-
-  ---
 
 ## Graphics/Animation Libraries Used:
 
