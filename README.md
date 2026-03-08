@@ -9,7 +9,7 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 
 ## Notable Technical Implementations: 
 
-### 1 Materials and Textures** 
+### 1. Materials and Textures** 
   - The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
 
   - I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`BasicModel`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
@@ -20,7 +20,7 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 
   - This structure gives material properties and texture assignments a single home, keeps project configuration separate from rendering logic, keeps texture-loading logic out of the scene's mesh components, and allows users to switch between intended finishes with smooth transitions instead of abrupt material swaps. Material definitions could also be shared across scenes if needed.
 
-### 2.Dynamic Mesh Positioning
+### 2. Dynamic Mesh Positioning
   - After initial render, the position of the meshes are validated to ensure that they do not intersect with a designated "ground" mesh, if it's defined. If there is intersection, it's translated up along the y-axis. There is no per-frame overhead since calculations only perform once. After rendering, the React Three Fiber component is forced to re-render if the mesh must be repositioned. This is implementation is WIP in `DynamicPositioningModel.js` and for now `BasicModel.js` is used instead.
 
   **Implementation:**
