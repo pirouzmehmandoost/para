@@ -1,108 +1,127 @@
 # PARA
 
-I'm developing this app to explore web development with NextJS 15 and explore a growing love computer graphics and rendering them on browsers.
-I share my to-do list here as well as light notes on tools and feedback.
+I'm developing this app to explore my growing love 3D computer graphics and mathematics. I share my to-do list here as well as light, and feedback I get from folks who play around with the app.
 
-PARA is a work in progress site that shows my 3D printing projects. For now it only shows the 3d models, and allows you to manipulate positons and materials.
+PARA is a work in progress site. It displays 3D models and allows you to manipulate their animations, materials, and read about how I use them. 
+
+The models are simplified versions of designes that I've made and 3D print for fun- I also love to 3D print, explore using experimental materials, and have been teaching myself how to use Blender for about a year. In the future this app will share how-to's for building the tools I make and use in CAD-like workflows.
+
+For now, this app is mostly showcases of several implementations that I've had fun working on. These implementations can work as standalone React Three Fiber components and use cases for Zustand alongside Three.js and R3F.
 
 Interact with the live app [here](https://para-pi.vercel.app/). 
 
-## Notable Technical Implementations: 
+# Notable Implementations:
+
+## 1. Materials and Textures
+
+- The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
+- I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`BasicModel`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
+- Instead, predefined material definitions live in the Zustand store `src/app/stores/materialStore.js`. That store acts as a registry for reusable material instances, texture assignments, and related material metadata. Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed for a given mesh, and choose a default.
+- `selectionStore.js` is responsible for the active UI selection state, including which `materialID` is currently selected for the focused mesh. When a user changes materials in the UI, `selectionStore` updates that active `materialID`, and `BasicModel` resolves it against the predefined materials in `materialStore` before interpolating the rendered mesh material toward the selected finish.
+- This structure gives material properties and texture assignments a single home, keeps project configuration separate from rendering logic, keeps texture-loading logic out of the scene's mesh components, and allows users to switch between intended finishes with smooth transitions instead of abrupt material swaps. Material definitions could also be shared across scenes if needed.
+
+Interact with the live app [here](https://para-pi.vercel.app/). 
+
+## 2. Dynamic Mesh Positioning
+
+- After initial render, the position of a mesh is validated to ensure that no vertices intersect with a designated "ground" mesh, if it's defined. If there is intersection, it's translated up along the y-axis. There is no per-frame overhead since calculations only perform once. After rendering, the React Three Fiber component is forced to re-render if the mesh must be repositioned.
+
+- This is implementation is WIP in `DynamicPositioningModel.js` and for now `BasicModel.js` is used instead.
+
+  #### High level overview
+  - Dimensions of a mesh's bounding box are derived. 
+  - Points on a geometric circle are calculated, with the circle centered underneath the bounding box. As if the mesh is a packed in a box and set atop a circular pallet.
+  - The points represent the lower limit for mesh positions on the y-axis.
+  - A 3D vector is positioned at each point including the center.
+  - A single ray is cast upward along the y axis from each vector position.
+  - If a ray intersects with the ground mesh, then the vector is positioned below the ground. 
+  - The intersecting ray that travels the longest distance is used to calculate a new mesh position.
+  - The model is translated upward on the Y-axis to ensure that it will not intersect during animation.
+
+  #### Raycasting strategy
+  - Calculate the diagonal length of the underside of bounding box. This will be the circle radius:
+  ```   
+    x,z = bounding box size (3D Vector) x and z values  
+    r = \sqrt{x^2 + z^2} \over 2  
+  ```
+
+  - Calculate a given number points on a circle using the angle method. The center is the x and z coordinates of the bounding box's center (Three.js space y-up):
+  ```
+    l = 10
+    { a | 0 ≤ a < l, a ∈ ℤ}
+    c = (c_x,c_z)
+    θ = 2πa
+    x = c_x + rcos(θ)
+    z = c_z + rsin(θ)
+  ```
+
+  - Position a 3D Vector at each point including the center (11 Vectors).
+
+  - Cast a ray upward from each vector. 
   
+  - Ignore intersections with all meshes but the ground.
 
- 1 **Materials and Textures** 
-  - The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
+  - Ignore all rays that travel a distance > 2 * bounding box height.
 
-  - I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`BasicModel`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
+  - If a ray intersects with the ground than the vector's position is below the ground.
 
-  - Instead, predefined material definitions live in the Zustand store `src/app/stores/materialStore.js`. That store acts as a registry for reusable material instances, texture assignments, and related material metadata. Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed for a given mesh, and choose a default.
+  - If there are no intersections then a no mesh repositioning occurs. 
 
-  - `selectionStore.js` is responsible for the active UI selection state, including which `materialID` is currently selected for the focused mesh. When a user changes materials in the UI, `selectionStore` updates that active `materialID`, and `BasicModel` resolves it against the predefined materials in `materialStore` before interpolating the rendered mesh material toward the selected finish.
+  - Derive the intersecting ray with longest travel distance.
+    
+  - Derive a fraction of bounding box height, to be used like padding.
 
-  - This structure gives material properties and texture assignments a single home, keeps project configuration separate from rendering logic, keeps texture-loading logic out of the scene's mesh components, and allows users to switch between intended finishes with smooth transitions instead of abrupt material swaps. Material definitions could also be shared across scenes if needed.
+  - Sum the two values, this is the new y-position for the mesh.
 
- 2. **Dynamic Model Positioning**
-   - Meshes of 3D Models are dynamically positioned, translating along the y-axis to avoid intersection with a designated Ground mesh. Zero per-frame overhead. Repositioning happens only once, the Ground's position remains constant.
-   - Files: `Model.js:30-144`, `Group.js`, `meshUtils.js`
-   
-   **Implementation:**
-   - Raycasting: A circle geometry is positioned under each model mesh's bounding box. 2 rays are cast up and down each vertex of the circle. The model is translated up or down the Y-axis. The circle's dimensions ensure that the mesh will not intersect the ground while the model mesh rotates.
+  - Set the new y-position for the mesh.
 
-   - **Sampling Strategy**: 
-   - Calculate the diagonal length of the underside of bounding box. As if the rectangle is triangulated, and you want the longest edge's length.
-    - Instantiate a circle geometry, radius = diagonal length, position is centered under the bounding box. Vertex count is 11 (10 edges + center)
-    - Raycast from each vertex (22 rays total). 
-   - **Bidirectional raycasting**: 
-    - **Hits against the model mesh itself are negated.**
-    - Upward rays detect if a model is too low, since an intersection means the ground is above the circle.
-    - The intersecting ray that travels the farthest matters most. If there is an intersection, the y-coordinate hit point is used to calculate how the model must move up the y axis.
-    - Downward rays detect high-floating models. **This is not implemented yet, a nice feature if the ground is a giant cube or sphere**
-   - **Hit Filtering**:
-     - Upward Penetration threshold (2x model height) ignores distant terrain until further refinement revises this logic.
-   - **Dynamic Clearance**: The longest ray cast travel distance + 5% of model height.
-   - **Performance**: One-time computational cost per model on mount (bounding box calculation + 22 raycasts). It isn't expected that the user will be changing their browser's height and width unless they tilt a mobile device, in which case which the component re-renders and raycasts.
+  - Animation Frame loop logic in `DynamicPositioningModel.js` interpolates positions between the old position and the new one.
+  
+  - ##### The visible effect is that the mesh floats up to its new position when the component re-renders.
+
+- ##### This implementation was implemented in order to be a fun way to learn about raycasting, as well as handling some buck wild edge cases for using certain React Hooks. It wasn't meant to be useful, as there are a several 3D animation and physics libraries that implement more performant solutions.
+
+- ##### This implementation is also a conservative approach to deriving a lower limit for mesh positions. If I refactor this logic, I'll likely update the logic that governs the y-position of all points/vectors.
 
 
-3.  **On-Demand Rendering**
-  - Canvas frameloop toggles beween `demand`  and `interactive` depending on next.js routing, so that in the future I can implement an `About` page and halt animations. 
+## 3. Animated Camera Rig
+
+- Details will be added soon.
 
 
-4. **Frustum Culling**
-  - Shadow map size is optimized for optimal frame rate, cast shadows only render for meshes within frustum bounds. Shadow computations are the most computationally costly factor of the app.
- 
+## 4. On-demand rendering: Next.js Route-based Canvas frameloop invalidation
+
+- Canvas frameloop toggles beween `demand`  and `interactive` depending on next.js routing, to invalidating the loop when the canvas is not visible to the user.
+
+- This optimizes overall performance when a canvas is not the intended punctum for a view.
+  
+- This also allows me to display a single frame as if it's a static image.
+
 
 ---
 
-
-## UI to-do list: 
-
-1.  **Resume page**
-  - WIP
-
-2.  **Home page**
-  - Create new splash page
-  - display instructions for user interactions (swipe gestures, navigation with ESC, etc).
-
-3.  **Model Technical Specs**
-  - Write more informative text about each design 
-
-  ---
 
 ## Graphics/Animation Libraries Used:
 
-- [Three.js](https://threejs.org/)
-JavaScript API for implementing WebGL- for rendering 2D/3D computer graphics on browsers.
+- [Three.js](https://threejs.org/) JavaScript API for implementing WebGL. For rendering 2D/3D computer graphics on browsers.
 
-- [React Three Fiber](https://github.com/pmndrs/react-three-fiber)
-React renderer for Threejs. For building 3D scenes as JSX components, useful hooks, performance optimization- resources with the same URL (geometries, materials) that are loaded with useLoader are cached automatically.
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber) React renderer for Threejs.
 
-['If you access a resource via useLoader with the same URL, throughout the component tree, then you will always refer to the same asset and thereby re-use it. This is especially useful if you run your GLTF assets through GLTFJSX because it links up geometries and materials and thereby creates re-usable models.'](https://r3f.docs.pmnd.rs/advanced/scaling-performance)
+- [React Post-Processing](https://react-postprocessing.docs.pmnd.rs/) Library of functionalities for post-processing graphics- ie special effects to rendered graphics.
 
+- [Maath](https://github.com/pmndrs/maath) A collection of useful math helpers, random generators.
 
-- [React Post-Processing](https://react-postprocessing.docs.pmnd.rs/)
-Library of functionalities for post-processing graphics- ie special effects to rendered graphics.
+- [Framer Motion](https://motion.dev/)
 
-
-- [Maath](https://github.com/pmndrs/maath)
-A collection of useful math helpers, random generators
-
-
-- [Motion](https://motion.dev/)
-
-
-- [GLTFJSX](https://github.com/pmndrs/gltfjsx) CLI tool that I use to optimize file size. It's primarily advertised for generating R3F components, I use it for file compression and write my own. 
-
+- [GLTFJSX](https://github.com/pmndrs/gltfjsx) A CLI that turns GLTF assets into declarative and re-usable react-three-fiber JSX components. **I only use it for file compression and write all of my own React Three Fiber Components.**
 
 ---
 
-
 ## Personal Notes:
-
 
 ### Fonts Used:
 - [Diatype](https://abcdinamo.com/typefaces/diatype)
 - [Halibut](https://www.collletttivo.it/typefaces/halibut)
-
 
 ### Fonts to remember:
 - [Hedvig Letters Serif](https://fonts.google.com/specimen/Hedvig+Letters+Serif?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
@@ -114,20 +133,15 @@ A collection of useful math helpers, random generators
 - [Medieval Sharp](https://fonts.google.com/specimen/MedievalSharp?preview.text=Pirouz%20Mehmandoost&categoryFilters=Appearance:%2FTheme%2FMedieval&specimen.preview.text=Pirouz+Mehmandoost)
 - [Jacquard 12](https://fonts.google.com/specimen/Jacquard+12?preview.text=Pirouz%20Mehmandoost&categoryFilters=Appearance:%2FTheme%2FMedieval&specimen.preview.text=Pirouz+Mehmandoost)
 
-
-## Next.js routing: 
-
+## Next.js routing:
 - **A Parallel route** gives you an extra place to render UI (modal slot). [docs](https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes)
 - **An Intercepting route** decides when a URL should render into that extra place (modal on in-app navigation) vs render normally (canonical page on refresh/deep link). [docs](https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes)
 
-
-## Reading list: 
-
+## Reading list:
 - [Post processing with WebGL](https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80)
 - [The Study of Shaders with React Three Fiber](https://blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/)
 - [Inigo Quilez- Raymarching distance fields](https://iquilezles.org/articles/raymarchingdf/)
 - [Metallic Flakes Material in Three.js and Next.js](https://www.sil3ntrunning.net/blog/metallic-flakes-material-in-three-js-and-next-js)
 - [The Book of Shaders](https://thebookofshaders.com/)
-
 
 ---
