@@ -1,8 +1,12 @@
 # PARA
 
-I'm developing this app to explore web development with NextJS 15 and explore a growing love computer graphics and rendering them on browsers. I share my to-do list here as well as light notes on tools and feedback.
+I'm developing this app to explore my growing love 3D computer graphics and mathematics. I share my to-do list here as well as light, and feedback I get from folks who play around with the app.
 
-PARA is a work in progress site that shows my 3D printing projects. For now it only shows the 3d models, and allows you to manipulate positons and materials.
+PARA is a work in progress site. It displays 3D models and allows you to manipulate their animations, materials, and read about how I use them. 
+
+The models are simplified versions of designes that I've made and 3D print for fun- I also love to 3D print, explore using experimental materials, and have been teaching myself how to use Blender for about a year. In the future this app will share how-to's for building the tools I make and use in CAD-like workflows.
+
+For now, this app is mostly showcases of several implementations that I've had fun working on. These implementations can work as standalone React Three Fiber components and use cases for Zustand alongside Three.js and R3F.
 
 Interact with the live app [here](https://para-pi.vercel.app/). 
 
@@ -23,7 +27,7 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 
 - This is implementation is WIP in `DynamicPositioningModel.js` and for now `BasicModel.js` is used instead.
 
-- ### High level overview
+  #### High level overview
   - Dimensions of a mesh's bounding box are derived. 
   - Points on a geometric circle are calculated, with the circle centered underneath the bounding box. As if the mesh is a packed in a box and set atop a circular pallet.
   - The points represent the lower limit for mesh positions on the y-axis.
@@ -33,7 +37,7 @@ Interact with the live app [here](https://para-pi.vercel.app/).
   - The intersecting ray that travels the longest distance is used to calculate a new mesh position.
   - The model is translated upward on the Y-axis to ensure that it will not intersect during animation.
 
-- ### Raycasting strategy
+  #### Raycasting strategy
   - Calculate the diagonal length of the underside of bounding box. This will be the circle radius:
   ```   
     x,z = bounding box size (3D Vector) x and z values  
