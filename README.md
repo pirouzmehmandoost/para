@@ -23,7 +23,7 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 ### 2. Dynamic Mesh Positioning
   - After initial render, the position of the meshes are validated to ensure that they do not intersect with a designated "ground" mesh, if it's defined. If there is intersection, it's translated up along the y-axis. There is no per-frame overhead since calculations only perform once. After rendering, the React Three Fiber component is forced to re-render if the mesh must be repositioned. This is implementation is WIP in `DynamicPositioningModel.js` and for now `BasicModel.js` is used instead.
 
-  **Implementation:**
+  - **Implementation:**
     - Dimensions of a mesh's bounding box are derived. 
     - 3D Vectors are positioned like points on circle under a mesh's bounding box. 
     - From each Vector 2 rays are cast along the y axis, one up and down.
@@ -31,15 +31,16 @@ Interact with the live app [here](https://para-pi.vercel.app/).
     - If a ray cast downward intersects with the ground, then the vector is positioned above the ground.
     - The model is translated upward on the Y-axis to ensure that it will not intersect during animation. 
 
-  **Raycasting and sampling strategy**: 
+  - **Raycasting and sampling strategy**: 
     - Calculate the diagonal length of the underside of bounding box:
+
     $$ 
       x,z = bounding box size (3D Vector) x and z values
-
       r = \sqrt{x^2 + z^2} \over 2
     $$
 
-   - Calculate 11 points on a circle using the angle method. The center is the x and z coordinates of the boundign box center (Vector3)
+   - Calculate 11 points on a circle using the angle method. The center is the x and z coordinates of the boundign box center.
+
     $$
       c = (c_x,c_y)
       a = {0 ≤ a ≤ 9, k ∈ ℤ}
