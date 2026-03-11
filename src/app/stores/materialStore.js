@@ -74,35 +74,37 @@ _scratchRoughnessTexture.name = '_scratchRoughnessTexture';
 _scratchRoughnessTexture.colorSpace = THREE.NoColorSpace;
 _scratchRoughnessTexture.needsUpdate = true;
 
-export const _scratchTransmissionTexture = new THREE.DataTexture(transmissionData, width, height);
+const _scratchTransmissionTexture = new THREE.DataTexture(transmissionData, width, height);
 _scratchTransmissionTexture.name = '_scratchTransmissionTexture';
 _scratchTransmissionTexture.colorSpace = THREE.NoColorSpace;
 _scratchTransmissionTexture.needsUpdate = true;
 
 export const defaultMeshTransmissionMaterialConfig = {
   anisotropy: 1,
-  anisotropicBlur: 1,
-  attenuationDistance: 10,
-  attenuationColor: '#ffffff',
-  backside: false,
-  thickness: 20,
-  backsideThickness: 0,
-  chromaticAberration: 0,
-  clearcoat: 0,
-  clearcoatRoughness: 0,
+  anisotropicBlur: 5,
+  attenuationDistance: 25,
+  attenuationColor: '#ccc0a3',
+  backside: true,
+  thickness: 30,
+  backsideThickness: 30,
+  chromaticAberration: 0.8,
+  clearcoat: 0.5,
+  clearcoatRoughness: 0.8,
   color: '#ccc0a3',
-  distortion: 0,
-  distortionScale: 0,
+  distortion: 0.4,
+  distortionScale: 0.06,
   flatShading: false,
   name: 'translucent',
-  reflectivity: 0.4,
-  resolution: 80,
-  roughness: 0.75,
-  samples: 12,
+  opacity: 1,
+  reflectivity: 0.5,
+  resolution: 256,
+  roughness: 0.45,
+  samples: 24,
   side: THREE.DoubleSide,
   temporalDistortion: 0,
   toneMapped: false,
   transmission: 1,
+  transparent: true,
   bumpMap: _scratchBumpTexture,
   clearcoatMap: _scratchClearcoatTexture,
   clearcoatRoughnessMap: _scratchClearcoatRoughnessTexture,
@@ -238,6 +240,13 @@ const materialState = {
     material: new THREE.MeshPhysicalMaterial({ ...eggshellMaterial }),
     materialProps: eggshellMaterial,
   },
+
+  translucent: {
+    displayName: 'Translucent',
+    tailwindColor: `bg-radial-[at_42%_40%] from-orange-100 to-amber-700/30 to-60%`,
+    material: null,
+    materialProps: defaultMeshTransmissionMaterialConfig
+  },
 };
 
 const textureState = {};
@@ -314,10 +323,11 @@ const materialStore = (set, get) => ({
       materials: {
         ...state.materials,
         "translucent": {
-          displayName: 'Translucent',
-          tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
+          ...state.materials.translucent, 
+          materialProps: {
+            ...state.materials.translucent.materialProps,
+          },
           material: clone,
-          materialProps: defaultMeshTransmissionMaterialConfig
         }
       },
     }));
