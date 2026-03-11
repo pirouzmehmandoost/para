@@ -41,7 +41,7 @@ export const RootCanvas = () => {
         shadows
       >
         <color args={[envColor]} attach='background' />
-        <fog attach='fog' color={envColor} near={180} far={275} />
+        <fog attach='fog' color={envColor} near={180} far={270} />
         <Environment shadows files={envImageUrl} environmentIntensity={0.5} />
         <Suspense fallback={<Loader />}>
           <BasicScene />

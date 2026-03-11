@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { MeshTransmissionMaterial, useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
+// import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import useMaterial, { defaultMeshTransmissionMaterialConfig, defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
@@ -53,14 +54,13 @@ const BasicModelTest = (props) => {
   const transmissionMaterialRef = useRef(null);
   const isMaterialTranslucentRef = useRef(false);
   const scaleRef = useRef(new THREE.Vector3(0.035, 0.035, 0.035));
+  // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
 
   // Set mesh scale relative to viewport dimensions
   useEffect(() => {
     if (!meshRef.current) return;
-    console.log(meshRef.current)
 
     meshRef.current.updateWorldMatrix(true, true);
-
     _scratchBoxRef.current
       .setFromObject(meshRef.current)
       .getCenter(_scratchCenterRef.current);
@@ -71,8 +71,9 @@ const BasicModelTest = (props) => {
     const factor = segmentedViewportDimensions / boundingBoxAspectRatio;
     const newScale = factor * scale;
   
-    scaleRef.current.set(newScale, newScale, newScale);
-    // console.log(nodeName + "'s new scale: " + newScale);
+    // scaleRef.current.set(newScale, newScale, newScale);
+    scaleRef.current = new THREE.Vector3(newScale, newScale, newScale);
+    // console.log(nodeName + "'s new scale: ",  scaleRef.current);
   }, [viewport.aspect, scale]);
 
   useLayoutEffect(() => {
@@ -115,6 +116,14 @@ const BasicModelTest = (props) => {
       const selectedAndFocused = isFocused?.length && isFocused === nodeName;
       const isTransmissionMaterial = defaultMaterialID.replace('_', ' ').includes('translucent');
       meshRef.current.updateWorldMatrix(true, true);
+
+
+      const boundingBoxAspectRatio = _scratchSizeRef.current.x / _scratchSizeRef.current.y;
+      const segmentedViewportDimensions = viewport.aspect / PROJECTS_LENGTH;
+      const factor = segmentedViewportDimensions / boundingBoxAspectRatio;
+      const newScale = factor * scale;
+
+      scaleRef.current.set(newScale, newScale, newScale);
       easing.damp3(meshRef.current.scale, scaleRef.current, 0.3, clampedDelta);
 
       if (selectedAndFocused) {
@@ -180,10 +189,12 @@ const BasicModelTest = (props) => {
               position={position}
               receiveShadow={true}
               rotation={[0, Math.PI * rotation, 0]}
-              scale={ scaleRef.current.scale}
-              // scale={[scale, scale, scale]}
+              scale={scaleRef.current}
             >
-              <MeshTransmissionMaterial ref={transmissionMaterialRef} {...defaultMeshTransmissionMaterialConfig} />
+              <MeshTransmissionMaterial
+                ref={transmissionMaterialRef}
+                {...defaultMeshTransmissionMaterialConfig}
+              />
             </mesh>
           )
           : (
@@ -197,8 +208,7 @@ const BasicModelTest = (props) => {
               position={position}
               receiveShadow={true}
               rotation={[0, Math.PI * rotation, 0]}
-              scale={ scaleRef.current.scale}
-              // scale={[scale, scale, scale]}
+              scale={scaleRef.current}
             />
           )
       )}
