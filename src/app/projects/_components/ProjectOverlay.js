@@ -37,7 +37,7 @@ export default function ProjectOverlay({ slug, entryPoint }) {
   const {
     description = '',
     sceneData: {
-      groupName = '',
+      displayName = '',
       materials: {
         defaultMaterialID = '',
         materialIDs = [],
@@ -76,11 +76,9 @@ export default function ProjectOverlay({ slug, entryPoint }) {
     p-1 accounts for outline around buttons
   */
   const MaterialSelectionModal = (
-    <div className='flex flex-col w-fit p-1 place-self-center items-center'>
-      <div className='text-xl text-nowrap mb-2'>
-        {materials[selectedMaterialID]?.displayName?.length && materials[selectedMaterialID].displayName}
-      </div>
-      <div className='flex flex-row w-full justify-center gap-x-6'>
+    <div className='flex flex-col w-full p-1 gap-y-2 place-self-center items-center text-center text-nowrap sm:text-lg md:text-lg lg:text-lg xl:text-xl 2xl:text-xl'>
+      { materials[selectedMaterialID]?.displayName?.length && materials[selectedMaterialID].displayName }
+      <div className='flex flex-row w-full place-content-center justify-center xs:gap-x-3 sm:gap-x-3 md:gap-x-3 lg:gap-x-3 gap-x-6'>
         {materialIDs
           .filter((entry) => Boolean(materials?.[entry]))
           .map((entry) => {
@@ -110,6 +108,19 @@ export default function ProjectOverlay({ slug, entryPoint }) {
     )
   };
 
+  const ExpandButton = () => {
+    return (
+      <button
+        aria-label={expanded ? 'Collapse details' : 'Expand details'}
+        className='ml-3 cursor-pointer'
+        onClick={() => { setExpanded((x) => !x) }}
+        type='button'
+      >
+        {expanded ? (<CloseFullscreenIcon fontSize='medium' />) : (<OpenInFullIcon fontSize='medium' />)}
+      </button>
+    )
+  };
+
   return (
     <div className='fixed flex flex-col w-full h-screen' data-route={pathname}>
       {/* <div className='fixed top-24 left-5'>
@@ -123,20 +134,13 @@ export default function ProjectOverlay({ slug, entryPoint }) {
         </div>
         <div className='flex flex-row max-w-full my-3 items-center text-neutral-900'>
           <div className='basis-1/3'>
-            <div className='flex ml-3'>
+            <div className='flex flex-row ml-3 justify-start'>
               <BackNavButton />
-              <button
-                aria-label={expanded ? 'Collapse details' : 'Expand details'}
-                className='ml-7 cursor-pointer'
-                onClick={() => { setExpanded((x) => !x) }}
-                type='button'
-              >
-                {expanded ? (<CloseFullscreenIcon fontSize='medium' />) : (<OpenInFullIcon fontSize='medium' />)}
-              </button>
+              <ExpandButton />
             </div>
           </div>
-          <div className='text-center text-4xl basis-1/3'>
-            {groupName}
+          <div className='basis-1/3 text-center text-4xl'>
+            {displayName}
           </div>
           <div className='basis-1/3'>
             {MaterialSelectionModal}
@@ -185,7 +189,7 @@ export default function ProjectOverlay({ slug, entryPoint }) {
 //   const {
 //     description = '',
 //     sceneData: {
-//       groupName = '',
+//       displayName = '',
 //       materials: {
 //         defaultMaterialID = '',
 //         materialIDs = [],
@@ -275,7 +279,7 @@ export default function ProjectOverlay({ slug, entryPoint }) {
 //             </button>
 //           </div>
 //           <div className='justify-self-center text-3xl text-center basis-1/3'>
-//             {groupName}
+//             {displayName}
 //           </div>
 //           <div className='sm:mx-2 md:mx-2 justify-self-center self-center basis-1/3'>
 //             {ColorSelectButtons}
