@@ -12,7 +12,7 @@ import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import useSelection from '@stores/selectionStore';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 import AnimatedRig from '../cameras/AnimatedRig';
-import BasicModel from '../models/BasicModel';
+import BasicModelTest from '../models/BasicModelTest';
 import Ground from '../models/Ground';
 
 THREE.Cache.enabled = true;
@@ -155,7 +155,7 @@ const BasicScene = () => {
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
-            <BasicModel
+            <BasicModelTest
               key={nodeName}
               autoRotate={sceneData.autoRotate}
               autoRotateSpeed={sceneData.autoRotateSpeed}
