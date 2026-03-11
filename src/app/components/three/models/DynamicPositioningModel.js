@@ -33,7 +33,7 @@ const DynamicPositioningModel = (props) => {
 
   // const boxRef = useRef(undefined)
   const size = useThree((state) => state.size);
-  const scene = useThree((state) => state.scene);
+  // const scene = useThree((state) => state.scene);
 
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
 
