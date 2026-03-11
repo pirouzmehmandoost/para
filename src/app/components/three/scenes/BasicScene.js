@@ -4,16 +4,16 @@ import { startTransition, useCallback, useEffect, useMemo, useRef, useState } fr
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, } from '@react-three/drei'
-import useSelection from '@stores/selectionStore';
+import { EffectComposer, N8AO } from '@react-three/postprocessing';
+// import { BlurPass, BlendFunction, Resizer, KernelSize } from 'postprocessing'
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
+import useSelection from '@stores/selectionStore';
+import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 import AnimatedRig from '../cameras/AnimatedRig';
 import BasicModel from '../models/BasicModel';
 import Ground from '../models/Ground';
-import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
-import { EffectComposer, N8AO } from '@react-three/postprocessing';
-// import { BlendFunction, Resizer, KernelSize } from 'postprocessing'
 
 THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
@@ -37,25 +37,18 @@ const BasicScene = () => {
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const totalMeshes = projects.length;
   const cameraTargets = useMemo(() => meshesReady ? meshRefs.current : [], [meshesReady]);
+  // const planeRef = useRef(null);
+  // const lightRef = useRef(null);
+  // const blurPassRef = useRef(new BlurPass());
 
-  const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
+  const groundScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
 
   const meshPositions = useMemo(() => {
-    const fixedYPositions = [-8, 40, -105];
-
-    const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 130;
-    const positions = [];
+    const finalPositions = [];
+    const fixedYPositions = [-8, 30, -100];
+    const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 95;
     const vertex = new THREE.Vector3();
-    const ellipseCurve = new THREE.EllipseCurve(
-      0,
-      0,
-      ellipseRadius,
-      ellipseRadius,
-      0,
-      2 * Math.PI,
-      false,
-      0.5 * Math.PI
-    );
+    const ellipseCurve = new THREE.EllipseCurve(0, 0, ellipseRadius, ellipseRadius, 0, 2 * Math.PI, false, 0.5 * Math.PI);
     ellipseCurve.closed = true;
 
     const curvePoints = ellipseCurve.getPoints(projects.length);
@@ -65,11 +58,11 @@ const BasicScene = () => {
       .getAttribute('position');
 
     for (let i = 0; i < positionAttribute.count; i++) {
-      const pt = vertex.fromBufferAttribute(positionAttribute, i);
-      positions.push(new THREE.Vector3(pt.x, fixedYPositions[i], pt.y));
+      const xzPosition = vertex.fromBufferAttribute(positionAttribute, i);
+      finalPositions.push(new THREE.Vector3(xzPosition.x, fixedYPositions[i], xzPosition.y));
     }
 
-    return positions;
+    return finalPositions;
   }, [size.width]);
 
   const meshReadyHandlers = useMemo(() =>
@@ -143,12 +136,22 @@ const BasicScene = () => {
         shadow-camera-right={250}
         shadow-mapSize={2048}
       />
-
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
         <N8AO aoRadius={50} distanceFalloff={0.3} intensity={7} />
         {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
+        {/* <SelectiveBloom
+          blurPass={blurPassRef.current} 
+          height={Resizer.AUTO_SIZE} 
+          intensity={0.1}
+          kernelSize={KernelSize.LARGE} 
+          lights={lightRef}
+          luminanceSmoothing={0.5} // smoothness of the luminance threshold. Range is [0, 1]
+          luminanceThreshold={0.025} // luminance threshold. Raise this value to mask out darker elements in the scene.
+          selection={planeRef} 
+          selectionLayer={4}
+          width={Resizer.AUTO_SIZE}
+        /> */}
       </EffectComposer>
-
       <Bvh firstHitOnly>
         {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
           return (
@@ -168,8 +171,29 @@ const BasicScene = () => {
           );
         })}
       </Bvh>
-      <Ground rotation={[Math.PI / 6, Math.PI, 0]} scale={meshScale * 1.25} />
-      <AnimatedRig fallbackPositions={meshPositions} focusTarget={isFocused} onSwipe={onSwipe} targets={cameraTargets} />
+      {/* <mesh
+        ref={planeRef}
+        position={[78, 25, -120]}
+        scale={[25, 25, 25]}
+      >
+        <planeGeometry />
+        <meshPhysicalMaterial
+          color='white'
+          emissive='white'
+          emissiveIntensity={5}
+          side={THREE.DoubleSide}
+        />
+      </mesh> */}
+      <Ground
+        rotation={[Math.PI / 6, Math.PI, 0]}
+        scale={[groundScale * 1.3, groundScale, groundScale * 0.9]}
+      />
+      <AnimatedRig
+        fallbackPositions={meshPositions}
+        focusTarget={isFocused}
+        onSwipe={onSwipe}
+        targets={cameraTargets}
+      />
     </>
   );
 };
