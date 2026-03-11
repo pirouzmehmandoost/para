@@ -8,7 +8,7 @@ import cameraConfigs from '@configs/cameraConfigs';
 
 THREE.Cache.enabled = true;
 
-const SimpleCameraRig = ({ focusTarget, fallbackPosition }) => {
+const SimpleCameraRig = ({ focusTarget, fallbackPosition, cameraShake, }) => {
   const sceneCamera = useThree((s) => s.camera);
   const lookAtPositionRef = useRef(new THREE.Vector3(sceneCamera.position.x, sceneCamera.position.y, sceneCamera.position.z));
   const cameraPositionRef = useRef(new THREE.Vector3(sceneCamera.position.x, sceneCamera.position.y, sceneCamera.position.z));
@@ -42,12 +42,15 @@ const SimpleCameraRig = ({ focusTarget, fallbackPosition }) => {
 
   useFrame(({ clock, camera }, delta) => {
     const clampedDelta = Math.min(delta, 0.08);
-    const elapsedTime = clock.elapsedTime;
-    blendedPositionRef.current.set(
-      lookAtPositionRef.current.x + 2.5 * Math.sin(elapsedTime),
-      lookAtPositionRef.current.y + 5 * Math.cos(elapsedTime),
-      lookAtPositionRef.current.z + (-2 * Math.cos(elapsedTime))
-    );
+
+    if (cameraShake) {
+      const elapsedTime = clock.elapsedTime;
+      blendedPositionRef.current.set(
+        lookAtPositionRef.current.x + 2.5 * Math.sin(elapsedTime),
+        lookAtPositionRef.current.y + 5 * Math.cos(elapsedTime),
+        lookAtPositionRef.current.z + (-2 * Math.cos(elapsedTime))
+      );
+    }
     cameraPositionRef.current.copy(camera.position)
     camera.lookAt(cameraPositionRef.current)
     easing.damp3(camera.position, blendedPositionRef.current, 1, clampedDelta);
