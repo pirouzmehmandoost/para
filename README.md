@@ -1,12 +1,10 @@
 # PARA
 
 I'm developing this app to explore my growing love 3D computer graphics and mathematics. I share my to-do list here as well as light, and feedback I get from folks who play around with the app.
-
 PARA is a work in progress site. It displays 3D models and allows you to manipulate their animations, materials, and read about how I use them. 
-
 The models are simplified versions of designes that I've made and 3D print for fun- I also love to 3D print, explore using experimental materials, and have been teaching myself how to use Blender for about a year. In the future this app will share how-to's for building the tools I make and use in CAD-like workflows.
-
 For now, this app is mostly showcases of several implementations that I've had fun working on. These implementations can work as standalone React Three Fiber components and use cases for Zustand alongside Three.js and R3F.
+I'll be working on this app more while reading the _Computer Graphics from Scratch_ by Gabriel Gambetta, since it's become a hobby to learn of the mathematics of 3D graphcs.
 
 Interact with the live app [here](https://para-pi.vercel.app/). 
 
@@ -84,9 +82,97 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 - ##### This implementation is also a conservative approach to deriving a lower limit for mesh positions. If I refactor this logic, I'll likely update the logic that governs the y-position of all points/vectors.
 
 
-## 3. Animated Camera Rig
+## 3. Animated Camera Rigs
 
-- Details will be added soon.
+- ### Better description soon, this is a rough draft:
+
+- Rigs in this project control a Three.js scene's camera (here it's a perspective camera), moving it along a circular path from one stopping position to another.
+- The stopping positons are center-front of an object.
+- A partifular Rig, `src/app/components/three/cameras/AnimatedRig.js` can move in either direction between stops along this path and hop from any stop to another.
+- `AnimatedRig` has an automatic and manual behavior.
+- The default behavior is automatic until the user interacts with the Rig. After a period of inactivity it defaults to automatic behavior. 
+- Any React component can drive the rig since using Zustand selectors subcribing to `selectionStore`. 
+- Pointer events also trigger Rig manual behavior namely for click events swipe gesture recognition. 
+- Swipe gesture recognition logic is owned by this rig.
+- Parents can govern manual behavior on swipe gestures by providing a callback that will fire on _pointerup_. 
+- Parents can govern manual behavior on click events via event handlers by triggering updates to the mentioned Zustand store. 
+- The Rig will return to automatic behavior after a predefined period of time which is set in a config object. See `/lib/configs/cameraConfigs.js`.
+- The Rig moves the camera between stopping positons with offset that is also set in the config object. 
+    - Here's how that works: 
+      - The Rig stops the camera at position _p_ relative to an object _O_ by calculating a 3D Vector target _t_. 
+      - If _O_ is a 3D Object then _t_ is the center the _O_'s bounding box.
+      - If _O_ is a 3D Vector then _t_ is that Vector. 
+      - In either cases is true then the camera's position is _p = {tx+sx, ty+sy, tz+sz}_ 
+      - Otherwise t is _(0,0,0)_ and and the camera's position is _p = {sx, sy, sz}_
+    - What this implies is elaborated at the end of section 3.
+
+- Since the origin of an object could be anywhere within its computed bounds, positioning logic relies on bounding and if it's a mesh then it's scale can relative to the viewport dimensions.
+- The rig positions the camera to look down the Z-axis at the center-front its target.
+
+- There are several types of components with special relationships with Rigs, `AnimatedRig` in particular:
+  - **Scenes**: Scene orchestrators, the parents of Rigs and Models. Any files in the directory `src/app/components/three/scenes/`
+  - **Models**: Load meshes from files and adds them to scenes. Any files in the directory `src/app/components/three/models/`
+
+- Following props are govern their relationships: 
+  - **Rigs** 
+    - Prop: _targets_: 
+      - This is optional.
+      - It is An array of Object3D refs. Scenes Own this and declare it as _meshRefs_. 
+      - Each element is owned by a Model and declared internally as _meshRef_. It's defined when Models render and thus add geometry the Three.js scene.
+      - These refs used to calculate the camera's target(s) as well as offset positions for the camera.
+    - Prop: _fallbackPositions_:
+      - This is optional. 
+      - An array of 3D Vectors that it will swap with for any element of _targets_ that is not an Object3D.
+      - This is useful when Rigs mount before Models, or for using Rigs in Scenes with no Models or Object3D's, or there's no need to use the _targets_ prop. 
+    - Prop: _focusTarget_: 
+      - This is optional. 
+      - If defined it must be one of the Object3D elements provided to _targets_.
+      - The Rig will orient the camera toward this Object if it is defined.
+    - Prop: _onSwipe_: 
+      - This optional prop exists for a specific type of Rig named `AnimatedRig`.
+      - If defined it will fire on pointer events to calculate right and left swipe gestures, specifically on _pointerup_.
+      - `AnimatedRig` handles the lifecycle of listeners. 
+        - They are attached to the Canvas via `Drei`'s _useThree_ hook, which exposes gl.domElement.
+        - It is safe to use in production as long as you understand when they're attached and removed from the context canvas to avoid conflicting listeners and overriding events.
+        - See the effect defined in this component for more details.
+
+    - _targets_ and _fallbackPositions_ do not have to be parallel arrays, however:
+      - If _targets_[i] is not an Object3D and _fallbackPositions_[i] is a Vector3, the rig will operate on _fallbackPositions_[i] to orient the camera.
+      - If Both elements are not of those types then the rig will orient itself relative to the origin. Internally the Rig will operate on a default Vector(0,0,0) declared as _defaultFallbackPositionRef_.
+
+  - **Models** 
+    -  Prop: _onMeshReady_: 
+      - A callback function. This callback forwards a ref to the provider in the modern React fashion. _onMeshReady_ is conditionally fired from a Model's effect once _meshRef.current_ is defined.
+      - Scenes provide a state setter as the callback.
+
+  - **Scenes** 
+    - Scenes set several internal state variables and refs: 
+      - Prop: _meshrefs_: 
+        - an array every ref forwarded from every Model. Scenes can also provide this to Rigs as the _targets_ prop.
+      - Prop: _meshReadyFlags_ or _meshReadyFlag_: 
+        - A boolean ref or an array refs of boolean refs. Used to track refs forwarded; for every Model in the scene, meshreadyFlags.current[i] is true if meshrefs[i].current is defined.
+      - Prop: _meshesReady_ or _meshReady_:  
+        - A state setter. Sets to true when all child Models forward their refs. Specifically, when the number of defined, forwarded refs matches the number quantity flags flipped to true within _meshReadyFlags_.
+    - Scenes provide several props to Rigs: 
+      - _meshRefs_ is provided to _targets_.
+      - _meshPositions_ is provided to _fallbackPositions_.
+
+    - One particular Rig named `BasicScene` uses a Rig named `AnimatedRig`: 
+      - BasicScene provides _cameraTargets_ to _targets_.
+        - _cameraTargets_ is a guarded wrapper that returns _meshRefs.current_ if _meshesReady_ is true, or an empty array.
+
+- There is a current hack in use that I believe deems this component **not safe for use in production outside of this project**:
+- The Rig makes the scene camera look at itself, which fixes the camera quaternion to eliminate pitch yaw and roll. That is the intent of the hack.
+- Why I opted for this:
+  - A Three.js camera's _lookAt()_ method and the `maath` library's _easing.dampLookat()_ mutate camera quaternions. 
+  - I want complete control over these quaternions do mutate them as I see fit. 
+  
+- The visual result of this hack is: 
+  - Quaternions don't mutate when the camera's changes positons, no pitch yaw or roll.
+  - It faces directly down one designated axis (down the Z-axis to -z), position relative to an element of _targets_ or _fallbackPositions_. 
+
+I've written alternative approaches to controlling the camera's quaternion in`/lub/utils/quaternionUtils.js`. 
+My approaches to enable complete control over the quaternions are paused until I do more until I understand quaternions better.
 
 
 ## 4. On-demand rendering: Next.js Route-based Canvas frameloop invalidation

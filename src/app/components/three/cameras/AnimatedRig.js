@@ -30,7 +30,7 @@ const AnimatedRig = ({
   const lookAtPosition = useRef(new THREE.Vector3());
 
   const stopPositions = useRef([new THREE.Vector3(0, 0, 0)]);
-  const fallbackPositionRef = useRef(new THREE.Vector3(0, 0, 0));
+  const defaultFallbackPositionRef = useRef(new THREE.Vector3(0, 0, 0)); // default fallback position
 
   const targetIndex = useRef(0);
   const nameToIndexMapRef = useRef({});
@@ -133,8 +133,10 @@ const AnimatedRig = ({
     for (let i = 0; i < length; i++) {
       if (!stopPositions.current[i]?.isVector3) stopPositions.current[i] = new THREE.Vector3();
 
+      // if targets[i] is not an Object3D then stopPositions[i] will store fallbackPositions[i] or the default fallback
+      // This case handles when Model components have yet to fire their onMeshReady callback. 
       if (!targets[i] || !targets[i]?.isObject3D) {
-        stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : fallbackPositionRef.current);
+        stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : defaultFallbackPositionRef.current);
         continue;
       }
 
@@ -147,7 +149,7 @@ const AnimatedRig = ({
 
     if (length === 0) {
       if (!stopPositions.current[0]?.isVector3) stopPositions.current[0] = new THREE.Vector3();
-      stopPositions.current[0].copy(fallbackPositionRef.current);
+      stopPositions.current[0].copy(defaultFallbackPositionRef.current);
     }
 
     if (targetIndex.current < 0 || targetIndex.current >= stopPositions.current.length) targetIndex.current = 0;
