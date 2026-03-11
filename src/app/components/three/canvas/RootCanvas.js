@@ -35,13 +35,13 @@ export const RootCanvas = () => {
       <Canvas
         frameloop={interactive ? 'always' : 'demand'}
         gl={{ antialias: true }}
-        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 5 }}
+        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 15 }}
         fallback={<div> Sorry, WebGL is not supported. </div>}
         orthographic={false}
         shadows
       >
         <color args={[envColor]} attach='background' />
-        <fog attach='fog' color={envColor} near={180} far={270} />
+        <fog attach='fog' color={envColor} near={180} far={275} />
         <Environment shadows files={envImageUrl} environmentIntensity={0.5} />
         <Suspense fallback={<Loader />}>
           <BasicScene />
