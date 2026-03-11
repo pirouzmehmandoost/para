@@ -112,7 +112,7 @@ export const portfolio = {
         autoRotateSpeed: 0.3,
         rotation: 0,
         autoUpdateMaterial: true,
-        groupName: 'Gerd',
+        displayName: 'Gerd',
         materials: {
           defaultMaterialID: 'textured_black',
           materialIDs: ['textured_black', 'matte_black', 'gloss_black'],
@@ -121,7 +121,7 @@ export const portfolio = {
           nodeName: 'textured_bag_simplified001',
           url: '/textured_bag.glb'
         },
-        scale: 0.55,
+        scale: 0.6,
       },
     },
     {
@@ -141,7 +141,7 @@ export const portfolio = {
           '/oval_bag_matte_white_4.png',
         ],
       },
-      shortDescription: 'A textured 3D printed handbag.',
+      shortDescription: 'A transucent 3D printed handbag.',
       description: 'Large enough to fit essentials, small enough second as a table decoration',
       details: '',
       dimensions: '',
@@ -150,10 +150,10 @@ export const portfolio = {
         autoRotateSpeed: 0.45,
         rotation: 0,
         autoUpdateMaterial: false,
-        groupName: 'Sang',
+        displayName: 'Sang',
         materials: {
-          defaultMaterialID: 'matte_black',
-          materialIDs: ['matte_black'],
+          defaultMaterialID: 'translucent',
+          materialIDs: ['translucent'],
         },
         fileData: {
           nodeName: 'gerd',
@@ -190,7 +190,7 @@ export const portfolio = {
         autoRotateSpeed: 0.45,
         rotation: 1.0,
         autoUpdateMaterial: false,
-        groupName: 'PÍ',
+        displayName: 'PÍ',
         materials: {
           defaultMaterialID: 'gloss_black',
           materialIDs: ['gloss_black', 'matte_black', 'eggshell'],
@@ -199,7 +199,7 @@ export const portfolio = {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap.glb'
         },
-        scale: 0.6,
+        scale: 0.35,
       },
     },
   ],
