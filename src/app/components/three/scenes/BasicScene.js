@@ -41,11 +41,11 @@ const BasicScene = () => {
   // const lightRef = useRef(null);
   // const blurPassRef = useRef(new BlurPass());
 
-  const groundScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5);
+  const groundScale = Math.min(0.6, scaleMeshAtBreakpoint(size.width) * 0.6);
 
   const meshPositions = useMemo(() => {
     const finalPositions = [];
-    const fixedYPositions = [-8, 30, -100];
+    const fixedYPositions = [-15, 25, -110];
     const ellipseRadius = scaleMeshAtBreakpoint(size.width) * 95;
     const vertex = new THREE.Vector3();
     const ellipseCurve = new THREE.EllipseCurve(0, 0, ellipseRadius, ellipseRadius, 0, 2 * Math.PI, false, 0.5 * Math.PI);
@@ -137,7 +137,7 @@ const BasicScene = () => {
         shadow-mapSize={2048}
       />
       <EffectComposer autoClear={false} disableNormalPass multisampling={0}>
-        <N8AO aoRadius={50} distanceFalloff={0.3} intensity={7} />
+        <N8AO aoRadius={50} distanceFalloff={0.3} intensity={0.5} screenSpaceRadius halfRes />
         {/* <Vignette eskil={false} offset={0.01} darkness={0.7} /> */}
         {/* <SelectiveBloom
           blurPass={blurPassRef.current} 
@@ -185,8 +185,9 @@ const BasicScene = () => {
         />
       </mesh> */}
       <Ground
-        rotation={[Math.PI / 6, Math.PI, 0]}
-        scale={[groundScale * 1.3, groundScale, groundScale * 0.9]}
+        position={[0, -90, -15]}
+        rotation={[Math.PI / 5, Math.PI, 0]}
+        scale={[groundScale * 1.3, groundScale, groundScale * 1.3]}
       />
       <AnimatedRig
         fallbackPositions={meshPositions}
