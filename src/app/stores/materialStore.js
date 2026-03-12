@@ -43,10 +43,10 @@ for (let i = 0; i < size; i++) {
   roughnessData[stride + 2] = 255;
   roughnessData[stride + 3] = 255;
 
-  transmissionData[stride] = 255;
-  transmissionData[stride + 1] = 255;
-  transmissionData[stride + 2] = 255;
-  transmissionData[stride + 3] = 255;
+  transmissionData[stride] = 0;
+  transmissionData[stride + 1] = 0;
+  transmissionData[stride + 2] = 0;
+  transmissionData[stride + 3] = 0;
 }
 
 const _scratchBumpTexture = new THREE.DataTexture(bumpData, width, height);
@@ -80,52 +80,31 @@ _scratchTransmissionTexture.colorSpace = THREE.NoColorSpace;
 _scratchTransmissionTexture.needsUpdate = true;
 
 export const defaultMeshTransmissionMaterialConfig = {
-  anisotropy: 1,
-  anisotropicBlur: 5,
-  attenuationDistance: 25,
-  attenuationColor: '#ccc0a3',
+  anisotropy: 0,
+  anisotropicBlur: 0,
   backside: true,
-  thickness: 50,
-  backsideThickness: 50,
-  chromaticAberration: 0.6,
-  clearcoat: 0.3,
-  clearcoatRoughness: 0.8,
-  color: '#ccc0a3',
-  distortion: 0.25,
-  distortionScale: 0.04,
+  backsideThickness: 100,
+  chromaticAberration: 0.3, 
+  color: '#ffffff',
   flatShading: false,
   name: 'translucent',
-  opacity: 1,
-  reflectivity: 0.5,
+  opacity: 0.9,
   resolution: 256,
-  roughness: 0.45,
+  roughness: 0.4,
   samples: 24,
   side: THREE.DoubleSide,
-  temporalDistortion: 0,
+  thickness: 100,
   toneMapped: false,
-  transmission: 1,
   transparent: true,
-  bumpMap: _scratchBumpTexture,
-  clearcoatMap: _scratchClearcoatTexture,
-  clearcoatRoughnessMap: _scratchClearcoatRoughnessTexture,
-  map: _scratchDiffuseTexture,
-  roughnessMap: _scratchRoughnessTexture,
-  transmissionMap: _scratchTransmissionTexture,
 };
 
 export const defaultMeshPhysicalMaterialConfig = {
   color: '#2f2f2f',
   flatShading: false,
-  ior: 1.5,
-  reflectivity: 0.3,
-  roughness: 0.8,
   side: THREE.DoubleSide,
   bumpMap: _scratchBumpTexture,
-  clearcoatMap: _scratchClearcoatTexture,
-  clearcoatRoughnessMap: _scratchClearcoatRoughnessTexture,
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
-  transmissionMap: _scratchTransmissionTexture,
 };
 
 const texturedBlackMaterial = {
@@ -151,6 +130,26 @@ const matteBlackMaterial = {
   reflectivity: 0.35,
   roughness: 0.75,
   side: THREE.DoubleSide,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+  bumpMap: _scratchBumpTexture,
+};
+
+const translucentBlackMaterial = {
+  attenuationColor: '#ccc0a3',
+  attenuationDistance: 100,
+  color: '#3f3f3f',
+  dispersion: 1,
+  flatShading: false,
+  ior: 1.5,
+  name: 'transparent_black',
+  opacity: 0.9, 
+  reflectivity: 0.3,
+  roughness: 0.7,
+  side: THREE.DoubleSide,
+  thickness: 10,
+  transmission: 1,
+  transparent: true,
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
   bumpMap: _scratchBumpTexture,
@@ -234,6 +233,16 @@ const materialState = {
     },
   },
 
+  transparent_black: {
+    displayName: 'Translucent Black',
+    tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
+    material: new THREE.MeshPhysicalMaterial({ ...translucentBlackMaterial }),
+    materialProps: translucentBlackMaterial,
+    textures: {
+      transmissionMap: '/gloss_material_roughness.jpg',
+    },
+  },
+
   eggshell: {
     displayName: 'Eggshell',
     tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
@@ -245,7 +254,7 @@ const materialState = {
     displayName: 'Translucent',
     tailwindColor: `bg-radial-[at_42%_40%] from-orange-100 to-amber-700/30 to-60%`,
     material: null,
-    materialProps: defaultMeshTransmissionMaterialConfig
+    materialProps: defaultMeshTransmissionMaterialConfig,
   },
 };
 
