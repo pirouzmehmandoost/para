@@ -5,9 +5,8 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
-import useMaterial from '@stores/materialStore';
+import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
-import { materialConfig } from '@configs/materialConfigs';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 
 THREE.ColorManagement.enabled = true;
@@ -44,7 +43,7 @@ const BasicModel = (props) => {
   const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
-  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig }));
+  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
 
   useLayoutEffect(() => {
     if (meshRef.current) {
