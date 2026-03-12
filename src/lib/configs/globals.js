@@ -199,7 +199,7 @@ export const portfolio = {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap.glb'
         },
-        scale: 0.3,
+        scale: 0.6,
       },
     },
   ],
