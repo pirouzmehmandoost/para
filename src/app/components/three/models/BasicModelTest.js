@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { MeshTransmissionMaterial, useGLTF } from '@react-three/drei';
@@ -47,17 +47,21 @@ const BasicModelTest = (props) => {
   const meshRef = useRef(undefined);
   const animateRotationRef = useRef(new THREE.Euler());
   const animatePositionRef = useRef(new THREE.Vector3(0, 0, 0));
+  const scaleRef = useRef(new THREE.Vector3(0.035, 0.035, 0.035));
+  const prevCanvasWidthRef = useRef(size.width);
   const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
   const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
   const transmissionMaterialRef = useRef(null);
   const isMaterialTranslucentRef = useRef(false);
-  const scaleRef = useRef(new THREE.Vector3(0.035, 0.035, 0.035));
-  // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
+  const meshRotation = useMemo(() => { return [0, Math.PI * rotation, 0]}, [rotation]);
 
-  // Set mesh scale relative to viewport dimensions
+  // old method for scaling is replaced by the new effect below
+  // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
   useEffect(() => {
+    const canvasWidth = size.width;
+    
     if (!meshRef.current) return;
 
     meshRef.current.updateWorldMatrix(true, true);
@@ -65,16 +69,17 @@ const BasicModelTest = (props) => {
       .setFromObject(meshRef.current)
       .getCenter(_scratchCenterRef.current);
     _scratchBoxRef.current.getSize(_scratchSizeRef.current);
-  
-    const boundingBoxAspectRatio = _scratchSizeRef.current.x / _scratchSizeRef.current.y;
-    const segmentedViewportDimensions = viewport.aspect / PROJECTS_LENGTH;
-    const factor = segmentedViewportDimensions / boundingBoxAspectRatio;
-    const newScale = factor * scale;
-  
-    // scaleRef.current.set(newScale, newScale, newScale);
+    const minb = Math.min( _scratchSizeRef.current.x , _scratchSizeRef.current.y)
+    const maxb = Math.max( _scratchSizeRef.current.x , _scratchSizeRef.current.y)
+    const minv = Math.min(viewport.height , viewport.width)
+    const maxv = Math.max( viewport.height , viewport.width)
+    const boundingBoxRatio = minb / maxb;
+    const viewportRatio = minv / maxv;
+    const factor = viewportRatio / boundingBoxRatio;
+    const newScale = factor * scale / PROJECTS_LENGTH;
     scaleRef.current = new THREE.Vector3(newScale, newScale, newScale);
     // console.log(nodeName + "'s new scale: ",  scaleRef.current);
-  }, [viewport.aspect, scale]);
+  }, [scale]);
 
   useLayoutEffect(() => {
     if (meshRef.current && !defaultMaterialID.replace('_', ' ').includes('translucent')) {
@@ -105,9 +110,9 @@ const BasicModelTest = (props) => {
   }, [onMeshReady, defaultMaterialID, setMeshTransmissionMaterial]);
 
 
-  useFrame(({ clock }, delta) => {
-    // Max 80ms per frame. Reduces drastic frame jumps during browser tab navigation.
-    const clampedDelta = Math.min(delta, 0.08);
+  useFrame(({ clock, viewport: vp }, delta) => {
+    // Clamp on delta eliminates frame jumping during browser tab navigation.
+    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame.
     const elapsedTime = clock.elapsedTime;
     const sine = Math.sin(elapsedTime);
     const cos = Math.cos(elapsedTime);
@@ -117,11 +122,12 @@ const BasicModelTest = (props) => {
       const isTransmissionMaterial = defaultMaterialID.replace('_', ' ').includes('translucent');
       meshRef.current.updateWorldMatrix(true, true);
 
-
-      const boundingBoxAspectRatio = _scratchSizeRef.current.x / _scratchSizeRef.current.y;
-      const segmentedViewportDimensions = viewport.aspect / PROJECTS_LENGTH;
-      const factor = segmentedViewportDimensions / boundingBoxAspectRatio;
-      const newScale = factor * scale;
+      const minBB = Math.min( _scratchSizeRef.current.x , _scratchSizeRef.current.y);
+      const maxBB = Math.max( _scratchSizeRef.current.x , _scratchSizeRef.current.y);
+      const minVP = Math.min(vp.height , vp.width);
+      const maxVP = Math.max(vp.height , vp.width);
+      const factor = (minVP / maxVP) / ( minBB / maxBB); // viewport ratio / bounding box ratio
+      const newScale = factor * scale / PROJECTS_LENGTH;
 
       scaleRef.current.set(newScale, newScale, newScale);
       easing.damp3(meshRef.current.scale, scaleRef.current, 0.3, clampedDelta);
@@ -130,20 +136,26 @@ const BasicModelTest = (props) => {
         animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y + 5, defaultPositionRef.current.z);
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        if (autoRotate) {
-          animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
-          meshRef.current.rotation.y += delta * autoRotateSpeed;
-        }
-
         if (!isTransmissionMaterial) {
+          if (autoRotate) {
+            animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
+            meshRef.current.rotation.y += delta * autoRotateSpeed;
+          }
+          // easing.dampC(blendedMaterialRef.current.attenuationColor, selectedMaterialRef.current?.attenuationColor ?? 'white', clampedDelta);
+          // easing.damp(blendedMaterialRef.current, "attenuationDistance", selectedMaterialRef.current?.attenuationDistance ?? Infinity, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "bumpScale", selectedMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
           easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current?.color ?? 'red', 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "dispersion", selectedMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescence", selectedMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescenceIOR", selectedMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "opacity", selectedMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "thickness", selectedMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "transmission", selectedMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
+          blendedMaterialRef.current.side = selectedMaterialRef.current?.side ?? THREE.DoubleSide;
+          blendedMaterialRef.current.tranparent = selectedMaterialRef.current?.tranparent ?? false;
           blendedMaterialRef.current.map = selectedMaterialRef.current?.map;
           blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap;
           blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap;
@@ -153,21 +165,27 @@ const BasicModelTest = (props) => {
         animatePositionRef.current.set(defaultPositionRef.current.x - sine / 2, defaultPositionRef.current.y + cos * 1.5, defaultPositionRef.current.z + sine);
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        if (autoRotate) {
-          animateRotationRef.current.set(((0.015 * sine) % 1), (Math.PI * rotation + ((0.025 * sine) % 1)), ((0.015 * cos) % 1));
-          easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
-        }
-
         if (!isTransmissionMaterial) {
+          if (autoRotate) {
+            animateRotationRef.current.set(((0.015 * sine) % 1), (Math.PI * rotation + ((0.025 * sine) % 1)), ((0.015 * cos) % 1));
+            easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
+          }
+          // easing.dampC(blendedMaterialRef.current.attenuationColor, defaultMaterialRef.current?.attenuationColor ?? 'white', clampedDelta);
+          // easing.damp(blendedMaterialRef.current, "attenuationDistance", defaultMaterialRef.current?.attenuationDistance ?? Infinity, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "bumpScale", defaultMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
           easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current?.color ?? 'red', 0.3, clampedDelta)
           easing.damp(blendedMaterialRef.current, "dispersion", defaultMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescence", defaultMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescenceIOR", defaultMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
-          easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "opacity", defaultMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0.5, 0.3, clampedDelta);
-          blendedMaterialRef.current.map = defaultMaterialRef.current?.map
+          easing.damp(blendedMaterialRef.current, "thickness", defaultMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "transmission", defaultMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
+          blendedMaterialRef.current.tranparent = defaultMaterialRef.current?.tranparent ?? false;
+          blendedMaterialRef.current.side = defaultMaterialRef.current?.side ?? THREE.DoubleSide;
+          blendedMaterialRef.current.map = defaultMaterialRef.current?.map;
           blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap;
           blendedMaterialRef.current.bumpMap = defaultMaterialRef.current?.bumpMap;
         }
@@ -188,7 +206,7 @@ const BasicModelTest = (props) => {
               onClick={onClick}
               position={position}
               receiveShadow={true}
-              rotation={[0, Math.PI * rotation, 0]}
+              rotation={meshRotation}
               scale={scaleRef.current}
             >
               <MeshTransmissionMaterial
@@ -207,7 +225,7 @@ const BasicModelTest = (props) => {
               onClick={onClick}
               position={position}
               receiveShadow={true}
-              rotation={[0, Math.PI * rotation, 0]}
+              rotation={meshRotation}
               scale={scaleRef.current}
             />
           )
