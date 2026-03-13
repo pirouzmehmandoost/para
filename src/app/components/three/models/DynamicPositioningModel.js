@@ -5,9 +5,8 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
-import useMaterial from '@stores/materialStore';
+import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
-import { materialConfig } from '@configs/materialConfigs';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 
 THREE.Cache.enabled = true;
@@ -33,7 +32,7 @@ const DynamicPositioningModel = (props) => {
 
   // const boxRef = useRef(undefined)
   const size = useThree((state) => state.size);
-  const scene = useThree((state) => state.scene);
+  // const scene = useThree((state) => state.scene);
 
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
 
@@ -46,7 +45,7 @@ const DynamicPositioningModel = (props) => {
   const meshRef = useRef(undefined);
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
-  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...materialConfig }));
+  const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
 
   const hasPositionedRef = useRef(false);
   const defaultPositionRef = useRef(new THREE.Vector3(position.x, position.y, position.z));

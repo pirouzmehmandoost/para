@@ -14,7 +14,7 @@ const initialState = {
     autoRotate: true,
     autoRotateSpeed: 1,
     autoUpdateMaterial: false,
-    groupName: '',
+    displayName: '',
     materials: {
       defaultMaterialID: '',
       materialIDs: [],
@@ -69,10 +69,14 @@ const selectionStore = (set, get) => ({
         ...initialState,
         sceneData: {
           ...initialState.sceneData,
-          fileData: { ...initialState.sceneData.fileData },
-          materials: { ...initialState.sceneData.materials },
-        }
-      }
+          fileData: {
+            ...initialState.sceneData.fileData,
+          },
+          materials: {
+            ...initialState.sceneData.materials,
+          },
+        },
+      },
     }),
 });
 

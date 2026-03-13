@@ -5,27 +5,65 @@ import { getColorSpace } from '@utils/materialUtils';
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
-// Uint8Array with pixel data (R, G, B, A for each pixel)
+const createIdempotentFlag = (obj) => Object.keys(obj).sort().join('|');
+
+// Uint8Arrays with pixel data (R, G, B, A for each pixel)
 const width = 32;
 const height = 32;
 const size = width * height;
+const bumpData = new Uint8Array(4 * size);
+const clearcoatData = new Uint8Array(4 * size);
+const clearcoatRoughnessData = new Uint8Array(4 * size);
 const diffusedata = new Uint8Array(4 * size);
 const roughnessData = new Uint8Array(4 * size);
-const bumpData = new Uint8Array(4 * size);
+const transmissionData = new Uint8Array(4 * size);
+
 bumpData.fill(0);
 
 for (let i = 0; i < size; i++) {
   const stride = i * 4;
-  diffusedata[stride] = 255; // r
-  diffusedata[stride + 1] = 255; // g
-  diffusedata[stride + 2] = 255; // b
-  diffusedata[stride + 3] = 255; // a
+
+  clearcoatData[stride] = 255;
+  clearcoatData[stride + 1] = 255;
+  clearcoatData[stride + 2] = 255;
+  clearcoatData[stride + 3] = 255;
+
+  clearcoatRoughnessData[stride] = 255;
+  clearcoatRoughnessData[stride + 1] = 255;
+  clearcoatRoughnessData[stride + 2] = 255;
+  clearcoatRoughnessData[stride + 3] = 255;
+
+  diffusedata[stride] = 255;
+  diffusedata[stride + 1] = 255;
+  diffusedata[stride + 2] = 255;
+  diffusedata[stride + 3] = 255;
 
   roughnessData[stride] = 255;
   roughnessData[stride + 1] = 255;
   roughnessData[stride + 2] = 255;
   roughnessData[stride + 3] = 255;
+
+  transmissionData[stride] = 0;
+  transmissionData[stride + 1] = 0;
+  transmissionData[stride + 2] = 0;
+  transmissionData[stride + 3] = 0;
 }
+
+const _scratchBumpTexture = new THREE.DataTexture(bumpData, width, height);
+_scratchBumpTexture.name = '_scratchBumpTexture';
+_scratchBumpTexture.colorSpace = THREE.NoColorSpace;
+_scratchBumpTexture.needsUpdate = true;
+
+const _scratchClearcoatTexture = new THREE.DataTexture(clearcoatData, width, height);
+_scratchClearcoatTexture.name = '_scratchClearcoatTexture';
+_scratchClearcoatTexture.colorSpace = THREE.NoColorSpace;
+_scratchClearcoatTexture.needsUpdate = true;
+
+const _scratchClearcoatRoughnessTexture = new THREE.DataTexture(clearcoatRoughnessData, width, height);
+_scratchClearcoatRoughnessTexture.name = '_scratchClearcoatRoughnessTexture';
+_scratchClearcoatRoughnessTexture.colorSpace = THREE.NoColorSpace;
+_scratchClearcoatRoughnessTexture.needsUpdate = true;
+
 const _scratchDiffuseTexture = new THREE.DataTexture(diffusedata, width, height);
 _scratchDiffuseTexture.name = '_scratchDiffuseTexture';
 _scratchDiffuseTexture.colorSpace = THREE.SRGBColorSpace;
@@ -36,12 +74,40 @@ _scratchRoughnessTexture.name = '_scratchRoughnessTexture';
 _scratchRoughnessTexture.colorSpace = THREE.NoColorSpace;
 _scratchRoughnessTexture.needsUpdate = true;
 
-const _scratchBumpTexture = new THREE.DataTexture(bumpData, width, height);
-_scratchBumpTexture.name = '_scratchBumpTexture';
-_scratchBumpTexture.colorSpace = THREE.NoColorSpace;
-_scratchBumpTexture.needsUpdate = true;
+const _scratchTransmissionTexture = new THREE.DataTexture(transmissionData, width, height);
+_scratchTransmissionTexture.name = '_scratchTransmissionTexture';
+_scratchTransmissionTexture.colorSpace = THREE.NoColorSpace;
+_scratchTransmissionTexture.needsUpdate = true;
 
-const createIdempotentFlag = (obj) => Object.keys(obj).sort().join('|');
+export const defaultMeshTransmissionMaterialConfig = {
+  // anisotropy: 0,
+  // anisotropicBlur: 1,
+  backside: true,
+  backsideThickness: 100,
+  chromaticAberration: 0.2, 
+  color: '#ffffff',
+  flatShading: false,
+  name: 'translucent',
+  opacity: 0.9,
+  clearcoat: 0.5,
+  clearcoatRoughness: 0.3,
+  resolution: 124,
+  roughness: 0.5,
+  samples: 24,
+  side: THREE.DoubleSide,
+  thickness: 100,
+  toneMapped: false,
+  transparent: true,
+};
+
+export const defaultMeshPhysicalMaterialConfig = {
+  color: '#2f2f2f',
+  flatShading: false,
+  side: THREE.DoubleSide,
+  bumpMap: _scratchBumpTexture,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+};
 
 const texturedBlackMaterial = {
   bumpScale: -1,
@@ -66,6 +132,26 @@ const matteBlackMaterial = {
   reflectivity: 0.35,
   roughness: 0.75,
   side: THREE.DoubleSide,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+  bumpMap: _scratchBumpTexture,
+};
+
+const translucentBlackMaterial = {
+  attenuationColor: '#ccc0a3',
+  attenuationDistance: 100,
+  color: '#3f3f3f',
+  dispersion: 1,
+  flatShading: false,
+  ior: 1.5,
+  name: 'transparent_black',
+  opacity: 0.9, 
+  reflectivity: 0.3,
+  roughness: 0.7,
+  side: THREE.DoubleSide,
+  thickness: 10,
+  transmission: 1,
+  transparent: true,
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
   bumpMap: _scratchBumpTexture,
@@ -149,11 +235,28 @@ const materialState = {
     },
   },
 
+  transparent_black: {
+    displayName: 'Translucent Black',
+    tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
+    material: new THREE.MeshPhysicalMaterial({ ...translucentBlackMaterial }),
+    materialProps: translucentBlackMaterial,
+    textures: {
+      transmissionMap: '/gloss_material_roughness.jpg',
+    },
+  },
+
   eggshell: {
     displayName: 'Eggshell',
     tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
     material: new THREE.MeshPhysicalMaterial({ ...eggshellMaterial }),
     materialProps: eggshellMaterial,
+  },
+
+  translucent: {
+    displayName: 'Translucent',
+    tailwindColor: `bg-radial-[at_40%_40%] from-orange-50 to-slate-500 to-50%`,
+    material: null,
+    materialProps: defaultMeshTransmissionMaterialConfig,
   },
 };
 
@@ -163,6 +266,7 @@ const materialStore = (set, get) => ({
   materials: materialState,
   textures: textureState,
   texturesInitialized: '',
+  materialsInitialized: false,
 
   getMaterials: () => get().materials,
 
@@ -190,17 +294,20 @@ const materialStore = (set, get) => ({
       const designatedTextures = materials[material]?.textures;
       if (designatedTextures) {
         const materialToUpdate = materials[material].material;
+        const materialPropsToUpdate = materials[material].materialProps;
         for (const materialProperty in designatedTextures) {
           const textureToAssign = textures[designatedTextures[materialProperty]];
           materialToUpdate[materialProperty] = textureToAssign.clone();
           materialToUpdate[materialProperty].flipY = false;
           materialToUpdate[materialProperty].colorSpace = getColorSpace(materialProperty);
+          materialPropsToUpdate[materialProperty] = materialToUpdate[materialProperty];
         }
       }
     }
 
     set((state) => ({
       texturesInitialized: initialized,
+      materialsInitialized: state.materialsInitialized,
       textures: {
         ...state.textures,
         ...textures
@@ -208,6 +315,31 @@ const materialStore = (set, get) => ({
       materials: {
         ...state.materials,
         ...materials
+      },
+    }));
+  },
+
+  setMeshTransmissionMaterial: (meshTransmissionMaterialObject) => {
+    const materialsInitialized = get().materialsInitialized;
+
+    if (materialsInitialized) return;
+
+    const clone = meshTransmissionMaterialObject.clone();
+    set((state) => ({
+      texturesInitialized: state.texturesInitialized,
+      materialsInitialized: true,
+      textures: {
+        ...state.textures,
+      },
+      materials: {
+        ...state.materials,
+        "translucent": {
+          ...state.materials.translucent, 
+          materialProps: {
+            ...state.materials.translucent.materialProps,
+          },
+          material: clone,
+        }
       },
     }));
   },

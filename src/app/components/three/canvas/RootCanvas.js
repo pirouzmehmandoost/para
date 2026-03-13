@@ -35,7 +35,7 @@ export const RootCanvas = () => {
       <Canvas
         frameloop={interactive ? 'always' : 'demand'}
         gl={{ antialias: true }}
-        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 5 }}
+        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 15 }}
         fallback={<div> Sorry, WebGL is not supported. </div>}
         orthographic={false}
         shadows

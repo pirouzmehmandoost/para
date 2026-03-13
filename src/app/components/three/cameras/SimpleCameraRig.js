@@ -1,53 +1,61 @@
-// 'use client';
+'use client';
 
-// import * as THREE from 'three';
-// import { useFrame, useThree } from '@react-three/fiber';
-// import { useMemo, useLayoutEffect, useRef } from 'react'
-// import { easing } from 'maath';
-// import cameraConfigs from '@configs/cameraConfigs';
+import * as THREE from 'three';
+import { useFrame, useThree } from '@react-three/fiber';
+import { useLayoutEffect, useRef } from 'react'
+import { easing } from 'maath';
+import cameraConfigs from '@configs/cameraConfigs';
 
-// THREE.Cache.enabled = true;
+THREE.Cache.enabled = true;
 
-// const SimpleCameraRig = ({ target, onTargetReady }) => {
-//   const { camera } = useThree();
+const SimpleCameraRig = ({ focusTarget, fallbackPosition, cameraShake, }) => {
+  const sceneCamera = useThree((s) => s.camera);
+  const lookAtPositionRef = useRef(new THREE.Vector3(sceneCamera.position.x, sceneCamera.position.y, sceneCamera.position.z));
+  const cameraPositionRef = useRef(new THREE.Vector3(sceneCamera.position.x, sceneCamera.position.y, sceneCamera.position.z));
+  const blendedPositionRef = useRef(new THREE.Vector3(sceneCamera.position.x, sceneCamera.position.y, sceneCamera.position.z));
+  const _scratchBoxRef = useRef(new THREE.Box3());
+  const _scratchCenterRef = useRef(new THREE.Vector3());
 
-//   const cameraTargetPosition = useMemo(()=> {
-//     const positionVector = new THREE.Vector3(cameraConfigs);
-//     if (target) {
-//       target.updateWorldMatrix(true, true);
-//       const modelBoundingBox = new THREE.Box3().setFromObject(target);
-//       const center = new THREE.Vector3();
-//       modelBoundingBox.getCenter(center);
-//       positionVector.copy(center);
-//     };
-//     return positionVector;
-//   }, [target]);
+  useLayoutEffect(() => {
+    if (focusTarget && focusTarget?.isObject3D) {
+      focusTarget.updateWorldMatrix(true, true);
+      _scratchBoxRef.current
+      .setFromObject(focusTarget)
+      .getCenter(_scratchCenterRef.current);
 
-//   const lookAtPosition = useRef(new THREE.Vector3());
+      lookAtPositionRef.current.set(
+        _scratchCenterRef.current.x,
+        _scratchCenterRef.current.y,
+        _scratchCenterRef.current.z + cameraConfigs.POSITION[2] + 10
+      );
+    }
+    else {
+      lookAtPositionRef.current.set(
+        fallbackPosition.x,
+        fallbackPosition.y,
+        fallbackPosition.z + cameraConfigs.POSITION[2] + 10
+      );
+    }
+    blendedPositionRef.current.copy(lookAtPositionRef.current);
+    sceneCamera.updateMatrixWorld();
+  }, [focusTarget, fallbackPosition]);
 
-//   useLayoutEffect(() => {
-//     if (target) {
-//       camera.position.set( cameraTargetPosition.x, cameraTargetPosition.y, cameraTargetPosition.z + 220);
-//       camera.lookAt(cameraTargetPosition);
-//       camera.updateMatrixWorld();
-//       if (onTargetReady) onTargetReady(cameraTargetPosition);
-//     }
-//   }, [target, cameraTargetPosition, camera]);
+  useFrame(({ clock, camera }, delta) => {
+    const clampedDelta = Math.min(delta, 0.08);
 
-//   useFrame(({ clock, camera }, delta) => {
-//     camera.lookAt(cameraTargetPosition);
-//     camera.updateMatrixWorld();
-//     const elapsedTime = clock.elapsedTime;
-//     const xOffset = 50 * Math.sin(elapsedTime);
-//     const yOffset = 50 * Math.cos(elapsedTime);
-//     const zOffset = cameraConfigs.POSITION[2] + yOffset;
-//     lookAtPosition.current.set(
-//       cameraTargetPosition.x + xOffset,
-//       cameraTargetPosition.y + yOffset,
-//       cameraTargetPosition.z + zOffset
-//     );
-//     easing.damp3(camera.position, lookAtPosition.current, 1, 0.06)
-//   });
-// };
+    if (cameraShake) {
+      const elapsedTime = clock.elapsedTime;
+      blendedPositionRef.current.set(
+        lookAtPositionRef.current.x + 2.5 * Math.sin(elapsedTime),
+        lookAtPositionRef.current.y + 5 * Math.cos(elapsedTime),
+        lookAtPositionRef.current.z + (-2 * Math.cos(elapsedTime))
+      );
+    }
+    cameraPositionRef.current.copy(camera.position)
+    camera.lookAt(cameraPositionRef.current)
+    easing.damp3(camera.position, blendedPositionRef.current, 1, clampedDelta);
+    camera.updateMatrixWorld();
+  });
+};
 
-// export default SimpleCameraRig;
+export default SimpleCameraRig;
