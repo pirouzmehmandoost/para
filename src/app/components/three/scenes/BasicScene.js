@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Bvh, } from '@react-three/drei'
 import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
-// import { BlurPass, BlendFunction, Resizer, KernelSize } from 'postprocessing'
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
@@ -39,7 +38,7 @@ const BasicScene = () => {
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const meshPositions = useRef([
     new THREE.Vector3(-100, -15, -40),
-    new THREE.Vector3(100, 25, -40),
+    new THREE.Vector3(100, 30, -40),
     new THREE.Vector3(0, -105, 40)
   ]);
 

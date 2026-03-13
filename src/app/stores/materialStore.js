@@ -80,17 +80,19 @@ _scratchTransmissionTexture.colorSpace = THREE.NoColorSpace;
 _scratchTransmissionTexture.needsUpdate = true;
 
 export const defaultMeshTransmissionMaterialConfig = {
-  anisotropy: 0,
-  anisotropicBlur: 0,
+  // anisotropy: 0,
+  // anisotropicBlur: 1,
   backside: true,
   backsideThickness: 100,
-  chromaticAberration: 0.3, 
+  chromaticAberration: 0.2, 
   color: '#ffffff',
   flatShading: false,
   name: 'translucent',
   opacity: 0.9,
-  resolution: 256,
-  roughness: 0.4,
+  clearcoat: 0.5,
+  clearcoatRoughness: 0.3,
+  resolution: 124,
+  roughness: 0.5,
   samples: 24,
   side: THREE.DoubleSide,
   thickness: 100,
@@ -252,7 +254,7 @@ const materialState = {
 
   translucent: {
     displayName: 'Translucent',
-    tailwindColor: `bg-radial-[at_42%_40%] from-orange-100 to-amber-700/30 to-60%`,
+    tailwindColor: `bg-radial-[at_40%_40%] from-orange-50 to-slate-500 to-50%`,
     material: null,
     materialProps: defaultMeshTransmissionMaterialConfig,
   },
