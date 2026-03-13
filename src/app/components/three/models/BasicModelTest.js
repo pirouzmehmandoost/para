@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { MeshTransmissionMaterial, useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
-// import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 import useMaterial, { defaultMeshTransmissionMaterialConfig, defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
@@ -36,10 +35,13 @@ const BasicModelTest = (props) => {
   // viewport: Bounds of the viewport in 3d units. viewport.aspect is (viewport.width / viewport.height)
   const { size, viewport } = useThree();
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
+
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
   const materials = useMaterial((state) => state.materials);
   const setMeshTransmissionMaterial = useMaterial((state) => state.setMeshTransmissionMaterial);
+
+  const meshRotation = useMemo(() => { return [0, Math.PI * rotation, 0]}, [rotation]);
 
   const _scratchBoxRef = useRef(new THREE.Box3());
   const _scratchCenterRef = useRef(new THREE.Vector3());
@@ -55,31 +57,7 @@ const BasicModelTest = (props) => {
   const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
   const transmissionMaterialRef = useRef(null);
   const isMaterialTranslucentRef = useRef(false);
-  const meshRotation = useMemo(() => { return [0, Math.PI * rotation, 0]}, [rotation]);
 
-  // old method for scaling is replaced by the new effect below
-  // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
-  useEffect(() => {
-    const heightDelta = size.height / prevCanvasHeightRef.current;
-    if (!meshRef.current) return;
-
-    meshRef.current.updateWorldMatrix(true, true);
-    _scratchBoxRef.current
-      .setFromObject(meshRef.current)
-      .getCenter(_scratchCenterRef.current);
-    _scratchBoxRef.current.getSize(_scratchSizeRef.current);
-    const minb = Math.min( _scratchSizeRef.current.x , _scratchSizeRef.current.y)
-    const maxb = Math.max( _scratchSizeRef.current.x , _scratchSizeRef.current.y)
-    const minv = Math.min(viewport.height , viewport.width)
-    const maxv = Math.max( viewport.height , viewport.width)
-    const boundingBoxRatio = minb / maxb;
-    const viewportRatio = minv / maxv;
-    const factor = viewportRatio / boundingBoxRatio;
-    const newScale = (factor * scale * heightDelta) / PROJECTS_LENGTH;
-    scaleRef.current = new THREE.Vector3(newScale, newScale, newScale);
-    prevCanvasHeightRef.current = size.height;
-    // console.log(nodeName + "'s new scale: ",  scaleRef.current);
-  }, [scale]);
 
   useLayoutEffect(() => {
     if (meshRef.current && !defaultMaterialID.replace('_', ' ').includes('translucent')) {
@@ -109,6 +87,29 @@ const BasicModelTest = (props) => {
     }
   }, [onMeshReady, defaultMaterialID, setMeshTransmissionMaterial]);
 
+  // old method for scaling is replaced by the new effect below
+  // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
+  useEffect(() => {
+    const heightDelta = size.height / prevCanvasHeightRef.current;
+    if (!meshRef.current) return;
+
+    meshRef.current.updateWorldMatrix(true, true);
+    _scratchBoxRef.current
+      .setFromObject(meshRef.current)
+      .getCenter(_scratchCenterRef.current);
+    _scratchBoxRef.current.getSize(_scratchSizeRef.current);
+    const minb = Math.min( _scratchSizeRef.current.x , _scratchSizeRef.current.y)
+    const maxb = Math.max( _scratchSizeRef.current.x , _scratchSizeRef.current.y)
+    const minv = Math.min(viewport.height , viewport.width)
+    const maxv = Math.max( viewport.height , viewport.width)
+    const boundingBoxRatio = minb / maxb;
+    const viewportRatio = minv / maxv;
+    const factor = viewportRatio / boundingBoxRatio;
+    const newScale = (factor * scale * heightDelta) / PROJECTS_LENGTH;
+    scaleRef.current = new THREE.Vector3(newScale, newScale, newScale);
+    prevCanvasHeightRef.current = size.height;
+    // console.log(nodeName + "'s new scale: ",  scaleRef.current);
+  }, [scale]);
 
   useFrame(({ clock, viewport: vp, size: canvasDimensions }, delta) => {
     // Clamp on delta eliminates frame jumping during browser tab navigation.
