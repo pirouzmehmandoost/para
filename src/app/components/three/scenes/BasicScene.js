@@ -17,8 +17,8 @@ THREE.Cache.enabled = true;
 THREE.ColorManagement.enabled = true;
 
 const BasicScene = () => {
-  const { projects } = portfolio;
   const { SWIPE_DELAY_MS } = cameraConfigs;
+  const { projects } = portfolio;
   const totalMeshes = projects.length;
 
   const set = useThree((state) => state.set);
@@ -145,7 +145,7 @@ const BasicScene = () => {
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions.current[index]}
               rotation={sceneData.rotation}
-              scale={sceneData.scale}
+              scale={sceneData.scale / totalMeshes}
             />
           );
         })}
