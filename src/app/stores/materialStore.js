@@ -152,7 +152,6 @@ const groundMaterial = {
 };
 
 const matteBlackMaterial = {
-  bumpScale: 10,
   color: '#2f2f2f',
   flatShading: false,
   ior: 1.5,
