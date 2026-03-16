@@ -3,9 +3,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
-import { MeshTransmissionMaterial, useGLTF } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
-import useMaterial, { defaultMeshTransmissionMaterialConfig, defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
+import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { portfolio } from '@configs/globals';
 
@@ -14,7 +14,7 @@ THREE.Cache.enabled = true;
 
 useGLTF.preload('/yoga_mat_strap.glb');
 useGLTF.preload('/textured_bag.glb');
-useGLTF.preload('/bag_9_BAT-transformed.glb');
+useGLTF.preload('/sang.glb');
 
 const PROJECTS_LENGTH = portfolio.projects.length;
 
@@ -39,7 +39,7 @@ const BasicModelTest = (props) => {
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
   const materials = useMaterial((state) => state.materials);
-  const setMeshTransmissionMaterial = useMaterial((state) => state.setMeshTransmissionMaterial);
+  // const setMeshTransmissionMaterial = useMaterial((state) => state.setMeshTransmissionMaterial);
 
   const meshRotation = useMemo(() => { return [0, Math.PI * rotation, 0]}, [rotation]);
 
@@ -55,12 +55,11 @@ const BasicModelTest = (props) => {
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
   const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
-  const transmissionMaterialRef = useRef(null);
-  const isMaterialTranslucentRef = useRef(false);
-
+  // const transmissionMaterialRef = useRef(null);
+  // const isMaterialTranslucentRef = useRef(false);
 
   useLayoutEffect(() => {
-    if (meshRef.current && !defaultMaterialID.replace('_', ' ').includes('translucent')) {
+    if (meshRef.current ) { // && !defaultMaterialID.replace('_', ' ').includes('translucent')) {
       const selectedAndFocused = isFocused?.length && (isFocused === nodeName);
       const selectedMatID = selectedMaterialID?.length && selectedAndFocused ? selectedMaterialID : defaultMaterialID;
       const selectedMat = materials[selectedMatID]?.material;
@@ -73,19 +72,21 @@ const BasicModelTest = (props) => {
   useEffect(() => {
     if (meshRef.current) {
       meshRef.current.updateWorldMatrix(true, true);
-      if (defaultMaterialID.replace('_', ' ').includes('translucent')) {
-        if (transmissionMaterialRef?.current && !isMaterialTranslucentRef.current) {
-          setMeshTransmissionMaterial(transmissionMaterialRef.current);
-          isMaterialTranslucentRef.current = true;
-        }
-      }
-      else {
-        blendedMaterialRef.current.copy(defaultMaterialRef.current);
-      }
+      blendedMaterialRef.current.copy(defaultMaterialRef.current);
+
+      // if (defaultMaterialID.replace('_', ' ').includes('translucent')) {
+      //   if (transmissionMaterialRef?.current && !isMaterialTranslucentRef.current) {
+      //     setMeshTransmissionMaterial(transmissionMaterialRef.current);
+      //     isMaterialTranslucentRef.current = true;
+      //   }
+      // }
+      // else {
+      //   blendedMaterialRef.current.copy(defaultMaterialRef.current);
+      // }
 
       if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
     }
-  }, [onMeshReady, defaultMaterialID, setMeshTransmissionMaterial]);
+  }, [onMeshReady ]); // defaultMaterialID, setMeshTransmissionMaterial ]);
 
   // old method for scaling is replaced by the new effect below
   // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
@@ -121,7 +122,7 @@ const BasicModelTest = (props) => {
 
     if (meshRef?.current && nodeName?.length) {
       const selectedAndFocused = isFocused?.length && isFocused === nodeName;
-      const isTransmissionMaterial = defaultMaterialID.replace('_', ' ').includes('translucent');
+      // const isTransmissionMaterial = defaultMaterialID.replace('_', ' ').includes('translucent');
       meshRef.current.updateWorldMatrix(true, true);
 
       const minBB = Math.min( _scratchSizeRef.current.x , _scratchSizeRef.current.y);
@@ -139,7 +140,7 @@ const BasicModelTest = (props) => {
         animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y + 5, defaultPositionRef.current.z);
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        if (!isTransmissionMaterial) {
+        // if (!isTransmissionMaterial) {
           if (autoRotate) {
             animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
             meshRef.current.rotation.y += delta * autoRotateSpeed;
@@ -151,23 +152,29 @@ const BasicModelTest = (props) => {
           easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescence", selectedMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescenceIOR", selectedMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
+          easing.damp2(blendedMaterialRef.current.normalScale, selectedMaterialRef.current?.normalScale ?? [1,1], 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "opacity", selectedMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "thickness", selectedMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "transmission", selectedMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
+
           blendedMaterialRef.current.side = selectedMaterialRef.current?.side ?? THREE.DoubleSide;
           blendedMaterialRef.current.tranparent = selectedMaterialRef.current?.tranparent ?? false;
-          blendedMaterialRef.current.map = selectedMaterialRef.current?.map;
-          blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap;
+
           blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap;
-        }
+          blendedMaterialRef.current.map = selectedMaterialRef.current?.map;
+          blendedMaterialRef.current.normalMap = selectedMaterialRef.current?.normalMap;
+          blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap;
+          blendedMaterialRef.current.transmissionMap = selectedMaterialRef.current?.transmissionMap;
+          // if (blendedMaterialRef.current?.normalMap) blendedMaterialRef.current.normalMap = defaultMaterialRef.current?.normalMap;
+        // }
       }
       else {
         animatePositionRef.current.set(defaultPositionRef.current.x - sine / 2, defaultPositionRef.current.y + cos * 1.5, defaultPositionRef.current.z + sine);
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        if (!isTransmissionMaterial) {
+        // if (!isTransmissionMaterial) {
           if (autoRotate) {
             animateRotationRef.current.set(((0.015 * sine) % 1), (Math.PI * rotation + ((0.025 * sine) % 1)), ((0.015 * cos) % 1));
             easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
@@ -179,17 +186,22 @@ const BasicModelTest = (props) => {
           easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescence", defaultMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "iridescenceIOR", defaultMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
+          easing.damp2(blendedMaterialRef.current.normalScale, defaultMaterialRef.current?.normalScale ?? [1,1], 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "opacity", defaultMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0.5, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "thickness", defaultMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
           easing.damp(blendedMaterialRef.current, "transmission", defaultMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
+
           blendedMaterialRef.current.side = defaultMaterialRef.current?.side ?? THREE.DoubleSide;
           blendedMaterialRef.current.tranparent = defaultMaterialRef.current?.tranparent ?? false;
-          blendedMaterialRef.current.map = defaultMaterialRef.current?.map;
-          blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap;
+
           blendedMaterialRef.current.bumpMap = defaultMaterialRef.current?.bumpMap;
-        }
+          blendedMaterialRef.current.map = defaultMaterialRef.current?.map;
+          blendedMaterialRef.current.normalMap = defaultMaterialRef.current?.normalMap;
+          blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap;
+          blendedMaterialRef.current.transmissionMap = defaultMaterialRef.current?.transmissionMap;
+        // }
       }
     }
   });
@@ -197,26 +209,26 @@ const BasicModelTest = (props) => {
   return (
     <>
       {geometry && (
-        defaultMaterialID.replace('_', ' ').includes('translucent') ?
-          (
-            <mesh
-              ref={meshRef}
-              castShadow={true}
-              geometry={geometry}
-              name={nodeName}
-              onClick={onClick}
-              position={position}
-              receiveShadow={true}
-              rotation={meshRotation}
-              scale={scaleRef.current}
-            >
-              <MeshTransmissionMaterial
-                ref={transmissionMaterialRef}
-                {...defaultMeshTransmissionMaterialConfig}
-              />
-            </mesh>
-          )
-          : (
+        // defaultMaterialID.replace('_', ' ').includes('translucent') ?
+        //   (
+        //     <mesh
+        //       ref={meshRef}
+        //       castShadow={true}
+        //       geometry={geometry}
+        //       name={nodeName}
+        //       onClick={onClick}
+        //       position={position}
+        //       receiveShadow={true}
+        //       rotation={meshRotation}
+        //       scale={scaleRef.current}
+        //     >
+        //       <MeshTransmissionMaterial
+        //         ref={transmissionMaterialRef}
+        //         {...defaultMeshTransmissionMaterialConfig}
+        //       />
+        //     </mesh>
+        //   )
+        //   : (
             <mesh
               ref={meshRef}
               castShadow={true}
@@ -229,7 +241,7 @@ const BasicModelTest = (props) => {
               rotation={meshRotation}
               scale={scaleRef.current}
             />
-          )
+          // )
       )}
     </>
   );
