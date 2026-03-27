@@ -73,12 +73,8 @@ const BasicModelTest = (props) => {
     }
   }, [onMeshReady]);
 
-  // old method for scaling is replaced by the new effect below
-  // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
-
   useEffect(() => {
     if (!meshRef.current) return;
-
 
     meshRef.current.updateWorldMatrix(true, true);
     _scratchBoxRef.current
