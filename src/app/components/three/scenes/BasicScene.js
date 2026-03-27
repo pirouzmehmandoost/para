@@ -38,7 +38,7 @@ const BasicScene = () => {
   const meshReadyFlags = useRef(new Array(projects.length).fill(false));
   const meshPositions = useRef([
     new THREE.Vector3(-100, -15, -40),
-    new THREE.Vector3(100, 30, -40),
+    new THREE.Vector3(100, 0, -40),
     new THREE.Vector3(0, -105, 40)
   ]);
 
