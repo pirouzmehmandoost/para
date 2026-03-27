@@ -17,6 +17,7 @@ useGLTF.preload('/sang.glb');
 
 const BasicModelTest = (props) => {
   const {
+    animatePosition = false,
     autoRotate = true,
     autoRotateSpeed = 0.5,
     fileData: { nodeName = '', url = '' } = {},
@@ -36,7 +37,6 @@ const BasicModelTest = (props) => {
   const isFocused = useSelection((state) => state.selection.isFocused);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
   const materials = useMaterial((state) => state.materials);
-  // const setMeshTransmissionMaterial = useMaterial((state) => state.setMeshTransmissionMaterial);
 
   const _scratchBoxRef = useRef(new THREE.Box3());
   const _scratchCenterRef = useRef(new THREE.Vector3());
@@ -50,13 +50,11 @@ const BasicModelTest = (props) => {
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
   const blendedMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
-  // const transmissionMaterialRef = useRef(null);
-  // const isMaterialTranslucentRef = useRef(false);
 
   const meshRotation = useMemo(() => { return [0, Math.PI * rotation, 0] }, [rotation]);
 
   useLayoutEffect(() => {
-    if (meshRef.current) { // && !defaultMaterialID.replace('_', ' ').includes('translucent')) {
+    if (meshRef.current) {
       const selectedAndFocused = isFocused?.length && (isFocused === nodeName);
       const selectedMatID = selectedMaterialID?.length && selectedAndFocused ? selectedMaterialID : defaultMaterialID;
       const selectedMat = materials[selectedMatID]?.material;
@@ -71,47 +69,43 @@ const BasicModelTest = (props) => {
       meshRef.current.updateWorldMatrix(true, true);
       blendedMaterialRef.current.copy(defaultMaterialRef.current);
 
-      // if (defaultMaterialID.replace('_', ' ').includes('translucent')) {
-      //   if (transmissionMaterialRef?.current && !isMaterialTranslucentRef.current) {
-      //     setMeshTransmissionMaterial(transmissionMaterialRef.current);
-      //     isMaterialTranslucentRef.current = true;
-      //   }
-      // }
-      // else {
-      //   blendedMaterialRef.current.copy(defaultMaterialRef.current);
-      // }
-
       if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
     }
-  }, [onMeshReady]); // defaultMaterialID, setMeshTransmissionMaterial ]);
+  }, [onMeshReady]);
 
   // old method for scaling is replaced by the new effect below
   // const meshScale = Math.min(0.5, scaleMeshAtBreakpoint(size.width) * 0.5) * scale;
+
   useEffect(() => {
-    const heightDelta = size.height / prevCanvasHeightRef.current;
     if (!meshRef.current) return;
+
 
     meshRef.current.updateWorldMatrix(true, true);
     _scratchBoxRef.current
       .setFromObject(meshRef.current)
       .getCenter(_scratchCenterRef.current);
     _scratchBoxRef.current.getSize(_scratchSizeRef.current);
-    const minb = Math.min(_scratchSizeRef.current.x, _scratchSizeRef.current.y)
-    const maxb = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y)
-    const minv = Math.min(viewport.height, viewport.width)
-    const maxv = Math.max(viewport.height, viewport.width)
-    const boundingBoxRatio = minb / maxb;
-    const viewportRatio = minv / maxv;
-    const factor = viewportRatio / boundingBoxRatio;
-    const newScale = (factor * scale * heightDelta);
+
+    const heightScaleDelta = size.height / prevCanvasHeightRef.current; // difference in height scale vs last effect invokation
+
+    const minBoundingBoxDimension = Math.min(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
+    const maxBoundingBoxDimension = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
+    const boundingBoxRatio = minBoundingBoxDimension / maxBoundingBoxDimension;
+
+    const minViewportDimension = Math.min(viewport.height, viewport.width);
+    const maxViewportDimension = Math.max(viewport.height, viewport.width);
+    const viewportRatio = minViewportDimension / maxViewportDimension;
+
+    const scaleFactor = viewportRatio / boundingBoxRatio;
+    const newScale = (scaleFactor * scale * heightScaleDelta);
+
     scaleRef.current = new THREE.Vector3(newScale, newScale, newScale);
     prevCanvasHeightRef.current = size.height;
     // console.log(nodeName + "'s new scale: ",  scaleRef.current);
   }, [scale]);
 
   useFrame(({ clock, viewport: vp, size: canvasDimensions }, delta) => {
-    // Clamp on delta eliminates frame jumping during browser tab navigation.
-    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame.
+    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame. Clamp keeps frames consecutive between browser tab navigation.
     const elapsedTime = clock.elapsedTime;
     const sine = Math.sin(elapsedTime);
     const cos = Math.cos(elapsedTime);
@@ -119,14 +113,13 @@ const BasicModelTest = (props) => {
 
     if (meshRef?.current && nodeName?.length) {
       const selectedAndFocused = isFocused?.length && isFocused === nodeName;
-      // const isTransmissionMaterial = defaultMaterialID.replace('_', ' ').includes('translucent');
       meshRef.current.updateWorldMatrix(true, true);
 
-      const minBB = Math.min(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
-      const maxBB = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
-      const minVP = Math.min(vp.height, vp.width);
-      const maxVP = Math.max(vp.height, vp.width);
-      const factor = (minVP / maxVP) / (minBB / maxBB); // viewport ratio / bounding box ratio
+      const minBBDimenion = Math.min(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
+      const maxBBDimension = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
+      const minVPDimension = Math.min(vp.height, vp.width);
+      const maxVPDimension = Math.max(vp.height, vp.width);
+      const factor = (minVPDimension / maxVPDimension) / (minBBDimenion / maxBBDimension);
       const newScale = (factor * scale * canvasHeightDelta);
 
       scaleRef.current.set(newScale, newScale, newScale);
@@ -134,10 +127,16 @@ const BasicModelTest = (props) => {
       prevCanvasHeightRef.current = canvasDimensions.height;
 
       if (selectedAndFocused) {
-        animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y + 5, defaultPositionRef.current.z);
-        easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        // if (!isTransmissionMaterial) {
+        if (animatePosition) {
+          animatePositionRef.current.set(
+            defaultPositionRef.current.x,
+            defaultPositionRef.current.y + 5,
+            defaultPositionRef.current.z
+          );
+          easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
+        }
+
         if (autoRotate) {
           animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
           meshRef.current.rotation.y += delta * autoRotateSpeed;
@@ -164,14 +163,18 @@ const BasicModelTest = (props) => {
         blendedMaterialRef.current.normalMap = selectedMaterialRef.current?.normalMap;
         blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap;
         blendedMaterialRef.current.transmissionMap = selectedMaterialRef.current?.transmissionMap;
-        // if (blendedMaterialRef.current?.normalMap) blendedMaterialRef.current.normalMap = defaultMaterialRef.current?.normalMap;
-        // }
       }
       else {
-        animatePositionRef.current.set(defaultPositionRef.current.x - sine / 2, defaultPositionRef.current.y + cos * 1.5, defaultPositionRef.current.z + sine);
-        easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-        // if (!isTransmissionMaterial) {
+        if (animatePosition) {
+          animatePositionRef.current.set(
+            defaultPositionRef.current.x - sine / 2,
+            defaultPositionRef.current.y + cos * 1.5,
+            defaultPositionRef.current.z + sine
+          );
+          easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
+        }
+
         if (autoRotate) {
           animateRotationRef.current.set(((0.015 * sine) % 1), (Math.PI * rotation + ((0.025 * sine) % 1)), ((0.015 * cos) % 1));
           easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
@@ -198,7 +201,6 @@ const BasicModelTest = (props) => {
         blendedMaterialRef.current.normalMap = defaultMaterialRef.current?.normalMap;
         blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap;
         blendedMaterialRef.current.transmissionMap = defaultMaterialRef.current?.transmissionMap;
-        // }
       }
     }
   });
