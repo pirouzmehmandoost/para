@@ -110,6 +110,26 @@ export const defaultMeshPhysicalMaterialConfig = {
   transmissionMap: _scratchTransmissionTexture,
 };
 
+// const chippedStoneMaterial = {
+//   color: '#ffffff',
+//   dispersion: 1,
+//   flatShading: false,
+//   ior: 1.8,
+//   name: 'chipped_stone',
+//   normalScale: new THREE.Vector2(0,1),
+//   opacity: 1,
+//   roughness: 1,
+//   side: THREE.DoubleSide,
+//   thickness: 1,
+//   transmission: 1,
+//   transparent: true,
+//   bumpMap: _scratchBumpTexture,
+//   map: _scratchDiffuseTexture,
+//   // normalMap: _scratchNormalTexture,
+//   roughnessMap: _scratchRoughnessTexture,
+//   transmissionMap: _scratchTransmissionTexture,
+// };
+
 const eggshellMaterial = {
   color: '#ccc0a3',
   dispersion: 1,
@@ -177,26 +197,6 @@ const stainedMatteBlackMaterial = {
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
 };
-
-// const chippedStoneMaterial = {
-//   color: '#ffffff',
-//   dispersion: 1,
-//   flatShading: false,
-//   ior: 1.8,
-//   name: 'chipped_stone',
-//   normalScale: new THREE.Vector2(0,1),
-//   opacity: 1,
-//   roughness: 1,
-//   side: THREE.DoubleSide,
-//   thickness: 1,
-//   transmission: 1,
-//   transparent: true,
-//   bumpMap: _scratchBumpTexture,
-//   map: _scratchDiffuseTexture,
-//   // normalMap: _scratchNormalTexture,
-//   roughnessMap: _scratchRoughnessTexture,
-//   transmissionMap: _scratchTransmissionTexture,
-// };
 
 const materialState = {
   eggshell: {
