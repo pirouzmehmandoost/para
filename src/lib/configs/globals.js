@@ -3,7 +3,7 @@ export const envColor = '#bcbcbc';
 export const portfolio = {
   projects: [
     {
-      name: 'Gerd',
+      displayName: 'Gerd',
       imgUrls: {
         bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
         matte_black: [
@@ -100,11 +100,12 @@ export const portfolio = {
         instructions: 'Hand wash with soap. Avoid contact with solvents containing acetone.'
       },
       sceneData: {
-        autoRotate: true,
-        autoRotateSpeed: 0.3,
+        animatePosition: false,
+        animateRotation: true,
+        animateMaterial: true,
         rotation: 0,
-        autoUpdateMaterial: true,
-        displayName: 'Gerd',
+        rotationSpeed: 0.3,
+        groupName: 'Gerd',
         materials: {
           defaultMaterialID: 'stained_matte_black',
           materialIDs: ['stained_matte_black', 'matte_black', 'gloss_black'],
@@ -117,7 +118,7 @@ export const portfolio = {
       },
     },
     {
-      name: 'Sang',
+      displayName: 'Sang',
       imgUrls: {
         bannerUrl: '/oval_bag_v8.5_matte_white_5.png',
         matte_black: [
@@ -142,24 +143,25 @@ export const portfolio = {
         instructions: 'Hand wash with soap. Avoid contact with solvents containing acetone.'
       },
       sceneData: {
-        autoRotate: true,
-        autoRotateSpeed: 0.45,
+        animatePosition: false,
+        animateRotation: true,
         rotation: 0,
-        autoUpdateMaterial: false,
-        displayName: 'Sang',
+        rotationSpeed: 0.45,
+        animateMaterial: false,
+        groupName: 'Sang',
         materials: {
           defaultMaterialID: 'matte_black',
           materialIDs: ['matte_black'],
         },
         fileData: {
-          nodeName: 'sang', // 'gerd',
-          url: '/sang.glb' // '/bag_9_BAT-transformed.glb'
+          nodeName: 'sang',
+          url: '/sang.glb'
         },
         scale: 0.6,
       },
     },
     {
-      name: 'Pí',
+      displayName: 'Pí',
       imgUrls: {
         bannerUrl: '/yoga_mat_strap_metallic_perspective_quarter.png',
         gloss_black: [
@@ -180,15 +182,16 @@ export const portfolio = {
       specifications: {
         material: 'Thermoplastic urethane',
         dimensions: `21.5 x 5" x 14"`,
-        weight: '2lb',
+        weight: '1.5 lb',
         instructions: 'Hand wash with soap. Avoid contact with solvents containing acetone.'
       },
       sceneData: {
-        autoRotate: true,
-        autoRotateSpeed: 0.45,
+        animatePosition: false,
+        animateRotation: true,
+        animateMaterial: false,
         rotation: 1.0,
-        autoUpdateMaterial: false,
-        displayName: 'PÍ',
+        rotationSpeed: 0.45,
+        groupName: 'Pí',
         materials: {
           defaultMaterialID: 'gloss_black',
           materialIDs: ['gloss_black', 'matte_black', 'eggshell'],
@@ -197,7 +200,7 @@ export const portfolio = {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap.glb'
         },
-        scale: 0.6,
+        scale: 0.5,
       },
     },
   ],

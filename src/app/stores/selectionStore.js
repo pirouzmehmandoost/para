@@ -8,13 +8,14 @@ const initialState = {
   imgUrls: {},
   materialID: '',
   isFocused: null,
-  name: '',
+  displayName: '',
   shortDescription: '',
   sceneData: {
-    autoRotate: true,
-    autoRotateSpeed: 1,
+    animatePosition: false,
+    animateRotation: true,
+    rotationSpeed: 1,
     autoUpdateMaterial: false,
-    displayName: '',
+    groupName: '',
     materials: {
       defaultMaterialID: '',
       materialIDs: [],

@@ -14,8 +14,7 @@ const CommandPalette = (props) => {
         {!cond && <li> Browse → swipe left/right </li> }
         {!cond && <li> Focus model → click model </li> }
         {!cond && <li> Open details → Focus model → click “View Details” </li> }
-        <li> Close details → Esc or Back Arrow Button </li>
-        <li> Exit focus → Esc </li>
+        <li> Back / Close details → Esc or Back Arrow Button </li>
       </ul>
     </div>
   );

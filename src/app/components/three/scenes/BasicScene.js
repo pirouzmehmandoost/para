@@ -132,12 +132,18 @@ const BasicScene = () => {
         />
       </EffectComposer>
       <Bvh firstHitOnly>
-        {projects.map(({ sceneData, sceneData: { fileData: { nodeName } = {} } = {} }, index) => {
+        {projects.map(({
+          sceneData,
+          sceneData: {
+            fileData: {
+              nodeName
+            } = {}
+          } = {}
+        }, index) => {
           return (
             <BasicModelTest
               key={nodeName}
-              autoRotate={sceneData.autoRotate}
-              autoRotateSpeed={sceneData.autoRotateSpeed}
+              animateRotation={sceneData.animateRotation}
               fileData={sceneData.fileData}
               materials={sceneData.materials}
               name={nodeName}
@@ -145,7 +151,8 @@ const BasicScene = () => {
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions.current[index]}
               rotation={sceneData.rotation}
-              scale={sceneData.scale / totalMeshes}
+              rotationSpeed={sceneData.rotationSpeed}
+              scale={1}
             />
           );
         })}
@@ -166,3 +173,4 @@ const BasicScene = () => {
 };
 
 export default BasicScene;
+

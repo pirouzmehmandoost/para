@@ -41,29 +41,13 @@ const createVariants = (reduceMotion) => {
   };
 };
 
-// const ControlsDisplayModal = ({pathname}) => {
-
-//   const cond = pathname?.startsWith('/projects/')
-//   return (
-//     <div className='fixed mt-5 ml-24 text-sm text-neutral-800'>
-//       <ul>
-//         {!cond && <li> Browse → swipe left/right </li> }
-//         {!cond && <li> Focus model → click model </li> }
-//         {!cond && <li> Open details → Focus model → click “View Details” </li> }
-//         <li> Close details → Esc or Back Arrow Button </li>
-//         <li> Exit focus → Esc </li>
-//       </ul>
-//     </div>
-//   );
-// };
-
 const SelectionDisplayModal = () => {
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
   const isFocused = useSelection((state) => state.selection.isFocused);
   const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === isFocused);
   const setSelectionStore = useSelection((state) => state.setSelection);
-  const modal = Boolean(focusedProject?.name?.length);
+  const modal = Boolean(focusedProject?.displayName?.length);
   const handleClick = () => { if (focusedProject) setSelectionStore({ ...focusedProject }) };
 
   return (
@@ -85,7 +69,7 @@ const SelectionDisplayModal = () => {
                 variants={variants.modalItem}
                 className='place-self-center text-center text-4xl perspective-origin-bottom'
               >
-                {focusedProject?.name}
+                {focusedProject?.displayName}
               </motion.div>
               <motion.div
                 variants={variants.modalItem}
@@ -98,7 +82,7 @@ const SelectionDisplayModal = () => {
                 className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'
               >
                 <Link
-                  href={`/projects/${getSlugFromName(focusedProject?.name)}`}
+                  href={`/projects/${getSlugFromName(focusedProject?.displayName)}`}
                   rel='noopener noreferrer'
                   className='pointer-events-auto'
                   onClick={handleClick}

@@ -36,8 +36,8 @@ export default function ProjectOverlay({ slug, entryPoint }) {
 
   const {
     description = '',
+    displayName = '',
     sceneData: {
-      displayName = '',
       materials: {
         defaultMaterialID = '',
         materialIDs = [],
