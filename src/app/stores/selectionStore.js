@@ -14,7 +14,7 @@ const initialState = {
     animatePosition: false,
     animateRotation: true,
     rotationSpeed: 1,
-    autoUpdateMaterial: false,
+    animateMaterial: false,
     groupName: '',
     materials: {
       defaultMaterialID: '',
