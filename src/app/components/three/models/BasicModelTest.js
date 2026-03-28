@@ -118,7 +118,7 @@ const BasicModelTest = (props) => {
     const visibleHeight = 2 * Math.tan(verticalFOVinRadians / 2) * 180;
     const visibleWidth = visibleHeight * camera.aspect;
 
-    const targetSize =  Math.min(visibleHeight, visibleWidth) / 3;
+    const targetSize =  Math.min(visibleHeight, visibleWidth);
     const scaleFactor = scale * targetSize / maxBoundingBoxDimension;
     scaleRef.current = new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor);
     // console.log(nodeName + "'s new scale: ",  scaleRef.current);
@@ -138,7 +138,7 @@ const BasicModelTest = (props) => {
       const verticalFOVinRadians = (cam.fov * Math.PI) / 180;
       const height = 2 * Math.tan(verticalFOVinRadians / 2) * 180;
       const width = height * cam.aspect;
-      const targetSize =  Math.min(height, width) / 3;
+      const targetSize =  Math.min(height, width);
       const scaleFactor = scale * targetSize / maxBBDimension;
 
       scaleRef.current.set(scaleFactor, scaleFactor, scaleFactor);
