@@ -152,7 +152,7 @@ const BasicScene = () => {
               position={meshPositions.current[index]}
               rotation={sceneData.rotation}
               rotationSpeed={sceneData.rotationSpeed}
-              scale={1}
+              scale={sceneData.scale}
             />
           );
         })}

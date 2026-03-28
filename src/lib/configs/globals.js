@@ -114,7 +114,7 @@ export const portfolio = {
           nodeName: 'textured_bag_simplified001',
           url: '/textured_bag.glb'
         },
-        scale: 0.6,
+        scale: 1 // 0.6,
       },
     },
     {
@@ -157,7 +157,7 @@ export const portfolio = {
           nodeName: 'sang',
           url: '/sang.glb'
         },
-        scale: 0.6,
+        scale: 1 // 0.6,
       },
     },
     {
@@ -200,7 +200,7 @@ export const portfolio = {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap.glb'
         },
-        scale: 0.5,
+        scale: 0.8 // 0.5,
       },
     },
   ],
