@@ -13,6 +13,6 @@ export const getSlugFromName = (name) => {
     if (!slug || !projects) return null;
 
     return projects.find(project => 
-      getSlugFromName(project.name) === slug
+      getSlugFromName(project.displayName) === slug
     );
   };
