@@ -20,7 +20,6 @@ type MainMenuTopLink = { title: string; disabled?: boolean; href: string };
 
 const mainMenuTopLinks: MainMenuTopLink[] = [
   { title: 'View R3F Project (WIP)', disabled: true, href: '/' },
-  // { title: 'About (Also WIP)', disabled: false, href: '/about' },
 ];
 
 type MainMenuBottomLink = { title: string; href: string };
