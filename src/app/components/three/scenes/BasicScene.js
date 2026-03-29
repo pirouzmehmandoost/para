@@ -9,7 +9,7 @@ import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
-import AnimatedRig from '../cameras/AnimatedRig';
+import SceneRig from '../cameras/SceneRig';
 import BasicModelTest from '../models/BasicModelTest';
 import Ground from '../models/Ground';
 
@@ -143,6 +143,7 @@ const BasicScene = () => {
           return (
             <BasicModelTest
               key={nodeName}
+              animateMaterial
               animateRotation={sceneData.animateRotation}
               fileData={sceneData.fileData}
               materials={sceneData.materials}
@@ -162,7 +163,7 @@ const BasicScene = () => {
         rotation={[Math.PI / 4.5, Math.PI, 0]}
         scale={[0.7, 0.7, 0.7]}
       />
-      <AnimatedRig
+      <SceneRig
         fallbackPositions={meshPositions.current}
         focusTarget={isFocused}
         onSwipe={onSwipe}

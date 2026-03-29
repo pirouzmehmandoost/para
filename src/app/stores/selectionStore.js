@@ -2,29 +2,34 @@ import { create } from 'zustand';
 
 const initialState = {
   bannerUrl: '',
-  dimensions: '',
-  description: '',
-  details: '',
-  imgUrls: {},
-  materialID: '',
-  isFocused: null,
   displayName: '',
-  shortDescription: '',
+  isFocused: null,
+  materialID: '',
+  productData: {
+    care: '',
+    description: '',
+    dimensions: '',
+    imgUrls: {},
+    materialSpecs: '',
+    shortDescription: '',
+    weight: '',
+  },
   sceneData: {
+    animateMaterial: true,
     animatePosition: false,
     animateRotation: true,
-    rotationSpeed: 1,
-    animateMaterial: false,
+    fileData: {
+      nodeName: '',
+      url: '',
+    },
     groupName: '',
     materials: {
       defaultMaterialID: '',
       materialIDs: [],
     },
-    fileData: {
-      nodeName: '',
-      url: ''
-    },
     position: {},
+    rotation: 0,
+    rotationSpeed: 1,
     scale: 1,
   },
 };

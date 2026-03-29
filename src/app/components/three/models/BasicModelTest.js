@@ -17,6 +17,7 @@ useGLTF.preload('/sang.glb');
 
 const BasicModelTest = (props) => {
   const {
+    animateMaterial = true,
     animatePosition = false,
     animateRotation = true,
     rotationSpeed = 0.5,
@@ -69,40 +70,12 @@ const BasicModelTest = (props) => {
     }
   }, [onMeshReady]);
 
-  // useEffect(() => {
-  //   if (!meshRef.current) return;
-
-  //   meshRef.current.updateWorldMatrix(true, true);
-  //   _scratchBoxRef.current
-  //     .setFromObject(meshRef.current)
-  //     .getCenter(_scratchCenterRef.current);
-  //   _scratchBoxRef.current.getSize(_scratchSizeRef.current);
-
-  //   const heightScaleDelta = size.height / prevCanvasHeightRef.current; // difference in height scale vs last effect invokation
-
-  //   const minBoundingBoxDimension = Math.min(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
-  //   const maxBoundingBoxDimension = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
-  //   const boundingBoxRatio = minBoundingBoxDimension / maxBoundingBoxDimension;
-
-  //   const minViewportDimension = Math.min(viewport.height, viewport.width);
-  //   const maxViewportDimension = Math.max(viewport.height, viewport.width);
-  //   const viewportRatio = minViewportDimension / maxViewportDimension;
-
-  //   const scaleFactor = viewportRatio / boundingBoxRatio;
-  //   const newScale = (scaleFactor * scale * heightScaleDelta);
-
-  //   scaleRef.current = new THREE.Vector3(newScale, newScale, newScale);
-  //   prevCanvasHeightRef.current = size.height;
-  //   // console.log(nodeName + "'s new scale: ",  scaleRef.current);
-  // }, [scale]);
-
   useEffect(() => {
     if (!meshRef.current) return;
     // const worldScale = new THREE.Vector3();
     // meshRef.current.getWorldScale(worldScale);
     // console.log("Local Scale:", meshRef.current.scale.x);
     // console.log("World Scale:", worldScale.x);
-    // console.log("value of the scale prop:", scale);
 
     meshRef.current.updateWorldMatrix(true, true);
     meshRef.current.geometry.computeBoundingBox();
@@ -110,10 +83,6 @@ const BasicModelTest = (props) => {
     _scratchBoxRef.current.setFromObject(meshRef.current).getCenter(_scratchCenterRef.current);
 
     const maxBoundingBoxDimension = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
-
-    // console.log('bounding box dimensions: ', _scratchBoxRef.current);
-    // console.log('bounding box size: ', _scratchSizeRef.current);
-
     const verticalFOVinRadians = (camera.fov * Math.PI) / 180;
     const visibleHeight = 2 * Math.tan(verticalFOVinRadians / 2) * 180;
     const visibleWidth = visibleHeight * camera.aspect;
@@ -121,11 +90,11 @@ const BasicModelTest = (props) => {
     const targetSize =  Math.min(visibleHeight, visibleWidth);
     const scaleFactor = scale * targetSize / maxBoundingBoxDimension;
     scaleRef.current = new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor);
-    // console.log(nodeName + "'s new scale: ",  scaleRef.current);
   }, [scale]);
 
   useFrame(({ clock, camera: cam}, delta) => {
-    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame. Clamp keeps frames consecutive between browser tab navigation.
+    // Clamp to keep frames consecutive between browser tab navigation.
+    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame.
     const elapsedTime = clock.elapsedTime;
     const sine = Math.sin(elapsedTime);
     const cos = Math.cos(elapsedTime);
@@ -145,13 +114,8 @@ const BasicModelTest = (props) => {
       easing.damp3(meshRef.current.scale, scaleRef.current, 0.3, clampedDelta);
 
       if (selectedAndFocused) {
-
         if (animatePosition) {
-          animatePositionRef.current.set(
-            defaultPositionRef.current.x,
-            defaultPositionRef.current.y + 5,
-            defaultPositionRef.current.z
-          );
+          animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y, defaultPositionRef.current.z);
           easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
         }
 
@@ -160,27 +124,29 @@ const BasicModelTest = (props) => {
           meshRef.current.rotation.y += delta * rotationSpeed;
         }
 
-        easing.damp(blendedMaterialRef.current, "bumpScale", selectedMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
-        easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current?.color ?? 'red', 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "dispersion", selectedMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "iridescence", selectedMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "iridescenceIOR", selectedMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
-        easing.damp2(blendedMaterialRef.current.normalScale, selectedMaterialRef.current?.normalScale ?? [1, 1], 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "opacity", selectedMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "thickness", selectedMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "transmission", selectedMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
+        if (animateMaterial) {
+          easing.damp(blendedMaterialRef.current, "bumpScale", selectedMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
+          easing.dampC(blendedMaterialRef.current.color, selectedMaterialRef.current?.color ?? 'red', 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "dispersion", selectedMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "ior", selectedMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "iridescence", selectedMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "iridescenceIOR", selectedMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
+          easing.damp2(blendedMaterialRef.current.normalScale, selectedMaterialRef.current?.normalScale ?? [1, 1], 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "opacity", selectedMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "reflectivity", selectedMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "roughness", selectedMaterialRef.current?.roughness ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "thickness", selectedMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "transmission", selectedMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
 
-        blendedMaterialRef.current.side = selectedMaterialRef.current?.side ?? THREE.DoubleSide;
-        blendedMaterialRef.current.tranparent = selectedMaterialRef.current?.tranparent ?? false;
+          blendedMaterialRef.current.side = selectedMaterialRef.current?.side ?? THREE.DoubleSide;
+          blendedMaterialRef.current.tranparent = selectedMaterialRef.current?.tranparent ?? false;
 
-        blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap;
-        blendedMaterialRef.current.map = selectedMaterialRef.current?.map;
-        blendedMaterialRef.current.normalMap = selectedMaterialRef.current?.normalMap;
-        blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap;
-        blendedMaterialRef.current.transmissionMap = selectedMaterialRef.current?.transmissionMap;
+          blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap;
+          blendedMaterialRef.current.map = selectedMaterialRef.current?.map;
+          blendedMaterialRef.current.normalMap = selectedMaterialRef.current?.normalMap;
+          blendedMaterialRef.current.roughnessMap = selectedMaterialRef.current?.roughnessMap;
+          blendedMaterialRef.current.transmissionMap = selectedMaterialRef.current?.transmissionMap;
+        }
       }
       else {
 
@@ -202,27 +168,29 @@ const BasicModelTest = (props) => {
           easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
         }
 
-        easing.damp(blendedMaterialRef.current, "bumpScale", defaultMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
-        easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current?.color ?? 'red', 0.3, clampedDelta)
-        easing.damp(blendedMaterialRef.current, "dispersion", defaultMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "iridescence", defaultMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "iridescenceIOR", defaultMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
-        easing.damp2(blendedMaterialRef.current.normalScale, defaultMaterialRef.current?.normalScale ?? [1, 1], 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "opacity", defaultMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0.5, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "thickness", defaultMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "transmission", defaultMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
+        if (animateMaterial) {
+          easing.damp(blendedMaterialRef.current, "bumpScale", defaultMaterialRef.current?.bumpScale ?? 1, 0.3, clampedDelta);
+          easing.dampC(blendedMaterialRef.current.color, defaultMaterialRef.current?.color ?? 'red', 0.3, clampedDelta)
+          easing.damp(blendedMaterialRef.current, "dispersion", defaultMaterialRef.current?.dispersion ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "ior", defaultMaterialRef.current?.ior ?? 1.5, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "iridescence", defaultMaterialRef.current?.iridescence ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "iridescenceIOR", defaultMaterialRef.current?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
+          easing.damp2(blendedMaterialRef.current.normalScale, defaultMaterialRef.current?.normalScale ?? [1, 1], 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "opacity", defaultMaterialRef.current?.opacity ?? 1, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "reflectivity", defaultMaterialRef.current?.reflectivity ?? 0.5, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "roughness", defaultMaterialRef.current?.roughness ?? 0.5, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "thickness", defaultMaterialRef.current?.thickness ?? 0, 0.3, clampedDelta);
+          easing.damp(blendedMaterialRef.current, "transmission", defaultMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
 
-        blendedMaterialRef.current.side = defaultMaterialRef.current?.side ?? THREE.DoubleSide;
-        blendedMaterialRef.current.tranparent = defaultMaterialRef.current?.tranparent ?? false;
+          blendedMaterialRef.current.side = defaultMaterialRef.current?.side ?? THREE.DoubleSide;
+          blendedMaterialRef.current.tranparent = defaultMaterialRef.current?.tranparent ?? false;
 
-        blendedMaterialRef.current.bumpMap = defaultMaterialRef.current?.bumpMap;
-        blendedMaterialRef.current.map = defaultMaterialRef.current?.map;
-        blendedMaterialRef.current.normalMap = defaultMaterialRef.current?.normalMap;
-        blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap;
-        blendedMaterialRef.current.transmissionMap = defaultMaterialRef.current?.transmissionMap;
+          blendedMaterialRef.current.bumpMap = defaultMaterialRef.current?.bumpMap;
+          blendedMaterialRef.current.map = defaultMaterialRef.current?.map;
+          blendedMaterialRef.current.normalMap = defaultMaterialRef.current?.normalMap;
+          blendedMaterialRef.current.roughnessMap = defaultMaterialRef.current?.roughnessMap;
+          blendedMaterialRef.current.transmissionMap = defaultMaterialRef.current?.transmissionMap;
+        }
       }
     }
   });

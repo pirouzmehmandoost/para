@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
-import { dampCameraLookAt } from '@utils/quaternionUtils';
 import cameraConfigs from '@configs/cameraConfigs';
 
 const SceneRig = ({
@@ -13,7 +12,6 @@ const SceneRig = ({
   fallbackPositions = [],
   targets = [],
 }) => {
-  const scene = useThree((state) => state.scene);
 
   const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS, POSITION } = cameraConfigs;
   const _scratchBoxRef = useRef(new THREE.Box3());
@@ -21,6 +19,7 @@ const SceneRig = ({
 
   const domElement = useThree((state) => state.gl.domElement);
   const clock = useThree((state) => state.clock);
+  const scene = useThree((state) => state.scene);
 
   const activePointerIdRef = useRef(null);
   const pointerStartRef = useRef(null);
@@ -32,34 +31,32 @@ const SceneRig = ({
   const lookAtPosition = useRef(new THREE.Vector3());
 
   const stopPositions = useRef([new THREE.Vector3(0, 0, 0)]);
-  const fallbackPositionRef = useRef(new THREE.Vector3(0, 0, 0));
+  const defaultFallbackPositionRef = useRef(new THREE.Vector3(POSITION[0], POSITION[1], POSITION[2])); // default fallback position
 
   const targetIndex = useRef(0);
-  const lib = useRef({});
-  const mapToIndexRef = useRef({})
+  const nameToIndexMapRef = useRef({});
+  const meshesInSceneRef = useRef({});
+
 
   useEffect(() => {
-    const sceneLib = {};
-    scene.traverse((object) => {
-      if (object.isMesh) {
-        sceneLib[`${object.name}`] = object;
-      }
-    });
+    const map = {};
+    const meshesInScene = {};
 
-    const map = {}
+    scene.traverse((object) => { if (object.isMesh) meshesInScene[`${object.name}`] = object });
+
     for (let i = 0; i < targets.length; i++) {
-      if (targets[i]?.name && sceneLib[targets[i].name]) {
-
-        map[targets[i].name] = i;
-
-        lib.current[targets[i].name] = {
-          target: sceneLib[targets[i].name],
-          index: i
+      if (targets[i]?.name?.length) {
+        const targetName = targets[i].name;
+        const foundTargetInScene = meshesInScene[targetName] || null;
+        
+        if (foundTargetInScene) {
+          map[targetName] = i;
+          meshesInSceneRef.current[targetName] = { target: foundTargetInScene, index: i, targetName };
         }
       }
     }
-    mapToIndexRef.current = map;
-  }, [targets, scene]);
+    nameToIndexMapRef.current = map;
+  }, [targets, scene, scene.children]);
 
 
   useEffect(() => {
@@ -124,18 +121,21 @@ const SceneRig = ({
   }, [domElement, clock, onSwipe, SWIPE_DELTA_TIME_MS, SWIPE_DELTA_PX, MANUAL_OVERRIDE_SECONDS]);
 
   useEffect(() => {
-    const length = Math.max(Object.entries(lib.current)?.length ?? 0, fallbackPositions?.length ?? 0);
+    const length = Math.max(Object.entries(meshesInSceneRef.current)?.length ?? 0, fallbackPositions?.length ?? 0);
+  
     for (let i = 0; i < length; i++) {
       if (!stopPositions.current[i]?.isVector3) stopPositions.current[i] = new THREE.Vector3();
 
-      if (!targets[i] || typeof lib.current[targets[i]?.name]?.target?.updateWorldMatrix !== 'function') {
-        stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : fallbackPositionRef.current);
+      if (!targets[i] || !targets[i]?.isObject3D) {
+        stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : defaultFallbackPositionRef.current);
         continue;
       }
 
-      const key = targets[i].name;
-      lib.current[key].target.updateWorldMatrix(true, true);
-      _scratchBoxRef.current.setFromObject(lib.current[key].target).getCenter(_scratchCenterRef.current);
+      const key = targets[i]?.name;
+      const exists = meshesInSceneRef.current[key].target?.name;
+      if (exists?.length && typeof targets[i]['updateWorldMatrix'] === 'function') meshesInSceneRef.current[key].target.updateWorldMatrix(true, true);
+
+      _scratchBoxRef.current.setFromObject(meshesInSceneRef.current[key].target).getCenter(_scratchCenterRef.current);
       stopPositions.current[i].copy(_scratchCenterRef.current);
     }
 
@@ -143,7 +143,7 @@ const SceneRig = ({
 
     if (length === 0) {
       if (!stopPositions.current[0]?.isVector3) stopPositions.current[0] = new THREE.Vector3();
-      stopPositions.current[0].copy(fallbackPositionRef.current);
+      stopPositions.current[0].copy(defaultFallbackPositionRef.current);
     }
 
     if (targetIndex.current < 0 || targetIndex.current >= stopPositions.current.length) targetIndex.current = 0;
@@ -156,22 +156,13 @@ const SceneRig = ({
     let nextPosition = stopPositions.current[0];
     const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
     const elapsedTime = clock.elapsedTime;
-
-    const focusedIndex = focusTarget !== null
-      ? (lib.current[focusTarget]?.index ?? -1)
-      : -1;
-
+    const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
-    if (focusedIndex >= 0 && stopPositions.current[focusedIndex]) {
-      targetIndex.current = focusedIndex;
-      nextPosition = stopPositions.current[targetIndex.current]; 
-    }
-    else if (isManualOverrideActive && stopPositions.current[targetIndex.current]) {
-      nextPosition = stopPositions.current[targetIndex.current];
-    }
+    if (focusedIndex >= 0 && stopPositions.current[focusedIndex]) targetIndex.current = focusedIndex
+    else if (isManualOverrideActive && stopPositions.current[targetIndex.current]) targetIndex.current = targetIndex.current
     else {
-      cameraPosition.current.copy(stopPositions.current[targetIndex.current]);
+     // cameraPosition.current.copy(stopPositions.current[targetIndex.current]);
       let currentIndex = targetIndex.current;
       let nextIndex = currentIndex >= stopPositions.current.length - 1 ? 0 : currentIndex + 1;
       const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > MIN_DWELL_SECONDS;
@@ -180,7 +171,20 @@ const SceneRig = ({
         lastSwitchTimeRef.current = elapsedTime;
         targetIndex.current = nextIndex;
       }
+    }
 
+    const targetName = targets[targetIndex.current]?.name;
+    const meshInScene = meshesInSceneRef.current[targetName]?.target;
+    const meshInSceneName = meshInScene?.name;
+    const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName); 
+
+    if (isTargetInScene && meshInScene.isObject3D) {
+      if (meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, true);
+
+       _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
+      nextPosition = _scratchCenterRef.current;
+    }
+    else {
       nextPosition = stopPositions.current[targetIndex.current];
     }
 
@@ -188,14 +192,10 @@ const SceneRig = ({
     const yOffset = -2 * sine;
     const zOffset = POSITION[2] + sine;
 
-    lookAtPosition.current.set(
-      nextPosition.x + sine,
-      nextPosition.y + yOffset,
-      nextPosition.z + zOffset
-    );
+    cameraPosition.current.copy(camera.position);
+    camera.lookAt(cameraPosition.current);
+    lookAtPosition.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
     easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
-    dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, Math.PI / 6, 0);
-
     camera.updateMatrixWorld();
   });
 };

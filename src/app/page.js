@@ -42,16 +42,25 @@ const createVariants = (reduceMotion) => {
 };
 
 const SelectionDisplayModal = () => {
+  const isFocused = useSelection((state) => state.selection.isFocused);
+  const setSelectionStore = useSelection((state) => state.setSelection);
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
-  const isFocused = useSelection((state) => state.selection.isFocused);
   const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === isFocused);
-  const setSelectionStore = useSelection((state) => state.setSelection);
-  const modal = Boolean(focusedProject?.displayName?.length);
   const handleClick = () => { if (focusedProject) setSelectionStore({ ...focusedProject }) };
 
+  const {
+    displayName = '',
+    productData: {
+      shortDescription = '',
+    } = {},
+  } = focusedProject || {};
+
+  const modal = Boolean(displayName.length);
+  const route = `/projects/${getSlugFromName(displayName)}`;
+
   return (
-    <div className={`fixed flex flex-col grow h-1/5 w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit top-32 md:left-10 lg:left-10 xl:left-10 2xl:left-10 place-self-center justify-center transition-all duration-500 ease-in-out 
+    <div className={`fixed flex flex-col grow place-self-center justify-center h-1/5 w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit top-32 md:left-10 lg:left-10 xl:left-10 2xl:left-10 transition-all duration-500 ease-in-out 
         ${modal ? 'h-1/5' : 'h-fit'}`}
     >
       <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
@@ -69,25 +78,25 @@ const SelectionDisplayModal = () => {
                 variants={variants.modalItem}
                 className='place-self-center text-center text-4xl perspective-origin-bottom'
               >
-                {focusedProject?.displayName}
+                {displayName}
               </motion.div>
               <motion.div
                 variants={variants.modalItem}
                 className='text-2xl text-center text-pretty perspective-origin-bottom'
               >
-                {focusedProject?.shortDescription}
+                {shortDescription}
               </motion.div>
               <motion.div
                 variants={variants.modalItem}
                 className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'
               >
                 <Link
-                  href={`/projects/${getSlugFromName(focusedProject?.displayName)}`}
+                  href={route}
                   rel='noopener noreferrer'
                   className='pointer-events-auto'
                   onClick={handleClick}
                 >
-                  View Details
+                  <div className='cursor-pointer drop-shadow-xs drop-shadow-black/50'> View Details </div>
                 </Link>
               </motion.div>
             </motion.div>
@@ -98,17 +107,15 @@ const SelectionDisplayModal = () => {
   );
 };
 
+// `/projects/[slug]` is an intercepting route mounted over the home page. It renders ProjectOverlay.
+// SelectionDisplayModal hides conditionally so the two don't overlap.
 const MainDisplayModal = () => {
   const pathname = usePathname();
-  // When `/projects/[slug]` is presented as an intercepting modal route,
-  // the home page remains mounted underneath. Hide the home overlays to
-  // avoid stacked/conflicting UI.
-  // if (pathname?.startsWith('/projects/')) return null;
 
   return (
     <main className='flex flex-col w-full h-full'>
       <CommandPalette pathname={pathname} />
-      {!pathname?.startsWith('/projects/') && <SelectionDisplayModal /> } 
+      {!pathname?.startsWith('/projects/') && <SelectionDisplayModal />}
     </main>
   );
 };
