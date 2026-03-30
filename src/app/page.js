@@ -114,7 +114,7 @@ const MainDisplayModal = () => {
 
   return (
     <main className='flex flex-col w-full h-full'>
-      <CommandPalette pathname={pathname} />
+      <CommandPalette />
       {!pathname?.startsWith('/projects/') && <SelectionDisplayModal />}
     </main>
   );
