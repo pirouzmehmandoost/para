@@ -1,5 +1,3 @@
-
-
 export const debugStyle = "background: blue; color: orange";
 
 // for logging an object's public fields
