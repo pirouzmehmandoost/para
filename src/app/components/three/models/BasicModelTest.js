@@ -139,7 +139,7 @@ const BasicModelTest = (props) => {
           easing.damp(blendedMaterialRef.current, "transmission", selectedMaterialRef.current?.transmission ?? 0, 0.3, clampedDelta);
 
           blendedMaterialRef.current.side = selectedMaterialRef.current?.side ?? THREE.DoubleSide;
-          blendedMaterialRef.current.tranparent = selectedMaterialRef.current?.tranparent ?? false;
+          blendedMaterialRef.current.transparent = selectedMaterialRef.current?.tranparent ?? false;
 
           blendedMaterialRef.current.bumpMap = selectedMaterialRef.current?.bumpMap;
           blendedMaterialRef.current.map = selectedMaterialRef.current?.map;
