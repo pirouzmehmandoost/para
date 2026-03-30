@@ -10,7 +10,7 @@ import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 import SceneRig from '../cameras/SceneRig';
-import BasicModelTest from '../models/BasicModelTest';
+import Model from '../models/Model';
 import Ground from '../models/Ground';
 
 THREE.Cache.enabled = true;
@@ -141,7 +141,7 @@ const BasicScene = () => {
           } = {}
         }, index) => {
           return (
-            <BasicModelTest
+            <Model
               key={nodeName}
               animateMaterial
               animateRotation={sceneData.animateRotation}
