@@ -153,7 +153,7 @@ export const portfolio = {
         groupName: 'Sang',
         materials: {
           defaultMaterialID: 'matte_black',
-          materialIDs: ['matte_black', 'eggshell'],
+          materialIDs: ['matte_black', 'translucent_grey'],
         },
         rotation: 0,
         rotationSpeed: 0.45,
@@ -195,8 +195,8 @@ export const portfolio = {
         },
         groupName: 'Pí',
         materials: {
-          defaultMaterialID: 'eggshell',
-          materialIDs: ['gloss_black', 'matte_black', 'eggshell'],
+          defaultMaterialID: 'translucent_grey',
+          materialIDs: ['translucent_grey', 'gloss_black', 'matte_black'],
         },
         rotation: 1.0,
         rotationSpeed: 0.45,

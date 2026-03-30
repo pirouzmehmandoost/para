@@ -79,31 +79,13 @@ _scratchTransmissionTexture.name = '_scratchTransmissionTexture';
 _scratchTransmissionTexture.colorSpace = THREE.NoColorSpace;
 _scratchTransmissionTexture.needsUpdate = true;
 
-// export const defaultMeshTransmissionMaterialConfig = {
-//   // anisotropy: 0,
-//   // anisotropicBlur: 1,
-//   backside: true,
-//   backsideThickness: 100,
-//   chromaticAberration: 0.2, 
-//   color: '#ffffff',
-//   flatShading: false,
-//   name: 'translucent',
-//   opacity: 0.9,
-//   clearcoat: 0.5,
-//   clearcoatRoughness: 0.3,
-//   resolution: 124,
-//   roughness: 0.5,
-//   samples: 24,
-//   side: THREE.DoubleSide,
-//   thickness: 100,
-//   toneMapped: false,
-//   transparent: true,
-// };
-
 export const defaultMeshPhysicalMaterialConfig = {
   color: '#2f2f2f',
   flatShading: false,
+  transmission: 0,
   side: THREE.DoubleSide,
+  thickness: 0,
+  transparent: false,
   bumpMap: _scratchBumpTexture,
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
@@ -135,8 +117,6 @@ const eggshellMaterial = {
   dispersion: 1,
   flatShading: false,
   ior: 1.5,
-  iridescence: 1,
-  iridescenceIOR: 1.5,
   name: 'eggshell',
   reflectivity: 0.4,
   roughness: 0.4,
@@ -198,6 +178,23 @@ const stainedMatteBlackMaterial = {
   roughnessMap: _scratchRoughnessTexture,
 };
 
+const translucentGreyMaterial = {
+  color: '#949994',
+  dispersion: 3,
+  flatShading: false,
+  ior: 1.5,
+  name: 'translucent_grey',
+  reflectivity: 0.4,
+  roughness: 0.25,
+  thickness: 200,
+  transmission: 1,
+  transparent: true,
+  side: THREE.DoubleSide,
+  map: _scratchDiffuseTexture,
+  roughnessMap: _scratchRoughnessTexture,
+  bumpMap: _scratchBumpTexture,
+};
+
 const materialState = {
   eggshell: {
     displayName: 'Eggshell',
@@ -242,12 +239,12 @@ const materialState = {
     materialProps: stainedMatteBlackMaterial,
   },
 
-  // translucent: {
-  //   displayName: 'Translucent',
-  //   tailwindColor: `bg-radial-[at_40%_40%] from-orange-50 to-slate-500 to-50%`,
-  //   material: null,
-  //   materialProps: defaultMeshTransmissionMaterialConfig,
-  // },
+  translucent_grey: {
+    displayName: 'Translucent Grey',
+    tailwindColor: `bg-radial-[at_45%_45%] from-orange-50 from-3% via-stone-600 via-55% to-slate-950 to-95%`,
+    material: new THREE.MeshPhysicalMaterial({ ...translucentGreyMaterial }),
+    materialProps: translucentGreyMaterial,
+  },
 
   // chipped_stone: {
   //   displayName: 'Chipped Stone',
@@ -268,7 +265,6 @@ const materialStore = (set, get) => ({
   materials: materialState,
   textures: textureState,
   texturesInitialized: '',
-  // meshTransitionMaterialInitialized: false,
 
   getMaterials: () => get().materials,
 
@@ -309,7 +305,6 @@ const materialStore = (set, get) => ({
 
     set((state) => ({
       texturesInitialized: initialized,
-      // meshTransitionMaterialInitialized: state.meshTransitionMaterialInitialized,
       textures: {
         ...state.textures,
         ...textures
@@ -320,6 +315,11 @@ const materialStore = (set, get) => ({
       },
     }));
   },
+});
+
+const useMaterial = create(materialStore);
+
+export default useMaterial;
 
   // setMeshTransmissionMaterial: (meshTransmissionMaterialObject) => {
   //   const meshTransitionMaterialInitialized = get().meshTransitionMaterialInitialized;
@@ -344,8 +344,3 @@ const materialStore = (set, get) => ({
   //     },
   //   }));
   // },
-});
-
-const useMaterial = create(materialStore);
-
-export default useMaterial;
