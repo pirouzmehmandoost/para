@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import CloseIcon from '@mui/icons-material/Close';
 
 const pathToCommandMap = {
   '/': [
@@ -17,7 +19,7 @@ const pathToCommandMap = {
 };
 
 //TO DO: if true, commands should be pathToCommandMap[`/projects/`] 
-const CommandPalette = () => {
+const CommandsTable = () => {
   const pathname = usePathname();
   const segment = useSelectedLayoutSegment('modal');
   const flagRef = useRef(false)
@@ -36,7 +38,7 @@ const CommandPalette = () => {
   }, [pathname, segment]);
 
   return (
-    <div className='fixed mt-5 ml-24 text-neutral-800'>
+    <div className='text-neutral-800'>
       <div className='text-center text-md'> Scene Controls </div>
       <table className='table-auto text-xs text-left border-t border-b border-collapse border-inherit'>
         <tbody>
@@ -55,4 +57,37 @@ const CommandPalette = () => {
   );
 };
 
+
+const CommandPalette = (props) => {
+  const { 
+    parentRef = undefined
+  } = props
+  const [menuVisible, setMenuVisible] = useState(false);
+  const assRef = useRef(null);
+
+  // useEffect(()=> {
+
+  //   if (assRef?.current && !!parentRef) {
+  //     if (parentRef?.current?.id?.length && assRef.current.id !== parentRef.current.id && menuVisible === true) {
+  //       console.log(parentRef?.current.id)
+
+  //       setMenuVisible(false);
+  //     }
+  //   }
+  // },[menuVisible]);
+
+  return (
+    <div ref={assRef} id='assRef' className='absolute top-7 left-25'>
+      <button
+        aria-label='Toggle menu'
+        className='flex z-100 w-fit h-fit p-2 rounded-full cursor-pointer bg-neutral-500 backdrop-blur-md md:backdrop-blur-xl text-neutral-700 hover:text-neutral-600 transition-all duration-1000 ease-in-out'
+        onClick={() => setMenuVisible(x => !x)}
+        type='button'
+      >
+        {menuVisible ? <CloseIcon fontSize='small' /> : <TipsAndUpdatesIcon fontSize='small' />}
+      </button>
+      { menuVisible && <CommandsTable /> }
+    </div>
+  )
+};
 export default CommandPalette;
