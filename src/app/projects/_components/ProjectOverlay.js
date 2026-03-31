@@ -99,7 +99,7 @@ const ProjectOverlay = ({ slug, entryPoint }) => {
 
   const ProductDetailsTable = () => {
     return (
-      <div className='flex w-fit overscroll-x-none select-none text-neutral-900 text-sm text-left font-medium whitespace-nowrap 2xs:px-5 2xs:mx-5 xs:px-5 xs:mx-5 sm:px-5 sm:mx-5 md:px-5 md:mx-5 lg:px-5 lg:mx-5 xl:px-6 xl:mx-6 2xl:px-6 2xl:mx-6 '>
+      <div className='flex w-fit overscroll-x-none select-none text-neutral-900 text-sm text-left font-medium whitespace-nowrap 2xs:px-5 2xs:mx-5 xs:px-5 xs:mx-5 sm:px-5 sm:mx-5 md:px-5 md:mx-5 lg:px-5 lg:mx-5 xl:px-6 xl:mx-6 2xl:px-6 2xl:mx-6'>
         <table className='table-auto divide-inherit border-collapse border'>
           <tbody>
             <tr className='border-b'>
@@ -154,17 +154,14 @@ const ProjectOverlay = ({ slug, entryPoint }) => {
     /* parent container fills the screen */
     <div data-route={pathname} className='fixed w-full h-screen text-neutral-900 subpixel-antialiased overscroll-x-none'>
       {/* modal container fixes position at bottom */}
-      <div className={`fixed w-full bottom-0 right-0 p-3 backdrop-blur-xl transition-all duration-700 ease-in-out ${expanded ? 'backdrop-opacity-0 backdrop-invert-0 ' : 'backdrop-opacity-90  backdrop-invert-20'}`}>
-
+      <div className={`fixed w-full bottom-0 right-0 -z-1 p-3 backdrop-blur-xl transition-all duration-700 ease-in-out ${expanded ? 'backdrop-opacity-0 backdrop-invert-0 ' : 'backdrop-opacity-90  backdrop-invert-20'}`}>
         {/* top section container with expanding/hiding items */}
-        <div className={`flex flex-col m-3 select-none transition-all duration-700 ease-in-out  ${expanded ? 'max-h-90 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className={`flex flex-col m-3 select-none transition-all duration-400 ease-in-out  ${expanded ? 'max-h-90 opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className={`flex flex-col 2xs:p-5 2xs:m-5 xs:p-5 xs:m-5 sm:p-5 sm:m-5 md:p-5 md:m-5 lg:p-5 lg:m-5 xl:p-6 xl:m-6 2xl:p-6 2xl:m-6 scroll-smooth overscroll-y-contain overscroll-x-none transition-all duration-700 ease-in-out delay-75 ${expanded ? 'overflow-y-auto' : 'overflow-hidden'}`}>
             {description}
           </div>
           <ProductDetailsTable />
         </div>
-
-
         {/* bottom section container with permanently visible items*/}
         <div className='flex flex-row max-w-full my-3 items-center'>
           <div className='basis-1/3'>
@@ -176,15 +173,14 @@ const ProjectOverlay = ({ slug, entryPoint }) => {
           <div className='basis-1/3 text-center text-4xl'>
             {displayName}
           </div>
-          <div className='basis-1/3'>
+          <div className='basis-1/3 z-10'>
             {MaterialSelectionModal}
           </div>
         </div>
       </div>
-      <div className={`fixed -z-1 w-full h-screen bg-linear-to-t from-neutral-500 from-60% to-transparent blur-3xl transition-all duration-500 ease-in-out ${expanded ? 'opacity-100' : 'opacity-0'}`} />
-      {/* <div className='absolute -top-20 -left-20 w-[400px] h-[400px] bg-linear-to-br from-purple-600 via-blue-500 to-teal-400 opacity-70 rounded-full blur-3xl'></div>
-  <div className='absolute top-[30%] -left-20 w-[400px] h-[400px] bg-linear-to-br from-purple-600 via-blue-500 to-teal-400 opacity-70 rounded-full blur-3xl'></div>
-  <div className='absolute bottom-0 right-0 w-[500px] h-[500px] bg-linear-to-tr from-indigo-500 via-fuchsia-500 to-pink-500 opacity-60 rounded-full blur-3xl'></div> */}
+      <div className={`fixed -z-100 w-full h-screen bg-linear-to-t from-neutral-500 from-60% to-transparent blur-3xl transition-all duration-500 ease-in-out ${expanded ? 'opacity-100' : 'opacity-0'}`} />
+      {/* <div className='absolute -top-20 -left-20 w-[400px] h-[400px] bg-linear-to-br from-purple-600 via-blue-500 to-teal-400 opacity-70 rounded-full blur-3xl'></div> */}
+      {/* <div className={`absolute -z-100 bottom-0 right-0 w-[500px] h-[500px] bg-linear-to-tr from-slate-700 via-slate-800 to-pink-950 rounded-full blur-3xl transition-all duration-500 ease-in-out ${expanded ? 'opacity-80' : 'opacity-0'}`} /> */}
     </div>
   );
 };
