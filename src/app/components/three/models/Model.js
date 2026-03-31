@@ -73,6 +73,11 @@ const Model = (props) => {
   useEffect(() => {
     if (!meshRef.current) return;
 
+    // const worldScale = new THREE.Vector3();
+    // meshRef.current.getWorldScale(worldScale);
+    // console.log("Local Scale:", meshRef.current.scale.x);
+    // console.log("World Scale:", worldScale.x);
+
     meshRef.current.updateWorldMatrix(true, true);
     meshRef.current.geometry.computeBoundingBox();
     meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current);
@@ -85,6 +90,7 @@ const Model = (props) => {
 
     const targetSize =  Math.min(visibleHeight, visibleWidth);
     const scaleFactor = scale * targetSize / maxBoundingBoxDimension;
+
     scaleRef.current = new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor);
   }, [scale]);
 
@@ -111,19 +117,19 @@ const Model = (props) => {
       easing.damp3(meshRef.current.scale, scaleRef.current, 0.3, clampedDelta);
 
       if (selectedAndFocused && animatePosition) {
-        animatePositionRef.current.set( defaultPositionRef.current.x, defaultPositionRef.current.y, defaultPositionRef.current.z);
+        animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y, defaultPositionRef.current.z);
       }
       else {
-        animatePositionRef.current.set( defaultPositionRef.current.x - sine * 0.5, defaultPositionRef.current.y + cos * 1.5, defaultPositionRef.current.z + sine );
+        animatePositionRef.current.set(defaultPositionRef.current.x - sine * 0.5, defaultPositionRef.current.y + cos * 1.5, defaultPositionRef.current.z + sine);
       }
       easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-      if (selectedAndFocused && animateRotation) {
+      if (selectedAndFocused && animateRotation && rotationSpeed) {
         animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
-        meshRef.current.rotation.y += delta * rotationSpeed;
+        meshRef.current.rotation.y += clampedDelta * rotationSpeed;
       }
       else {
-        animateRotationRef.current.set( (0.015 * sine) % 1, (Math.PI * rotation) + ((0.025 * sine) % 1), (0.015 * cos) % 1 );
+        animateRotationRef.current.set(((0.015 * sine) % 1), (Math.PI * rotation) + ((0.025 * sine) % 1), ((0.015 * cos) % 1));
         easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1.5, clampedDelta);
       }
 
@@ -132,10 +138,8 @@ const Model = (props) => {
         easing.dampC(blendedMaterialRef.current.color, materialToUpdate?.color ?? 'red', 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "dispersion", materialToUpdate?.dispersion ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "ior", materialToUpdate?.ior ?? 1.5, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "iridescence", materialToUpdate?.iridescence ?? 0, 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "iridescenceIOR", materialToUpdate?.iridescenceIOR ?? 1.3, 0.3, clampedDelta);
         easing.damp2(blendedMaterialRef.current.normalScale, materialToUpdate?.normalScale ?? [1, 1], 0.3, clampedDelta);
-        easing.damp(blendedMaterialRef.current, "opacity", materialToUpdate?.opacity ?? 1, 0.3, clampedDelta);
+        // easing.damp(blendedMaterialRef.current, "opacity", materialToUpdate?.opacity ?? 1, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "reflectivity", materialToUpdate?.reflectivity ?? 0.5, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "roughness",materialToUpdate?.roughness ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "thickness", materialToUpdate?.thickness ?? 0, 0.3, clampedDelta);
