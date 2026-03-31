@@ -9,7 +9,7 @@ export function sortObjectProps(obj) {
   return sortedObj
 }
 
-// Example: in BasicModel.js, log the material properties of a selected/focused Model 
+// Example: in Model.js, log the material properties of a selected/focused Model 
 // if (isFocused?.length && isFocused === nodeName) {
 //   console.log(`%cname: ${nodeName} selectedMatID: ${selectedMatID}${"\n"}`, debugStyle);
 //   console.table(createSortedObject(selectedMaterialRef.current));
