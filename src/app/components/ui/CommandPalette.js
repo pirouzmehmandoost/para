@@ -58,12 +58,8 @@ const CommandsTable = () => {
 };
 
 
-const CommandPalette = (props) => {
-  const { 
-    parentRef = undefined
-  } = props
+const CommandPalette = () => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const assRef = useRef(null);
 
   // useEffect(()=> {
 
@@ -77,7 +73,7 @@ const CommandPalette = (props) => {
   // },[menuVisible]);
 
   return (
-    <div ref={assRef} id='assRef' className='absolute top-7 left-25'>
+    <div className='absolute top-7 left-25'>
       <button
         aria-label='Toggle menu'
         className='flex z-100 w-fit h-fit p-2 rounded-full cursor-pointer bg-neutral-500 backdrop-blur-md md:backdrop-blur-xl text-neutral-700 hover:text-neutral-600 transition-all duration-1000 ease-in-out'

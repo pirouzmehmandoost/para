@@ -21,7 +21,7 @@ const createVariants = (reduceMotion) => {
       open: { opacity: 1, transition: { duration: dur(0.35), ease: EASE_IN_OUT } },
       closed: { opacity: 0, transition: { duration: dur(0.25), ease: EASE_IN_OUT } },
     },
-    modal: {
+    modalContainer: {
       hidden: { opacity: 0, y: 6, transition: { duration: dur(0.2), ease: EASE_IN_OUT } },
       visible: {
         opacity: 1,
@@ -56,47 +56,36 @@ const SelectionDisplayModal = () => {
     } = {},
   } = focusedProject || {};
 
-  const modal = Boolean(displayName.length);
+  const showModal = Boolean(displayName.length);
   const route = `/projects/${getSlugFromName(displayName)}`;
 
   return (
-    <div className={`fixed flex flex-col grow place-self-center justify-center h-1/5 w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit top-32 md:left-10 lg:left-10 xl:left-10 2xl:left-10 transition-all duration-500 ease-in-out 
-        ${modal ? 'h-1/5' : 'h-fit'}`}
-    >
+    <div className={`fixed flex flex-col grow place-self-center justify-center w-full h-1/5 sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit top-32 md:left-10 lg:left-10 xl:left-10 2xl:left-10 transition-all duration-500 ease-in-out ${showModal ? 'h-1/5' : 'h-fit'}`}>
       <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
         <AnimatePresence mode='wait'>
-          {modal && (
+          {showModal && (
             <motion.div
               id='modal-content'
               className='flex flex-col w-fit h-full text-neutral-800 place-items-start'
               animate='visible'
               exit='hidden'
               initial='hidden'
-              variants={variants.modal}
+              variants={variants.modalContainer}
             >
-              <motion.div
-                variants={variants.modalItem}
-                className='place-self-center text-center text-4xl perspective-origin-bottom'
-              >
+              <motion.div variants={variants.modalItem} className='place-self-center text-center text-4xl perspective-origin-bottom'>
                 {displayName}
               </motion.div>
-              <motion.div
-                variants={variants.modalItem}
-                className='text-2xl text-center text-pretty perspective-origin-bottom'
-              >
+              <motion.div variants={variants.modalItem} className='text-2xl text-center text-pretty perspective-origin-bottom'>
                 {shortDescription}
               </motion.div>
-              <motion.div
-                variants={variants.modalItem}
-                className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'
-              >
-                <Link
+              <motion.div variants={variants.modalItem} className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'>
+                <Link 
                   href={route}
                   rel='noopener noreferrer'
                   className='pointer-events-auto'
                   onClick={handleClick}
                 >
-                  <div className='cursor-pointer drop-shadow-xs drop-shadow-black/50'> View Details </div>
+                  <div className='cursor-pointer'> View Details </div>
                 </Link>
               </motion.div>
             </motion.div>
