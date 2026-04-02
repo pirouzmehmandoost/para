@@ -1,7 +1,7 @@
 import './globals.css';
 import localFont from 'next/font/local';
 import { envColor } from '@configs/globals';
-import  MainMenu from '@ui/MainMenu';
+import MainMenu from '@ui/MainMenu';
 import RootCanvas from '@three/canvas/RootCanvas';
 import GlobalKeyboardShortcuts from '@ui/GlobalKeyboardShortcuts';
 
