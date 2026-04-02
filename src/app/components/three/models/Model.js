@@ -19,7 +19,6 @@ const Model = (props) => {
   const {
     animateMaterial = true,
     animatePosition = false,
-    animateRotation = true,
     rotationSpeed = 0.5,
     fileData: { nodeName = '', url = '' } = {},
     materials: { defaultMaterialID = '' } = {},
@@ -34,6 +33,7 @@ const Model = (props) => {
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
 
   const isFocused = useSelection((state) => state.selection.isFocused);
+  const shouldAnimateRotation = useSelection((state) => state.selection.sceneData.animateRotation);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
   const materials = useMaterial((state) => state.materials);
 
@@ -72,7 +72,6 @@ const Model = (props) => {
 
   useEffect(() => {
     if (!meshRef.current) return;
-
     // const worldScale = new THREE.Vector3();
     // meshRef.current.getWorldScale(worldScale);
     // console.log("Local Scale:", meshRef.current.scale.x);
@@ -124,7 +123,7 @@ const Model = (props) => {
       }
       easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
 
-      if (selectedAndFocused && animateRotation && rotationSpeed) {
+      if (selectedAndFocused && shouldAnimateRotation) {
         animateRotationRef.current.set(0, meshRef.current.rotation.y, 0);
         meshRef.current.rotation.y += clampedDelta * rotationSpeed;
       }
@@ -139,7 +138,6 @@ const Model = (props) => {
         easing.damp(blendedMaterialRef.current, "dispersion", materialToUpdate?.dispersion ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "ior", materialToUpdate?.ior ?? 1.5, 0.3, clampedDelta);
         easing.damp2(blendedMaterialRef.current.normalScale, materialToUpdate?.normalScale ?? [1, 1], 0.3, clampedDelta);
-        // easing.damp(blendedMaterialRef.current, "opacity", materialToUpdate?.opacity ?? 1, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "reflectivity", materialToUpdate?.reflectivity ?? 0.5, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "roughness",materialToUpdate?.roughness ?? 0, 0.3, clampedDelta);
         easing.damp(blendedMaterialRef.current, "thickness", materialToUpdate?.thickness ?? 0, 0.3, clampedDelta);
