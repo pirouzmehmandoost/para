@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
 import { portfolio } from '@configs/globals';
-import CommandPalette from '@ui/CommandPalette';
+// import AppHelpOverlay from '@ui/AppHelpOverlay';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
@@ -96,14 +96,14 @@ const SelectionDisplayModal = () => {
   );
 };
 
-// `/projects/[slug]` is an intercepting route mounted over the home page. It renders ProjectOverlay.
+// `/projects/[slug]` is an intercepting route mounted over the home page. It renders ProjectDataModal.
 // SelectionDisplayModal hides conditionally so the two don't overlap.
 const MainDisplayModal = () => {
   const pathname = usePathname();
 
   return (
     <main className='flex flex-col w-full h-full'>
-      <CommandPalette />
+      {/* <AppHelpOverlay /> */}
       {!pathname?.startsWith('/projects/') && <SelectionDisplayModal />}
     </main>
   );
