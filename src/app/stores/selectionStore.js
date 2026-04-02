@@ -69,10 +69,28 @@ const selectionStore = (set, get) => ({
       }
     })),
 
+  setAnimateRotation: () => {
+    set((state) => ({
+      selection: {
+        ...state.selection,
+        sceneData: {
+          ...state.selection.sceneData,
+          animateRotation: !state.selection.sceneData.animateRotation,
+        },
+      }
+    }));
+  },
+
   reset: () =>
     set({
       selection: {
         ...initialState,
+        productData: {
+          ...initialState.productData,
+          imgUrls: {
+            ...initialState.productData.imgUrls,
+          }
+        },
         sceneData: {
           ...initialState.sceneData,
           fileData: {
