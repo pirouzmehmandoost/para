@@ -21,63 +21,6 @@ export const portfolio = {
           Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
           Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
           Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
           Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.`,
         dimensions:  `21.5 x 5" x 14"`,
         imgUrls: {
