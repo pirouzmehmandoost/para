@@ -16,6 +16,7 @@ const initialState = {
   },
   sceneData: {
     animateMaterial: true,
+    defaultRotationAnimationActive: true,
     animatePosition: false,
     animateRotation: true,
     fileData: {
@@ -28,7 +29,8 @@ const initialState = {
       materialIDs: [],
     },
     position: {},
-    rotation: 0,
+    rotation: { x: 0, y:0, z:0 },
+    deltaRotation: { x: 0, y:0, z:0 },
     rotationSpeed: 1,
     scale: 1,
   },
@@ -48,6 +50,15 @@ const selectionStore = (set, get) => ({
         selection: {
           ...selected,
           isFocused: nextFocused,
+          productData: {
+            ...selected.productData,
+            imgUrls: { ...selected.productData.imgUrls },
+          },
+          sceneData: {
+            ...selected.sceneData,
+            fileData: { ...selected.sceneData.fileData },
+            materials: { ...selected.sceneData.materials },
+          },
         },
       };
     });
@@ -69,13 +80,59 @@ const selectionStore = (set, get) => ({
       }
     })),
 
-  setAnimateRotation: () => {
+  toggleAnimateRotation: () => {
     set((state) => ({
       selection: {
         ...state.selection,
+        productData: {
+          ...state.selection.productData,
+          imgUrls: {...state.selection.productData.imgUrls },
+        },
         sceneData: {
           ...state.selection.sceneData,
+          fileData: { ...state.selection.sceneData.fileData },
+          materials: { ...state.selection.sceneData.materials },
           animateRotation: !state.selection.sceneData.animateRotation,
+        },
+      }
+    }));
+  },
+
+setRotation: (vals) => {
+    set((state) => ({
+      selection: {
+        ...state.selection,
+        productData: {
+          ...state.selection.productData,
+          imgUrls: {...state.selection.productData.imgUrls },
+        },
+        sceneData: {
+          ...state.selection.sceneData,
+          fileData: { ...state.selection.sceneData.fileData },
+          materials: { ...state.selection.sceneData.materials },
+          rotation: { ...state.selection.sceneData.rotation }, 
+          deltaRotation: {...vals},
+          defaultRotationAnimationActive: false,
+        },
+      }
+    }));
+  },
+
+  toggleDefaultRotationAnimation: () => {
+    set((state) => ({
+      selection: {
+        ...state.selection,
+        productData: {
+          ...state.selection.productData,
+          imgUrls: {...state.selection.productData.imgUrls },
+        },
+        sceneData: {
+          ...state.selection.sceneData,
+          fileData: { ...state.selection.sceneData.fileData },
+          materials: { ...state.selection.sceneData.materials },
+          rotation: { ...state.selection.sceneData.rotation },
+          defaultRotationAnimationActive: !state.selection.sceneData.defaultRotationAnimationActive, // toggle
+          deltaRotation: { ...initialState.sceneData.deltaRotation }, // reset deltaRotation (this may not be a good design decision)
         },
       }
     }));
@@ -87,18 +144,14 @@ const selectionStore = (set, get) => ({
         ...initialState,
         productData: {
           ...initialState.productData,
-          imgUrls: {
-            ...initialState.productData.imgUrls,
-          }
+          imgUrls: { ...initialState.productData.imgUrls }
         },
         sceneData: {
           ...initialState.sceneData,
-          fileData: {
-            ...initialState.sceneData.fileData,
-          },
-          materials: {
-            ...initialState.sceneData.materials,
-          },
+          fileData: { ...initialState.sceneData.fileData },
+          materials: { ...initialState.sceneData.materials },
+          rotation: { ...initialState.sceneData.rotation },
+          deltaRotation: { ...initialState.sceneData.deltaRotation },
         },
       },
     }),

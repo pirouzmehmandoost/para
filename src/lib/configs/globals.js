@@ -46,6 +46,7 @@ export const portfolio = {
         animateMaterial: true,
         animatePosition: false,
         animateRotation: true,
+        defaultRotationAnimationActive: true,
         fileData: {
           nodeName: 'textured_bag_simplified001',
           url: '/textured_bag.glb'
@@ -55,7 +56,7 @@ export const portfolio = {
           defaultMaterialID: 'stained_matte_black',
           materialIDs: ['stained_matte_black', 'matte_black', 'gloss_black'],
         },
-        rotation: 0,
+        rotation: { x: 0, y: 0, z: 0 },
         rotationSpeed: 0.3,
         scale: 1,
       },
@@ -89,6 +90,7 @@ export const portfolio = {
         animateMaterial: true,
         animatePosition: false,
         animateRotation: true,
+        defaultRotationAnimationActive: true,
         fileData: {
           nodeName: 'sang',
           url: '/sang.glb'
@@ -98,7 +100,7 @@ export const portfolio = {
           defaultMaterialID: 'matte_black',
           materialIDs: ['matte_black', 'translucent_grey'],
         },
-        rotation: 0,
+        rotation: { x: 0, y: 0, z: 0 },
         rotationSpeed: 0.45,
         scale: 1,
       },
@@ -132,16 +134,17 @@ export const portfolio = {
         animateMaterial: true,
         animatePosition: false,
         animateRotation: true,
+        defaultRotationAnimationActive: true,
         fileData: {
           nodeName: 'Yoga_Mat_Strap',
           url: '/yoga_mat_strap.glb'
         },
         groupName: 'Pí',
         materials: {
-          defaultMaterialID: 'translucent_grey',
-          materialIDs: ['translucent_grey', 'gloss_black', 'matte_black'],
+          defaultMaterialID: 'gloss_black',
+          materialIDs: ['gloss_black', 'matte_black', 'translucent_grey'],
         },
-        rotation: 1.0,
+        rotation: {x: 0, y: 1, z: 0 },
         rotationSpeed: 0.45,
         scale: 0.8,
       },

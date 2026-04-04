@@ -6,7 +6,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
 import { portfolio } from '@configs/globals';
-// import AppHelpOverlay from '@ui/AppHelpOverlay';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
@@ -43,11 +42,13 @@ const createVariants = (reduceMotion) => {
 
 const SelectionDisplayModal = () => {
   const isFocused = useSelection((state) => state.selection.isFocused);
-  const setSelectionStore = useSelection((state) => state.setSelection);
+  const setSelection = useSelection((state) => state.setSelection);
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
+
   const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === isFocused);
-  const handleClick = () => { if (focusedProject) setSelectionStore({ ...focusedProject }) };
+
+  const handleClick = () => { if (focusedProject) setSelection({ ...focusedProject }) };
 
   const {
     displayName = '',
@@ -79,7 +80,7 @@ const SelectionDisplayModal = () => {
                 {shortDescription}
               </motion.div>
               <motion.div variants={variants.modalItem} className='place-self-center text-center text-3xl text-neutral-800 perspective-origin-bottom'>
-                <Link 
+                <Link
                   href={route}
                   rel='noopener noreferrer'
                   className='pointer-events-auto'
@@ -103,7 +104,6 @@ const MainDisplayModal = () => {
 
   return (
     <main className='flex flex-col w-full h-full'>
-      {/* <AppHelpOverlay /> */}
       {!pathname?.startsWith('/projects/') && <SelectionDisplayModal />}
     </main>
   );

@@ -24,7 +24,7 @@ const BasicScene = () => {
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
 
-  const setSelectionStore = useSelection((state) => state.setSelection);
+  const setSelection = useSelection((state) => state.setSelection);
   const isFocused = useSelection((state) => state.selection.isFocused);
   const setIsFocused = useSelection((state) => state.setIsFocused);
   const setMaterialID = useSelection((state) => state.setMaterialID);
@@ -78,7 +78,7 @@ const BasicScene = () => {
       setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
       setIsFocused(clickedName);
     });
-  }, [isFocused, setIsFocused, setMaterialID, setSelectionStore]);
+  }, [isFocused, setIsFocused, setMaterialID, setSelection]);
 
   const onSwipe = useCallback((e) => {
     lastSwipeTimeRef.current = Date.now();
@@ -144,7 +144,6 @@ const BasicScene = () => {
             <Model
               key={nodeName}
               animateMaterial
-              animateRotation={sceneData.animateRotation}
               fileData={sceneData.fileData}
               materials={sceneData.materials}
               name={nodeName}
