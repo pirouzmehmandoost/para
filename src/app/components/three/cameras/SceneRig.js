@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
 import cameraConfigs from '@configs/cameraConfigs';
+import { dampCameraLookAt } from '@utils/quaternionUtils';
 
 const SceneRig = ({
   focusTarget = null,
@@ -27,8 +28,9 @@ const SceneRig = ({
   const lastSwitchTimeRef = useRef(0);
   const manualOverrideTimeRef = useRef(-Infinity); // active while elapsedTime < this value)
 
-  const cameraPositionRef = useRef(new THREE.Vector3());
-  const lookAtPositionRef = useRef(new THREE.Vector3());
+  const currentCameraPositionRef = useRef(new THREE.Vector3());
+  const nextCameraPositionRef = useRef(new THREE.Vector3());
+  const cameraTargetRef = useRef(new THREE.Vector3());
 
   const cameraStopPositionsRef = useRef([new THREE.Vector3(0, 0, 0)]);
   const defaultFallbackPositionRef = useRef(new THREE.Vector3(POSITION[0], POSITION[1], POSITION[2]));
@@ -162,7 +164,7 @@ const SceneRig = ({
     if (focusedIndex >= 0 && cameraStopPositionsRef.current[focusedIndex]) targetIndexRef.current = focusedIndex
     else if (isManualOverrideActive && cameraStopPositionsRef.current[targetIndexRef.current]) targetIndexRef.current = targetIndexRef.current
     else {
-     // cameraPositionRef.current.copy(cameraStopPositionsRef.current[targetIndexRef.current]);
+      currentCameraPositionRef.current.copy(cameraStopPositionsRef.current[targetIndexRef.current]); // TEST: temporarily uncomment this line. 
       let currentIndex = targetIndexRef.current;
       let nextIndex = currentIndex >= cameraStopPositionsRef.current.length - 1 ? 0 : currentIndex + 1;
       const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > MIN_DWELL_SECONDS;
@@ -192,10 +194,13 @@ const SceneRig = ({
     const yOffset = -2 * sine;
     const zOffset = POSITION[2] + sine;
 
-    cameraPositionRef.current.copy(camera.position);
-    camera.lookAt(cameraPositionRef.current);
-    lookAtPositionRef.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
-    easing.damp3(camera.position, lookAtPositionRef.current, 1, clampedDelta);
+    currentCameraPositionRef.current.copy(camera.position);
+    // camera.lookAt(currentCameraPositionRef.current);
+    nextCameraPositionRef.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
+    cameraTargetRef.current.set(currentCameraPositionRef.current.x, currentCameraPositionRef.current.y, currentCameraPositionRef.current.z-1);
+    camera.lookAt(cameraTargetRef.current);
+
+    easing.damp3(camera.position, nextCameraPositionRef.current, 1, clampedDelta);
     camera.updateMatrixWorld();
   });
 };
