@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
 import cameraConfigs from '@configs/cameraConfigs';
-import { dampCameraLookAt } from '@utils/quaternionUtils';
 
 const SceneRig = ({
   focusTarget = null,
