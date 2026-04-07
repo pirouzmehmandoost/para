@@ -45,6 +45,7 @@ const Model = (props) => {
   const _scratchCenterRef = useRef(new THREE.Vector3());
   const _scratchSizeRef = useRef(new THREE.Vector3());
   const meshRef = useRef(undefined);
+  const rotationModeRef = useRef(null);
 
   const scaleRef = useRef(new THREE.Vector3(1, 1, 1));
 
@@ -57,6 +58,30 @@ const Model = (props) => {
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
   const animateMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
+
+  function determineRotationAnimation(rotationMode, delta ) {
+    if (rotationMode !== rotationModeRef.current) rotationModeRef.current = rotationMode;
+
+      const refToUpdate = rotationMode === 'MODE_IDLE' ? defaultRotationRef.current :  animateRotationRef.current;
+      const smoothTime =  rotationMode === 'MODE_IDLE' ? 1.5 : 1;
+
+      if (rotationMode === 'MODE_TURNTABLE') {
+        const y = animateRotationRef.current.y + delta * rotationSpeed
+        const wY = wrap(y, 0, 2 * Math.PI);
+        animateRotationRef.current.set(defaultRotationRef.current.x, wY, defaultRotationRef.current.z);
+      }
+      else if (rotationMode === 'MODE_MANUAL') {
+        const ox = rotationOffset?.x ?? 0;
+        const oy = rotationOffset?.y ?? 0;
+        const oz = rotationOffset?.z ?? 0;
+        animateRotationRef.current.set(defaultRotationRef.current.x + ox, defaultRotationRef.current.y + oy, defaultRotationRef.current.z + oz);
+      }
+      else if (rotationMode === 'MODE_IDLE') {
+        animateRotationRef.current.set(defaultRotationRef.current.x, defaultRotationRef.current.y, defaultRotationRef.current.z);
+      }
+
+      if (eulerDistance(meshRef.current.rotation, refToUpdate) > epsilon) easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, delta);
+  }
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -130,40 +155,11 @@ const Model = (props) => {
         easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, clampedDelta);
       }
 
-      if (selectedAndFocused && shouldAnimateRotation) {
-        if (defaultRotationAnimationActive) {  
-          const y = animateRotationRef.current.y + clampedDelta * rotationSpeed
-          const wY = wrap(y, 0, 2 * Math.PI);
+      const rotationMode = !selectedAndFocused || !shouldAnimateRotation
+        ? 'MODE_IDLE'
+        : defaultRotationAnimationActive ? 'MODE_TURNTABLE' : 'MODE_MANUAL';
 
-          animateRotationRef.current.set(
-            defaultRotationRef.current.x,
-            wY,
-            defaultRotationRef.current.z,
-          );
-        }
-        else {
-          const ox = rotationOffset?.x ?? 0;
-          const oy = rotationOffset?.y ?? 0;
-          const oz = rotationOffset?.z ?? 0;
-
-          animateRotationRef.current.set(
-            defaultRotationRef.current.x + ox, //+ ((0.015 * sine) % 1),
-            defaultRotationRef.current.y + oy, // + ((0.025 * sine) % 1),
-            defaultRotationRef.current.z + oz, // + ((0.015 * cos) % 1),
-          );
-        }
-
-        if (eulerDistance(meshRef.current.rotation, animateRotationRef.current) > epsilon) {
-          easing.dampE(meshRef.current.rotation, animateRotationRef.current, 1, clampedDelta);
-        }
-      }
-      else {
-        animateRotationRef.current.set(defaultRotationRef.current.x, defaultRotationRef.current.y, defaultRotationRef.current.z);
-
-        if (eulerDistance(meshRef.current.rotation, defaultRotationRef.current) > epsilon) {
-          easing.dampE(meshRef.current.rotation, defaultRotationRef.current, 1.5, clampedDelta);
-        }
-      }
+      determineRotationAnimation(rotationMode, clampedDelta);
 
       if (animateMaterial) {
         easing.damp(animateMaterialRef.current, "bumpScale", materialToUpdate?.bumpScale ?? 1, 0.3, clampedDelta);
