@@ -14,7 +14,7 @@ THREE.Cache.enabled = true;
 
 export const Loader = () => {
   return (
-    <Html center className='text-black text-nowrap text-5xl animate-pulse'>
+    <Html center className='text-black text-nowrap text-5xl'>
       Loading...
     </Html>
   );
@@ -33,6 +33,7 @@ export const RootCanvas = () => {
   return (
     <div className={`fixed inset-0 bg-[${envColor}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       <Canvas
+        dpr={[1, 1.5]}
         frameloop={interactive ? 'always' : 'demand'}
         gl={{ antialias: true }}
         camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 15 }}
