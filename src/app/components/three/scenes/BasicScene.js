@@ -143,7 +143,6 @@ const BasicScene = () => {
           return (
             <Model
               key={nodeName}
-              animateMaterial
               fileData={sceneData.fileData}
               materials={sceneData.materials}
               name={nodeName}

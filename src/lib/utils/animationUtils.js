@@ -1,6 +1,6 @@
 // epsilon values for floating point comparison
-export const rotationThreshold = 3e-3;
-export const scaleThreshold = 1e-4;
+export const generalThreshold = 3e-3;
+export const largeThreshold = 10e-4;
 
 export const angleDelta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 

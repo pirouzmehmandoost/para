@@ -124,6 +124,7 @@ const eggshellMaterial = {
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
   bumpMap: _scratchBumpTexture,
+  transmissionMap: _scratchTransmissionTexture,
 };
 
 const glossBlackMaterial = {
@@ -138,6 +139,7 @@ const glossBlackMaterial = {
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
   bumpMap: _scratchBumpTexture,
+  transmissionMap: _scratchTransmissionTexture,
 };
 
 const groundMaterial = {
@@ -162,6 +164,7 @@ const matteBlackMaterial = {
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
   bumpMap: _scratchBumpTexture,
+  transmissionMap: _scratchTransmissionTexture,
 };
 
 const stainedMatteBlackMaterial = {
@@ -176,23 +179,25 @@ const stainedMatteBlackMaterial = {
   bumpMap: _scratchBumpTexture,
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
+  transmissionMap: _scratchTransmissionTexture,
 };
 
 const translucentGreyMaterial = {
   color: '#949994',
-  dispersion: 3,
+  dispersion: 2,
   flatShading: false,
   ior: 1.5,
   name: 'translucent_grey',
   reflectivity: 0.4,
   roughness: 0.25,
-  thickness: 200,
+  thickness: 50,
   transmission: 1,
   transparent: true,
   side: THREE.DoubleSide,
   map: _scratchDiffuseTexture,
   roughnessMap: _scratchRoughnessTexture,
   bumpMap: _scratchBumpTexture,
+  transmissionMap: _scratchTransmissionTexture,
 };
 
 const materialState = {
