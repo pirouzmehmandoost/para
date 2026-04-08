@@ -142,7 +142,7 @@ export const portfolio = {
         groupName: 'Pí',
         materials: {
           defaultMaterialID: 'gloss_black',
-          materialIDs: ['gloss_black', 'matte_black', 'translucent_grey'],
+          materialIDs: ['gloss_black', 'matte_black'],
         },
         rotation: {x: 0, y: 1, z: 0 },
         rotationSpeed: 0.45,

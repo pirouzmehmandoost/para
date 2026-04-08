@@ -7,7 +7,7 @@ import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
 import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
-import { eulerDistance, generalThreshold, largeThreshold, wrap } from '@utils/animationUtils';
+import { eulerDistance, generalThreshold, largeThreshold, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
@@ -15,17 +15,6 @@ THREE.Cache.enabled = true;
 useGLTF.preload('/yoga_mat_strap.glb');
 useGLTF.preload('/textured_bag.glb');
 useGLTF.preload('/sang.glb');
-
-const RotationAnimationModes = {
-  MODE_IDLE: 'MODE_IDLE',
-  MODE_TURNTABLE: 'MODE_TURNTABLE',
-  MODE_MANUAL: 'MODE_MANUAL'
-}
-
-const PositionAnimationModes = {
-  ENABLED: 'ENABLED',
-  DISABLED: 'DISABLED'
-}
 
 const Model = (props) => {
   const {
@@ -43,24 +32,24 @@ const Model = (props) => {
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
 
   const isFocused = useSelection((state) => state.selection.isFocused);
-  const shouldAnimateRotation = useSelection((state) => state.selection.sceneData.animateRotation);
   const turntableRotationAnimation = useSelection((state) => state.selection.sceneData.defaultRotationAnimationActive);
   const rotationOffset = useSelection((state) => state.selection.sceneData.deltaRotation);
+  const shouldAnimateRotation = useSelection((state) => state.selection.sceneData.animateRotation);
   const shouldAnimatePosition = useSelection((state) => state.selection.sceneData.animatePosition);
   const shouldAnimateMaterial = useSelection((state) => state.selection.sceneData.animateMaterial);
   const selectedMaterialID = useSelection((state) => state.selection.materialID);
+
   const materials = useMaterial((state) => state.materials);
 
   const _scratchSizeRef = useRef(new THREE.Vector3());
 
   const meshRef = useRef(undefined);
 
-  const scaleRef = useRef(new THREE.Vector3(0,0,0));
+  const scaleRef = useRef(new THREE.Vector3(0, 0, 0));
 
   const defaultRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz));
   const animateRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz));
   const rotationModeRef = useRef(null);
-  const prevRotationModeRef = useRef(null);
 
   const defaultPositionRef = useRef(new THREE.Vector3(px, py, pz));
   const animatePositionRef = useRef(new THREE.Vector3(px, py, pz));
@@ -70,31 +59,27 @@ const Model = (props) => {
   const defaultMaterialRef = useRef(null);
   const animateMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
 
-  const shouldUpdateWorldMatrix = useRef(false);
-
   function computeRotationAnimation(rotationMode, delta) {
-    const didModeChange = rotationMode !== prevRotationModeRef.current;
-    if (didModeChange) {
-      // Mode-entry seeding: capture current rendered orientation once
-      // so target generation starts from runtime state on transition frame.
-      animateRotationRef.current.copy(meshRef.current.rotation);
-      prevRotationModeRef.current = rotationMode;
-    }
-    const refToUpdate = rotationMode === RotationAnimationModes.MODE_IDLE
-      ? defaultRotationRef.current
-      : animateRotationRef.current;
+    const didModeChange = rotationMode !== rotationModeRef.current;
 
+    if (didModeChange) {
+      animateRotationRef.current.copy(meshRef.current.rotation);
+      rotationModeRef.current = rotationMode;
+    }
+
+    const refToUpdate = rotationMode === RotationAnimationModes.MODE_IDLE ? defaultRotationRef.current : animateRotationRef.current;
     const smoothTime = rotationMode === RotationAnimationModes.MODE_IDLE ? 1.5 : 1;
-    
+
     if (rotationMode === RotationAnimationModes.MODE_TURNTABLE) {
       const y = animateRotationRef.current.y + delta * rotationSpeed;
-      const wY = wrap(y, 0, 2 * Math.PI);
+      const wY = wrap(y, 0, (Math.PI * 2));
       animateRotationRef.current.set(defaultRotationRef.current.x, wY, defaultRotationRef.current.z);
-    } 
+    }
     else if (rotationMode === RotationAnimationModes.MODE_MANUAL) {
       const ox = rotationOffset?.x ?? 0;
       const oy = rotationOffset?.y ?? 0;
       const oz = rotationOffset?.z ?? 0;
+
       animateRotationRef.current.set(
         defaultRotationRef.current.x + ox,
         defaultRotationRef.current.y + oy,
@@ -111,26 +96,33 @@ const Model = (props) => {
 
     if (eulerDistance(meshRef.current.rotation, refToUpdate) > generalThreshold) {
       easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, delta);
-      if (shouldUpdateWorldMatrix.current !== true) shouldUpdateWorldMatrix.current = true;
     }
+
     rotationModeRef.current = rotationMode;
-  }
+  };
 
   function computePositionAnimation(positionMode, xOffset = 0, yOffset = 0, zOffset = 0, delta) {
     if (positionMode !== positionModeRef.current) positionModeRef.current = positionMode;
 
     if (positionMode === 'ENABLED') {
-      animatePositionRef.current.set(defaultPositionRef.current.x + xOffset, defaultPositionRef.current.y + yOffset, defaultPositionRef.current.z + zOffset);
+      animatePositionRef.current.set(
+        defaultPositionRef.current.x + xOffset,
+        defaultPositionRef.current.y + yOffset,
+        defaultPositionRef.current.z + zOffset
+      );
     }
     else if (positionMode === 'DISABLED') {
-      animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y, defaultPositionRef.current.z);
+      animatePositionRef.current.set(
+        defaultPositionRef.current.x,
+        defaultPositionRef.current.y,
+        defaultPositionRef.current.z
+      );
     }
 
     if (meshRef.current.position.distanceTo(animatePositionRef.current) > generalThreshold) {
       easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, delta);
-      if (shouldUpdateWorldMatrix.current !== true) shouldUpdateWorldMatrix.current = true;
     }
-  }
+  };
 
   function computeMeshScale(camera, delta, setOnMount = false) {
     if (!meshRef.current) return;
@@ -138,24 +130,20 @@ const Model = (props) => {
     const maxBoundingBoxDimension = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
     const verticalFOVinRadians = (camera.fov * Math.PI) / 180;
     const visibleHeight = 2 * Math.tan(verticalFOVinRadians / 2) * 180;
-
     const visibleWidth = visibleHeight * camera.aspect;
     const targetSize = Math.min(visibleHeight, visibleWidth);
-    const scaleFactor = scale * targetSize / maxBoundingBoxDimension;
+    const scaleFactor = scale * targetSize / (maxBoundingBoxDimension > 0 ? maxBoundingBoxDimension : 1);
 
     if (setOnMount) {
       scaleRef.current = new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor);
       meshRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
-      if (shouldUpdateWorldMatrix.current !== true) shouldUpdateWorldMatrix.current = true;
       return;
     }
-    else {
-      scaleRef.current.set(scaleFactor, scaleFactor, scaleFactor);
-    }
+
+    scaleRef.current.set(scaleFactor, scaleFactor, scaleFactor);
 
     if (meshRef.current.scale.distanceTo(scaleRef.current) > largeThreshold) {
       easing.damp3(meshRef.current.scale, scaleRef.current, 0.3, delta);
-      if (shouldUpdateWorldMatrix.current !== true) shouldUpdateWorldMatrix.current = true;
     }
   };
 
@@ -163,7 +151,11 @@ const Model = (props) => {
     if (!shouldAnimateMaterial || !materialToUpdate) return;
 
     if (Math.abs(animateMaterialRef.current.bumpScale - materialToUpdate.bumpScale) > largeThreshold) easing.damp(animateMaterialRef.current, "bumpScale", materialToUpdate.bumpScale, 0.3, delta);
-    
+
+    if (Math.abs(animateMaterialRef.current.clearcoat - materialToUpdate.clearcoat) > largeThreshold) easing.damp(animateMaterialRef.current, "clearcoat", materialToUpdate.clearcoat, 0.3, delta);
+
+    if (Math.abs(animateMaterialRef.current.clearcoatRoughness - materialToUpdate.clearcoatRoughness) > largeThreshold) easing.damp(animateMaterialRef.current, "clearcoatRoughness", materialToUpdate.clearcoatRoughness, 0.3, delta);
+
     if (!animateMaterialRef.current.color.equals(materialToUpdate.color)) easing.dampC(animateMaterialRef.current.color, materialToUpdate.color, 0.3, delta);
 
     if (Math.abs(animateMaterialRef.current.dispersion - materialToUpdate.dispersion) > largeThreshold) easing.damp(animateMaterialRef.current, "dispersion", materialToUpdate.dispersion, 0.3, delta);
@@ -210,9 +202,15 @@ const Model = (props) => {
     if ((animateMaterialRef.current?.transmissionMap && materialToUpdate?.transmissionMap) &&
       animateMaterialRef.current.transmissionMap.uuid !== materialToUpdate.transmissionMap.uuid) {
       animateMaterialRef.current.transmissionMap = materialToUpdate.transmissionMap;
-    }    
-  }
+    }
+  };
 
+  useEffect(() => {
+    if (meshRef.current) {
+      animateMaterialRef.current.copy(defaultMaterialRef.current);
+      if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
+    }
+  }, [onMeshReady]);
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -225,58 +223,43 @@ const Model = (props) => {
     }
   }, [defaultMaterialID, isFocused, materials, nodeName, selectedMaterialID]);
 
-
   useLayoutEffect(() => {
-    if (meshRef.current) meshRef.current.position.copy(defaultPositionRef.current);
+    if (meshRef.current) {
+      defaultPositionRef.current.set(px, py, pz)
+      meshRef.current.position.copy(defaultPositionRef.current);
+    }
   }, [px, py, pz]);
 
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (meshRef.current) {
-      meshRef.current.updateWorldMatrix(true, true);
-      animateMaterialRef.current.copy(defaultMaterialRef.current);
-      if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
+      meshRef.current.geometry.computeBoundingBox();
+      meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current);
+      computeMeshScale(camera, 0.08, true)
     }
-  }, [onMeshReady]);
-
-  useEffect(() => {
-    if (!meshRef.current) return;
-
-    meshRef.current.updateWorldMatrix(true, true);
-    meshRef.current.geometry.computeBoundingBox();
-    meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current);
-    computeMeshScale(camera, 0.08, true)
   }, [scale]);
 
   useFrame(({ clock, camera: cam }, delta) => {
-    shouldUpdateWorldMatrix.current = false;
-
-    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame. Clamp keeps frames consecutive between brower tab navigation.
+    const clampedDelta = Math.min(delta, 0.08);
     const elapsedTime = clock.elapsedTime;
+    const positionOffsetY =  Math.abs(Math.cos(elapsedTime) * 2);
+    const positionOffsetZ =  Math.sin(elapsedTime) * 2;
 
-    if (meshRef?.current && nodeName?.length) {
-      const selectedAndFocused = isFocused?.length && isFocused === nodeName;
-      const positionMode = !selectedAndFocused || !shouldAnimatePosition
-        ? PositionAnimationModes.DISABLED
-        : PositionAnimationModes.ENABLED;
-      const rotationMode = !selectedAndFocused || !shouldAnimateRotation
-        ? RotationAnimationModes.MODE_IDLE
-        : turntableRotationAnimation ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL;
-      const materialToUpdate = selectedAndFocused ? selectedMaterialRef.current : defaultMaterialRef.current;
+    if (!meshRef.current || !nodeName?.length) return;
 
-      computeMeshScale(cam, clampedDelta, false);
-      computePositionAnimation(positionMode, 0, Math.abs(Math.cos(elapsedTime) * 2), Math.sin(elapsedTime) * 2, clampedDelta);
-      computeRotationAnimation(rotationMode, clampedDelta);
-      easeMaterialProperties(materialToUpdate, clampedDelta);
-      updateDeterministicMaterialProperties(materialToUpdate);
+    const selectedAndFocused = isFocused?.length && isFocused === nodeName;
+    const positionMode = !selectedAndFocused || !shouldAnimatePosition
+      ? PositionAnimationModes.DISABLED
+      : PositionAnimationModes.ENABLED;
+    const rotationMode = !selectedAndFocused || !shouldAnimateRotation
+      ? RotationAnimationModes.MODE_IDLE
+      : (turntableRotationAnimation ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
+    const materialToUpdate = selectedAndFocused ? selectedMaterialRef.current : defaultMaterialRef.current;
 
-      if ((positionMode !== PositionAnimationModes.DISABLED || rotationMode !== RotationAnimationModes.MODE_IDLE) && shouldUpdateWorldMatrix.current === true) {
-        meshRef.current.updateWorldMatrix(true, true);
-      } 
-      else {
-        shouldUpdateWorldMatrix.current = false;
-      }
-    }
+    computeMeshScale(cam, clampedDelta, false);
+    computePositionAnimation(positionMode, 0, positionOffsetY, positionOffsetZ, clampedDelta);
+    computeRotationAnimation(rotationMode, clampedDelta);
+    easeMaterialProperties(materialToUpdate, clampedDelta);
+    updateDeterministicMaterialProperties(materialToUpdate);
   });
 
   return (

@@ -81,6 +81,8 @@ _scratchTransmissionTexture.needsUpdate = true;
 
 export const defaultMeshPhysicalMaterialConfig = {
   color: '#2f2f2f',
+  clearcoat: 0.1,
+  clearcoatRoughness: 1,
   flatShading: false,
   transmission: 0,
   side: THREE.DoubleSide,
@@ -112,21 +114,6 @@ export const defaultMeshPhysicalMaterialConfig = {
 //   transmissionMap: _scratchTransmissionTexture,
 // };
 
-const eggshellMaterial = {
-  color: '#ccc0a3',
-  dispersion: 1,
-  flatShading: false,
-  ior: 1.5,
-  name: 'eggshell',
-  reflectivity: 0.4,
-  roughness: 0.4,
-  side: THREE.DoubleSide,
-  map: _scratchDiffuseTexture,
-  roughnessMap: _scratchRoughnessTexture,
-  bumpMap: _scratchBumpTexture,
-  transmissionMap: _scratchTransmissionTexture,
-};
-
 const glossBlackMaterial = {
   bumpScale: 2,
   color: '#101010',
@@ -154,7 +141,10 @@ const groundMaterial = {
 };
 
 const matteBlackMaterial = {
-  color: '#2f2f2f',
+  bumpScale: 3,
+  color: '#2c2c2c',
+  clearcoat: 0,
+  clearcoatRoughness: 1,
   flatShading: false,
   ior: 1.5,
   name: 'matte_black',
@@ -168,11 +158,12 @@ const matteBlackMaterial = {
 };
 
 const stainedMatteBlackMaterial = {
-  bumpScale: -1,
+  bumpScale: -0.5,
   color: '#4f4f4f',
+  clearcoatRoughness: 1, 
   flatShading: false,
   name: 'stained_matte_black',
-  reflectivity: 0.35,
+  reflectivity: 0.3,
   ior: 1.8,
   roughness: 1,
   side: THREE.DoubleSide,
@@ -183,14 +174,17 @@ const stainedMatteBlackMaterial = {
 };
 
 const translucentGreyMaterial = {
+  bumpScale: 1,
   color: '#949994',
-  dispersion: 2,
+  clearcoat: 0.8,
+  clearcoatRoughness: 0.3,
+  // dispersion: 1,
   flatShading: false,
   ior: 1.5,
   name: 'translucent_grey',
-  reflectivity: 0.4,
-  roughness: 0.25,
-  thickness: 50,
+  reflectivity: 0.25,
+  roughness: 0.3,
+  thickness: 15,
   transmission: 1,
   transparent: true,
   side: THREE.DoubleSide,
@@ -201,18 +195,10 @@ const translucentGreyMaterial = {
 };
 
 const materialState = {
-  eggshell: {
-    displayName: 'Eggshell',
-    tailwindColor: `bg-radial-[at_35%_35%] from-white to-orange-100 to-30%`,
-    material: new THREE.MeshPhysicalMaterial({ ...eggshellMaterial }),
-    materialProps: eggshellMaterial,
-  },
-
   gloss_black: {
     displayName: 'Gloss Black',
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
     material: new THREE.MeshPhysicalMaterial({ ...glossBlackMaterial }),
-    materialProps: glossBlackMaterial,
     textures: {
       bumpMap: '/gloss_material_roughness.jpg',
     },
@@ -222,14 +208,15 @@ const materialState = {
     displayName: 'Ground',
     tailwindColor: `bg-zinc-900`,
     material: new THREE.MeshStandardMaterial({ ...groundMaterial }),
-    materialProps: groundMaterial,
   },
 
   matte_black: {
     displayName: 'Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
     material: new THREE.MeshPhysicalMaterial({ ...matteBlackMaterial }),
-    materialProps: matteBlackMaterial,
+    textures: {
+      bumpMap: '/gloss_material_roughness.jpg',
+    },
   },
 
   stained_matte_black: {
@@ -241,14 +228,12 @@ const materialState = {
       roughnessMap: '/textured_bag_roughness.jpg',
       bumpMap: '/textured_bag_bump.jpg',
     },
-    materialProps: stainedMatteBlackMaterial,
   },
 
   translucent_grey: {
     displayName: 'Translucent Grey',
     tailwindColor: `bg-radial-[at_45%_45%] from-orange-50 from-3% via-stone-600 via-55% to-slate-950 to-95%`,
     material: new THREE.MeshPhysicalMaterial({ ...translucentGreyMaterial }),
-    materialProps: translucentGreyMaterial,
   },
 
   // chipped_stone: {
@@ -297,13 +282,13 @@ const materialStore = (set, get) => ({
       const designatedTextures = materials[material]?.textures;
       if (designatedTextures) {
         const materialToUpdate = materials[material].material;
-        const materialPropsToUpdate = materials[material].materialProps;
+        // const materialPropsToUpdate = materials[material].materialProps;
         for (const materialProperty in designatedTextures) {
           const textureToAssign = textures[designatedTextures[materialProperty]];
           materialToUpdate[materialProperty] = textureToAssign.clone();
           materialToUpdate[materialProperty].flipY = false;
           materialToUpdate[materialProperty].colorSpace = getColorSpace(materialProperty);
-          materialPropsToUpdate[materialProperty] = materialToUpdate[materialProperty];
+          // materialPropsToUpdate[materialProperty] = materialToUpdate[materialProperty];
         }
       }
     }
@@ -341,9 +326,6 @@ export default useMaterial;
   //       ...state.materials,
   //       "translucent": {
   //         ...state.materials.translucent, 
-  //         materialProps: {
-  //           ...state.materials.translucent.materialProps,
-  //         },
   //         material: clone,
   //       }
   //     },

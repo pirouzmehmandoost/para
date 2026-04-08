@@ -13,3 +13,14 @@ export const wrap = (value, min, max) => {
   const range = max - min;
   return ((((value - min) % range) + range) % range) + min;
 }
+
+export const RotationAnimationModes = {
+  MODE_IDLE: 'MODE_IDLE',
+  MODE_TURNTABLE: 'MODE_TURNTABLE',
+  MODE_MANUAL: 'MODE_MANUAL'
+}
+
+export const PositionAnimationModes = {
+  ENABLED: 'ENABLED',
+  DISABLED: 'DISABLED'
+}
