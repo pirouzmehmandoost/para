@@ -117,7 +117,7 @@ const Model = (props) => {
     }
   };
 
-  function computeMeshScale(camera, delta, setOnMount = false) {
+  function updateCameraRelativeScale(camera, delta, setOnMount = false) {
     if (!meshRef.current) return;
 
     const maxBoundingBoxDimension = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
@@ -225,7 +225,7 @@ const Model = (props) => {
     if (meshRef.current) {
       meshRef.current.geometry.computeBoundingBox();
       meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current);
-      computeMeshScale(camera, 0.08, true)
+      updateCameraRelativeScale(camera, 0.08, true)
     }
   }, [scale]);
 
@@ -246,7 +246,7 @@ const Model = (props) => {
       : (turntableRotationAnimation ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
     const materialToUpdate = selectedAndFocused ? selectedMaterialRef.current : defaultMaterialRef.current;
 
-    computeMeshScale(cam, clampedDelta, false);
+    updateCameraRelativeScale(cam, clampedDelta, false);
     computePositionAnimation(positionMode, 0, positionOffsetY, positionOffsetZ, clampedDelta);
     computeRotationAnimation(rotationMode, clampedDelta);
     easeMaterialProperties(materialToUpdate, clampedDelta);
