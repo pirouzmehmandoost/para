@@ -9,13 +9,6 @@ import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/material
 import useSelection from '@stores/selectionStore';
 import { eulerDistance, generalThreshold, largeThreshold, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
 
-THREE.ColorManagement.enabled = true;
-THREE.Cache.enabled = true;
-
-useGLTF.preload('/yoga_mat_strap.glb');
-useGLTF.preload('/textured_bag.glb');
-useGLTF.preload('/sang.glb');
-
 const Model = (props) => {
   const {
     rotationSpeed = 0.5,
@@ -159,8 +152,6 @@ const Model = (props) => {
     if (!animateMaterialRef.current.color.equals(materialToUpdate.color)) easing.dampC(animateMaterialRef.current.color, materialToUpdate.color, 0.3, delta);
 
     if (Math.abs(animateMaterialRef.current.dispersion - materialToUpdate.dispersion) > largeThreshold) easing.damp(animateMaterialRef.current, "dispersion", materialToUpdate.dispersion, 0.3, delta);
-
-    if (Math.abs(animateMaterialRef.current.ior - materialToUpdate.ior) > largeThreshold) easing.damp(animateMaterialRef.current, "ior", materialToUpdate.ior, 0.3, delta);
 
     if (Math.abs(animateMaterialRef.current.reflectivity - materialToUpdate.reflectivity) > largeThreshold) easing.damp(animateMaterialRef.current, "reflectivity", materialToUpdate.reflectivity, 0.3, delta);
 
