@@ -78,7 +78,8 @@ const BasicScene = () => {
       setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
       setIsFocused(clickedName);
     });
-  }, [isFocused, setIsFocused, setMaterialID, setSelection]);
+  }, [isFocused, setIsFocused, setMaterialID]);
+// }, [isFocused, setIsFocused, setMaterialID, setSelection]);
 
   const onSwipe = useCallback((e) => {
     lastSwipeTimeRef.current = Date.now();
@@ -145,7 +146,7 @@ const BasicScene = () => {
               key={nodeName}
               fileData={sceneData.fileData}
               materials={sceneData.materials}
-              name={nodeName}
+              // name={nodeName}
               onClick={handleClick}
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions.current[index]}
