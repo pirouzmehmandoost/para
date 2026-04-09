@@ -91,7 +91,7 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
   };
 
   const MaterialControlsPanel = (
-    <div className='flex flex-col min-40 h-fit p-5 gap-y-1 items-center text-center rounded-4xl backdrop-blur-md backdrop-brightness-200 text-nowrap text-md'>
+    <div className='flex flex-col min-w-40 h-fit p-5 gap-y-1 items-center text-center rounded-4xl backdrop-blur-md backdrop-brightness-200 text-nowrap text-md'>
       <div className='flex flex-row w-full place-content-center justify-center gap-x-3 xs:gap-x-3 sm:gap-x-3 md:gap-x-3 lg:gap-x-5 xl:gap-x-6 2xl:gap-x-6'>
         {materialIDs
           .filter((entry) => Boolean(materials?.[entry]))
