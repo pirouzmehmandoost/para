@@ -112,7 +112,7 @@ const BasicScene = () => {
         shadow-camera-bottom={-250}
         shadow-camera-left={-250}
         shadow-camera-right={250}
-        shadow-mapSize={4096}
+        shadow-mapSize={2048}
       />
       <EffectComposer
         autoClear={false}
@@ -146,7 +146,6 @@ const BasicScene = () => {
               key={nodeName}
               fileData={sceneData.fileData}
               materials={sceneData.materials}
-              // name={nodeName}
               onClick={handleClick}
               onMeshReady={meshReadyHandlers[index]}
               position={meshPositions.current[index]}
