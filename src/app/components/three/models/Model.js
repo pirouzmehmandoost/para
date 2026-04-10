@@ -11,13 +11,13 @@ import { eulerDistance, generalThreshold, largeThreshold, RotationAnimationModes
 
 const Model = (props) => {
   const {
-    rotationSpeed = 0.5,
     fileData: { nodeName = '', url = '' } = {},
-    materials: { defaultMaterialID = '' } = {},
+    materials: { defaultMaterialID = 'matte_black', materialIDs = [], } = {},
     onClick = undefined,
     onMeshReady = undefined,
-    rotation: { x: rx = 0, y: ry = 0, z: rz = 0 } = {},
+    rotation: { x: rx = 0, y: ry = 0, z: rz = 0 } = {}, 
     position: { x: px = 0, y: py = 0, z: pz = 0 } = {},
+    rotationSpeed = 0.5,
     scale = 1,
   } = props;
 
@@ -30,9 +30,10 @@ const Model = (props) => {
   const shouldAnimateRotation = useSelection((state) => state.selection.sceneData.animateRotation);
   const shouldAnimatePosition = useSelection((state) => state.selection.sceneData.animatePosition);
   const shouldAnimateMaterial = useSelection((state) => state.selection.sceneData.animateMaterial);
-  const selectedMaterialID = useSelection((state) => state.selection.materialID);
+  const activeMaterialID = useSelection((state) => state.selection.materialID);
 
-  const materials = useMaterial((state) => state.materials);
+  const getMaterialVariants = useMaterial.getState().getSelectedMaterials;
+  const texturesInitialized = useMaterial((state) => state.texturesInitialized);
 
   const _scratchSizeRef = useRef(new THREE.Vector3());
 
@@ -40,19 +41,19 @@ const Model = (props) => {
 
   const scaleRef = useRef(new THREE.Vector3(0, 0, 0));
 
-  const defaultRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz));
-  const animateRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz));
+  const defaultRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz)); // original rotation.
+  const animateRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz)); // transform rotation
   const rotationModeRef = useRef(null);
 
-  const defaultPositionRef = useRef(new THREE.Vector3(px, py, pz));
-  const animatePositionRef = useRef(new THREE.Vector3(px, py, pz));
+  const defaultPositionRef = useRef(new THREE.Vector3(px, py, pz));  // original rotation.
+  const animatePositionRef = useRef(new THREE.Vector3(px, py, pz));  // transform rotation.
   const positionModeRef = useRef(null);
 
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
   const animateMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
 
-  function computeRotationAnimation(rotationMode, delta) {
+  function updateRotationAnimation(rotationMode, delta) {
     const didModeChange = rotationMode !== rotationModeRef.current;
 
     if (didModeChange) {
@@ -94,7 +95,7 @@ const Model = (props) => {
     rotationModeRef.current = rotationMode;
   };
 
-  function computePositionAnimation(positionMode, xOffset = 0, yOffset = 0, zOffset = 0, delta) {
+  function updatePositionAnimation(positionMode, xOffset = 0, yOffset = 0, zOffset = 0, delta) {
     if (positionMode !== positionModeRef.current) positionModeRef.current = positionMode;
 
     if (positionMode === 'ENABLED') {
@@ -193,6 +194,7 @@ const Model = (props) => {
     if ((animateMaterialRef.current?.transmissionMap && materialToUpdate?.transmissionMap) &&
       animateMaterialRef.current.transmissionMap.uuid !== materialToUpdate.transmissionMap.uuid) {
       animateMaterialRef.current.transmissionMap = materialToUpdate.transmissionMap;
+      animateMaterialRef.current.needsUpdate = true;
     }
   };
 
@@ -206,13 +208,13 @@ const Model = (props) => {
   useLayoutEffect(() => {
     if (meshRef.current) {
       const selectedAndFocused = isFocused?.length && (isFocused === nodeName);
-      const selectedMatID = selectedMaterialID?.length && selectedAndFocused ? selectedMaterialID : defaultMaterialID;
-      const selectedMat = materials[selectedMatID]?.material;
-      selectedMaterialRef.current = selectedMat;
-      const defaultMat = materials[defaultMaterialID]?.material;
-      defaultMaterialRef.current = defaultMat;
+      const selectedMaterialID = activeMaterialID?.length && selectedAndFocused ? activeMaterialID : defaultMaterialID;
+      const materialVariants = getMaterialVariants(materialIDs);
+
+      selectedMaterialRef.current = materialVariants[selectedMaterialID];
+      defaultMaterialRef.current = materialVariants[defaultMaterialID];
     }
-  }, [defaultMaterialID, isFocused, materials, nodeName, selectedMaterialID]);
+  }, [activeMaterialID, defaultMaterialID, isFocused, nodeName, texturesInitialized]);
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -247,8 +249,8 @@ const Model = (props) => {
     const materialToUpdate = selectedAndFocused ? selectedMaterialRef.current : defaultMaterialRef.current;
 
     updateCameraRelativeScale(cam, clampedDelta, false);
-    computePositionAnimation(positionMode, 0, positionOffsetY, positionOffsetZ, clampedDelta);
-    computeRotationAnimation(rotationMode, clampedDelta);
+    updatePositionAnimation(positionMode, 0, positionOffsetY, positionOffsetZ, clampedDelta);
+    updateRotationAnimation(rotationMode, clampedDelta);
     easeMaterialProperties(materialToUpdate, clampedDelta);
     updateDeterministicMaterialProperties(materialToUpdate);
   });

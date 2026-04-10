@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { getColorSpace } from '@utils/materialUtils';
 
 THREE.ColorManagement.enabled = true;
-THREE.Cache.enabled = true;
 
 const createIdempotentFlag = (obj) => Object.keys(obj).sort().join('|');
 
@@ -160,7 +159,7 @@ const matteBlackMaterial = {
 const stainedMatteBlackMaterial = {
   bumpScale: -0.5,
   color: '#4f4f4f',
-  clearcoatRoughness: 1, 
+  clearcoatRoughness: 1,
   flatShading: false,
   name: 'stained_matte_black',
   reflectivity: 0.3,
@@ -178,7 +177,6 @@ const translucentGreyMaterial = {
   color: '#949994',
   clearcoat: 0.8,
   clearcoatRoughness: 0.3,
-  // dispersion: 1,
   flatShading: false,
   ior: 1.5,
   name: 'translucent_grey',
@@ -258,6 +256,38 @@ const materialStore = (set, get) => ({
 
   getMaterials: () => get().materials,
 
+  getSelectedMaterials: (materialIDs = []) => {
+    let invalidIDCount = 0;
+    let invalidIDs = [];
+    let selectedMaterials = {};
+    const warnText = "Warning: getSelectedMaterials() => ";
+    const texturesInitialized = get().texturesInitialized;
+    const materials = get().materials;
+
+    if (!texturesInitialized?.length) {
+      console.warn(warnText + "accessing materials before textures have loaded. Returning {}.");
+      return {};
+    }
+    if (!Array.isArray(materialIDs) || !materialIDs?.length) {
+      console.warn(warnText + "materialIDs should not be an empty array. Returning {}.");
+      return {};
+    }
+
+    for (let i = 0; i < materialIDs.length; i++) {
+      if (materials[materialIDs[i]]?.material) {
+        selectedMaterials[materialIDs[i]] = materials[materialIDs[i]].material;
+      }
+      else {
+        invalidIDCount++;
+        invalidIDs[i] = materialIDs[i];
+      }
+    }
+
+    if (invalidIDCount) console.warn(warnText + invalidIDCount + " invalid material IDs: ", invalidIDs)
+
+    return selectedMaterials;
+  },
+
   getMaterial: (id) => {
     const materials = get().materials;
     if (materials[`${id}`]) return (materials[`${id}`]);
@@ -282,13 +312,11 @@ const materialStore = (set, get) => ({
       const designatedTextures = materials[material]?.textures;
       if (designatedTextures) {
         const materialToUpdate = materials[material].material;
-        // const materialPropsToUpdate = materials[material].materialProps;
         for (const materialProperty in designatedTextures) {
           const textureToAssign = textures[designatedTextures[materialProperty]];
           materialToUpdate[materialProperty] = textureToAssign.clone();
           materialToUpdate[materialProperty].flipY = false;
           materialToUpdate[materialProperty].colorSpace = getColorSpace(materialProperty);
-          // materialPropsToUpdate[materialProperty] = materialToUpdate[materialProperty];
         }
       }
     }
@@ -311,23 +339,23 @@ const useMaterial = create(materialStore);
 
 export default useMaterial;
 
-  // setMeshTransmissionMaterial: (meshTransmissionMaterialObject) => {
-  //   const meshTransitionMaterialInitialized = get().meshTransitionMaterialInitialized;
-  //   if (meshTransitionMaterialInitialized) return;
+// setMeshTransmissionMaterial: (meshTransmissionMaterialObject) => {
+//   const meshTransitionMaterialInitialized = get().meshTransitionMaterialInitialized;
+//   if (meshTransitionMaterialInitialized) return;
 
-  //   const clone = meshTransmissionMaterialObject.clone();
-  //   set((state) => ({
-  //     texturesInitialized: state.texturesInitialized,
-  //     meshTransitionMaterialInitialized: true,
-  //     textures: {
-  //       ...state.textures,
-  //     },
-  //     materials: {
-  //       ...state.materials,
-  //       "translucent": {
-  //         ...state.materials.translucent, 
-  //         material: clone,
-  //       }
-  //     },
-  //   }));
-  // },
+//   const clone = meshTransmissionMaterialObject.clone();
+//   set((state) => ({
+//     texturesInitialized: state.texturesInitialized,
+//     meshTransitionMaterialInitialized: true,
+//     textures: {
+//       ...state.textures,
+//     },
+//     materials: {
+//       ...state.materials,
+//       "translucent": {
+//         ...state.materials.translucent,
+//         material: clone,
+//       }
+//     },
+//   }));
+// },
