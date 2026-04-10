@@ -5,12 +5,49 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
 import cameraConfigs from '@configs/cameraConfigs';
+import { largeThreshold, generalThreshold, eulerDistance } from '@/lib/utils/animationUtils';
+
+/* 
+Potential Redesign: 
+1- keys of meshesInSceneRef are the name field of each scene child. Maybe they should be uuids since those are unique. 
+The idea for using names as keys is to allow overwriting, but this decision may be dangerous.
+
+2- useEffect fires if scene or scene.children mutate, but meshesInSceneRef may hold stale data. if a key in meshesInSceneRef
+matches the name of a child in the scene then the value will be overwritten, but if not then the value is stale. 
+the rig may throw if a child is ever disposed, even though this app doesnt manually dispose children.
+
+3- Determine a way to cut down unnecessary calls to camera.updateMatrixWorld();
+
+4- The if-else logic in useFrame() needs revision. 
+
+5- Selectively calculate the center of each target's bounding box. 
+For meshes and groups, it may be necessary to recompute the Box3 center position for the rig to orient the camera correctly
+but if meshesInSceneRef changes to store something that isnt then it becomes overhead (lights, etc). 
+
+6- Add focusTarget to meshesInSceneRef it there no existing reference targets. 
+If the intent is to use SceneRig and only focus on a single target, focusTarget may be non-null and targets may initialize to [].
+If focusTarget is not in targets maybe it should be added. Although in BasicScene focusTarget and one element in targets point to the Mesh. 
+
+    // Check if focusTarget is not null. 
+    // const isFocusTargetinTargets = focusTarget && focusTarget?.uuid?.length 
+    //   ? targets.some(({ uuid='' }) => uuid?.length && focusTarget.uuid === uuid ) 
+    //   : false;
+
+    // if (!isFocusTargetinTargets) {
+    //   sceneChildrenRef.current[focusTarget.uuid] = {
+    //     target: focusTarget,
+    //     index: Object.entries(sceneChildrenRef.current)?.length ?? 0,
+    //     name: focusTarget?.name,
+    //   };
+    // }
+*/
+
 
 const SceneRig = ({
-  focusTarget = null,
-  onSwipe = undefined,
-  fallbackPositions = [],
-  targets = [],
+  focusTarget = null, // optional Object3D to isolate focus on.
+  onSwipe = undefined, // optional callback
+  fallbackPositions = [], // array of Vector3
+  targets = [], // array of Object3D refs.
 }) => {
 
   const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS, POSITION } = cameraConfigs;
@@ -35,11 +72,9 @@ const SceneRig = ({
   const defaultFallbackPositionRef = useRef(new THREE.Vector3(POSITION[0], POSITION[1], POSITION[2]));
 
   const targetIndexRef = useRef(0);
-  // const nameToIndexMapRef = useRef({});
   const meshesInSceneRef = useRef({});
 
   useEffect(() => {
-    const map = {};
     const meshesInScene = {};
 
     scene.traverse((object) => { if (object.isMesh) meshesInScene[`${object.name}`] = object });
@@ -50,12 +85,10 @@ const SceneRig = ({
         const foundTargetInScene = meshesInScene[targetName] || null;
         
         if (foundTargetInScene) {
-          // map[targetName] = i;
           meshesInSceneRef.current[targetName] = { target: foundTargetInScene, index: i, targetName };
         }
       }
     }
-    // nameToIndexMapRef.current = map;
   }, [targets, scene, scene.children]);
 
 
@@ -134,7 +167,7 @@ const SceneRig = ({
 
       const key = targets[i]?.name;
       const exists = meshesInSceneRef.current[key].target?.name;
-      if (exists?.length && typeof targets[i]['updateWorldMatrix'] === 'function') meshesInSceneRef.current[key].target.updateWorldMatrix(true, true);
+      if (exists?.length && typeof targets[i]['updateWorldMatrix'] === 'function') meshesInSceneRef.current[key].target.updateWorldMatrix(true, false);
 
       _scratchBoxRef.current.setFromObject(meshesInSceneRef.current[key].target).getCenter(_scratchCenterRef.current);
       cameraStopPositionsRef.current[i].copy(_scratchCenterRef.current);
@@ -151,12 +184,16 @@ const SceneRig = ({
   }, [targets, fallbackPositions]);
 
   useFrame(({ camera, clock }, delta) => {
+    const elapsedTime = clock.elapsedTime;
+    const xOffset = Math.sin(elapsedTime);
+    const yOffset = -2 * xOffset;
+    const zOffset = POSITION[2] + xOffset;
+    const clampedDelta = Math.min(delta, 0.08);
+
     if (targetIndexRef.current >= cameraStopPositionsRef.current.length || targetIndexRef.current < 0) targetIndexRef.current = 0;
     if (cameraStopPositionsRef.current.length === 0) return;
 
     let nextPosition = cameraStopPositionsRef.current[0];
-    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
-    const elapsedTime = clock.elapsedTime;
     const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
@@ -180,27 +217,22 @@ const SceneRig = ({
     const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName); 
 
     if (isTargetInScene && meshInScene.isObject3D) {
-      if (meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, true);
+      camera.updateMatrixWorld();
+      if (meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
 
-       _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
+      _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
       nextPosition = _scratchCenterRef.current;
     }
     else {
       nextPosition = cameraStopPositionsRef.current[targetIndexRef.current];
     }
 
-    const sine = Math.sin(elapsedTime);
-    const yOffset = -2 * sine;
-    const zOffset = POSITION[2] + sine;
-
     currentCameraPositionRef.current.copy(camera.position);
-    // camera.lookAt(currentCameraPositionRef.current);
-    nextCameraPositionRef.current.set(nextPosition.x + sine, nextPosition.y + yOffset, nextPosition.z + zOffset);
-    cameraTargetRef.current.set(currentCameraPositionRef.current.x, currentCameraPositionRef.current.y, currentCameraPositionRef.current.z-1);
-    camera.lookAt(cameraTargetRef.current);
-
+    camera.lookAt(currentCameraPositionRef.current);
+    nextCameraPositionRef.current.set(nextPosition.x + xOffset, nextPosition.y + yOffset, nextPosition.z + zOffset);
+    // cameraTargetRef.current.set(currentCameraPositionRef.current.x, currentCameraPositionRef.current.y, currentCameraPositionRef.current.z-POSITION[2]);
+    // camera.lookAt(cameraTargetRef.current);
     easing.damp3(camera.position, nextCameraPositionRef.current, 1, clampedDelta);
-    camera.updateMatrixWorld();
   });
 };
 
