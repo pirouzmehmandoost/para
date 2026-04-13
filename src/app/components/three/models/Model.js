@@ -176,19 +176,23 @@ const Model = (props) => {
       animateMaterialRef.current.needsUpdate = true;
     }
 
+    // NOTE: For now, map slots on animatedMaterialRef.current are never non-null (see materialStore.js) set needsUpdate anyway.
     if (animateMaterialRef.current?.bumpMap &&
       animateMaterialRef.current.bumpMap.uuid !== materialToUpdate.bumpMap?.uuid) {
       animateMaterialRef.current.bumpMap = materialToUpdate?.bumpMap;
+      animateMaterialRef.current.needsUpdate = true;
     }
 
     if ((animateMaterialRef.current?.map && materialToUpdate?.map) &&
       animateMaterialRef.current.map.uuid !== materialToUpdate.map.uuid) {
       animateMaterialRef.current.map = materialToUpdate.map;
+      animateMaterialRef.current.needsUpdate = true;
     }
 
     if ((animateMaterialRef.current?.roughnessMap && materialToUpdate?.roughnessMap) &&
       animateMaterialRef.current.roughnessMap.uuid !== materialToUpdate.roughnessMap.uuid) {
       animateMaterialRef.current.roughnessMap = materialToUpdate.roughnessMap;
+      animateMaterialRef.current.needsUpdate = true;
     }
 
     if ((animateMaterialRef.current?.transmissionMap && materialToUpdate?.transmissionMap) &&
@@ -201,6 +205,7 @@ const Model = (props) => {
   useEffect(() => {
     if (meshRef.current) {
       animateMaterialRef.current.copy(defaultMaterialRef.current);
+      animateMaterialRef.current.needsUpdate = true; // guarantee material version bump.
       if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
     }
   }, [onMeshReady]);
