@@ -15,7 +15,7 @@ const Model = (props) => {
     materials: { defaultMaterialID = 'matte_black', materialIDs = [], } = {},
     onClick = undefined,
     onMeshReady = undefined,
-    rotation: { x: rx = 0, y: ry = 0, z: rz = 0 } = {}, 
+    rotation: { x: rx = 0, y: ry = 0, z: rz = 0 } = {},
     position: { x: px = 0, y: py = 0, z: pz = 0 } = {},
     rotationSpeed = 0.5,
     scale = 1,
@@ -52,6 +52,40 @@ const Model = (props) => {
   const selectedMaterialRef = useRef(null);
   const defaultMaterialRef = useRef(null);
   const animateMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
+
+  useEffect(() => {
+    if (meshRef.current) {
+      animateMaterialRef.current.copy(defaultMaterialRef.current);
+      animateMaterialRef.current.needsUpdate = true; // guarantee material version bump.
+      if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
+    }
+  }, [onMeshReady]);
+
+  useLayoutEffect(() => {
+    if (meshRef.current) {
+      const selectedAndFocused = isFocused?.length && (isFocused === nodeName);
+      const selectedMaterialID = activeMaterialID?.length && selectedAndFocused ? activeMaterialID : defaultMaterialID;
+      const materialVariants = getMaterialVariants(materialIDs);
+
+      selectedMaterialRef.current = materialVariants[selectedMaterialID];
+      defaultMaterialRef.current = materialVariants[defaultMaterialID];
+    }
+  }, [activeMaterialID, defaultMaterialID, isFocused, nodeName, texturesInitialized]);
+
+  useLayoutEffect(() => {
+    if (meshRef.current) {
+      defaultPositionRef.current.set(px, py, pz)
+      meshRef.current.position.copy(defaultPositionRef.current);
+    }
+  }, [px, py, pz]);
+
+  useLayoutEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.geometry.computeBoundingBox();
+      meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current);
+      updateCameraRelativeScale(camera, 0.08, true)
+    }
+  }, [scale]);
 
   function updateRotationAnimation(rotationMode, delta) {
     const didModeChange = rotationMode !== rotationModeRef.current;
@@ -202,45 +236,11 @@ const Model = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (meshRef.current) {
-      animateMaterialRef.current.copy(defaultMaterialRef.current);
-      animateMaterialRef.current.needsUpdate = true; // guarantee material version bump.
-      if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
-    }
-  }, [onMeshReady]);
-
-  useLayoutEffect(() => {
-    if (meshRef.current) {
-      const selectedAndFocused = isFocused?.length && (isFocused === nodeName);
-      const selectedMaterialID = activeMaterialID?.length && selectedAndFocused ? activeMaterialID : defaultMaterialID;
-      const materialVariants = getMaterialVariants(materialIDs);
-
-      selectedMaterialRef.current = materialVariants[selectedMaterialID];
-      defaultMaterialRef.current = materialVariants[defaultMaterialID];
-    }
-  }, [activeMaterialID, defaultMaterialID, isFocused, nodeName, texturesInitialized]);
-
-  useLayoutEffect(() => {
-    if (meshRef.current) {
-      defaultPositionRef.current.set(px, py, pz)
-      meshRef.current.position.copy(defaultPositionRef.current);
-    }
-  }, [px, py, pz]);
-
-  useLayoutEffect(() => {
-    if (meshRef.current) {
-      meshRef.current.geometry.computeBoundingBox();
-      meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current);
-      updateCameraRelativeScale(camera, 0.08, true)
-    }
-  }, [scale]);
-
   useFrame(({ clock, camera: cam }, delta) => {
     const clampedDelta = Math.min(delta, 0.08);
     const elapsedTime = clock.elapsedTime;
-    const positionOffsetY =  Math.abs(Math.cos(elapsedTime) * 2);
-    const positionOffsetZ =  Math.sin(elapsedTime) * 2;
+    const positionOffsetY = Math.abs(Math.cos(elapsedTime) * 2);
+    const positionOffsetZ = Math.sin(elapsedTime) * 2;
 
     if (!meshRef.current || !nodeName?.length) return;
 
