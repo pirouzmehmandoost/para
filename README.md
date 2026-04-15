@@ -13,18 +13,19 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 ## 1. Materials and Textures
 
 - The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
-- I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`BasicModel`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
+- I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`Model`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
 - Instead, predefined material definitions live in the Zustand store `src/app/stores/materialStore.js`. That store acts as a registry for reusable material instances, texture assignments, and related material metadata. Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed for a given mesh, and choose a default.
-- `selectionStore.js` is responsible for the active UI selection state, including which `materialID` is currently selected for the focused mesh. When a user changes materials in the UI, `selectionStore` updates that active `materialID`, and `BasicModel` resolves it against the predefined materials in `materialStore` before interpolating the rendered mesh material toward the selected finish.
+- `selectionStore.js` is responsible for the active UI selection state, including which `materialID` is currently selected for the focused mesh. When a user changes materials in the UI, `selectionStore` updates that active `materialID`, and `Model` resolves it against the predefined materials in `materialStore` before interpolating the rendered mesh material toward the selected finish.
 - This structure gives material properties and texture assignments a single home, keeps project configuration separate from rendering logic, keeps texture-loading logic out of the scene's mesh components, and allows users to switch between intended finishes with smooth transitions instead of abrupt material swaps. Material definitions could also be shared across scenes if needed.
 
 Interact with the live app [here](https://para-pi.vercel.app/). 
 
 ## 2. Dynamic Mesh Positioning
 
+**this section is old. The components referenced are no longer in use or no longer exist.** 
 - After initial render, the position of a mesh is validated to ensure that no vertices intersect with a designated "ground" mesh, if it's defined. If there is intersection, it's translated up along the y-axis. There is no per-frame overhead since calculations only perform once. After rendering, the React Three Fiber component is forced to re-render if the mesh must be repositioned.
 
-- This is implementation is WIP in `DynamicPositioningModel.js` and for now `BasicModel.js` is used instead.
+- This was a WIP implementation in `DynamicPositioningModel.js`, but `Model.js` is used instead.
 
   #### High level overview
   - Dimensions of a mesh's bounding box are derived. 
@@ -84,7 +85,7 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 
 ## 3. Animated Camera Rigs
 
-- ### Better description soon, this is a rough draft:
+**This documentation is old and AnimatedRig.js wss replaced with SceneRig.js. Will update soon.**
 
 - Rigs in this project control a Three.js scene's camera (here it's a perspective camera), moving it along a circular path from one stopping position to another.
 - The stopping positons are center-front of an object.
@@ -115,10 +116,10 @@ Interact with the live app [here](https://para-pi.vercel.app/).
 
 - Following props are govern their relationships: 
   - **Rigs** 
-    - Prop: _targets_: 
+   ~~- Prop: _targets_: 
       - This is optional.
       - It is An array of Object3D refs. Scenes Own this and declare it as _meshRefs_. 
-      - Each element is owned by a Model and declared internally as _meshRef_. It's defined when Models render and thus add geometry the Three.js scene.
+      - Each element is owned by a Model and declared internally as _meshRef_. It's defined when Models render and thus add geometry the Three.js scene.~~
       - These refs used to calculate the camera's target(s) as well as offset positions for the camera.
     - Prop: _fallbackPositions_:
       - This is optional. 
