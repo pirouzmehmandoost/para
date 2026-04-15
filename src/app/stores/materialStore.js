@@ -2,8 +2,6 @@ import { create } from 'zustand';
 import * as THREE from 'three';
 import { getColorSpace } from '@utils/materialUtils';
 
-THREE.ColorManagement.enabled = true;
-
 const createIdempotentFlag = (obj) => Object.keys(obj).sort().join('|');
 
 // Uint8Arrays with pixel data (R, G, B, A for each pixel)
@@ -11,9 +9,7 @@ const width = 32;
 const height = 32;
 const size = width * height;
 const bumpData = new Uint8Array(4 * size);
-// const clearcoatData = new Uint8Array(4 * size);
-// const clearcoatRoughnessData = new Uint8Array(4 * size);
-const diffusedata = new Uint8Array(4 * size);
+const diffuseData = new Uint8Array(4 * size);
 const roughnessData = new Uint8Array(4 * size);
 const transmissionData = new Uint8Array(4 * size);
 
@@ -22,20 +18,10 @@ bumpData.fill(0);
 for (let i = 0; i < size; i++) {
   const stride = i * 4;
 
-  // clearcoatData[stride] = 255;
-  // clearcoatData[stride + 1] = 255;
-  // clearcoatData[stride + 2] = 255;
-  // clearcoatData[stride + 3] = 255;
-
-  // clearcoatRoughnessData[stride] = 255;
-  // clearcoatRoughnessData[stride + 1] = 255;
-  // clearcoatRoughnessData[stride + 2] = 255;
-  // clearcoatRoughnessData[stride + 3] = 255;
-
-  diffusedata[stride] = 255;
-  diffusedata[stride + 1] = 255;
-  diffusedata[stride + 2] = 255;
-  diffusedata[stride + 3] = 255;
+  diffuseData[stride] = 255;
+  diffuseData[stride + 1] = 255;
+  diffuseData[stride + 2] = 255;
+  diffuseData[stride + 3] = 255;
 
   roughnessData[stride] = 255;
   roughnessData[stride + 1] = 255;
@@ -53,17 +39,7 @@ _scratchBumpTexture.name = '_scratchBumpTexture';
 _scratchBumpTexture.colorSpace = THREE.NoColorSpace;
 _scratchBumpTexture.needsUpdate = true;
 
-// const _scratchClearcoatTexture = new THREE.DataTexture(clearcoatData, width, height);
-// _scratchClearcoatTexture.name = '_scratchClearcoatTexture';
-// _scratchClearcoatTexture.colorSpace = THREE.NoColorSpace;
-// _scratchClearcoatTexture.needsUpdate = true;
-
-// const _scratchClearcoatRoughnessTexture = new THREE.DataTexture(clearcoatRoughnessData, width, height);
-// _scratchClearcoatRoughnessTexture.name = '_scratchClearcoatRoughnessTexture';
-// _scratchClearcoatRoughnessTexture.colorSpace = THREE.NoColorSpace;
-// _scratchClearcoatRoughnessTexture.needsUpdate = true;
-
-const _scratchDiffuseTexture = new THREE.DataTexture(diffusedata, width, height);
+const _scratchDiffuseTexture = new THREE.DataTexture(diffuseData, width, height);
 _scratchDiffuseTexture.name = '_scratchDiffuseTexture';
 _scratchDiffuseTexture.colorSpace = THREE.SRGBColorSpace;
 _scratchDiffuseTexture.needsUpdate = true;
@@ -93,22 +69,7 @@ export const defaultMeshPhysicalMaterialConfig = {
   transmissionMap: _scratchTransmissionTexture,
 };
 
-const glossBlackMaterial = {
-  bumpScale: 2,
-  color: '#101010',
-  flatShading: false,
-  ior: 1.5,
-  name: 'gloss_black',
-  reflectivity: 0.35,
-  roughness: 0.375,
-  side: THREE.DoubleSide,
-  map: _scratchDiffuseTexture,
-  roughnessMap: _scratchRoughnessTexture,
-  bumpMap: _scratchBumpTexture,
-  transmissionMap: _scratchTransmissionTexture,
-};
-
-const groundMaterial = {
+const defaultMeshStandardMaterialConfig = {
   color: '#101010',
   flatShading: false,
   metalness: 0.8,
@@ -116,67 +77,89 @@ const groundMaterial = {
   roughness: 1,
   side: THREE.DoubleSide,
   transparent: true,
-  name: 'ground',
 };
 
-const matteBlackMaterial = {
-  bumpScale: 3,
-  color: '#2c2c2c',
-  clearcoat: 0,
-  clearcoatRoughness: 1,
-  flatShading: false,
-  ior: 1.5,
-  name: 'matte_black',
-  reflectivity: 0.35,
-  roughness: 0.75,
-  side: THREE.DoubleSide,
-  map: _scratchDiffuseTexture,
-  roughnessMap: _scratchRoughnessTexture,
-  bumpMap: _scratchBumpTexture,
-  transmissionMap: _scratchTransmissionTexture,
+const meshPhysicalMaterialConfigs = {
+  glossBlackMaterial: {
+    bumpScale: 2,
+    color: '#101010',
+    flatShading: false,
+    ior: 1.5,
+    name: 'gloss_black',
+    reflectivity: 0.35,
+    roughness: 0.375,
+    side: THREE.DoubleSide,
+  },
+
+  matteBlackMaterial: {
+    bumpScale: 3,
+    color: '#2c2c2c',
+    clearcoat: 0,
+    clearcoatRoughness: 1,
+    flatShading: false,
+    ior: 1.5,
+    name: 'matte_black',
+    reflectivity: 0.35,
+    roughness: 0.75,
+    side: THREE.DoubleSide,
+  },
+
+  stainedMatteBlackMaterial: {
+    bumpScale: -0.5,
+    color: '#4f4f4f',
+    clearcoatRoughness: 1,
+    flatShading: false,
+    name: 'stained_matte_black',
+    reflectivity: 0.3,
+    ior: 1.8,
+    roughness: 1,
+    side: THREE.DoubleSide,
+  },
+
+  translucentGreyMaterial: {
+    bumpScale: 1,
+    color: '#949994',
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.3,
+    flatShading: false,
+    ior: 1.5,
+    name: 'translucent_grey',
+    reflectivity: 0.25,
+    roughness: 0.3,
+    thickness: 15,
+    transmission: 1,
+    transparent: true,
+    side: THREE.DoubleSide,
+  },
 };
 
-const stainedMatteBlackMaterial = {
-  bumpScale: -0.5,
-  color: '#4f4f4f',
-  clearcoatRoughness: 1,
-  flatShading: false,
-  name: 'stained_matte_black',
-  reflectivity: 0.3,
-  ior: 1.8,
-  roughness: 1,
-  side: THREE.DoubleSide,
-  bumpMap: _scratchBumpTexture,
-  map: _scratchDiffuseTexture,
-  roughnessMap: _scratchRoughnessTexture,
-  transmissionMap: _scratchTransmissionTexture,
-};
+for (const materialConfig in meshPhysicalMaterialConfigs) {
+  meshPhysicalMaterialConfigs[materialConfig].bumpMap = new THREE.DataTexture(bumpData, width, height);
+  meshPhysicalMaterialConfigs[materialConfig].bumpMap.name = '_scratchBumpTexture';
+  meshPhysicalMaterialConfigs[materialConfig].bumpMap.colorSpace = THREE.NoColorSpace;
+  meshPhysicalMaterialConfigs[materialConfig].bumpMap.needsUpdate = true;
 
-const translucentGreyMaterial = {
-  bumpScale: 1,
-  color: '#949994',
-  clearcoat: 0.8,
-  clearcoatRoughness: 0.3,
-  flatShading: false,
-  ior: 1.5,
-  name: 'translucent_grey',
-  reflectivity: 0.25,
-  roughness: 0.3,
-  thickness: 15,
-  transmission: 1,
-  transparent: true,
-  side: THREE.DoubleSide,
-  map: _scratchDiffuseTexture,
-  roughnessMap: _scratchRoughnessTexture,
-  bumpMap: _scratchBumpTexture,
-  transmissionMap: _scratchTransmissionTexture,
-};
+  meshPhysicalMaterialConfigs[materialConfig].map = new THREE.DataTexture(diffuseData, width, height);
+  meshPhysicalMaterialConfigs[materialConfig].map.name = '_scratchDiffuseTexture';
+  meshPhysicalMaterialConfigs[materialConfig].map.colorSpace = THREE.SRGBColorSpace;
+  meshPhysicalMaterialConfigs[materialConfig].map.needsUpdate = true;
+
+  meshPhysicalMaterialConfigs[materialConfig].roughnessMap = new THREE.DataTexture(roughnessData, width, height);
+  meshPhysicalMaterialConfigs[materialConfig].roughnessMap.name = '_scratchRoughnessTexture';
+  meshPhysicalMaterialConfigs[materialConfig].roughnessMap.colorSpace = THREE.NoColorSpace;
+  meshPhysicalMaterialConfigs[materialConfig].roughnessMap.needsUpdate = true;
+
+  meshPhysicalMaterialConfigs[materialConfig].transmissionMap = new THREE.DataTexture(transmissionData, width, height);
+  meshPhysicalMaterialConfigs[materialConfig].transmissionMap.name = '_scratchTransmissionTexture';
+  meshPhysicalMaterialConfigs[materialConfig].transmissionMap.colorSpace = THREE.NoColorSpace;
+  meshPhysicalMaterialConfigs[materialConfig].transmissionMap.needsUpdate = true;
+}
 
 const materialState = {
   gloss_black: {
     displayName: 'Gloss Black',
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
-    material: new THREE.MeshPhysicalMaterial({ ...glossBlackMaterial }),
+    material: new THREE.MeshPhysicalMaterial({ ...meshPhysicalMaterialConfigs.glossBlackMaterial }),
     textures: {
       bumpMap: '/gloss_material_roughness.jpg',
     },
@@ -185,13 +168,13 @@ const materialState = {
   ground: {
     displayName: 'Ground',
     tailwindColor: `bg-zinc-900`,
-    material: new THREE.MeshStandardMaterial({ ...groundMaterial }),
+    material: new THREE.MeshStandardMaterial({ ...defaultMeshStandardMaterialConfig, name: 'ground', }),
   },
 
   matte_black: {
     displayName: 'Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
-    material: new THREE.MeshPhysicalMaterial({ ...matteBlackMaterial }),
+    material: new THREE.MeshPhysicalMaterial({ ...meshPhysicalMaterialConfigs.matteBlackMaterial }),
     textures: {
       bumpMap: '/gloss_material_roughness.jpg',
     },
@@ -200,7 +183,7 @@ const materialState = {
   stained_matte_black: {
     displayName: 'Stained Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
-    material: new THREE.MeshPhysicalMaterial({ ...stainedMatteBlackMaterial }),
+    material: new THREE.MeshPhysicalMaterial({ ...meshPhysicalMaterialConfigs.stainedMatteBlackMaterial }),
     textures: {
       map: '/textured_bag_color.jpg',
       roughnessMap: '/textured_bag_roughness.jpg',
@@ -211,31 +194,28 @@ const materialState = {
   translucent_grey: {
     displayName: 'Translucent Grey',
     tailwindColor: `bg-radial-[at_45%_45%] from-orange-50 from-3% via-stone-600 via-55% to-slate-950 to-95%`,
-    material: new THREE.MeshPhysicalMaterial({ ...translucentGreyMaterial }),
+    material: new THREE.MeshPhysicalMaterial({ ...meshPhysicalMaterialConfigs.translucentGreyMaterial }),
   },
 };
 
-const textureState = {};
-
 const materialStore = (set, get) => ({
   materials: materialState,
-  textures: textureState,
   texturesInitialized: '',
 
   getSelectedMaterials: (materialIDs = []) => {
     let invalidIDCount = 0;
-    let invalidIDs = [];
-    let selectedMaterials = {};
-    const warnText = "Warning: getSelectedMaterials() => ";
+    const invalidIDs = [];
+    const selectedMaterials = {};
     const texturesInitialized = get().texturesInitialized;
     const materials = get().materials;
 
     if (!texturesInitialized?.length) {
-      console.warn(warnText + "accessing materials before textures have loaded. Returning {}.");
+      console.warn("Warning: getSelectedMaterials() => Accessing materials before textures have loaded. Returning {}.");
       return {};
     }
+
     if (!Array.isArray(materialIDs) || !materialIDs?.length) {
-      console.warn(warnText + "materialIDs should not be an empty array. Returning {}.");
+      console.warn("Warning: getSelectedMaterials() => materialIDs should not be an empty array. Returning {}.");
       return {};
     }
 
@@ -245,16 +225,17 @@ const materialStore = (set, get) => ({
       }
       else {
         invalidIDCount++;
-        invalidIDs[i] = materialIDs[i];
+        invalidIDs.push(materialIDs[i]);
       }
     }
 
-    if (invalidIDCount) console.warn(warnText + invalidIDCount + " invalid material IDs: ", invalidIDs)
+    if (invalidIDCount) console.warn("Warning: getSelectedMaterials() => " + invalidIDCount + " invalid material IDs: ", invalidIDs);
 
     return selectedMaterials;
   },
 
   setMaterialTextures: (textures) => {
+    const staged = [];
     const materials = get().materials;
     const texturesInitialized = get().texturesInitialized;
     const initialized = createIdempotentFlag(textures);
@@ -263,27 +244,30 @@ const materialStore = (set, get) => ({
 
     for (const material in materials) {
       const designatedTextures = materials[material]?.textures;
-      if (designatedTextures) {
-        const materialToUpdate = materials[material].material;
-        for (const materialProperty in designatedTextures) {
-          const textureToAssign = textures[designatedTextures[materialProperty]];
-          materialToUpdate[materialProperty] = textureToAssign.clone();
-          materialToUpdate[materialProperty].flipY = false;
-          materialToUpdate[materialProperty].colorSpace = getColorSpace(materialProperty);
+      if (!designatedTextures) continue;
+      for (const materialProperty in designatedTextures) {
+        const textureToAssign = textures[designatedTextures[materialProperty]] ?? null;
+        if (!textureToAssign || !textureToAssign.isTexture) {
+          console.warn(`Warning: setMaterialTextures() => Missing or invalid texture for material "${material}", property "${materialProperty}". Got:`, textureToAssign);
+          return;
         }
+        staged.push({
+          target: materials[material].material,
+          property: materialProperty,
+          texture: textureToAssign
+        });
       }
     }
 
-    set((state) => ({
+    for (const { target, property, texture } of staged) {
+      target[property] = texture.clone();
+      target[property].flipY = false;
+      target[property].colorSpace = getColorSpace(property);
+    }
+
+    set(() => ({
       texturesInitialized: initialized,
-      textures: {
-        ...state.textures,
-        ...textures
-      },
-      materials: {
-        ...state.materials,
-        ...materials
-      },
+      materials: { ...materials },
     }));
   },
 });
@@ -291,24 +275,3 @@ const materialStore = (set, get) => ({
 const useMaterial = create(materialStore);
 
 export default useMaterial;
-
-// setMeshTransmissionMaterial: (meshTransmissionMaterialObject) => {
-//   const meshTransitionMaterialInitialized = get().meshTransitionMaterialInitialized;
-//   if (meshTransitionMaterialInitialized) return;
-
-//   const clone = meshTransmissionMaterialObject.clone();
-//   set((state) => ({
-//     texturesInitialized: state.texturesInitialized,
-//     meshTransitionMaterialInitialized: true,
-//     textures: {
-//       ...state.textures,
-//     },
-//     materials: {
-//       ...state.materials,
-//       "translucent": {
-//         ...state.materials.translucent,
-//         material: clone,
-//       }
-//     },
-//   }));
-// },
