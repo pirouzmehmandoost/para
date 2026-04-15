@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-THREE.ColorManagement.enabled = true;
 
 export const getColorSpace = (property) => {
   switch (property) {

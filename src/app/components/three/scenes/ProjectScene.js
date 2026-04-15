@@ -10,9 +10,6 @@
 // // import SimpleCameraRig from '../cameras/SimpleCameraRig';
 // import useSelection from '@stores/selectionStore';
 
-// THREE.ColorManagement.enabled = true;
-// THREE.Cache.enabled = true;
-
 // const cloudProps = (i) => {
 //   return {
 //     color: 'black',

@@ -15,9 +15,6 @@
 // import Ground from '../models/Ground';
 // import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 
-// THREE.Cache.enabled = true;
-// THREE.ColorManagement.enabled = true;
-
 // const { projects } = portfolio;
 
 // const ComplexScene = () => {

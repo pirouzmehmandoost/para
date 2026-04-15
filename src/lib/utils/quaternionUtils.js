@@ -1,23 +1,49 @@
-import { Euler, Matrix4, Quaternion } from 'three';
+import * as THREE from 'three';
+const _scratchMatrix = new THREE.Matrix4();
+const _scratchQuat = new THREE.Quaternion();
+const _scratchEuler = new THREE.Euler();
+const _dir = new THREE.Vector3();
+const _deltaQuat = new THREE.Quaternion();
+const _targetQuat = new THREE.Quaternion();
+const _targetYawQuat = new THREE.Quaternion();
+const _up = new THREE.Vector3(0, 1, 0);
 
-const _scratchMatrix = new Matrix4();
-const _scratchQuat = new Quaternion();
-const _scratchEuler = new Euler();
 
 // euler.x = pitch (up/down tilt) 
 // euler.y = yaw (left/right turn)
 // euler.z = roll (tilt left/right)
-export function dampCameraLookAt(camera, targetPoint, smoothTime, delta, pitchFactor = null, yawFactor = null, rollFactor = null) {
+export function dampCameraLookAt(
+  camera,
+  targetPoint,
+  smoothTime,
+  delta,
+  pitchFactor = null,
+  yawFactor = null,
+  rollFactor = null
+) {
   const st = Math.max(1e-4, smoothTime);
   const t = 1 - Math.exp((-2 * delta) / st);
+
+  // Horizontal direction camera -> target
+  _dir.copy(targetPoint).sub(camera.position);
+  _dir.y = 0;
+
+  // If target is directly above/below, keep current orientation
+  if (_dir.lengthSq() < 1e-8) return;
+
+  _dir.normalize();
+
+  // Target yaw around world up: atan2(x, z) matches three.js forward
+  // const targetYaw = Math.atan2(_dir.x, _dir.z);
 
   _scratchMatrix.lookAt(camera.position, targetPoint, camera.up);
   _scratchQuat.setFromRotationMatrix(_scratchMatrix);
   _scratchEuler.setFromQuaternion(_scratchQuat);
-  
+
   // Constrain angles if numeric values are provided
   if (typeof pitchFactor === 'number') _scratchEuler.x *= pitchFactor;
-  if (typeof yawFactor === 'number') _scratchEuler.y *= yawFactor;
+
+  if (typeof yawFactor === 'number')  _scratchEuler.y = Math.max(-1 * yawFactor, Math.min(yawFactor, _scratchEuler.y));//_scratchEuler.y *= yawFactor;
   if (typeof rollFactor === 'number') _scratchEuler.z *= rollFactor;
 
   _scratchQuat.setFromEuler(_scratchEuler);
@@ -92,9 +118,6 @@ const _up = new Vector3(0, 1, 0);
 // }
 
 
-
-
-
 export function dampCameraLookAt(camera, targetPoint, smoothTime, delta, pitchLimit = null, yawLimit = null, rollLimit = null) {
   const st = Math.max(1e-4, smoothTime);
   const t = 1 - Math.exp((-2 * delta) / st);
@@ -112,7 +135,7 @@ export function dampCameraLookAt(camera, targetPoint, smoothTime, delta, pitchLi
   const targetYaw = Math.atan2(_dir.x, _dir.z);
 
   // Current yaw from camera forward projected to XZ
-  const forward = new Vector3(0, 0, 1).applyQuaternion(camera.quaternion);
+  const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion);
   forward.y = 0;
   forward.normalize();
   const currentYaw = Math.atan2(forward.x, forward.z);
@@ -132,8 +155,4 @@ export function dampCameraLookAt(camera, targetPoint, smoothTime, delta, pitchLi
 
   camera.quaternion.slerp(_scratchQuat, t);
 }
-
-
-
-
 */

@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, Html } from '@react-three/drei';
+import { Environment, Html, useGLTF} from '@react-three/drei';
 import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import BasicScene from '../scenes/BasicScene';
@@ -12,9 +12,14 @@ import BasicScene from '../scenes/BasicScene';
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
 
+useGLTF.preload('/yoga_mat_strap.glb');
+useGLTF.preload('/textured_bag.glb');
+useGLTF.preload('/sang.glb');
+useGLTF.preload('/env_ground_3-transformed.glb');
+
 export const Loader = () => {
   return (
-    <Html center className='text-black text-nowrap text-5xl animate-pulse'>
+    <Html center className='text-black text-nowrap text-5xl'>
       Loading...
     </Html>
   );
@@ -33,9 +38,10 @@ export const RootCanvas = () => {
   return (
     <div className={`fixed inset-0 bg-[${envColor}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       <Canvas
+        dpr={[1, 1.5]}
         frameloop={interactive ? 'always' : 'demand'}
         gl={{ antialias: true }}
-        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 5 }}
+        camera={{ position: [0, 666, 666], near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 15 }}
         fallback={<div> Sorry, WebGL is not supported. </div>}
         orthographic={false}
         shadows

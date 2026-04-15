@@ -4,16 +4,34 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
-import { dampCameraLookAt } from '@utils/quaternionUtils';
 import cameraConfigs from '@configs/cameraConfigs';
+import useSelection from '@stores/selectionStore';
+
+/* 
+Potential Redesign: 
+1- keys of meshesInSceneRef are the name property of each scene child. Maybe they could be uuids since those are unique. 
+2- Cut down unnecessary calls to camera.updateMatrixWorld();
+4- The if-else logic in useFrame() needs revision. 
+5- The old way of reading focusTarget provide this value as a prop. Now this value is read directly from selectionStore per frame
+
+ old way: 
+  (BasicScene provided focusTarget as a prop to SceneRig)
+  const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
+
+new way: 
+  (store snapshot is read directly per frame/within useFrame())
+  const { selection } = useSelection.getState();
+  const focusTargetExists =  selection.isFocused !== null || selection?.isFocused?.length !== 0
+  const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
+
+  Determine if this is a valid and if it is the best approach. 
+*/
 
 const SceneRig = ({
-  focusTarget = null,
-  onSwipe = undefined,
-  fallbackPositions = [],
-  targets = [],
+  onSwipe = undefined, // optional callback
+  fallbackPositions = [], // array of Vector3
+  targets = [], // array of Object3D refs.
 }) => {
-  const scene = useThree((state) => state.scene);
 
   const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS, POSITION } = cameraConfigs;
   const _scratchBoxRef = useRef(new THREE.Box3());
@@ -21,6 +39,7 @@ const SceneRig = ({
 
   const domElement = useThree((state) => state.gl.domElement);
   const clock = useThree((state) => state.clock);
+  const scene = useThree((state) => state.scene);
 
   const activePointerIdRef = useRef(null);
   const pointerStartRef = useRef(null);
@@ -28,38 +47,32 @@ const SceneRig = ({
   const lastSwitchTimeRef = useRef(0);
   const manualOverrideTimeRef = useRef(-Infinity); // active while elapsedTime < this value)
 
-  const cameraPosition = useRef(new THREE.Vector3());
-  const lookAtPosition = useRef(new THREE.Vector3());
+  const currentCameraPositionRef = useRef(new THREE.Vector3());
+  const nextCameraPositionRef = useRef(new THREE.Vector3());
+  // const cameraTargetRef = useRef(new THREE.Vector3());
 
-  const stopPositions = useRef([new THREE.Vector3(0, 0, 0)]);
-  const fallbackPositionRef = useRef(new THREE.Vector3(0, 0, 0));
+  const cameraStopPositionsRef = useRef([new THREE.Vector3(0, 0, 0)]);
+  const defaultFallbackPositionRef = useRef(new THREE.Vector3(POSITION[0], POSITION[1], POSITION[2]));
 
-  const targetIndex = useRef(0);
-  const lib = useRef({});
-  const mapToIndexRef = useRef({})
+  const targetIndexRef = useRef(0);
+  const meshesInSceneRef = useRef({});
 
   useEffect(() => {
-    const sceneLib = {};
-    scene.traverse((object) => {
-      if (object.isMesh) {
-        sceneLib[`${object.name}`] = object;
-      }
-    });
+    const meshesInScene = {};
 
-    const map = {}
+    scene.traverse((object) => { if (object.isMesh) meshesInScene[`${object.name}`] = object });
+
     for (let i = 0; i < targets.length; i++) {
-      if (targets[i]?.name && sceneLib[targets[i].name]) {
-
-        map[targets[i].name] = i;
-
-        lib.current[targets[i].name] = {
-          target: sceneLib[targets[i].name],
-          index: i
+      if (targets[i]?.name?.length) {
+        const targetName = targets[i].name;
+        const foundTargetInScene = meshesInScene[targetName] || null;
+        
+        if (foundTargetInScene) {
+          meshesInSceneRef.current[targetName] = { target: foundTargetInScene, index: i, targetName };
         }
       }
     }
-    mapToIndexRef.current = map;
-  }, [targets, scene]);
+  }, [targets, scene, scene.children]);
 
 
   useEffect(() => {
@@ -93,11 +106,12 @@ const SceneRig = ({
       const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_DELTA_PX && deltaTime < SWIPE_DELTA_TIME_MS;
 
       if (isSwipe) {
-        const count = stopPositions.current.length;
+        const count = cameraStopPositionsRef.current.length;
+
         if (count > 0) {
           const step = deltaX > 0 ? 1 : -1;
 
-          targetIndex.current = (targetIndex.current + step + count) % count;
+          targetIndexRef.current = (targetIndexRef.current + step + count) % count;
           manualOverrideTimeRef.current = clock.elapsedTime + MANUAL_OVERRIDE_SECONDS;
           lastSwitchTimeRef.current = clock.elapsedTime;
 
@@ -124,79 +138,86 @@ const SceneRig = ({
   }, [domElement, clock, onSwipe, SWIPE_DELTA_TIME_MS, SWIPE_DELTA_PX, MANUAL_OVERRIDE_SECONDS]);
 
   useEffect(() => {
-    const length = Math.max(Object.entries(lib.current)?.length ?? 0, fallbackPositions?.length ?? 0);
+    const length = Math.max(Object.entries(meshesInSceneRef.current)?.length ?? 0, fallbackPositions?.length ?? 0);
+  
     for (let i = 0; i < length; i++) {
-      if (!stopPositions.current[i]?.isVector3) stopPositions.current[i] = new THREE.Vector3();
+      if (!cameraStopPositionsRef.current[i]?.isVector3) cameraStopPositionsRef.current[i] = new THREE.Vector3();
 
-      if (!targets[i] || typeof lib.current[targets[i]?.name]?.target?.updateWorldMatrix !== 'function') {
-        stopPositions.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : fallbackPositionRef.current);
+      if (!targets[i] || !targets[i]?.isObject3D) {
+        cameraStopPositionsRef.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : defaultFallbackPositionRef.current);
         continue;
       }
 
-      const key = targets[i].name;
-      lib.current[key].target.updateWorldMatrix(true, true);
-      _scratchBoxRef.current.setFromObject(lib.current[key].target).getCenter(_scratchCenterRef.current);
-      stopPositions.current[i].copy(_scratchCenterRef.current);
+      const key = targets[i]?.name;
+      const exists = meshesInSceneRef.current[key].target?.name;
+      if (exists?.length && typeof targets[i]['updateWorldMatrix'] === 'function') meshesInSceneRef.current[key].target.updateWorldMatrix(true, false);
+
+      _scratchBoxRef.current.setFromObject(meshesInSceneRef.current[key].target).getCenter(_scratchCenterRef.current);
+      cameraStopPositionsRef.current[i].copy(_scratchCenterRef.current);
     }
 
-    stopPositions.current.length = length || 1;
+    cameraStopPositionsRef.current.length = length || 1;
 
     if (length === 0) {
-      if (!stopPositions.current[0]?.isVector3) stopPositions.current[0] = new THREE.Vector3();
-      stopPositions.current[0].copy(fallbackPositionRef.current);
+      if (!cameraStopPositionsRef.current[0]?.isVector3) cameraStopPositionsRef.current[0] = new THREE.Vector3();
+      cameraStopPositionsRef.current[0].copy(defaultFallbackPositionRef.current);
     }
 
-    if (targetIndex.current < 0 || targetIndex.current >= stopPositions.current.length) targetIndex.current = 0;
+    if (targetIndexRef.current < 0 || targetIndexRef.current >= cameraStopPositionsRef.current.length) targetIndexRef.current = 0;
   }, [targets, fallbackPositions]);
 
   useFrame(({ camera, clock }, delta) => {
-    if (targetIndex.current >= stopPositions.current.length || targetIndex.current < 0) targetIndex.current = 0;
-    if (stopPositions.current.length === 0) return;
-
-    let nextPosition = stopPositions.current[0];
-    const clampedDelta = Math.min(delta, 0.08); // Max 80ms per frame
     const elapsedTime = clock.elapsedTime;
+    const xOffset = Math.sin(elapsedTime);
+    const yOffset = -2 * xOffset;
+    const zOffset = POSITION[2] + xOffset;
+    const clampedDelta = Math.min(delta, 0.08);
+    const { selection } = useSelection.getState();
 
-    const focusedIndex = focusTarget !== null
-      ? (lib.current[focusTarget]?.index ?? -1)
-      : -1;
+    if (targetIndexRef.current >= cameraStopPositionsRef.current.length || targetIndexRef.current < 0) targetIndexRef.current = 0;
+    if (cameraStopPositionsRef.current.length === 0) return;
 
+    let nextPosition = cameraStopPositionsRef.current[0];
+    const focusTargetExists = selection.isFocused !== null && selection.isFocused?.length > 0;
+    const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
-    if (focusedIndex >= 0 && stopPositions.current[focusedIndex]) {
-      targetIndex.current = focusedIndex;
-      nextPosition = stopPositions.current[targetIndex.current]; 
-    }
-    else if (isManualOverrideActive && stopPositions.current[targetIndex.current]) {
-      nextPosition = stopPositions.current[targetIndex.current];
-    }
+    if (focusedIndex >= 0 && cameraStopPositionsRef.current[focusedIndex]) targetIndexRef.current = focusedIndex
+    else if (isManualOverrideActive && cameraStopPositionsRef.current[targetIndexRef.current]) targetIndexRef.current = targetIndexRef.current
     else {
-      cameraPosition.current.copy(stopPositions.current[targetIndex.current]);
-      let currentIndex = targetIndex.current;
-      let nextIndex = currentIndex >= stopPositions.current.length - 1 ? 0 : currentIndex + 1;
+      currentCameraPositionRef.current.copy(cameraStopPositionsRef.current[targetIndexRef.current]); // TEST: temporarily uncomment this line. 
+      let currentIndex = targetIndexRef.current;
+      let nextIndex = currentIndex >= cameraStopPositionsRef.current.length - 1 ? 0 : currentIndex + 1;
       const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > MIN_DWELL_SECONDS;
 
       if (canSwitch) {
         lastSwitchTimeRef.current = elapsedTime;
-        targetIndex.current = nextIndex;
+        targetIndexRef.current = nextIndex;
       }
-
-      nextPosition = stopPositions.current[targetIndex.current];
     }
 
-    const sine = Math.sin(elapsedTime);
-    const yOffset = -2 * sine;
-    const zOffset = POSITION[2] + sine;
+    const targetName = targets[targetIndexRef.current]?.name;
+    const meshInScene = meshesInSceneRef.current[targetName]?.target;
+    const meshInSceneName = meshInScene?.name;
+    const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName); 
 
-    lookAtPosition.current.set(
-      nextPosition.x + sine,
-      nextPosition.y + yOffset,
-      nextPosition.z + zOffset
-    );
-    easing.damp3(camera.position, lookAtPosition.current, 1, clampedDelta);
-    dampCameraLookAt(camera, nextPosition, 1.5, clampedDelta, 0, Math.PI / 6, 0);
+    if (isTargetInScene && meshInScene.isObject3D) {
+      camera.updateMatrixWorld();
+      if (meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
 
-    camera.updateMatrixWorld();
+      _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
+      nextPosition = _scratchCenterRef.current;
+    }
+    else {
+      nextPosition = cameraStopPositionsRef.current[targetIndexRef.current];
+    }
+
+    currentCameraPositionRef.current.copy(camera.position);
+    camera.lookAt(currentCameraPositionRef.current);
+    nextCameraPositionRef.current.set(nextPosition.x + xOffset, nextPosition.y + yOffset, nextPosition.z + zOffset);
+    // cameraTargetRef.current.set(currentCameraPositionRef.current.x, currentCameraPositionRef.current.y, currentCameraPositionRef.current.z-POSITION[2]);
+    // camera.lookAt(cameraTargetRef.current);
+    easing.damp3(camera.position, nextCameraPositionRef.current, 1, clampedDelta);
   });
 };
 

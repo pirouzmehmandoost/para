@@ -20,7 +20,6 @@ type MainMenuTopLink = { title: string; disabled?: boolean; href: string };
 
 const mainMenuTopLinks: MainMenuTopLink[] = [
   { title: 'View R3F Project (WIP)', disabled: true, href: '/' },
-  // { title: 'About (Also WIP)', disabled: false, href: '/about' },
 ];
 
 type MainMenuBottomLink = { title: string; href: string };
@@ -116,13 +115,18 @@ const MainMenu = () => {
     setVisible(true);
   }, [hasHydrated, firstPageVisited, setPageVisited, setVisible]);
 
+  const handleClick = (e, disabled) => {
+    setVisible(false);
+    if (disabled) e.preventDefault();
+  }
+
   return (
     <div className='flex flex-col w-full h-full'>
       <div className='relative flex w-full h-fit'>
-        <div className='relative flex flex-col grow w-fit h-fit z-10 place-items-center'>
+        <div className='relative flex flex-col grow w-fit h-fit z-10'>
           <button
-            aria-label='Toggle menu'
-            className='fixed w-fit h-fit z-20 inset-0 top-5 left-5 justify-center p-2 rounded-full cursor-pointer bg-neutral-500/10 backdrop-blur-md md:backdrop-blur-xl transition-all duration-1000 ease-in-out text-neutral-700 hover:text-neutral-700'
+            aria-label='Toggle main menu'
+            className='fixed w-fit h-fit z-20 inset-0 top-5 left-5 p-2 rounded-full cursor-pointer text-neutral-600 backdrop-contrast-125 bg-neutral-600/10 backdrop-blur-xl transition-all duration-500 ease-in-out hover:text-neutral-700 hover:bg-neutral-700/10'
             onClick={() => setVisible(!menuVisible)}
             type='button'
           >
@@ -130,7 +134,7 @@ const MainMenu = () => {
           </button>
           <motion.div
             animate={menuVisible ? 'open' : 'closed'}
-            className={`fixed inset-0 z-10 flex justify-center origin-center ${menuVisible ? 'pointer-events-auto' : 'pointer-events-none'}`}
+            className={`fixed flex inset-0 z-10 justify-center origin-center ${menuVisible ? 'pointer-events-auto' : 'pointer-events-none'}`}
             initial='open'
             variants={variants.menu}
           >
@@ -171,10 +175,7 @@ const MainMenu = () => {
                             <Link
                               className='cursor-pointer'
                               href={href}
-                              onClick={(e) => {
-                                setVisible(false);
-                                if (disabled) e.preventDefault();
-                              }}
+                              onClick={(e) => handleClick(e, disabled)}
                             >
                               {title}
                             </Link>
@@ -208,6 +209,7 @@ const MainMenu = () => {
               )}
             </AnimatePresence>
           </motion.div>
+          {/* blur everything behind MainMenu if open */}
           <motion.div
             animate={menuVisible ? 'open' : 'closed'}
             className='fixed inset-0 -z-10 bg-neutral-400/0 backdrop-blur-md md:backdrop-blur-xl pointer-events-none'
@@ -223,7 +225,26 @@ const MainMenu = () => {
 export default MainMenu;
 
 // const DiagonalText = ({text}) => {
-//   const names = text.split(" ");
-//   const characters = text.split('').map((char, index) => <div key={index} className='text-red-700 rotate-45'> {char} </div> );
-//   return <div  className='-rotate-45'> {characters} </div>
+//   let charArray = [];
+//   const strings = text.split(" ");
+//   const longestLength = strings.reduce((a , b) => Math.max(a, b.length), 0);
+//   // const characters = text.split('').map((char, index) => <div key={index} className='rotate-45'> {char} </div> );
+//   const filled = strings.map(str => str.length < longestLength
+//     ? [...str, ...Array(longestLength - str.length).fill('\u00A0')]
+//     : str.split('')
+//   );
+
+//   for (let i = 0; i < longestLength; i++) {
+//     for (let j = 0; j < filled.length; j++) {
+//       if (charArray[i]) charArray[i] = [...charArray[i], ...filled[j][i]]
+//       else charArray[i] = [...filled[j][i]];
+//     }
+//   }
+
+//   const diagonalBlock = charArray.map((arr, index) => (
+//     <div key={index} className='rotate-45 w-fit bg-blue-900 space-y-2'>
+//       { arr.map((char, index2) => <div key={index2} className=' bg-red-500'> {char} </div> ) }
+//     </div>
+//   ));
+//   return <div className='-rotate-45 bg-blue-400 max-w-fit'> {diagonalBlock} </div>
 // };
