@@ -5,46 +5,29 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
 import cameraConfigs from '@configs/cameraConfigs';
-import { largeThreshold, generalThreshold, eulerDistance } from '@/lib/utils/animationUtils';
+import useSelection from '@stores/selectionStore';
 
 /* 
 Potential Redesign: 
-1- keys of meshesInSceneRef are the name field of each scene child. Maybe they should be uuids since those are unique. 
-The idea for using names as keys is to allow overwriting, but this decision may be dangerous.
-
-2- useEffect fires if scene or scene.children mutate, but meshesInSceneRef may hold stale data. if a key in meshesInSceneRef
-matches the name of a child in the scene then the value will be overwritten, but if not then the value is stale. 
-the rig may throw if a child is ever disposed, even though this app doesnt manually dispose children.
-
-3- Determine a way to cut down unnecessary calls to camera.updateMatrixWorld();
-
+1- keys of meshesInSceneRef are the name property of each scene child. Maybe they could be uuids since those are unique. 
+2- Cut down unnecessary calls to camera.updateMatrixWorld();
 4- The if-else logic in useFrame() needs revision. 
+5- The old way of reading focusTarget provide this value as a prop. Now this value is read directly from selectionStore per frame
 
-5- Selectively calculate the center of each target's bounding box. 
-For meshes and groups, it may be necessary to recompute the Box3 center position for the rig to orient the camera correctly
-but if meshesInSceneRef changes to store something that isnt then it becomes overhead (lights, etc). 
+ old way: 
+  (BasicScene provided focusTarget as a prop to SceneRig)
+  const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
 
-6- Add focusTarget to meshesInSceneRef it there no existing reference targets. 
-If the intent is to use SceneRig and only focus on a single target, focusTarget may be non-null and targets may initialize to [].
-If focusTarget is not in targets maybe it should be added. Although in BasicScene focusTarget and one element in targets point to the Mesh. 
+new way: 
+  (store snapshot is read directly per frame/within useFrame())
+  const { selection } = useSelection.getState();
+  const focusTargetExists =  selection.isFocused !== null || selection?.isFocused?.length !== 0
+  const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
 
-    // Check if focusTarget is not null. 
-    // const isFocusTargetinTargets = focusTarget && focusTarget?.uuid?.length 
-    //   ? targets.some(({ uuid='' }) => uuid?.length && focusTarget.uuid === uuid ) 
-    //   : false;
-
-    // if (!isFocusTargetinTargets) {
-    //   sceneChildrenRef.current[focusTarget.uuid] = {
-    //     target: focusTarget,
-    //     index: Object.entries(sceneChildrenRef.current)?.length ?? 0,
-    //     name: focusTarget?.name,
-    //   };
-    // }
+  Determine if this is a valid and if it is the best approach. 
 */
 
-
 const SceneRig = ({
-  focusTarget = null, // optional Object3D to isolate focus on.
   onSwipe = undefined, // optional callback
   fallbackPositions = [], // array of Vector3
   targets = [], // array of Object3D refs.
@@ -189,12 +172,15 @@ const SceneRig = ({
     const yOffset = -2 * xOffset;
     const zOffset = POSITION[2] + xOffset;
     const clampedDelta = Math.min(delta, 0.08);
+    const { selection } = useSelection.getState();
 
     if (targetIndexRef.current >= cameraStopPositionsRef.current.length || targetIndexRef.current < 0) targetIndexRef.current = 0;
     if (cameraStopPositionsRef.current.length === 0) return;
 
     let nextPosition = cameraStopPositionsRef.current[0];
-    const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
+    const focusTargetExists =  selection.isFocused !== null || selection?.isFocused?.length !== 0
+    // const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
+    const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
     if (focusedIndex >= 0 && cameraStopPositionsRef.current[focusedIndex]) targetIndexRef.current = focusedIndex
