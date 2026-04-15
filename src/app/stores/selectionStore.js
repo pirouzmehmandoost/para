@@ -158,7 +158,10 @@ setRotation: (vals) => {
         sceneData: {
           ...initialState.sceneData,
           fileData: { ...initialState.sceneData.fileData },
-          materials: { ...initialState.sceneData.materials },
+          materials: {
+            ...initialState.sceneData.materials, 
+            materialIDs: [ ...initialState.sceneData.materials.materialIDs],
+          },
           rotation: { ...initialState.sceneData.rotation },
           deltaRotation: { ...initialState.sceneData.deltaRotation },
         },
