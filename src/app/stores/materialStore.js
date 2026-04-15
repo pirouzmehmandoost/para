@@ -2,7 +2,11 @@ import { create } from 'zustand';
 import * as THREE from 'three';
 import { getColorSpace } from '@utils/materialUtils';
 
-const createIdempotentFlag = (obj) => Object.keys(obj).sort().join('|');
+const _buildCacheKey = (obj) => {
+  if (Array.isArray(obj)) return obj.join('|');
+
+  return Object.keys(obj).sort().join('|');
+};
 
 // Uint8Arrays with pixel data (R, G, B, A for each pixel)
 const width = 32;
@@ -198,26 +202,33 @@ const materialState = {
   },
 };
 
+const _selectedMaterialsCache = new Map();
+
 const materialStore = (set, get) => ({
   materials: materialState,
   texturesInitialized: '',
 
   getSelectedMaterials: (materialIDs = []) => {
-    let invalidIDCount = 0;
-    const invalidIDs = [];
-    const selectedMaterials = {};
     const texturesInitialized = get().texturesInitialized;
-    const materials = get().materials;
 
     if (!texturesInitialized?.length) {
       console.warn("Warning: getSelectedMaterials() => Accessing materials before textures have loaded. Returning {}.");
       return {};
     }
 
-    if (!Array.isArray(materialIDs) || !materialIDs?.length) {
+    if (!Array.isArray(materialIDs) || !materialIDs.length) {
       console.warn("Warning: getSelectedMaterials() => materialIDs should not be an empty array. Returning {}.");
       return {};
     }
+
+    const cacheKey = _buildCacheKey(materialIDs);
+
+    if (_selectedMaterialsCache.has(cacheKey)) return _selectedMaterialsCache.get(cacheKey);
+
+    let invalidIDCount = 0;
+    const invalidIDs = [];
+    const selectedMaterials = {};
+    const materials = get().materials;
 
     for (let i = 0; i < materialIDs.length; i++) {
       if (materials[materialIDs[i]]?.material) {
@@ -231,6 +242,7 @@ const materialStore = (set, get) => ({
 
     if (invalidIDCount) console.warn("Warning: getSelectedMaterials() => " + invalidIDCount + " invalid material IDs: ", invalidIDs);
 
+    _selectedMaterialsCache.set(cacheKey, selectedMaterials);
     return selectedMaterials;
   },
 
@@ -238,7 +250,7 @@ const materialStore = (set, get) => ({
     const staged = [];
     const materials = get().materials;
     const texturesInitialized = get().texturesInitialized;
-    const initialized = createIdempotentFlag(textures);
+    const initialized = _buildCacheKey(textures);
 
     if (texturesInitialized === initialized) return;
 
