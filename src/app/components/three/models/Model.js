@@ -24,17 +24,6 @@ const Model = (props) => {
   const { camera } = useThree();
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
 
-  const isFocused = useSelection((state) => state.selection.isFocused);
-  const turntableRotationAnimation = useSelection((state) => state.selection.sceneData.defaultRotationAnimationActive);
-  const rotationOffset = useSelection((state) => state.selection.sceneData.deltaRotation);
-  const shouldAnimateRotation = useSelection((state) => state.selection.sceneData.animateRotation);
-  const shouldAnimatePosition = useSelection((state) => state.selection.sceneData.animatePosition);
-  const shouldAnimateMaterial = useSelection((state) => state.selection.sceneData.animateMaterial);
-  const activeMaterialID = useSelection((state) => state.selection.materialID);
-
-  const getMaterialVariants = useMaterial.getState().getSelectedMaterials;
-  const texturesInitialized = useMaterial((state) => state.texturesInitialized);
-
   const _scratchSizeRef = useRef(new THREE.Vector3());
 
   const meshRef = useRef(undefined);
@@ -49,28 +38,12 @@ const Model = (props) => {
   const animatePositionRef = useRef(new THREE.Vector3(px, py, pz));  // transform rotation.
   const positionModeRef = useRef(null);
 
-  const selectedMaterialRef = useRef(null);
-  const defaultMaterialRef = useRef(null);
   const animateMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
+  const materialReadyRef = useRef(false);
+  const targetMaterialIDRef = useRef(null);
+  const targetMaterialRef = useRef(null);
 
-  useEffect(() => {
-    if (meshRef.current) {
-      animateMaterialRef.current.copy(defaultMaterialRef.current);
-      animateMaterialRef.current.needsUpdate = true; // guarantee material version bump.
-      if (typeof onMeshReady === 'function') onMeshReady(meshRef.current);
-    }
-  }, [onMeshReady]);
-
-  useLayoutEffect(() => {
-    if (meshRef.current) {
-      const selectedAndFocused = isFocused?.length && (isFocused === nodeName);
-      const selectedMaterialID = activeMaterialID?.length && selectedAndFocused ? activeMaterialID : defaultMaterialID;
-      const materialVariants = getMaterialVariants(materialIDs);
-
-      selectedMaterialRef.current = materialVariants[selectedMaterialID];
-      defaultMaterialRef.current = materialVariants[defaultMaterialID];
-    }
-  }, [activeMaterialID, defaultMaterialID, isFocused, nodeName, texturesInitialized]);
+  useEffect(() => { if (meshRef.current && typeof onMeshReady === 'function') onMeshReady(meshRef.current) }, [onMeshReady]);
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -87,7 +60,7 @@ const Model = (props) => {
     }
   }, [scale]);
 
-  function updateRotationAnimation(rotationMode, delta) {
+  function updateRotationAnimation(rotationMode, deltaRotation, frameDelta) {
     const didModeChange = rotationMode !== rotationModeRef.current;
 
     if (didModeChange) {
@@ -99,19 +72,18 @@ const Model = (props) => {
     const smoothTime = rotationMode === RotationAnimationModes.MODE_IDLE ? 1.5 : 1;
 
     if (rotationMode === RotationAnimationModes.MODE_TURNTABLE) {
-      const y = animateRotationRef.current.y + delta * rotationSpeed;
+      const y = animateRotationRef.current.y + frameDelta * rotationSpeed;
       const wY = wrap(y, 0, (Math.PI * 2));
       animateRotationRef.current.set(defaultRotationRef.current.x, wY, defaultRotationRef.current.z);
     }
     else if (rotationMode === RotationAnimationModes.MODE_MANUAL) {
-      const ox = rotationOffset?.x ?? 0;
-      const oy = rotationOffset?.y ?? 0;
-      const oz = rotationOffset?.z ?? 0;
+  
+      const { x = 0, y = 0, z = 0 } = deltaRotation;
 
       animateRotationRef.current.set(
-        defaultRotationRef.current.x + ox,
-        defaultRotationRef.current.y + oy,
-        defaultRotationRef.current.z + oz
+        defaultRotationRef.current.x + x,
+        defaultRotationRef.current.y + y,
+        defaultRotationRef.current.z + z
       );
     }
     else if (rotationMode === RotationAnimationModes.MODE_IDLE) {
@@ -123,7 +95,7 @@ const Model = (props) => {
     }
 
     if (eulerDistance(meshRef.current.rotation, refToUpdate) > generalThreshold) {
-      easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, delta);
+      easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, frameDelta);
     }
 
     rotationModeRef.current = rotationMode;
@@ -176,7 +148,7 @@ const Model = (props) => {
   };
 
   function easeMaterialProperties(materialToUpdate, delta) {
-    if (!shouldAnimateMaterial || !materialToUpdate) return;
+    if (!materialToUpdate) return;
 
     if (Math.abs(animateMaterialRef.current.bumpScale - materialToUpdate.bumpScale) > largeThreshold) easing.damp(animateMaterialRef.current, "bumpScale", materialToUpdate.bumpScale, 0.3, delta);
 
@@ -198,7 +170,7 @@ const Model = (props) => {
   }
 
   function updateDeterministicMaterialProperties(materialToUpdate) {
-    if (!shouldAnimateMaterial || !materialToUpdate) return;
+    if (!materialToUpdate) return;
 
     if (animateMaterialRef.current.side !== materialToUpdate.side) {
       animateMaterialRef.current.side = materialToUpdate?.side ?? THREE.DoubleSide;
@@ -210,54 +182,93 @@ const Model = (props) => {
       animateMaterialRef.current.needsUpdate = true;
     }
 
-    // NOTE: For now, map slots on animatedMaterialRef.current are never non-null (see materialStore.js) set needsUpdate anyway.
+    // If the two materials have different textures (including one being null and the other non-null), assign and set needsUpdate.
+    // NOTE: For now map slots on any material in materialStore are never non-null. Set needsUpdate = true anyway.
     if (animateMaterialRef.current?.bumpMap &&
       animateMaterialRef.current.bumpMap.uuid !== materialToUpdate.bumpMap?.uuid) {
       animateMaterialRef.current.bumpMap = materialToUpdate?.bumpMap;
       animateMaterialRef.current.needsUpdate = true;
     }
 
-    if ((animateMaterialRef.current?.map && materialToUpdate?.map) &&
-      animateMaterialRef.current.map.uuid !== materialToUpdate.map.uuid) {
-      animateMaterialRef.current.map = materialToUpdate.map;
+    if (animateMaterialRef.current?.map && 
+      animateMaterialRef.current.map.uuid !== materialToUpdate.map?.uuid) {
+      animateMaterialRef.current.map = materialToUpdate?.map;
       animateMaterialRef.current.needsUpdate = true;
     }
 
-    if ((animateMaterialRef.current?.roughnessMap && materialToUpdate?.roughnessMap) &&
-      animateMaterialRef.current.roughnessMap.uuid !== materialToUpdate.roughnessMap.uuid) {
+    if (animateMaterialRef.current?.roughnessMap &&
+      animateMaterialRef.current.roughnessMap.uuid !== materialToUpdate.roughnessMap?.uuid) {
       animateMaterialRef.current.roughnessMap = materialToUpdate.roughnessMap;
       animateMaterialRef.current.needsUpdate = true;
     }
 
-    if ((animateMaterialRef.current?.transmissionMap && materialToUpdate?.transmissionMap) &&
-      animateMaterialRef.current.transmissionMap.uuid !== materialToUpdate.transmissionMap.uuid) {
+    if (animateMaterialRef.current?.transmissionMap &&
+      animateMaterialRef.current.transmissionMap.uuid !== materialToUpdate.transmissionMap?.uuid) {
       animateMaterialRef.current.transmissionMap = materialToUpdate.transmissionMap;
       animateMaterialRef.current.needsUpdate = true;
     }
   };
 
   useFrame(({ clock, camera: cam }, delta) => {
-    const clampedDelta = Math.min(delta, 0.08);
-    const elapsedTime = clock.elapsedTime;
-    const positionOffsetY = Math.abs(Math.cos(elapsedTime) * 2);
-    const positionOffsetZ = Math.sin(elapsedTime) * 2;
-
     if (!meshRef.current || !nodeName?.length) return;
 
-    const selectedAndFocused = isFocused?.length && isFocused === nodeName;
-    const positionMode = !selectedAndFocused || !shouldAnimatePosition
-      ? PositionAnimationModes.DISABLED
-      : PositionAnimationModes.ENABLED;
-    const rotationMode = !selectedAndFocused || !shouldAnimateRotation
-      ? RotationAnimationModes.MODE_IDLE
-      : (turntableRotationAnimation ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
-    const materialToUpdate = selectedAndFocused ? selectedMaterialRef.current : defaultMaterialRef.current;
+    const clampedDelta = Math.min(delta, 0.08);
+    const elapsedTime = clock.elapsedTime;
+
+    const matState = useMaterial.getState();
+    const texturesReady = matState.texturesInitialized?.length > 0;
+    const { selection } = useSelection.getState();
+    const selectedAndFocused = selection.isFocused?.length > 0 && selection.isFocused === nodeName;
 
     updateCameraRelativeScale(cam, clampedDelta, false);
-    updatePositionAnimation(positionMode, 0, positionOffsetY, positionOffsetZ, clampedDelta);
-    updateRotationAnimation(rotationMode, clampedDelta);
-    easeMaterialProperties(materialToUpdate, clampedDelta);
-    updateDeterministicMaterialProperties(materialToUpdate);
+
+    const positionMode = !selectedAndFocused || !selection.sceneData.animatePosition ? PositionAnimationModes.DISABLED : PositionAnimationModes.ENABLED;
+    updatePositionAnimation(
+      positionMode,
+      0,
+      Math.abs(Math.cos(elapsedTime) * 2),
+      Math.sin(elapsedTime) * 2,
+      clampedDelta
+    );
+
+    const rotationMode = !selectedAndFocused || !selection.sceneData.animateRotation
+      ? RotationAnimationModes.MODE_IDLE
+      : (selection.sceneData.defaultRotationAnimationActive ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
+    updateRotationAnimation(rotationMode, selection.sceneData.deltaRotation, clampedDelta);
+
+    if (!texturesReady) return;
+
+    const desiredMaterialID = selectedAndFocused && selection.materialID?.length
+      ? selection.materialID
+      : defaultMaterialID;
+
+    if (!materialReadyRef.current) {
+      // One-shot: seed animateMaterialRef from the store's default material
+      const variants = matState.getSelectedMaterials(materialIDs);
+      const mat = variants[defaultMaterialID];
+      if (mat) {
+        animateMaterialRef.current.copy(mat);
+        animateMaterialRef.current.needsUpdate = true;
+        targetMaterialIDRef.current = defaultMaterialID;
+        targetMaterialRef.current = mat;
+        materialReadyRef.current = true;
+      }
+      return;
+    }
+
+    if (desiredMaterialID !== targetMaterialIDRef.current) {
+      const variants = matState.getSelectedMaterials(materialIDs);
+      const mat = variants[desiredMaterialID];
+      if (mat) {
+        targetMaterialIDRef.current = desiredMaterialID;
+        targetMaterialRef.current = mat;
+      }
+    }
+
+    if (selection.sceneData.animateMaterial && targetMaterialRef.current) {
+      easeMaterialProperties(targetMaterialRef.current, clampedDelta);
+      updateDeterministicMaterialProperties(targetMaterialRef.current);
+    }
   });
 
   return (

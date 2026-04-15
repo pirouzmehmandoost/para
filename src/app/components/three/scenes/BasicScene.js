@@ -24,12 +24,9 @@ const BasicScene = () => {
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
 
-  const setSelection = useSelection((state) => state.setSelection);
   const isFocused = useSelection((state) => state.selection.isFocused);
-  const setIsFocused = useSelection((state) => state.setIsFocused);
-  const setMaterialID = useSelection((state) => state.setMaterialID);
   const resetSelectionStore = useSelection((state) => state.reset);
-
+  const setFocusAndMaterial = useSelection((state) => state.setFocusAndMaterial);
   const [meshesReady, setMeshesReady] = useState(false);
 
   const lastSwipeTimeRef = useRef(0);
@@ -61,33 +58,29 @@ const BasicScene = () => {
 
     startTransition(() => {
       resetSelectionStore();
-      setIsFocused(null)
     });
-  }, [resetSelectionStore, setIsFocused, SWIPE_DELAY_MS]);
+  }, [resetSelectionStore, SWIPE_DELAY_MS]);
 
   const handleClick = useCallback((e) => {
     e.stopPropagation();
 
     const clickedName = e.object.name;
-    if (isFocused === clickedName) return;
+    if (useSelection.getState().selection.isFocused === clickedName) return;
 
     const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedName);
     if (index < 0) return;
 
     startTransition(() => {
-      setMaterialID(projects[index].sceneData.materials.defaultMaterialID);
-      setIsFocused(clickedName);
+      setFocusAndMaterial(clickedName, projects[index].sceneData.materials.defaultMaterialID);
     });
-  }, [isFocused, setIsFocused, setMaterialID]);
-// }, [isFocused, setIsFocused, setMaterialID, setSelection]);
+  }, [setFocusAndMaterial]);
 
   const onSwipe = useCallback((e) => {
     lastSwipeTimeRef.current = Date.now();
     startTransition(() => {
       resetSelectionStore();
-      setIsFocused(null);
     });
-  }, [resetSelectionStore, setIsFocused]);
+  }, [resetSelectionStore]);
 
   useEffect(() => {
     const prev = get().onPointerMissed;

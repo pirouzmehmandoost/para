@@ -80,6 +80,15 @@ const selectionStore = (set, get) => ({
       }
     })),
 
+    setFocusAndMaterial: (name, materialID) =>
+      set((state) => ({
+        selection: {
+          ...state.selection,
+          isFocused: name,
+          materialID: materialID,
+        }
+      })),
+
   toggleAnimateRotation: () => {
     set((state) => ({
       selection: {

@@ -11,8 +11,8 @@ const width = 32;
 const height = 32;
 const size = width * height;
 const bumpData = new Uint8Array(4 * size);
-const clearcoatData = new Uint8Array(4 * size);
-const clearcoatRoughnessData = new Uint8Array(4 * size);
+// const clearcoatData = new Uint8Array(4 * size);
+// const clearcoatRoughnessData = new Uint8Array(4 * size);
 const diffusedata = new Uint8Array(4 * size);
 const roughnessData = new Uint8Array(4 * size);
 const transmissionData = new Uint8Array(4 * size);
@@ -22,15 +22,15 @@ bumpData.fill(0);
 for (let i = 0; i < size; i++) {
   const stride = i * 4;
 
-  clearcoatData[stride] = 255;
-  clearcoatData[stride + 1] = 255;
-  clearcoatData[stride + 2] = 255;
-  clearcoatData[stride + 3] = 255;
+  // clearcoatData[stride] = 255;
+  // clearcoatData[stride + 1] = 255;
+  // clearcoatData[stride + 2] = 255;
+  // clearcoatData[stride + 3] = 255;
 
-  clearcoatRoughnessData[stride] = 255;
-  clearcoatRoughnessData[stride + 1] = 255;
-  clearcoatRoughnessData[stride + 2] = 255;
-  clearcoatRoughnessData[stride + 3] = 255;
+  // clearcoatRoughnessData[stride] = 255;
+  // clearcoatRoughnessData[stride + 1] = 255;
+  // clearcoatRoughnessData[stride + 2] = 255;
+  // clearcoatRoughnessData[stride + 3] = 255;
 
   diffusedata[stride] = 255;
   diffusedata[stride + 1] = 255;
@@ -53,15 +53,15 @@ _scratchBumpTexture.name = '_scratchBumpTexture';
 _scratchBumpTexture.colorSpace = THREE.NoColorSpace;
 _scratchBumpTexture.needsUpdate = true;
 
-const _scratchClearcoatTexture = new THREE.DataTexture(clearcoatData, width, height);
-_scratchClearcoatTexture.name = '_scratchClearcoatTexture';
-_scratchClearcoatTexture.colorSpace = THREE.NoColorSpace;
-_scratchClearcoatTexture.needsUpdate = true;
+// const _scratchClearcoatTexture = new THREE.DataTexture(clearcoatData, width, height);
+// _scratchClearcoatTexture.name = '_scratchClearcoatTexture';
+// _scratchClearcoatTexture.colorSpace = THREE.NoColorSpace;
+// _scratchClearcoatTexture.needsUpdate = true;
 
-const _scratchClearcoatRoughnessTexture = new THREE.DataTexture(clearcoatRoughnessData, width, height);
-_scratchClearcoatRoughnessTexture.name = '_scratchClearcoatRoughnessTexture';
-_scratchClearcoatRoughnessTexture.colorSpace = THREE.NoColorSpace;
-_scratchClearcoatRoughnessTexture.needsUpdate = true;
+// const _scratchClearcoatRoughnessTexture = new THREE.DataTexture(clearcoatRoughnessData, width, height);
+// _scratchClearcoatRoughnessTexture.name = '_scratchClearcoatRoughnessTexture';
+// _scratchClearcoatRoughnessTexture.colorSpace = THREE.NoColorSpace;
+// _scratchClearcoatRoughnessTexture.needsUpdate = true;
 
 const _scratchDiffuseTexture = new THREE.DataTexture(diffusedata, width, height);
 _scratchDiffuseTexture.name = '_scratchDiffuseTexture';
@@ -92,26 +92,6 @@ export const defaultMeshPhysicalMaterialConfig = {
   roughnessMap: _scratchRoughnessTexture,
   transmissionMap: _scratchTransmissionTexture,
 };
-
-// const chippedStoneMaterial = {
-//   color: '#ffffff',
-//   dispersion: 1,
-//   flatShading: false,
-//   ior: 1.8,
-//   name: 'chipped_stone',
-//   normalScale: new THREE.Vector2(0,1),
-//   opacity: 1,
-//   roughness: 1,
-//   side: THREE.DoubleSide,
-//   thickness: 1,
-//   transmission: 1,
-//   transparent: true,
-//   bumpMap: _scratchBumpTexture,
-//   map: _scratchDiffuseTexture,
-//   // normalMap: _scratchNormalTexture,
-//   roughnessMap: _scratchRoughnessTexture,
-//   transmissionMap: _scratchTransmissionTexture,
-// };
 
 const glossBlackMaterial = {
   bumpScale: 2,
@@ -233,18 +213,6 @@ const materialState = {
     tailwindColor: `bg-radial-[at_45%_45%] from-orange-50 from-3% via-stone-600 via-55% to-slate-950 to-95%`,
     material: new THREE.MeshPhysicalMaterial({ ...translucentGreyMaterial }),
   },
-
-  // chipped_stone: {
-  //   displayName: 'Chipped Stone',
-  //   tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-700 via-37% to-zinc-950 to-100%`,
-  //   material: new THREE.MeshPhysicalMaterial({ ...chippedStoneMaterial }),
-  //   materialProps: chippedStoneMaterial,
-  //   textures: {
-  //     map: '/chipped_stone_diffuse.jpg',
-  //     normalMap: '/chipped_stone_normal.jpg',
-  //     transmissionMap: '/chipped_stone_transmission.jpg',
-  //   },
-  // },
 };
 
 const textureState = {};
@@ -253,8 +221,6 @@ const materialStore = (set, get) => ({
   materials: materialState,
   textures: textureState,
   texturesInitialized: '',
-
-  getMaterials: () => get().materials,
 
   getSelectedMaterials: (materialIDs = []) => {
     let invalidIDCount = 0;
@@ -287,19 +253,6 @@ const materialStore = (set, get) => ({
 
     return selectedMaterials;
   },
-
-  getMaterial: (id) => {
-    const materials = get().materials;
-    if (materials[`${id}`]) return (materials[`${id}`]);
-    else {
-      console.warn(`getMaterial(${id}) => no material with id: ${id}. id must exist.`);
-      return undefined;
-    }
-  },
-
-  getTextures: () => get().textures,
-
-  getTexture: (id) => get().textures[`${id}`],
 
   setMaterialTextures: (textures) => {
     const materials = get().materials;
