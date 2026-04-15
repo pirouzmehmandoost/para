@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
@@ -8,6 +8,9 @@ import { easing } from 'maath';
 import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { eulerDistance, generalThreshold, largeThreshold, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
+import cameraConfigs from '@configs/cameraConfigs';
+
+const { POSITION: [ , , cameraOffsetDistance] } = cameraConfigs;
 
 const Model = (props) => {
   const {
@@ -21,7 +24,7 @@ const Model = (props) => {
     scale = 1,
   } = props;
 
-  const { camera } = useThree();
+  const camera = useThree((state) => state.camera);
   const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
 
   const _scratchSizeRef = useRef(new THREE.Vector3());
@@ -30,12 +33,12 @@ const Model = (props) => {
 
   const scaleRef = useRef(new THREE.Vector3(0, 0, 0));
 
-  const defaultRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz)); // original rotation.
-  const animateRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz)); // transform rotation
+  const defaultRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz));
+  const animateRotationRef = useRef(new THREE.Euler(Math.PI * rx, Math.PI * ry, Math.PI * rz));
   const rotationModeRef = useRef(null);
 
-  const defaultPositionRef = useRef(new THREE.Vector3(px, py, pz));  // original rotation.
-  const animatePositionRef = useRef(new THREE.Vector3(px, py, pz));  // transform rotation.
+  const defaultPositionRef = useRef(new THREE.Vector3(px, py, pz));
+  const animatePositionRef = useRef(new THREE.Vector3(px, py, pz));
   const positionModeRef = useRef(null);
 
   const animateMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }));
@@ -58,7 +61,7 @@ const Model = (props) => {
       meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current);
       updateCameraRelativeScale(camera, 0.08, true)
     }
-  }, [scale]);
+  }, [camera, scale]);
 
   function updateRotationAnimation(rotationMode, deltaRotation, frameDelta) {
     const didModeChange = rotationMode !== rotationModeRef.current;
@@ -104,14 +107,14 @@ const Model = (props) => {
   function updatePositionAnimation(positionMode, xOffset = 0, yOffset = 0, zOffset = 0, delta) {
     if (positionMode !== positionModeRef.current) positionModeRef.current = positionMode;
 
-    if (positionMode === 'ENABLED') {
+    if (positionMode === PositionAnimationModes.ENABLED) {
       animatePositionRef.current.set(
         defaultPositionRef.current.x + xOffset,
         defaultPositionRef.current.y + yOffset,
         defaultPositionRef.current.z + zOffset
       );
     }
-    else if (positionMode === 'DISABLED') {
+    else if (positionMode === PositionAnimationModes.DISABLED) {
       animatePositionRef.current.set(
         defaultPositionRef.current.x,
         defaultPositionRef.current.y,
@@ -129,7 +132,7 @@ const Model = (props) => {
 
     const maxBoundingBoxDimension = Math.max(_scratchSizeRef.current.x, _scratchSizeRef.current.y);
     const verticalFOVinRadians = (camera.fov * Math.PI) / 180;
-    const visibleHeight = 2 * Math.tan(verticalFOVinRadians / 2) * 180;
+    const visibleHeight = 2 * Math.tan(verticalFOVinRadians / 2) * cameraOffsetDistance;
     const visibleWidth = visibleHeight * camera.aspect;
     const targetSize = Math.min(visibleHeight, visibleWidth);
     const scaleFactor = scale * targetSize / (maxBoundingBoxDimension > 0 ? maxBoundingBoxDimension : 1);
@@ -173,7 +176,7 @@ const Model = (props) => {
     if (!materialToUpdate) return;
 
     if (animateMaterialRef.current.side !== materialToUpdate.side) {
-      animateMaterialRef.current.side = materialToUpdate?.side ?? THREE.DoubleSide;
+      animateMaterialRef.current.side = materialToUpdate.side ?? THREE.DoubleSide;
       animateMaterialRef.current.needsUpdate = true;
     }
 
@@ -289,4 +292,4 @@ const Model = (props) => {
   );
 };
 
-export default Model;
+export default memo(Model);
