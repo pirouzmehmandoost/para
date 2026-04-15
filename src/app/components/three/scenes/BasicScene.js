@@ -13,9 +13,6 @@ import SceneRig from '../cameras/SceneRig';
 import Model from '../models/Model';
 import Ground from '../models/Ground';
 
-THREE.Cache.enabled = true;
-THREE.ColorManagement.enabled = true;
-
 const BasicScene = () => {
   const { SWIPE_DELAY_MS } = cameraConfigs;
   const { projects } = portfolio;

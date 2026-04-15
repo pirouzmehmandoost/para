@@ -13,8 +13,6 @@ import SimpleCameraRig from '../cameras/SimpleCameraRig';
 import Model from '../models/Model';
 import Ground from '../models/Ground';
 
-THREE.Cache.enabled = true;
-THREE.ColorManagement.enabled = true;
 
 const { projects } = sceneConfigs;
 const {
