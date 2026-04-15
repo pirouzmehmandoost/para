@@ -178,8 +178,7 @@ const SceneRig = ({
     if (cameraStopPositionsRef.current.length === 0) return;
 
     let nextPosition = cameraStopPositionsRef.current[0];
-    const focusTargetExists =  selection.isFocused !== null || selection?.isFocused?.length !== 0
-    // const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
+    const focusTargetExists = selection.isFocused !== null && selection.isFocused?.length > 0;
     const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
