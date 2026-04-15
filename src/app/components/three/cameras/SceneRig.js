@@ -49,7 +49,7 @@ const SceneRig = ({
 
   const currentCameraPositionRef = useRef(new THREE.Vector3());
   const nextCameraPositionRef = useRef(new THREE.Vector3());
-  const cameraTargetRef = useRef(new THREE.Vector3());
+  // const cameraTargetRef = useRef(new THREE.Vector3());
 
   const cameraStopPositionsRef = useRef([new THREE.Vector3(0, 0, 0)]);
   const defaultFallbackPositionRef = useRef(new THREE.Vector3(POSITION[0], POSITION[1], POSITION[2]));

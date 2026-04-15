@@ -21,7 +21,6 @@ const BasicScene = () => {
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
 
-  const isFocused = useSelection((state) => state.selection.isFocused);
   const resetSelectionStore = useSelection((state) => state.reset);
   const setFocusAndMaterial = useSelection((state) => state.setFocusAndMaterial);
   const [meshesReady, setMeshesReady] = useState(false);
@@ -153,7 +152,6 @@ const BasicScene = () => {
       />
       <SceneRig
         fallbackPositions={meshPositions.current}
-        focusTarget={isFocused}
         onSwipe={onSwipe}
         targets={cameraTargets}
       />
