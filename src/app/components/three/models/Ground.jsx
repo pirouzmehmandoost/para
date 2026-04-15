@@ -6,14 +6,10 @@ import { useGLTF } from '@react-three/drei';
 import useMaterial from '@stores/materialStore';
 import { groundConfig } from '@/lib/configs/groundConfig';
 
-THREE.ColorManagement.enabled = true;
-THREE.Cache.enabled = true;
 
 const { POSITION, ROTATION, SCALE } = groundConfig;
 const URL = '/env_ground_3-transformed.glb';
 const NODE_NAME = 'ground';
-
-useGLTF.preload(URL);
 
 const Ground = (props) => {
   const {

@@ -5,8 +5,6 @@ import * as THREE from 'three';
 import { useThree, useFrame } from '@react-three/fiber';
 import { easing } from 'maath';
 
-THREE.ColorManagement.enabled = true;
-
 /* Example usage: 
   <AnimatedLight
     castShadow

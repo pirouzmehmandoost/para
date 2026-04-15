@@ -15,6 +15,7 @@ THREE.Cache.enabled = true;
 useGLTF.preload('/yoga_mat_strap.glb');
 useGLTF.preload('/textured_bag.glb');
 useGLTF.preload('/sang.glb');
+useGLTF.preload('/env_ground_3-transformed.glb');
 
 export const Loader = () => {
   return (

@@ -9,12 +9,6 @@ import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/material
 import useSelection from '@stores/selectionStore';
 import { scaleMeshAtBreakpoint } from '@utils/scaleUtils';
 
-THREE.Cache.enabled = true;
-THREE.ColorManagement.enabled = true;
-
-useGLTF.preload('/yoga_mat_strap.glb');
-useGLTF.preload('/textured_bag.glb');
-useGLTF.preload('/bag_9_BAT-transformed.glb');
 
 const DynamicPositioningModel = (props) => {
   const {
