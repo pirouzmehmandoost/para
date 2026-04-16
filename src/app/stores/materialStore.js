@@ -137,7 +137,7 @@ const meshPhysicalMaterialConfigs = {
 
 for (const materialConfig in meshPhysicalMaterialConfigs) {
 
-  // set clearcoat and transmission if undefined or 0. 
+  // set clearcoat, clearcoatRoughness, and transmission if undefined or 0. 
   if (!meshPhysicalMaterialConfigs[materialConfig]?.clearcoat) { 
     meshPhysicalMaterialConfigs[materialConfig].clearcoat = defaultMeshPhysicalMaterialConfig.clearcoat;
   }
