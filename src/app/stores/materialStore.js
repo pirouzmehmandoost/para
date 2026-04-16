@@ -146,6 +146,10 @@ for (const materialConfig in meshPhysicalMaterialConfigs) {
     meshPhysicalMaterialConfigs[materialConfig].transmission = defaultMeshPhysicalMaterialConfig.transmission;
   }
 
+  if (!meshPhysicalMaterialConfigs[materialConfig]?.clearcoatRoughness) {
+    meshPhysicalMaterialConfigs[materialConfig].clearcoatRoughness = defaultMeshPhysicalMaterialConfig.clearcoatRoughness;
+  }
+
   meshPhysicalMaterialConfigs[materialConfig].bumpMap = new THREE.DataTexture(bumpData, width, height);
   meshPhysicalMaterialConfigs[materialConfig].bumpMap.name = '_scratchBumpTexture';
   meshPhysicalMaterialConfigs[materialConfig].bumpMap.colorSpace = THREE.NoColorSpace;
