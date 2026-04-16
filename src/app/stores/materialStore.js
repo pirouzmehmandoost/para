@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import * as THREE from 'three';
 import { getColorSpace } from '@utils/materialUtils';
+import { EPSILON_1e7 } from '@utils/animationUtils';
 
 const _buildCacheKey = (obj) => {
   if (Array.isArray(obj)) return obj.join('|');
@@ -60,12 +61,12 @@ _scratchTransmissionTexture.needsUpdate = true;
 
 export const defaultMeshPhysicalMaterialConfig = {
   color: '#2f2f2f',
-  clearcoat: 0.1,
+  clearcoat: EPSILON_1e7,
   clearcoatRoughness: 1,
   flatShading: false,
-  transmission: 0,
   side: THREE.DoubleSide,
   thickness: 0,
+  transmission: EPSILON_1e7,
   transparent: false,
   bumpMap: _scratchBumpTexture,
   map: _scratchDiffuseTexture,
@@ -98,8 +99,6 @@ const meshPhysicalMaterialConfigs = {
   matteBlackMaterial: {
     bumpScale: 3,
     color: '#2c2c2c',
-    clearcoat: 0,
-    clearcoatRoughness: 1,
     flatShading: false,
     ior: 1.5,
     name: 'matte_black',
@@ -111,7 +110,6 @@ const meshPhysicalMaterialConfigs = {
   stainedMatteBlackMaterial: {
     bumpScale: -0.5,
     color: '#4f4f4f',
-    clearcoatRoughness: 1,
     flatShading: false,
     name: 'stained_matte_black',
     reflectivity: 0.3,
@@ -138,6 +136,16 @@ const meshPhysicalMaterialConfigs = {
 };
 
 for (const materialConfig in meshPhysicalMaterialConfigs) {
+
+  // set clearcoat and transmission if undefined or 0. 
+  if (!meshPhysicalMaterialConfigs[materialConfig]?.clearcoat) { 
+    meshPhysicalMaterialConfigs[materialConfig].clearcoat = defaultMeshPhysicalMaterialConfig.clearcoat;
+  }
+
+  if (!meshPhysicalMaterialConfigs[materialConfig]?.transmission) {
+    meshPhysicalMaterialConfigs[materialConfig].transmission = defaultMeshPhysicalMaterialConfig.transmission;
+  }
+
   meshPhysicalMaterialConfigs[materialConfig].bumpMap = new THREE.DataTexture(bumpData, width, height);
   meshPhysicalMaterialConfigs[materialConfig].bumpMap.name = '_scratchBumpTexture';
   meshPhysicalMaterialConfigs[materialConfig].bumpMap.colorSpace = THREE.NoColorSpace;

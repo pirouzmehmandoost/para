@@ -7,10 +7,10 @@ import { useGLTF } from '@react-three/drei';
 import { easing } from 'maath';
 import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
-import { eulerDistance, generalThreshold, largeThreshold, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
+import { eulerDistance, EPSILON_3e3, EPSILON_10e4, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
 import cameraConfigs from '@configs/cameraConfigs';
 
-const { POSITION: [ , , cameraOffsetDistance] } = cameraConfigs;
+const { POSITION: [, , cameraOffsetDistance] } = cameraConfigs;
 
 const Model = (props) => {
   const {
@@ -80,7 +80,7 @@ const Model = (props) => {
       animateRotationRef.current.set(defaultRotationRef.current.x, wY, defaultRotationRef.current.z);
     }
     else if (rotationMode === RotationAnimationModes.MODE_MANUAL) {
-  
+
       const { x = 0, y = 0, z = 0 } = deltaRotation;
 
       animateRotationRef.current.set(
@@ -97,7 +97,7 @@ const Model = (props) => {
       );
     }
 
-    if (eulerDistance(meshRef.current.rotation, refToUpdate) > generalThreshold) {
+    if (eulerDistance(meshRef.current.rotation, refToUpdate) > EPSILON_3e3) {
       easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, frameDelta);
     }
 
@@ -122,7 +122,7 @@ const Model = (props) => {
       );
     }
 
-    if (meshRef.current.position.distanceTo(animatePositionRef.current) > generalThreshold) {
+    if (meshRef.current.position.distanceTo(animatePositionRef.current) > EPSILON_3e3) {
       easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, delta);
     }
   };
@@ -145,7 +145,7 @@ const Model = (props) => {
 
     scaleRef.current.set(scaleFactor, scaleFactor, scaleFactor);
 
-    if (meshRef.current.scale.distanceTo(scaleRef.current) > largeThreshold) {
+    if (meshRef.current.scale.distanceTo(scaleRef.current) > EPSILON_10e4) {
       easing.damp3(meshRef.current.scale, scaleRef.current, 0.3, delta);
     }
   };
@@ -153,23 +153,21 @@ const Model = (props) => {
   function easeMaterialProperties(materialToUpdate, delta) {
     if (!materialToUpdate) return;
 
-    if (Math.abs(animateMaterialRef.current.bumpScale - materialToUpdate.bumpScale) > largeThreshold) easing.damp(animateMaterialRef.current, "bumpScale", materialToUpdate.bumpScale, 0.3, delta);
+    if (Math.abs(animateMaterialRef.current.clearcoat - materialToUpdate.clearcoat) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "clearcoat", materialToUpdate.clearcoat, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.clearcoat - materialToUpdate.clearcoat) > largeThreshold) easing.damp(animateMaterialRef.current, "clearcoat", materialToUpdate.clearcoat, 0.3, delta);
+    if (Math.abs(animateMaterialRef.current.transmission - materialToUpdate.transmission) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "transmission", materialToUpdate.transmission, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.clearcoatRoughness - materialToUpdate.clearcoatRoughness) > largeThreshold) easing.damp(animateMaterialRef.current, "clearcoatRoughness", materialToUpdate.clearcoatRoughness, 0.3, delta);
+    if (Math.abs(animateMaterialRef.current.bumpScale - materialToUpdate.bumpScale) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "bumpScale", materialToUpdate.bumpScale, 0.3, delta);
+
+    if (Math.abs(animateMaterialRef.current.clearcoatRoughness - materialToUpdate.clearcoatRoughness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "clearcoatRoughness", materialToUpdate.clearcoatRoughness, 0.3, delta);
 
     if (!animateMaterialRef.current.color.equals(materialToUpdate.color)) easing.dampC(animateMaterialRef.current.color, materialToUpdate.color, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.dispersion - materialToUpdate.dispersion) > largeThreshold) easing.damp(animateMaterialRef.current, "dispersion", materialToUpdate.dispersion, 0.3, delta);
+    if (Math.abs(animateMaterialRef.current.reflectivity - materialToUpdate.reflectivity) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "reflectivity", materialToUpdate.reflectivity, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.reflectivity - materialToUpdate.reflectivity) > largeThreshold) easing.damp(animateMaterialRef.current, "reflectivity", materialToUpdate.reflectivity, 0.3, delta);
+    if (Math.abs(animateMaterialRef.current.roughness - materialToUpdate.roughness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "roughness", materialToUpdate.roughness, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.roughness - materialToUpdate.roughness) > largeThreshold) easing.damp(animateMaterialRef.current, "roughness", materialToUpdate.roughness, 0.3, delta);
-
-    if (Math.abs(animateMaterialRef.current.thickness - materialToUpdate.thickness) > largeThreshold) easing.damp(animateMaterialRef.current, "thickness", materialToUpdate.thickness, 0.3, delta);
-
-    if (Math.abs(animateMaterialRef.current.transmission - materialToUpdate.transmission) > largeThreshold) easing.damp(animateMaterialRef.current, "transmission", materialToUpdate.transmission, 0.3, delta);
+    if (Math.abs(animateMaterialRef.current.thickness - materialToUpdate.thickness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "thickness", materialToUpdate.thickness, 0.3, delta);
   }
 
   function updateDeterministicMaterialProperties(materialToUpdate) {
@@ -193,7 +191,7 @@ const Model = (props) => {
       animateMaterialRef.current.needsUpdate = true;
     }
 
-    if (animateMaterialRef.current?.map && 
+    if (animateMaterialRef.current?.map &&
       animateMaterialRef.current.map.uuid !== materialToUpdate.map?.uuid) {
       animateMaterialRef.current.map = materialToUpdate?.map;
       animateMaterialRef.current.needsUpdate = true;
