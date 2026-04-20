@@ -1,45 +1,41 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import { memo, useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
 import useMaterial from '@stores/materialStore';
-import { groundConfig } from '@/lib/configs/groundConfig';
+import groundConfigs from '@configs/groundConfigs';
 
-
-const { POSITION, ROTATION, SCALE } = groundConfig;
-const URL = '/env_ground_3-transformed.glb';
-const NODE_NAME = 'ground';
+const { NODE_NAME, POSITION, ROTATION, SCALE, URL } = groundConfigs;
 
 const Ground = (props) => {
   const {
-    onGroundReady = undefined,
+    // onGroundReady = undefined,
     position = [],
     rotation = [],
     scale = [],
   } = props;
 
   const groundRef = useRef(undefined);
-  const hasPositionedRef = useRef(false);
+  // const hasPositionedRef = useRef(false);
   const geometry = useGLTF(URL).nodes?.Plane?.geometry ?? null;
+
   const materials = useMaterial.getState().materials;
   const material = materials[NODE_NAME].material;
+
   const groundPosition = position?.length ? position : POSITION;
   const groundRotation = rotation?.length ? rotation : ROTATION;
   const groundScale = scale?.length === 3 ? scale : SCALE;
 
-  useEffect(() => {
-    if (hasPositionedRef.current) return;
+  // useEffect(() => {
+  //   if (hasPositionedRef.current) return;
 
-    if (groundRef.current) {
-      groundRef.current?.updateMatrixWorld(true, true);
-
-      if (typeof onGroundReady === 'function') {
-        onGroundReady(groundRef.current);
-      }
-      hasPositionedRef.current = true;
-    }
-  }, [onGroundReady]);
+  //   if (groundRef.current) {
+  //     if (typeof onGroundReady === 'function') {
+  //       onGroundReady(groundRef.current);
+  //     }
+  //     hasPositionedRef.current = true;
+  //   }
+  // }, [onGroundReady]);
 
   return (
     <>
@@ -49,7 +45,6 @@ const Ground = (props) => {
           castShadow={false}
           geometry={geometry}
           material={material}
-          name={"Ground"}
           position={groundPosition}
           receiveShadow={true}
           rotation={groundRotation}
@@ -60,4 +55,4 @@ const Ground = (props) => {
   );
 }
 
-export default Ground;
+export default memo(Ground);
