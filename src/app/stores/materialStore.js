@@ -3,50 +3,13 @@ import * as THREE from 'three';
 import { getColorSpace } from '@utils/materialUtils';
 import { EPSILON_1e7 } from '@utils/animationUtils';
 
-/*
-NOTES:
-
-Point 1: Disposal must include scratch DataTextures. 
-  Every THREE.DataTexture instance — whether loaded or scratch — allocates a GPU texture object when first rendered.
-  dispose() releases that GPU-side allocation. If translucent_grey's scratch DataTextures are never disposed, those four GPU textures leak for the lifetime of the application.
-  The disposal strategy must cover all texture instances on all materials, not only the loaded ones.
-
-Point 2: Unique references are a prerequisite for safe disposal.
-  texture.dispose() releases the GPU resources for that specific THREE.Texture instance.
-  If two materials shared the same THREE.Texture object (same reference, same UUID), disposing it via one material would invalidate the GPU texture for the other material.
-  The other material's slot would still hold a reference to the disposed JavaScript object, but any subsequent render using it would either produce a black/missing texture or trigger a re-upload.
-
-The current implementation already satisfies this prerequisite (unique references). 
-_generateDataTextures() is called separately for each material config (line 182) and once for defaultMeshPhysicalMaterialConfig (line 86). 
-Each call constructs four new THREE.DataTexture instances via new THREE.DataTexture(...). Each instance is a distinct JavaScript object with its own UUID. 
-No two materials share a texture reference.
-
-The shared Uint8Array buffers (bumpData, diffuseData, etc.) are CPU-side data. 
-texture.dispose() does NOT free or affect the Uint8Array — it only releases the GPU-side WebGLTexture. 
-So multiple DataTexture instances can safely share the same Uint8Array buffer and be disposed independently without affecting each other.
-
-After setMaterialTextures() runs, the situation is:
-  - Materials WITH loaded textures (e.g., gloss_black, matte_black, stained_matte_black): their slots hold cloned loaded textures (from texture.clone() at line 322). The original scratch DataTextures that were in those slots are now unreferenced — they are already candidates for disposal at that point, though nothing currently disposes them.
-  - Materials WITHOUT loaded textures (e.g., translucent_grey): their slots still hold the scratch DataTextures from _generateDataTextures().
-  - defaultMeshPhysicalMaterialConfig: holds its own set of scratch DataTextures (from line 86). These are referenced by animateMaterialRef in Model.js only until the one-shot .copy(mat) overwrites them.
-
-So the disposal strategy will need to track three categories: 
-  1- scratch DataTextures that were replaced by loaded textures and are now unreferenced,
-
-  2- scratch DataTextures that remain in use on materials without loaded textures, and (3) loaded texture clones on materials with loaded textures. 
-    All three categories need disposal when the store or application tears down.
-*/
-
 const _buildCacheKey = (obj) => {
   if (Array.isArray(obj)) return obj.join('|');
 
   return Object.keys(obj).sort().join('|');
 };
 
-// Uint8Arrays buffers with pixel data (R, G, B, A for each pixel)
-// Buffer data is shared among scratch instances of DataTexture, references are stored on the CPU.
-// Disposing any DataTexture via .dispose() (releasing GPU-side WebGLTexture).
-// will release memory GPU-side with no affect buffer data, shared or otherwise.
+/** See materialStore.md §4 **/
 const width = 32;
 const height = 32;
 const size = width * height;
@@ -76,6 +39,13 @@ for (let i = 0; i < size; i++) {
   transmissionData[stride + 3] = 255;
 }
 
+/*
+ * returns an object with 4 properties of type THREE.DataTexture.
+ * These are assigned to the bumpMap, map, roughnessMap, transmissionMap properties of material config objects:
+ *  - The 4 properties of private constant _meshPhysicalMaterialConfigs
+ *    (e.g. _meshPhysicalMaterialConfigs.glossBlackMaterial, _meshPhysicalMaterialConfigs.stainedMatteBlackMaterial, etc.).
+ *  - The exported constant defaultMeshPhysicalMaterialConfig (imported in Model.js).
+*/
 function _generateDataTextures() {
   const bumpDataTexture = new THREE.DataTexture(bumpData, width, height);
   bumpDataTexture.name = '_scratchBumpTexture';
@@ -138,7 +108,6 @@ const _meshPhysicalMaterialConfigs = {
     roughness: 0.375,
     side: THREE.DoubleSide,
   },
-
   matteBlackMaterial: {
     bumpScale: 3,
     color: '#2c2c2c',
@@ -149,7 +118,6 @@ const _meshPhysicalMaterialConfigs = {
     roughness: 0.75,
     side: THREE.DoubleSide,
   },
-
   stainedMatteBlackMaterial: {
     bumpScale: -0.5,
     color: '#4f4f4f',
@@ -160,7 +128,6 @@ const _meshPhysicalMaterialConfigs = {
     roughness: 1,
     side: THREE.DoubleSide,
   },
-
   translucentGreyMaterial: {
     bumpScale: 1,
     color: '#949994',
@@ -179,7 +146,6 @@ const _meshPhysicalMaterialConfigs = {
 };
 
 for (const materialConfig in _meshPhysicalMaterialConfigs) {
-
   // set clearcoat, clearcoatRoughness, and transmission if undefined or 0. 
   if (!_meshPhysicalMaterialConfigs[materialConfig]?.clearcoat) {
     _meshPhysicalMaterialConfigs[materialConfig].clearcoat = defaultMeshPhysicalMaterialConfig.clearcoat;
@@ -190,8 +156,8 @@ for (const materialConfig in _meshPhysicalMaterialConfigs) {
   }
 
   // set clearcoatRoughness to 1 if undefined or 0. 
-  // If eased, transitioning from 0 will produce undesirable, highly concentrated specular highlights.
-  // Materials that should have no perceivable clearcoat will have clearcoat=1e-7 and clearcoatRoughness=1.
+  // Transitioning from 0 will produces an undesirable, highly concentrated specular highlights.
+  // Materials with intentionally imperceptible clearcoat have clearcoat = 1e-7 and clearcoatRoughness = 1.
   if (!_meshPhysicalMaterialConfigs[materialConfig]?.clearcoatRoughness) {
     _meshPhysicalMaterialConfigs[materialConfig].clearcoatRoughness = defaultMeshPhysicalMaterialConfig.clearcoatRoughness;
   }
@@ -212,13 +178,11 @@ const materialState = {
       bumpMap: '/gloss_material_roughness.jpg',
     },
   },
-
   ground: {
     displayName: 'Ground',
     tailwindColor: `bg-zinc-900`,
     material: new THREE.MeshStandardMaterial({ ...defaultMeshStandardMaterialConfig, name: 'ground', }),
   },
-
   matte_black: {
     displayName: 'Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
@@ -227,7 +191,6 @@ const materialState = {
       bumpMap: '/gloss_material_roughness.jpg',
     },
   },
-
   stained_matte_black: {
     displayName: 'Stained Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
@@ -238,7 +201,6 @@ const materialState = {
       bumpMap: '/textured_bag_bump.jpg',
     },
   },
-
   translucent_grey: {
     displayName: 'Translucent Grey',
     tailwindColor: `bg-radial-[at_45%_45%] from-orange-50 from-3% via-stone-600 via-55% to-slate-950 to-95%`,
