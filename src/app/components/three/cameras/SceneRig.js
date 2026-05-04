@@ -202,8 +202,7 @@ const SceneRig = ({
     const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName); 
 
     if (isTargetInScene && meshInScene.isObject3D) {
-      camera.updateMatrixWorld();
-      if (meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
+      if (typeof meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
 
       _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
       nextPosition = _scratchCenterRef.current;
