@@ -7,23 +7,6 @@ import { easing } from 'maath';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 
-/* 
-Potential Redesign: 
-1- keys of meshesInSceneRef are the name property of each scene child. Maybe they could be uuids since those are unique. 
-2- Determine whether the entire if-else block from in useFrame() (lines 182-199) requires revision. 
-3- The old way of reading focusTarget provide this value as a prop. Now this value is read directly from selectionStore per frame. Determine whether the new way is the best approach. 
-
- old way: 
-  (BasicScene provided focusTarget as a prop to SceneRig)
-  const focusedIndex = focusTarget !== null ? (meshesInSceneRef.current[focusTarget]?.index ?? -1) : -1;
-
-new way: 
-  (store snapshot is read directly per frame/within useFrame())
-  const { selection } = useSelection.getState();
-  const focusTargetExists =  selection.isFocused !== null || selection?.isFocused?.length !== 0
-  const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
-*/
-
 const SceneRig = ({
   onSwipe = undefined, // optional callback
   fallbackPositions = [], // array of Vector3
