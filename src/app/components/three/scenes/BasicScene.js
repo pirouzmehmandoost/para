@@ -3,7 +3,7 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import { Bvh, } from '@react-three/drei'
+// import { Bvh, } from '@react-three/drei'
 import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
@@ -121,7 +121,7 @@ const BasicScene = () => {
           darkness={0.75}
         />
       </EffectComposer>
-      <Bvh firstHitOnly>
+      {/* <Bvh firstHitOnly> */}
         {projects.map(({
           sceneData,
           sceneData: {
@@ -144,10 +144,10 @@ const BasicScene = () => {
             />
           );
         })}
-      </Bvh>
+      {/* </Bvh> */}
       <Ground
         position={[0, -90, -15]}
-        rotation={[Math.PI / 4.5, Math.PI, 0]}
+        rotation={[Math.PI / 4.5, Math.PI/2, 0]} // y was originally MATH.PI
         scale={[0.7, 0.7, 0.7]}
       />
       <SceneRig
