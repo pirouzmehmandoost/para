@@ -10,9 +10,8 @@ import useSelection from '@stores/selectionStore';
 /* 
 Potential Redesign: 
 1- keys of meshesInSceneRef are the name property of each scene child. Maybe they could be uuids since those are unique. 
-2- Cut down unnecessary calls to camera.updateMatrixWorld();
-4- The if-else logic in useFrame() needs revision. 
-5- The old way of reading focusTarget provide this value as a prop. Now this value is read directly from selectionStore per frame
+2- Determine whether the entire if-else block from in useFrame() (lines 182-199) requires revision. 
+3- The old way of reading focusTarget provide this value as a prop. Now this value is read directly from selectionStore per frame. Determine whether the new way is the best approach. 
 
  old way: 
   (BasicScene provided focusTarget as a prop to SceneRig)
@@ -23,8 +22,6 @@ new way:
   const { selection } = useSelection.getState();
   const focusTargetExists =  selection.isFocused !== null || selection?.isFocused?.length !== 0
   const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
-
-  Determine if this is a valid and if it is the best approach. 
 */
 
 const SceneRig = ({
@@ -66,7 +63,7 @@ const SceneRig = ({
       if (targets[i]?.name?.length) {
         const targetName = targets[i].name;
         const foundTargetInScene = meshesInScene[targetName] || null;
-        
+
         if (foundTargetInScene) {
           meshesInSceneRef.current[targetName] = { target: foundTargetInScene, index: i, targetName };
         }
@@ -139,7 +136,7 @@ const SceneRig = ({
 
   useEffect(() => {
     const length = Math.max(Object.entries(meshesInSceneRef.current)?.length ?? 0, fallbackPositions?.length ?? 0);
-  
+
     for (let i = 0; i < length; i++) {
       if (!cameraStopPositionsRef.current[i]?.isVector3) cameraStopPositionsRef.current[i] = new THREE.Vector3();
 
@@ -167,11 +164,11 @@ const SceneRig = ({
   }, [targets, fallbackPositions]);
 
   useFrame(({ camera, clock }, delta) => {
+    const clampedDelta = Math.min(delta, 0.08);
     const elapsedTime = clock.elapsedTime;
     const xOffset = Math.sin(elapsedTime);
     const yOffset = -2 * xOffset;
     const zOffset = POSITION[2] + xOffset;
-    const clampedDelta = Math.min(delta, 0.08);
     const { selection } = useSelection.getState();
 
     if (targetIndexRef.current >= cameraStopPositionsRef.current.length || targetIndexRef.current < 0) targetIndexRef.current = 0;
@@ -182,10 +179,15 @@ const SceneRig = ({
     const focusedIndex = focusTargetExists ? (meshesInSceneRef.current[selection.isFocused]?.index ?? -1) : -1;
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
-    if (focusedIndex >= 0 && cameraStopPositionsRef.current[focusedIndex]) targetIndexRef.current = focusedIndex
-    else if (isManualOverrideActive && cameraStopPositionsRef.current[targetIndexRef.current]) targetIndexRef.current = targetIndexRef.current
+    if (focusedIndex >= 0 && cameraStopPositionsRef.current[focusedIndex]) {
+      targetIndexRef.current = focusedIndex;
+    }
+    else if (isManualOverrideActive && cameraStopPositionsRef.current[targetIndexRef.current]) {
+      // if current index points to a valid entry in cameraStopPositionsRef then prevent the else block from running.
+      // if false (e.g. cameraStopPositionsRef.current is shortened between frames by useEffect) then the else block resets the index. 
+    }
     else {
-      currentCameraPositionRef.current.copy(cameraStopPositionsRef.current[targetIndexRef.current]); // TEST: temporarily uncomment this line. 
+      // currentCameraPositionRef.current.copy(cameraStopPositionsRef.current[targetIndexRef.current]);  
       let currentIndex = targetIndexRef.current;
       let nextIndex = currentIndex >= cameraStopPositionsRef.current.length - 1 ? 0 : currentIndex + 1;
       const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > MIN_DWELL_SECONDS;
@@ -199,7 +201,7 @@ const SceneRig = ({
     const targetName = targets[targetIndexRef.current]?.name;
     const meshInScene = meshesInSceneRef.current[targetName]?.target;
     const meshInSceneName = meshInScene?.name;
-    const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName); 
+    const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName);
 
     if (isTargetInScene && meshInScene.isObject3D) {
       if (typeof meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
