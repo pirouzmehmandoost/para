@@ -239,30 +239,30 @@ const Model = (props) => {
 
     if (!texturesReady) return;
 
-    const desiredMaterialID = selectedAndFocused && selection.materialID?.length
+    const selectedMaterialID = selectedAndFocused && selection.materialID?.length
       ? selection.materialID
       : defaultMaterialID;
 
     if (!materialReadyRef.current) {
       // One-shot: seed animateMaterialRef from the store's default material
       const variants = matState.getSelectedMaterials(materialIDs);
-      const mat = variants[defaultMaterialID];
-      if (mat) {
-        animateMaterialRef.current.copy(mat);
+      const defaultMaterial = variants[defaultMaterialID];
+      if (defaultMaterial) {
+        animateMaterialRef.current.copy(defaultMaterial);
         animateMaterialRef.current.needsUpdate = true;
         targetMaterialIDRef.current = defaultMaterialID;
-        targetMaterialRef.current = mat;
+        targetMaterialRef.current = defaultMaterial;
         materialReadyRef.current = true;
       }
       return;
     }
 
-    if (desiredMaterialID !== targetMaterialIDRef.current) {
+    if (selectedMaterialID !== targetMaterialIDRef.current) {
       const variants = matState.getSelectedMaterials(materialIDs);
-      const mat = variants[desiredMaterialID];
-      if (mat) {
-        targetMaterialIDRef.current = desiredMaterialID;
-        targetMaterialRef.current = mat;
+      const targetMaterial = variants[selectedMaterialID];
+      if (targetMaterial) {
+        targetMaterialIDRef.current = selectedMaterialID;
+        targetMaterialRef.current = targetMaterial;
       }
     }
 
