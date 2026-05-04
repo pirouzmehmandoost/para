@@ -80,7 +80,7 @@ export const defaultMeshPhysicalMaterialConfig = {
   side: THREE.DoubleSide,
   thickness: 0,
   transmission: EPSILON_1e7,
-  transparent: false,
+  transparent: true, // true for all MeshPysicalMaterials in store
   bumpMap: _defaultMeshPhysicalMaterialConfigMaps.bumpDataTexture,
   map: _defaultMeshPhysicalMaterialConfigMaps.diffuseDataTexture,
   roughnessMap: _defaultMeshPhysicalMaterialConfigMaps.roughnessDataTexture,
@@ -160,6 +160,10 @@ for (const materialConfig in _meshPhysicalMaterialConfigs) {
   // Materials with intentionally imperceptible clearcoat have clearcoat = 1e-7 and clearcoatRoughness = 1.
   if (!_meshPhysicalMaterialConfigs[materialConfig]?.clearcoatRoughness) {
     _meshPhysicalMaterialConfigs[materialConfig].clearcoatRoughness = defaultMeshPhysicalMaterialConfig.clearcoatRoughness;
+  }
+
+  if (!_meshPhysicalMaterialConfigs[materialConfig]?.transparent) {
+    _meshPhysicalMaterialConfigs[materialConfig].transparent = defaultMeshPhysicalMaterialConfig.transparent;
   }
 
   const dataTextures = _generateDataTextures();
