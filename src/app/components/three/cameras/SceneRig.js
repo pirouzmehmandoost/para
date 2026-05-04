@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
@@ -13,13 +13,20 @@ const SceneRig = ({
   targets = [], // array of Object3D refs.
 }) => {
 
-  const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS, POSITION } = cameraConfigs;
+  const {
+    MIN_DWELL_SECONDS,
+    MANUAL_OVERRIDE_SECONDS,
+    SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS,
+    INITIAL_CAMERA_POSITION,
+    OFFSET_CAMERA_POSITION,
+  } = cameraConfigs;
   const _scratchBoxRef = useRef(new THREE.Box3());
   const _scratchCenterRef = useRef(new THREE.Vector3());
 
   const domElement = useThree((state) => state.gl.domElement);
   const clock = useThree((state) => state.clock);
   const scene = useThree((state) => state.scene);
+  const cam = useThree((state) => state.camera);
 
   const activePointerIdRef = useRef(null);
   const pointerStartRef = useRef(null);
@@ -27,15 +34,19 @@ const SceneRig = ({
   const lastSwitchTimeRef = useRef(0);
   const manualOverrideTimeRef = useRef(-Infinity); // active while elapsedTime < this value)
 
-  const currentCameraPositionRef = useRef(new THREE.Vector3());
+  // const currentCameraPositionRef = useRef(new THREE.Vector3());
   const nextCameraPositionRef = useRef(new THREE.Vector3());
-  // const cameraTargetRef = useRef(new THREE.Vector3());
+  const cameraTargetPositionRef = useRef(new THREE.Vector3());
 
   const cameraStopPositionsRef = useRef([new THREE.Vector3(0, 0, 0)]);
-  const defaultFallbackPositionRef = useRef(new THREE.Vector3(POSITION[0], POSITION[1], POSITION[2]));
+  const defaultFallbackPositionRef = useRef(new THREE.Vector3(OFFSET_CAMERA_POSITION[0], OFFSET_CAMERA_POSITION[1], OFFSET_CAMERA_POSITION[2]));
 
   const targetIndexRef = useRef(0);
   const meshesInSceneRef = useRef({});
+
+  useLayoutEffect(() => {
+    cam.lookAt(INITIAL_CAMERA_POSITION[0], INITIAL_CAMERA_POSITION[1], -1 * INITIAL_CAMERA_POSITION[2]);
+  }, [cam]);
 
   useEffect(() => {
     const meshesInScene = {};
@@ -151,7 +162,7 @@ const SceneRig = ({
     const elapsedTime = clock.elapsedTime;
     const xOffset = Math.sin(elapsedTime);
     const yOffset = -2 * xOffset;
-    const zOffset = POSITION[2] + xOffset;
+    const zOffset = OFFSET_CAMERA_POSITION[2] + xOffset;
     const { selection } = useSelection.getState();
 
     if (targetIndexRef.current >= cameraStopPositionsRef.current.length || targetIndexRef.current < 0) targetIndexRef.current = 0;
@@ -167,7 +178,8 @@ const SceneRig = ({
     }
     else if (isManualOverrideActive && cameraStopPositionsRef.current[targetIndexRef.current]) {
       // if current index points to a valid entry in cameraStopPositionsRef then prevent the else block from running.
-      // if false (e.g. cameraStopPositionsRef.current is shortened between frames by useEffect) then the else block resets the index. 
+      // if false (e.g. isManualOverrideActive is false or cameraStopPositionsRef.current is shortened between frames by useEffect),
+      // then the else block resets the index. 
     }
     else {
       // currentCameraPositionRef.current.copy(cameraStopPositionsRef.current[targetIndexRef.current]);  
@@ -196,11 +208,9 @@ const SceneRig = ({
       nextPosition = cameraStopPositionsRef.current[targetIndexRef.current];
     }
 
-    currentCameraPositionRef.current.copy(camera.position);
-    camera.lookAt(currentCameraPositionRef.current);
     nextCameraPositionRef.current.set(nextPosition.x + xOffset, nextPosition.y + yOffset, nextPosition.z + zOffset);
-    // cameraTargetRef.current.set(currentCameraPositionRef.current.x, currentCameraPositionRef.current.y, currentCameraPositionRef.current.z-POSITION[2]);
-    // camera.lookAt(cameraTargetRef.current);
+    // cameraTargetPositionRef.current.set(currentCameraPositionRef.current.x, currentCameraPositionRef.current.y, currentCameraPositionRef.current.z - OFFSET_CAMERA_POSITION[2]);
+    // camera.lookAt(cameraTargetPositionRef.current);
     easing.damp3(camera.position, nextCameraPositionRef.current, 1, clampedDelta);
   });
 };

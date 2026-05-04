@@ -10,7 +10,7 @@ import useSelection from '@stores/selectionStore';
 import { eulerDistance, EPSILON_3e3, EPSILON_10e4, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
 import cameraConfigs from '@configs/cameraConfigs';
 
-const { POSITION: [, , cameraOffsetDistance] } = cameraConfigs;
+const { OFFSET_CAMERA_POSITION: [, , cameraOffsetDistance] } = cameraConfigs;
 
 const Model = (props) => {
   const {

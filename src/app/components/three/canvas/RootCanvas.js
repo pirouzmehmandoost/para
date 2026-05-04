@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
-import { Environment, Html, useGLTF} from '@react-three/drei';
+import { Environment, Html, useGLTF } from '@react-three/drei';
 import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import BasicScene from '../scenes/BasicScene';
@@ -28,6 +28,7 @@ export const Loader = () => {
 export const RootCanvas = () => {
   const pathname = usePathname();
   const interactive = pathname === '/' || pathname.startsWith('/projects/');
+  const { NEAR, FAR, FOV, INITIAL_CAMERA_POSITION } = cameraConfigs;
 
   // function SceneRouter() {
   //   if (pathname === '/') return <HomeScene />;
@@ -41,17 +42,16 @@ export const RootCanvas = () => {
         dpr={[1, 1.5]}
         frameloop={interactive ? 'always' : 'demand'}
         gl={{ antialias: true }}
-        camera={{ position: cameraConfigs.INITIAL_POSITION, near: cameraConfigs.NEAR, far: cameraConfigs.FAR, fov: cameraConfigs.FOV - 15 }}
+        camera={{ position: INITIAL_CAMERA_POSITION, near: NEAR, far: FAR, fov: FOV - 15 }}
         fallback={<div> Sorry, WebGL is not supported. </div>}
         orthographic={false}
-        shadows={{ type: THREE.PCFShadowMap }} // shadows
+        shadows={{ type: THREE.PCFShadowMap }}
       >
         <color args={[envColor]} attach='background' />
         <fog attach='fog' color={envColor} near={180} far={270} />
         <Environment shadows files={envImageUrl} environmentIntensity={0.5} />
         <Suspense fallback={<Loader />}>
           <BasicScene />
-          {/* <SceneRouter /> */}
         </Suspense>
       </Canvas>
     </div>
