@@ -1,4 +1,5 @@
 const cameraConfigs = {
+  INITIAL_POSITION: [0, 666, 666],
   POSITION: [0, 10, 180],
   NEAR: 1,
   FAR: 480,
