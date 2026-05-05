@@ -36,12 +36,11 @@ const SceneRig = ({
 
   // const currentCameraPositionRef = useRef(new THREE.Vector3());
   const nextCameraPositionRef = useRef(new THREE.Vector3());
-  const cameraTargetPositionRef = useRef(new THREE.Vector3());
-
   const cameraStopPositionsRef = useRef([new THREE.Vector3(0, 0, 0)]);
   const defaultFallbackPositionRef = useRef(new THREE.Vector3(OFFSET_CAMERA_POSITION[0], OFFSET_CAMERA_POSITION[1], OFFSET_CAMERA_POSITION[2]));
 
   const targetIndexRef = useRef(0);
+  const prevTargetIndexRef = useRef(-1);
   const meshesInSceneRef = useRef({});
 
   useLayoutEffect(() => {
@@ -174,6 +173,7 @@ const SceneRig = ({
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
     if (focusedIndex >= 0 && cameraStopPositionsRef.current[focusedIndex]) {
+      prevTargetIndexRef.current = targetIndexRef.current;
       targetIndexRef.current = focusedIndex;
     }
     else if (isManualOverrideActive && cameraStopPositionsRef.current[targetIndexRef.current]) {
@@ -188,6 +188,7 @@ const SceneRig = ({
       const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > MIN_DWELL_SECONDS;
 
       if (canSwitch) {
+        prevTargetIndexRef.current = currentIndex;
         lastSwitchTimeRef.current = elapsedTime;
         targetIndexRef.current = nextIndex;
       }
@@ -199,9 +200,11 @@ const SceneRig = ({
     const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName);
 
     if (isTargetInScene && meshInScene.isObject3D) {
-      if (typeof meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
-
-      _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
+      if (prevTargetIndexRef.current !== targetIndexRef.current) {
+        if (typeof meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
+        _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
+        prevTargetIndexRef.current = targetIndexRef.current;
+      }
       nextPosition = _scratchCenterRef.current;
     }
     else {
