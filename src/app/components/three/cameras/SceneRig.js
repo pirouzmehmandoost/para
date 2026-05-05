@@ -200,11 +200,11 @@ const SceneRig = ({
     const isTargetInScene = (targetName?.length && meshInSceneName?.length) && (targetName === meshInSceneName);
 
     if (isTargetInScene && meshInScene.isObject3D) {
-      if (prevTargetIndexRef.current !== targetIndexRef.current) {
+      // if (prevTargetIndexRef.current !== targetIndexRef.current) {
         if (typeof meshInScene['updateWorldMatrix'] === 'function') meshesInSceneRef.current[targetName].target.updateWorldMatrix(true, false);
         _scratchBoxRef.current.setFromObject(meshInScene).getCenter(_scratchCenterRef.current);
-        prevTargetIndexRef.current = targetIndexRef.current;
-      }
+      //   prevTargetIndexRef.current = targetIndexRef.current;
+      // }
       nextPosition = _scratchCenterRef.current;
     }
     else {
