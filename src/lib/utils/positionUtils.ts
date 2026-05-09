@@ -30,9 +30,10 @@ export function getAABBCenterSlow(
 ): THREE.Vector3 {
   if (!target) return;
 
+  _scratchBox.makeEmpty();
   target.updateWorldMatrix(updateParents, updateChildren);
   _scratchBox.setFromObject(target).getCenter(_scratchCenter);
-  return _scratchCenter.clone();
+  return _scratchCenter;
 }
 
 /**
@@ -84,9 +85,13 @@ export function getAABBCenterFast(
 
     if (!geo.boundingBox) geo.computeBoundingBox();
 
+    // if (geo.boundingBox) {
+    //   _s.box.copy(geo.boundingBox).applyMatrix4(target.matrixWorld);
+    //   return _s.box.getCenter(out);
+    // }
     if (geo.boundingBox) {
-      _s.box.copy(geo.boundingBox).applyMatrix4(target.matrixWorld);
-      return _s.box.getCenter(out);
+      geo.boundingBox.getCenter(out);
+      return out.applyMatrix4(target.matrixWorld);
     }
   }
 
