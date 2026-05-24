@@ -3,7 +3,7 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-// import { Bvh, } from '@react-three/drei'
+// import { Bvh } from '@react-three/drei'
 import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
 import { portfolio } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
