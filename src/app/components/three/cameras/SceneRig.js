@@ -8,6 +8,7 @@ import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 // import { EPSILON_10e4 } from '@/lib/utils/animationUtils';
 import { getAABBCenterFast } from '@/lib/utils/positionUtils';
+import { useTimer } from '@/lib/hooks/useTimer';
 
 const SceneRig = ({
   onSwipe = undefined, // optional callback
@@ -26,7 +27,7 @@ const SceneRig = ({
   const _scratchCenterRef = useRef(new THREE.Vector3());
 
   const domElement = useThree((state) => state.gl.domElement);
-  const clock = useThree((state) => state.clock);
+  const { getElapsed } = useTimer();
   const scene = useThree((state) => state.scene);
   const cam = useThree((state) => state.camera);
 
@@ -188,8 +189,8 @@ const SceneRig = ({
           const step = deltaX > 0 ? 1 : -1;
 
           targetIndexRef.current = (targetIndexRef.current + step + count) % count;
-          manualOverrideTimeRef.current = clock.elapsedTime + MANUAL_OVERRIDE_SECONDS;
-          lastSwitchTimeRef.current = clock.elapsedTime;
+          manualOverrideTimeRef.current = getElapsed() + MANUAL_OVERRIDE_SECONDS;
+          lastSwitchTimeRef.current = getElapsed();
 
           onSwipe?.(e);
         }
@@ -211,7 +212,7 @@ const SceneRig = ({
       domElement.removeEventListener('pointercancel', onPointerCancel);
       domElement.removeEventListener('lostpointercapture', onPointerCancel);
     };
-  }, [domElement, clock, onSwipe, SWIPE_DELTA_TIME_MS, SWIPE_DELTA_PX, MANUAL_OVERRIDE_SECONDS]);
+  }, [domElement, getElapsed, onSwipe, SWIPE_DELTA_TIME_MS, SWIPE_DELTA_PX, MANUAL_OVERRIDE_SECONDS]);
 
   useEffect(() => {
     const length = Math.max(Object.entries(targetsInSceneRef.current)?.length ?? 0, fallbackPositions?.length ?? 0);
@@ -245,9 +246,9 @@ const SceneRig = ({
     if (targetIndexRef.current < 0 || targetIndexRef.current >= cameraStopPositionsRef.current.length) targetIndexRef.current = 0;
   }, [targets, fallbackPositions]);
 
-  useFrame(({ camera, clock }, delta) => {
+  useFrame(({ camera }, delta) => {
     const clampedDelta = Math.min(delta, 0.08);
-    const elapsedTime = clock.elapsedTime;
+    const elapsedTime = getElapsed();
     const xOffset = Math.sin(elapsedTime);
     const yOffset = -2 * xOffset;
     const zOffset = OFFSET_CAMERA_POSITION[2] + xOffset;
