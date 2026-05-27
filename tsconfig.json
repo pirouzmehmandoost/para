@@ -5,6 +5,8 @@
       "@public/*": ["./public/*"],
       "@utils/*": ["./src/lib/utils/*"],
       "@configs/*": ["./src/lib/configs/*"],
+      "@targetRegistry": ["./src/lib/targetRegistry/TargetRegistry.ts"],
+      "@hooks/*": ["./src/app/hooks/*"],
       "@stores/*": ["./src/app/stores/*"],
       "@projects/*": ["./src/app/projects/*"],
       "@components/*": ["./src/app/components/*"],
