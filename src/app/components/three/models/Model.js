@@ -9,10 +9,12 @@ import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/material
 import useSelection from '@stores/selectionStore';
 import { eulerDistance, EPSILON_3e3, EPSILON_10e4, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
 import cameraConfigs from '@configs/cameraConfigs';
+import { useTimer } from '@/lib/hooks/useTimer';
 
 const { OFFSET_CAMERA_POSITION: [, , cameraOffsetDistance] } = cameraConfigs;
 
 const Model = (props) => {
+  const { getElapsed } = useTimer();
   const {
     fileData: { nodeName = '', url = '' } = {},
     materials: { defaultMaterialID = 'matte_black', materialIDs = [], } = {},
@@ -210,11 +212,11 @@ const Model = (props) => {
     }
   };
 
-  useFrame(({ clock, camera: cam }, delta) => {
+  useFrame(({ camera: cam }, delta) => {
     if (!meshRef.current || !nodeName?.length) return;
 
     const clampedDelta = Math.min(delta, 0.08);
-    const elapsedTime = clock.elapsedTime;
+    const elapsedTime = getElapsed();
 
     const matState = useMaterial.getState();
     const texturesReady = matState.texturesInitialized?.length > 0;

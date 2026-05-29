@@ -8,6 +8,7 @@ import { Environment, Html, useGLTF } from '@react-three/drei';
 import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import BasicScene from '../scenes/BasicScene';
+import { TimerProvider } from '@/lib/hooks/useTimer';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
@@ -51,7 +52,9 @@ export const RootCanvas = () => {
         <fog attach='fog' color={envColor} near={180} far={270} />
         <Environment shadows files={envImageUrl} environmentIntensity={0.5} />
         <Suspense fallback={<Loader />}>
-          <BasicScene />
+          <TimerProvider>
+            <BasicScene />
+          </TimerProvider>
         </Suspense>
       </Canvas>
     </div>
