@@ -29,6 +29,10 @@ interface ListenerRecord {
   handler: Object3DEventHandler;
 }
 
+
+/* 
+  upcoming changes: remove positions and defaultPosition i.e. stop conflating the responsibilities of this registry with that of SceneRig.
+*/
 class TargetRegistry {
   private _scene: THREE.Object3D;
   private _targets: Record<string, THREE.Object3D> = {};
