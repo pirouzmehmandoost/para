@@ -25,7 +25,17 @@ const Model = (props) => {
   } = props;
 
   const camera = useThree((state) => state.camera);
-  const geometry = useGLTF(url).nodes?.[nodeName]?.geometry || null;
+
+  const {
+    nodes: {
+      [nodeName]: {
+        geometry = null,
+        geometry: {
+          uuid = '',
+        } = {},
+      } = {},
+    } = {},
+  } = useGLTF(url) || null;
 
   const _scratchSizeRef = useRef(new THREE.Vector3());
 
@@ -163,6 +173,8 @@ const Model = (props) => {
 
     if (!animateMaterialRef.current.color.equals(materialToUpdate.color)) easing.dampC(animateMaterialRef.current.color, materialToUpdate.color, 0.3, delta);
 
+    if (Math.abs(animateMaterialRef.current.opacity - materialToUpdate.opacity) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "opacity", materialToUpdate.opacity, 0.3, delta);
+
     if (Math.abs(animateMaterialRef.current.reflectivity - materialToUpdate.reflectivity) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "reflectivity", materialToUpdate.reflectivity, 0.3, delta);
 
     if (Math.abs(animateMaterialRef.current.roughness - materialToUpdate.roughness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "roughness", materialToUpdate.roughness, 0.3, delta);
@@ -274,7 +286,7 @@ const Model = (props) => {
 
   return (
     <>
-      {geometry && (
+      {geometry && nodeName && (
         <mesh
           ref={meshRef}
           castShadow={true}
