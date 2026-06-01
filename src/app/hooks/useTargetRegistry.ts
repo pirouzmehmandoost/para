@@ -1,40 +1,47 @@
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import TargetRegistry from '@targetRegistry';
 
-type TargetSource =
-  | THREE.Object3D[]
-  | ((obj: THREE.Object3D) => boolean);
+type Targets = THREE.Object3D[] | ((obj: THREE.Object3D) => boolean);
 
 export default function useTargetRegistry(
   scene: THREE.Scene | null,
-  source?: TargetSource,
-  defaultFallback?: THREE.Vector3 | number[],
+  targets?: Targets,
+  defaultFallback?: THREE.Vector3,
 ): React.RefObject<TargetRegistry | null> {
   const registryRef = useRef<TargetRegistry | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
 
   useEffect(() => {
-    if (!scene || !source) return;
+    if (!scene || !targets || !scene.isScene) return;
 
-    if (!registryRef.current) {
-      registryRef.current = new TargetRegistry(scene, defaultFallback);
+    if (sceneRef.current === null) sceneRef.current = scene;
+
+    if (scene.uuid !== sceneRef.current.uuid) {
+      sceneRef.current = scene;
+      registryRef.current = null;
     }
 
-    if (Array.isArray(source)) {
-      registryRef.current.register(source);
+    if (!registryRef.current) {
+      registryRef.current = new TargetRegistry(sceneRef.current, defaultFallback);
+    }
+
+    if (Array.isArray(targets)) {
+      registryRef.current.register(targets);
     } else {
-      registryRef.current.registerByFilter(source);
+      registryRef.current.registerByFilter(targets);
     }
 
     return () => {
       registryRef.current?.deregister();
     };
-  }, [scene, source]);
+  }, [scene, targets]);
 
   useEffect(() => {
     return () => {
       registryRef.current?.deregister();
       registryRef.current = null;
+      sceneRef.current = null;
     };
   }, []);
 

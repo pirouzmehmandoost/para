@@ -31,7 +31,7 @@ interface ListenerRecord {
 
 class TargetRegistry {
   private _scene: THREE.Object3D;
-  private _targets: THREE.Object3D[] = [];
+  private _targets: Record<string, THREE.Object3D> = {};
   private _promoted: Record<string, RegistryEntry> = {};
   private _demoted: Record<string, RegistryEntry> = {};
   private _positions: THREE.Vector3[] = [];
@@ -40,32 +40,19 @@ class TargetRegistry {
   private _activeFilter: ((obj: THREE.Object3D) => boolean) | null = null;
   private _sceneChildAddedHandler: ChildAddedHandler | null = null;
 
-  constructor(
-    scene: THREE.Object3D,
-    defaultFallback?: THREE.Vector3 | number[],
-  ) {
+  constructor(scene: THREE.Object3D, defaultFallback?: THREE.Vector3) {
     if (!scene || !scene.isObject3D || !(scene as THREE.Scene).isScene) {
-      throw new TypeError(
-        `TargetRegistry.ts: scene must be of type THREE.Scene.`,
-      );
+      throw new TypeError(`TargetRegistry.ts: scene must be of type THREE.Scene.`);
     } else {
       this._scene = scene;
     }
 
     if (typeof defaultFallback !== 'undefined') {
-      if (Array.isArray(defaultFallback)) {
-        if (defaultFallback.length === 3) {
-          this._defaultFallback.fromArray(defaultFallback);
-        } else {
-          throw new RangeError(
-            `TargetRegistry.ts: defaultFallbacks must contain exactly 3 elements. Received: ${defaultFallback.length}`,
-          );
-        }
-      } else if (defaultFallback?.isVector3) {
+      if (defaultFallback?.isVector3) {
         this._defaultFallback.copy(defaultFallback);
       } else {
         throw new TypeError(
-          `TargetRegistry.ts: defaultFallback must be THREE.Vector3 or number[]. Received: ${typeof defaultFallback}`,
+          `TargetRegistry.ts: defaultFallback must be THREE.Vector3. Received: ${typeof defaultFallback}`,
         );
       }
     }
@@ -79,8 +66,14 @@ class TargetRegistry {
     this._promoted = {};
     this._demoted = {};
     this._positions = [];
-    this._targets = [...targets];
+    this._targets = {};
     this._activeFilter = null;
+
+    if (!targets.length) return;
+
+    this._targets = Object.fromEntries(
+      targets.filter((t) => t?.isObject3D).map((t) => [t.uuid, t]),
+    );
 
     const sceneObjects: Record<string, THREE.Object3D> = {};
 
@@ -88,8 +81,8 @@ class TargetRegistry {
       if (obj.isObject3D) sceneObjects[obj.uuid] = obj;
     });
 
-    for (let i = 0; i < targets.length; i++) {
-      const t = targets[i];
+    for (const key in this._targets) {
+      const t = this._targets[key];
 
       if (!t?.uuid?.length) continue;
 
@@ -129,7 +122,7 @@ class TargetRegistry {
     this._promoted = {};
     this._demoted = {};
     this._positions = [];
-    this._targets = [];
+    this._targets = {};
     this._activeFilter = filter;
 
     this._scene.traverse((obj) => {
@@ -158,11 +151,7 @@ class TargetRegistry {
   }
 
   refreshPosition(index: number, position: THREE.Vector3): void {
-    if (
-      index >= 0 &&
-      index < this._positions.length &&
-      this._positions[index]
-    ) {
+    if (index >= 0 && index < this._positions.length && this._positions[index]) {
       this._positions[index].copy(position);
     }
   }
@@ -191,10 +180,7 @@ class TargetRegistry {
 
     if (!entry) return false;
 
-    const isEntryInScene = this._scene.getObjectByProperty(
-      'uuid',
-      entry.target.uuid,
-    );
+    const isEntryInScene = this._scene.getObjectByProperty('uuid', entry.target.uuid);
 
     const parentUUID = entry.target.parent?.uuid;
     const isParentInScene = parentUUID
@@ -227,7 +213,8 @@ class TargetRegistry {
       };
 
       this._promoted[uuid] = entry;
-      this._targets.push(target);
+      this._targets[uuid] = target;
+
       this._positions.push(new THREE.Vector3().copy(this._defaultFallback));
       this._addListener(target, 'removed', this._makeRemovedHandler(uuid));
     } else {
@@ -240,7 +227,7 @@ class TargetRegistry {
       };
 
       this._demoted[uuid] = entry;
-      this._targets.push(target);
+      this._targets[uuid] = target;
       this._addListener(target, 'added', this._makeAddedHandler(uuid));
     }
 
@@ -266,8 +253,7 @@ class TargetRegistry {
       delete this._demoted[uuid];
     }
 
-    const idx = this._targets.findIndex((t) => t.uuid === uuid);
-    if (idx >= 0) this._targets.splice(idx, 1);
+    if (this._targets[uuid]) delete this._targets[uuid];
 
     return true;
   }
@@ -278,11 +264,11 @@ class TargetRegistry {
     this._promoted = {};
     this._demoted = {};
     this._positions = [];
-    this._targets = [];
+    this._targets = {};
     this._activeFilter = null;
   }
 
-  // Private: shared promotion logic (no scene-graph validation)
+  // Private methods
 
   private _promoteEntry(entry: RegistryEntry): void {
     const uuid = entry.targetUUID;
@@ -298,8 +284,6 @@ class TargetRegistry {
     this._removeListenersForTarget(entry.target, 'added');
     this._addListener(entry.target, 'removed', this._makeRemovedHandler(uuid));
   }
-
-  // Private event handlers
 
   private _makeRemovedHandler(uuid: string): Object3DEventHandler {
     const handler: Object3DEventHandler = () => {
@@ -317,9 +301,7 @@ class TargetRegistry {
       this._demoted[uuid] = entry;
 
       const parent = this._scene.getObjectByProperty('uuid', entry.parentUUID);
-      const isTracked =
-        this._activeFilter !== null ||
-        !!this._targets.find((t) => t.uuid === uuid);
+      const isTracked = this._activeFilter !== null || !!this._targets[uuid];
 
       if (!parent || !isTracked) {
         delete this._demoted[uuid];
@@ -351,8 +333,6 @@ class TargetRegistry {
     return handler;
   }
 
-  // Private methods
-
   private _promoteByObject(obj: THREE.Object3D): void {
     const uuid = obj.uuid;
     const entry: RegistryEntry = {
@@ -364,7 +344,7 @@ class TargetRegistry {
     };
 
     this._promoted[uuid] = entry;
-    this._targets.push(obj);
+    this._targets[uuid] = obj;
 
     this._positions.push(new THREE.Vector3().copy(this._defaultFallback));
     this._addListener(obj, 'removed', this._makeRemovedHandler(uuid));
@@ -377,11 +357,7 @@ class TargetRegistry {
 
     this._sceneChildAddedHandler = (event) => {
       event.child.traverse((obj) => {
-        if (
-          filter(obj) &&
-          !this._promoted[obj.uuid] &&
-          !this._demoted[obj.uuid]
-        ) {
+        if (filter(obj) && !this._promoted[obj.uuid] && !this._demoted[obj.uuid]) {
           this._promoteByObject(obj);
         }
       });
@@ -406,10 +382,7 @@ class TargetRegistry {
   private _removeSceneChildAddedListener(): void {
     if (!this._sceneChildAddedHandler) return;
 
-    this._scene.removeEventListener(
-      'childadded',
-      this._sceneChildAddedHandler,
-    );
+    this._scene.removeEventListener('childadded', this._sceneChildAddedHandler);
     this._sceneChildAddedHandler = null;
   }
 
@@ -436,10 +409,7 @@ class TargetRegistry {
     this._listeners.push({ target, type, handler });
   }
 
-  private _removeListenersForTarget(
-    target: THREE.Object3D,
-    type: Object3DEventTypes,
-  ): void {
+  private _removeListenersForTarget(target: THREE.Object3D, type: Object3DEventTypes): void {
     for (let i = this._listeners.length - 1; i >= 0; i--) {
       const rec = this._listeners[i];
       if (rec.target === target && rec.type === type) {
