@@ -4,7 +4,7 @@
 
 TargetRegistry is a framework-agnostic TypeScript class that tracks Three.js Object3D targets through a promotion/demotion/removal lifecycle. It maintains an ordered list of world-space positions and a UUID-keyed map of tracked targets, driven by Three.js `added`/`removed` events.
 
-It is consumed by SceneRig (via a thin React hook wrapper, `useTargetRegistry`) but has no dependency on React, React Three Fiber, or Zustand.
+It is consumed by `ExperimentalRig` (via a thin React hook wrapper, `useTargetRegistry`) but has no dependency on React, React Three Fiber, or Zustand.
 
 ## Files
 
@@ -163,7 +163,7 @@ interface RegistryEntry {
 }
 
 class TargetRegistry {
-  constructor(scene: THREE.Object3D, defaultFallback?: THREE.Vector3 | number[]);
+  constructor(scene: THREE.Object3D, defaultFallback?: THREE.Vector3);
 
   register(targets: THREE.Object3D[]): void;
   setFallbackPosition(position: THREE.Vector3): void;
@@ -184,13 +184,13 @@ class TargetRegistry {
 
 ### Constructor
 
-**`constructor(scene, defaultFallback?)`** — `scene` is required and must be a `THREE.Scene`; throws `TypeError` otherwise. `defaultFallback` is optional — accepts a `THREE.Vector3` or a `number[]` of length 3. If omitted, defaults to the origin `(0, 0, 0)`. If a `number[]` is provided with length other than 3, throws `RangeError`.
+**`constructor(scene, defaultFallback?)`** — `scene` is required and must be a `THREE.Scene`; throws `TypeError` otherwise. `defaultFallback` is optional — accepts a `THREE.Vector3`. If omitted, defaults to the origin `(0, 0, 0)`.
 
 ### Method contracts
 
 **`register(targets)`** — Called when the consumer's target list changes. Runs full discovery: traverses the scene graph, classifies each target as promoted or demoted, wires `added`/`removed` event listeners, initializes position slots with `defaultFallback`. Cleans up listeners from the previous target set. Targets with falsy or empty `uuid` are skipped.
 
-**`setFallbackPosition(position)`** — Overwrites the default fallback position. Copies the value (does not retain a reference).
+**`setFallbackPosition(position)`** — Overwrites the default fallback position. Copies the value (does not retain a reference, see [`THREE.Vector3.copy()`](https://threejs.org/docs/#Vector3.copy)).
 
 **`getPositions()`** — Returns the internal position array as `readonly`. The caller must not mutate the array structure (no push/splice). Individual `Vector3` values are readable; the registry updates them in-place via `refreshPosition()`.
 
@@ -230,36 +230,24 @@ function useTargetRegistry(
 
 ---
 
-## Why not Zustand
+## Design rationale for consumer-driven demotion
 
-The registry's state is consumed imperatively in `useFrame` via `getState()`-style reads. No React component subscribes to registry state or re-renders when it changes.
-
-Additionally, the registry's `_handleAdded`/`_handleRemoved` event handlers fire synchronously during React's commit phase (before effects). Calling Zustand's `set()` during the commit phase would trigger subscription notifications that schedule re-renders — re-rendering during the commit phase violates React's invariants.
-
-The existing `selectionStore` is correctly a Zustand store because UI components (modals, overlays) subscribe to selection state and re-render. The registry has no such consumers.
-
----
-
-## Design rationale: consumer-driven demotion
-
-Three.js does not dispatch events when `Object3D.visible` changes — `visible` is a plain boolean property (Object3D.js, line 291). The registry cannot detect visibility changes via events.
-
-More broadly, scene graph membership is not the only criterion for target availability. Production applications need to exclude targets for reasons the registry cannot anticipate:
+Stated broadly, scene graph membership is not the only criterion for target availability. Production applications need to exclude targets for reasons the registry cannot anticipate:
 
 - **Visibility filtering:** A product configurator hides meshes by category. Hidden products should not be camera targets.
 - **Distance culling:** A large scene excludes targets beyond a camera distance threshold.
-- **UI toggles:** A scene editor lets users enable/disable individual targets via a checkbox panel.
+- **UI toggles:** A scene editor (such as one using [Leva](https://github.com/pmndrs/leva)) lets users enable/disable individual targets via a checkbox panel.
 - **LOD swaps:** A consumer replaces a high-detail mesh with a low-detail mesh at runtime.
 
 The `demote(uuid)` and `promote(uuid)` methods let the consumer drive availability transitions for any application-specific reason. The registry handles all bookkeeping (positions array, index adjustment, listener management). Consumers that only need scene-graph-driven lifecycle never call these methods — they are additive, not mandatory.
 
-Consumer-demoted targets are distinguished from scene-graph-demoted targets internally. A scene-graph-demoted target auto-re-promotes when it re-enters the scene graph (the `added` event fires). A consumer-demoted target does not auto-re-promote — the consumer owns the demotion reason and must explicitly call `promote(uuid)` to reverse it.
+Consumer-demoted targets are distinguished from scene-graph-demoted targets internally. A scene-graph-demoted target "auto-re-promotes" when it re-enters the scene graph (the `added` event fires). A consumer-demoted target does not auto-re-promote — the consumer owns the demotion reason and must explicitly call `promote(uuid)` to reverse it.
 
 ---
 
 ## Design constraints
 
-1. **Zero allocations in the per-frame path.** `getPositions()` returns the internal array by reference. `refreshPosition()` copies into existing Vector3 objects. No `new Vector3()`, no `clone()`, no object spread.
+1. **Zero CPU allocations in the per-frame path.** `getPositions()` returns the internal array by reference. `refreshPosition()` copies into existing Vector3 objects. No `new Vector3()`, no `clone()`, no object spread.
 
 2. **Event listeners must be cleaned up.** Every `addEventListener` call must have a corresponding `removeEventListener` in `deregister()` and in `register()` (when replacing a previous target set).
 
@@ -271,18 +259,35 @@ Consumer-demoted targets are distinguished from scene-graph-demoted targets inte
 
 ---
 
-## Relationship to SceneRig
+## Relationship to ExperimentalRig and SceneRig
 
-After extraction, SceneRig retains:
+`ExperimentalRig.js` is a test copy of `SceneRig.js` wired to use the registry. Whereas SceneRig owns target lifecycle system logic, its is abstracted away in ExperimentalRig to consume the registry via `useTargetRegistry`.
+
+
+After extraction, `ExperimentalRig` retains:
 - Gesture/pointer handling (swipe detection, manual override)
-- Camera animation loop (`useFrame` with `easing.damp3`)
+- Camera animation loop (`useFrame`)
 - Target cycling logic (dwell time, auto-advance, focus override)
-- `useTargetRegistry` hook call
 - Per-frame position computation via `getAABBCenterFast` and `registry.refreshPosition()`
 
-SceneRig loses:
+ExperimentalRig loses:
 - Target discovery effects (scene traversal, target classification)
-- Event listener wiring for `added`/`removed`
+- Event listener wiring effects for `added`/`removed`
 - `targetsInSceneRef`, `targetsNotInSceneRef`, `nameToUUIDRef`, `cameraStopPositionsRef` refs
 
+ExpermimentalRig gains:
+- `useTargetRegistry` hook call
+
 These are replaced by reads from `registryRef.current.getPositions()`, `registryRef.current.getPromoted()`, and `registryRef.current.resolveNameToUUID()`.
+
+## TO-DO
+
+1. **Consolidate duplicated code in `_addTarget()`, `_promoteByObject()`
+
+2. `_attachSceneChildAddedListener()` iterates `_demoted` while `_promoteEntry()` deletes from it. 
+
+3. **Scope the registry's responsibility to lifecycle tracking.** Determine whether to remove `_positions` and `_defaultFallback`, related methods. For  purposes specifc to the app PARA, I could abstract existing positioning logic away to a new subclass.
+
+4. **Add a Usage Guide doc that links to this doc.**
+
+5. **Document function reference stability**  Both docs should warn users against providing an unstable function reference when `targets` is a function.
