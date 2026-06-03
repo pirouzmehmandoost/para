@@ -2,6 +2,13 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import TargetRegistry from '@targetRegistry';
 
+/*
+IMPORTANT 
+Consumers passing a function as `targets` should provide a stable reference. 
+Neglecting to memoize the functions will create a new function reference on every React Render
+and silently destroy and rebuild the entire registry per animation frame.
+*/
+
 type Targets = THREE.Object3D[] | ((obj: THREE.Object3D) => boolean);
 
 export default function useTargetRegistry(
