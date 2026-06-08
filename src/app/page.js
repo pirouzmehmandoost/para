@@ -5,11 +5,10 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
-import { portfolio } from '@configs/globals';
+import { projects } from '@configs/globals';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
-const { projects } = portfolio;
 
 const createVariants = (reduceMotion) => {
   const dur = (ms) => (reduceMotion ? 0 : ms);

@@ -4,7 +4,7 @@ import { startTransition, useCallback, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
-import { portfolio } from '@configs/globals';
+import { projects } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
@@ -12,7 +12,6 @@ import SceneRigV3 from '../cameras/SceneRigV3';
 import Model from '../models/Model';
 import Ground from '../models/Ground';
 
-const { projects } = portfolio;
 const { SWIPE_DELAY_MS, OFFSET_CAMERA_POSITION, INITIAL_CAMERA_POSITION } = cameraConfigs;
 const meshPositions = [
   new THREE.Vector3(-100, -18, -40),

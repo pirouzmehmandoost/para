@@ -4,7 +4,7 @@
 // import * as THREE from 'three';
 // import { useThree } from '@react-three/fiber';
 // import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
-// import { portfolio } from '@configs/globals';
+// import { projects } from '@configs/globals';
 // import cameraConfigs from '@configs/cameraConfigs';
 // import useSelection from '@stores/selectionStore';
 // import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
@@ -14,7 +14,6 @@
 
 // const BasicScene = () => {
 //   const { SWIPE_DELAY_MS } = cameraConfigs;
-//   const { projects } = portfolio;
 //   const totalMeshes = projects.length;
 
 //   const set = useThree((state) => state.set);
