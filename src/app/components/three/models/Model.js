@@ -30,9 +30,6 @@ const Model = (props) => {
     nodes: {
       [nodeName]: {
         geometry = null,
-        geometry: {
-          uuid = '',
-        } = {},
       } = {},
     } = {},
   } = useGLTF(url) || null;
