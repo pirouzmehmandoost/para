@@ -20,7 +20,6 @@ export const projects = [
         nodeName: 'textured_bag_simplified001',
         url: '/textured_bag.glb'
       },
-      groupName: 'Gerd',
       materials: {
         defaultMaterialID: 'stained_matte_black',
         materialIDs: ['stained_matte_black', 'matte_black', 'gloss_black'],
@@ -33,7 +32,7 @@ export const projects = [
   {
     UIData: {
       care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
-      description: 'Large enough to fit essentials, small enough second as a table decoration. Lightweight and satisfyingly squishy.',
+      description: 'Lil bag. Gerd but little.',
       dimensions: `16" x 4" x 12"`,
       displayName: 'Sang',
       materialSpecs: 'Thermoplastic urethane',
@@ -49,7 +48,6 @@ export const projects = [
         nodeName: 'sang',
         url: '/sang.glb'
       },
-      groupName: 'Sang',
       materials: {
         defaultMaterialID: 'translucent_grey',
         materialIDs: ['translucent_grey', 'matte_black'],
@@ -78,7 +76,6 @@ export const projects = [
         nodeName: 'Yoga_Mat_Strap',
         url: '/yoga_mat_strap.glb'
       },
-      groupName: 'Pí',
       materials: {
         defaultMaterialID: 'gloss_black',
         materialIDs: ['gloss_black', 'matte_black'],
