@@ -158,7 +158,7 @@ const SceneRigV3 = ({
     const xOffset = Math.sin(elapsedTime);
     const yOffset = -2 * xOffset;
     const zOffset = OFFSET_CAMERA_POSITION[2] + xOffset;
-    const isFocused = useSelection.getState().selection.isFocused;
+    const focusedName = useSelection.getState().selection.focusedName;
 
     if (targetIndexRef.current >= positions.length || targetIndexRef.current < 0) {
       targetIndexRef.current = 0;
@@ -167,9 +167,9 @@ const SceneRigV3 = ({
     const promotedEntries = Object.values(promoted);
 
     let nextPosition = positions[0];
-    const focusTargetExists = isFocused !== null && isFocused?.length > 0;
+    const focusTargetExists = focusedName !== null && focusedName?.length > 0;
     const focusedEntry = focusTargetExists
-      ? promotedEntries.find(e => e.target.name === isFocused)
+      ? promotedEntries.find(e => e.target.name === focusedName)
       : undefined;
     const focusedIndex = focusedEntry?.index ?? -1;
     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;

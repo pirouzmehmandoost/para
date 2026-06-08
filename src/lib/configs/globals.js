@@ -2,11 +2,11 @@ export const envImageUrl = '/para_ground_glare_fog.hdr';
 export const envColor = '#bcbcbc';
 export const projects = [
   {
-    displayName: 'Gerd',
-    productData: {
+    UIData: {
       care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
       description: `Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.`,
       dimensions: `21.5" x 5" x 14"`,
+      displayName: 'Gerd',
       materialSpecs: 'Thermoplastic urethane',
       shortDescription: `A large 3D printed shoulder bag.`,
       weight: '1lb',
@@ -31,11 +31,11 @@ export const projects = [
     },
   },
   {
-    displayName: 'Sang',
-    productData: {
+    UIData: {
       care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
       description: 'Large enough to fit essentials, small enough second as a table decoration. Lightweight and satisfyingly squishy.',
       dimensions: `16" x 4" x 12"`,
+      displayName: 'Sang',
       materialSpecs: 'Thermoplastic urethane',
       shortDescription: 'A small 3D printed shoulder bag.',
       weight: '1lb',
@@ -60,11 +60,11 @@ export const projects = [
     },
   },
   {
-    displayName: 'Pí',
-    productData: {
+    UIData: {
       care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
       description: `A Yoga mat holder with a large handle for easy carrying. Lightweight to allow sitting rolled mats upright, adding sculptural qualities to idle exercise equipment.`,
       dimensions: `21.5" x 5" x 14"`,
+      displayName: 'Pí',
       materialSpecs: 'Thermoplastic urethane',
       shortDescription: `A yoga mat holder with a large handle.`,
       weight: '1lb',

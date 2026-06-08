@@ -258,8 +258,8 @@
 //     if (cameraStopPositionsRef.current.length === 0) return;
 
 //     let nextPosition = cameraStopPositionsRef.current[0];
-//     const focusTargetExists = selection.isFocused !== null && selection.isFocused?.length > 0;
-//     const focusedTargetUUID = !focusTargetExists ? -1 : nameToUUIDRef.current[selection.isFocused];
+//     const focusTargetExists = selection.focusedName !== null && selection.focusedName?.length > 0;
+//     const focusedTargetUUID = !focusTargetExists ? -1 : nameToUUIDRef.current[selection.focusedName];
 //     const focusedIndex = focusTargetExists ? (targetsInSceneRef.current[focusedTargetUUID]?.index ?? -1) : -1;
 //     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 

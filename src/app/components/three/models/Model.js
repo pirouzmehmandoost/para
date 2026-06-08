@@ -228,7 +228,7 @@ const Model = (props) => {
     const matState = useMaterial.getState();
     const texturesReady = matState.texturesInitialized?.length > 0;
     const { selection } = useSelection.getState();
-    const selectedAndFocused = selection.isFocused?.length > 0 && selection.isFocused === nodeName;
+    const selectedAndFocused = selection.focusedName?.length > 0 && selection.focusedName === nodeName;
 
     updateCameraRelativeScale(cam, clampedDelta, false);
 

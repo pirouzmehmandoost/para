@@ -53,9 +53,10 @@ const SceneComposer = () => {
   const handleClick = useCallback((e) => {
     e.stopPropagation();
 
-    const clickedKey = e.object.name;
+    const clickedKey = e.object.name || null;
     if (!clickedKey) return;
-    if (useSelection.getState().selection.isFocused === clickedKey) return;
+
+    if (useSelection.getState().selection.focusedName === clickedKey) return;
 
     const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedKey);
     if (index < 0) return;

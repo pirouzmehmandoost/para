@@ -59,7 +59,7 @@
 //     e.stopPropagation();
 
 //     const clickedName = e.object.name;
-//     if (useSelection.getState().selection.isFocused === clickedName) return;
+//     if (useSelection.getState().selection.focusedName === clickedName) return;
 
 //     const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedName);
 //     if (index < 0) return;

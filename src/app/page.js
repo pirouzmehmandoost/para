@@ -40,18 +40,18 @@ const createVariants = (reduceMotion) => {
 };
 
 const SelectionDisplayModal = () => {
-  const isFocused = useSelection((state) => state.selection.isFocused);
+  const focusedName = useSelection((state) => state.selection.focusedName);
   const setSelection = useSelection((state) => state.setSelection);
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
 
-  const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === isFocused);
+  const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === focusedName);
 
   const handleClick = () => { if (focusedProject) setSelection({ ...focusedProject }) };
 
   const {
-    displayName = '',
-    productData: {
+    UIData: {
+      displayName = '',
       shortDescription = '',
     } = {},
   } = focusedProject || {};

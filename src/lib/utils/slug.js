@@ -1,18 +1,23 @@
 export const getSlugFromName = (name) => {
-    if (!name) return '';
-    return name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-  };
-  
-  export const getProjectFromSlug = (slug, projects) => {
-    if (!slug || !projects) return null;
+  if (!name) return '';
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+};
 
-    return projects.find(project => 
-      getSlugFromName(project.displayName) === slug
-    );
-  };
+export const getProjectFromSlug = (slug, projects) => {
+  if (!slug || !projects) return null;
+
+  return projects.find(
+    ({
+      UIData: {
+        displayName
+      } = {}
+    }) =>
+      getSlugFromName(displayName) === slug
+  );
+};

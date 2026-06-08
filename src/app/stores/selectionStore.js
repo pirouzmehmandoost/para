@@ -1,15 +1,14 @@
 import { create } from 'zustand';
 
 const initialState = {
-  bannerUrl: '',
-  displayName: '',
-  isFocused: null,
+  focusedName: null,
+  focusedUUID: null,
   materialID: '',
-  productData: {
+  UIData: {
     care: '',
     description: '',
     dimensions: '',
-    imgUrls: {},
+    displayName: '',
     materialSpecs: '',
     shortDescription: '',
     weight: '',
@@ -33,9 +32,8 @@ const initialState = {
 function isolateSelection(selection) {
   return {
     ...selection,
-    productData: {
-      ...selection.productData,
-      imgUrls: { ...selection.productData.imgUrls },
+    UIData: {
+      ...selection.UIData,
     },
     sceneData: {
       ...selection.sceneData,
@@ -54,21 +52,19 @@ function isolateSelection(selection) {
 const selectionStore = (set, get) => ({
   selection: initialState,
 
-  getSelection: () => get().selection,
-
   setSelection: (selected) =>
     set((state) => ({
       selection: {
         ...isolateSelection(selected),
-        isFocused: selected?.isFocused ?? state.selection?.isFocused ?? null,
+        focusedName: selected?.focusedName ?? state.selection?.focusedName ?? null,
       },
     })),
 
-  setIsFocused: (name) =>
+  setFocusedName: (name) =>
     set((state) => ({
       selection: {
         ...isolateSelection(state.selection),
-        isFocused: name,
+        focusedName: name,
       },
     })),
 
@@ -84,7 +80,7 @@ const selectionStore = (set, get) => ({
     set((state) => ({
       selection: {
         ...isolateSelection(state.selection),
-        isFocused: name,
+        focusedName: name,
         materialID: materialID,
       },
     })),

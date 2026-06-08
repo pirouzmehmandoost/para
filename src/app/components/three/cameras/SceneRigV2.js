@@ -275,14 +275,14 @@
 //     const xOffset = Math.sin(elapsedTime);
 //     const yOffset = -2 * xOffset;
 //     const zOffset = OFFSET_CAMERA_POSITION[2] + xOffset;
-//     const isFocused = useSelection.getState().selection.isFocused;
+//     const focusedName = useSelection.getState().selection.focusedName;
 
 //     if (targetIndexRef.current >= cameraStopPositionsRef.current.length || targetIndexRef.current < 0) targetIndexRef.current = 0;
 //     if (cameraStopPositionsRef.current.length === 0) return;
 
 //     let nextPosition = cameraStopPositionsRef.current[0];
-//     const focusTargetExists = isFocused !== null && isFocused?.length > 0;
-//     const focusedTargetUUID = !focusTargetExists ? -1 : nameToUUIDRef.current[isFocused];
+//     const focusTargetExists = focusedName !== null && focusedName?.length > 0;
+//     const focusedTargetUUID = !focusTargetExists ? -1 : nameToUUIDRef.current[focusedName];
 //     const focusedIndex = focusTargetExists ? (targetsInSceneRef.current[focusedTargetUUID]?.index ?? -1) : -1;
 //     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
