@@ -9,10 +9,10 @@
 // // import { EPSILON_10e4 } from '@/lib/utils/animationUtils';
 // import { getAABBCenterFast } from '@/lib/utils/positionUtils';
 
-// // SceneRig.js and SceneRigV2.js are preserved for documentation and reference during development.
-// const SceneRig = ({
+// // SceneRigV2.js is a revision to SceneRig.js. It contains an update the effect in on 78-152 in SceneRig.js.
+// // Currently the app uses SceneRigV3.js. SceneRig.js and SceneRigV2.js are preserved for documentation and reference during development.
+// const SceneRigV2 = ({
 //   onSwipe = undefined,
-//   fallbackPositions = [],
 //   targets = [],
 // }) => {
 
@@ -49,7 +49,7 @@
 
 //   useLayoutEffect(() => {
 //     cam.lookAt(INITIAL_CAMERA_POSITION[0], INITIAL_CAMERA_POSITION[1], -1 * INITIAL_CAMERA_POSITION[2]);
-//   }, [cam]);
+//   }, [INITIAL_CAMERA_POSITION, cam]);
 
 //   useEffect(() => {
 //     const targetsInScene = {};
@@ -64,11 +64,11 @@
 //         const targetUUID = targets[i].uuid;
 //         const foundTargetInScene = targetsInScene[targetUUID] || null;
 //         if (foundTargetInScene) {
-//           targetsInSceneRef.current[targetUUID] = { target: foundTargetInScene, index: i, targetUUID };
+//           targetsInSceneRef.current[targetUUID] = { target: foundTargetInScene, index: i, targetUUID, parentUUID: foundTargetInScene?.parent?.uuid || '' };
 //           if (foundTargetInScene.name?.length) nameToUUID[foundTargetInScene.name] = targetUUID;
 //         }
 //         else {
-//           targetsNotInSceneRef.current[targetUUID] = { target: targets[i], index: i, targetUUID };
+//           targetsNotInSceneRef.current[targetUUID] = { target: targets[i], index: i, targetUUID, parentUUID: targets[i]?.parent?.uuid || '' };
 //         }
 //       }
 //     }
@@ -78,77 +78,100 @@
 
 //   useEffect(() => {
 //     const addedEventHandlers = [];
-//     // const removedEventHandlers = [];
+//     const removedEventHandlers = [];
 
-//     // for (const [uuid, entry] of Object.entries(targetsInSceneRef.current)) {
-//     //   const removedEventHandler = () => {
-//     //     // index of cameraStopPositionsRef to update (element is currently a fallback Vector3).
-//     //     const staleTargetIndex = entry.index;
-//     //     // get parent uuid for validation (Object3D _addedEvent signals parentage and sets Object3D.parent to non-null).
-//     //     const parentUUID = entry.target.parent?.uuid;
-//     //     // Validate parent in scene graph (parentage does not imply parent in scene, though the parent can be the scene). 
-//     //     const isParentInScene = parentUUID ? scene?.getObjectByProperty('uuid', parentUUID)?.isObject3D : null;
-//     //     if (isParentInScene) return;
-//     //     // Update targetsNotInSceneRef.
-//     //     targetsNotInSceneRef.current[uuid] = entry;
-//     //     const staleStopPosition = cameraStopPositionsRef.current[staleTargetIndex]?.isVector3 ?  cameraStopPositionsRef.current[staleTargetIndex] : null
-//     //     // Update cameraStopPositionsRef.current
-//     //     if (staleStopPosition) {
-//     //       cameraStopPositionsRef.current.splice(staleTargetIndex, 1);
-//     //     }
-//     //     // Update name to uuid map.
-//     //     if (entry.target?.name?.length) delete nameToUUIDRef.current[entry.target?.name];
-//     //     // Update targetsInSceneRef.
-//     //     delete targetsInSceneRef.current[uuid];
-//     //     // Remove self after firing
-//     //     entry.target.removeEventListener('removed', removedEventHandler);
-//     //   };
-//     //   entry.target.addEventListener('removed', removedEventHandler);
-//     //   removedEventHandlers.push({ target: entry.target, removedEventHandler });
-//     // }
+//     const handleRemoved = (event) => {
+//       const uuid = event.target.uuid
+//       const entry = targetsInSceneRef.current[uuid];
 
-//     for (const [uuid, entry] of Object.entries(targetsNotInSceneRef.current)) {
-//       const addedEventHandler = () => {
-//         // index of cameraStopPositionsRef to update (element is currently a fallback Vector3).
-//         const pendingTargetIndex = entry.index;
-//         // get parent uuid for validation (Object3D _addedEvent signals parentage and sets Object3D.parent to non-null).
-//         const parentUUID = entry.target.parent?.uuid;
-//         // Validate parent in scene graph (parentage does not imply parent in scene, though the parent can be the scene). 
-//         const isParentInScene = parentUUID ? scene?.getObjectByProperty('uuid', parentUUID)?.isObject3D : null;
-//         if (!isParentInScene) return;
-//         // Update targetsInSceneRef.
-//         targetsInSceneRef.current[uuid] = entry;
-//         // Get AABB center position.
-//         const newStopPosition = getAABBCenterFast(entry.target, _scratchCenterRef.current);
-//         // Update cameraStopPositionsRef.current[index].
-//         if (newStopPosition) {
-//           if (cameraStopPositionsRef.current[pendingTargetIndex]?.isVector3) cameraStopPositionsRef.current[pendingTargetIndex].copy(newStopPosition);
-//           else {
-//             while (cameraStopPositionsRef.current.length <= pendingTargetIndex) {
-//               cameraStopPositionsRef.current.push(new THREE.Vector3().copy(defaultFallbackPositionRef.current));
-//             }
-//             cameraStopPositionsRef.current[pendingTargetIndex].copy(newStopPosition);
-//           }
+//       if (!entry) return;
+
+//       const staleTargetIndex = entry.index;
+
+//       if (!scene.getObjectByProperty('uuid', uuid)) {
+//         targetsNotInSceneRef.current[uuid] = entry;
+//         delete targetsInSceneRef.current[uuid];
+//         if (cameraStopPositionsRef.current[staleTargetIndex]) cameraStopPositionsRef.current.splice(staleTargetIndex, 1);
+
+//         if (cameraStopPositionsRef.current.length === 0 || targetIndexRef.current >= cameraStopPositionsRef.current.length) {
+//           prevTargetIndexRef.current = -1;
+//           targetIndexRef.current = 0;
 //         }
-//         // Update name to uuid map.
-//         if (entry.target?.name?.length) nameToUUIDRef.current[entry.target?.name] = uuid;
-//         // Update targetsNotInSceneRef.
-//         delete targetsNotInSceneRef.current[uuid];
-//         // Remove self after firing
-//         entry.target.removeEventListener('added', addedEventHandler);
-//       };
+//         else {
+//           prevTargetIndexRef.current = staleTargetIndex;
+//           targetIndexRef.current += 1;
+//         }
 
-//       entry.target.addEventListener('added', addedEventHandler);
-//       addedEventHandlers.push({ target: entry.target, addedEventHandler });
-//     }
-//     return () => {
-//       for (const { target, addedEventHandler } of addedEventHandlers) {
-//         target.removeEventListener('added', addedEventHandler);
+//         for (const key in targetsInSceneRef.current) {
+//           const item = targetsInSceneRef.current[key];
+//           if (item.index > staleTargetIndex) item.index -= 1;
+//         }
+//         for (const key in targetsNotInSceneRef.current) {
+//           const item = targetsNotInSceneRef.current[key];
+//           if (item.index > staleTargetIndex) item.index -= 1;
+//         }
+
+//         const parent = scene.getObjectByProperty('uuid', entry.parentUUID);
+//         if (!parent || (!!targets && !targets.find(t => t.uuid === uuid))) delete targetsNotInSceneRef.current[uuid]
+//         else {
+//           targetsNotInSceneRef.current[uuid].parentUUID = parent.uuid;
+//           targetsNotInSceneRef.current[uuid].index = Object.keys(targetsInSceneRef.current).length;
+//           entry.target.addEventListener('added', handleAdded);
+//           addedEventHandlers.push({ target: entry.target, handleAdded })
+//         }
+
+//         if (entry.target?.name?.length && nameToUUIDRef.current[entry.target.name]) delete nameToUUIDRef.current[entry.target.name];
 //       }
-//       // for (const { target, removedEventHandler } of removedEventHandlers) {
-//       //   target.removeEventListener('removed', removedEventHandler);
-//       // }
 
+//       entry.target.removeEventListener('removed', handleRemoved);
+//     };
+
+//     const handleAdded = (event) => {
+//       const uuid = event.target.uuid;
+//       const entry = targetsNotInSceneRef.current[uuid];
+
+//       if (!entry) return;
+
+//       const pendingTargetIndex = entry.index;
+//       const parentUUID = entry.target.parent?.uuid;
+//       const isParentInScene = parentUUID ? scene?.getObjectByProperty('uuid', parentUUID)?.isObject3D : null;
+//       if (!isParentInScene) return;
+
+//       targetsInSceneRef.current[uuid] = entry;
+//       if (targetsNotInSceneRef.current[uuid]) delete targetsNotInSceneRef.current[uuid];
+
+//       entry.target.addEventListener('removed', handleRemoved);
+//       removedEventHandlers.push({ target: entry.target, handleRemoved });
+
+//       const newStopPosition = getAABBCenterFast(entry.target, _scratchCenterRef.current);
+//       if (newStopPosition) {
+//         if (cameraStopPositionsRef.current[pendingTargetIndex]?.isVector3) cameraStopPositionsRef.current[pendingTargetIndex].copy(newStopPosition);
+//         else {
+//           while (cameraStopPositionsRef.current.length <= pendingTargetIndex) {
+//             cameraStopPositionsRef.current.push(new THREE.Vector3().copy(defaultFallbackPositionRef.current));
+//           }
+//           cameraStopPositionsRef.current[pendingTargetIndex].copy(newStopPosition);
+//         }
+//       }
+
+//       if (entry.target.name?.length) nameToUUIDRef.current[entry.target?.name] = uuid;
+//       entry.target.removeEventListener('added', handleAdded);
+
+//       const target = targetsInSceneRef.current[uuid].target;
+//       target.addEventListener('removed', handleRemoved);
+//       removedEventHandlers.push({ target, handleRemoved });
+
+
+//       for (const uuid in targetsNotInSceneRef.current) {
+//         const target = targetsNotInSceneRef.current[uuid].target;
+//         target.addEventListener('added', handleAdded);
+//         addedEventHandlers.push({ target, handleAdded });
+//       }
+//     };
+
+//     return () => {
+//       addedEventHandlers.forEach(h => h.target.removeEventListener('added', h.handleAdded));
+//       removedEventHandlers.forEach(h => h.target.removeEventListener('removed', h.handleRemoved));
 //     };
 //   }, [targets, scene]);
 
@@ -215,19 +238,19 @@
 //   }, [domElement, clock, onSwipe, SWIPE_DELTA_TIME_MS, SWIPE_DELTA_PX, MANUAL_OVERRIDE_SECONDS]);
 
 //   useEffect(() => {
-//     const length = Math.max(Object.entries(targetsInSceneRef.current)?.length ?? 0, fallbackPositions?.length ?? 0);
+//     const length = Object.entries(targetsInSceneRef.current)?.length ?? 0;
 
 //     for (let i = 0; i < length; i++) {
 //       if (!cameraStopPositionsRef.current[i]?.isVector3) cameraStopPositionsRef.current[i] = new THREE.Vector3();
 
 //       if (!targets[i] || !targets[i]?.isObject3D) {
-//         cameraStopPositionsRef.current[i].copy(fallbackPositions[i]?.isVector3 ? fallbackPositions[i] : defaultFallbackPositionRef.current);
+//         cameraStopPositionsRef.current[i].copy(defaultFallbackPositionRef.current);
 //         continue;
 //       }
 
 //       const key = targets[i]?.uuid;
 //       const exists = targetsInSceneRef.current[key]?.target?.uuid ?? 0;
-//       if (exists?.length) {
+//       if (exists) {
 //         const target = targetsInSceneRef.current[key].target;
 
 //         if (typeof target['updateWorldMatrix'] === 'function') target.updateWorldMatrix(true, false);
@@ -244,7 +267,7 @@
 //     }
 
 //     if (targetIndexRef.current < 0 || targetIndexRef.current >= cameraStopPositionsRef.current.length) targetIndexRef.current = 0;
-//   }, [targets, fallbackPositions]);
+//   }, [targets]);
 
 //   useFrame(({ camera, clock }, delta) => {
 //     const clampedDelta = Math.min(delta, 0.08);
@@ -252,14 +275,14 @@
 //     const xOffset = Math.sin(elapsedTime);
 //     const yOffset = -2 * xOffset;
 //     const zOffset = OFFSET_CAMERA_POSITION[2] + xOffset;
-//     const { selection } = useSelection.getState();
+//     const isFocused = useSelection.getState().selection.isFocused;
 
 //     if (targetIndexRef.current >= cameraStopPositionsRef.current.length || targetIndexRef.current < 0) targetIndexRef.current = 0;
 //     if (cameraStopPositionsRef.current.length === 0) return;
 
 //     let nextPosition = cameraStopPositionsRef.current[0];
-//     const focusTargetExists = selection.isFocused !== null && selection.isFocused?.length > 0;
-//     const focusedTargetUUID = !focusTargetExists ? -1 : nameToUUIDRef.current[selection.isFocused];
+//     const focusTargetExists = isFocused !== null && isFocused?.length > 0;
+//     const focusedTargetUUID = !focusTargetExists ? -1 : nameToUUIDRef.current[isFocused];
 //     const focusedIndex = focusTargetExists ? (targetsInSceneRef.current[focusedTargetUUID]?.index ?? -1) : -1;
 //     const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
@@ -305,4 +328,4 @@
 //   });
 // };
 
-// export default SceneRig;
+// export default SceneRigV2;

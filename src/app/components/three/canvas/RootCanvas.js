@@ -7,10 +7,12 @@ import { Canvas } from '@react-three/fiber';
 import { Environment, Html, useGLTF } from '@react-three/drei';
 import { envColor, envImageUrl } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
-import BasicScene from '../scenes/BasicScene';
+import SceneComposer from '../scenes/SceneComposer';
 
 THREE.ColorManagement.enabled = true;
 THREE.Cache.enabled = true;
+
+const { NEAR, FAR, FOV, INITIAL_CAMERA_POSITION } = cameraConfigs;
 
 useGLTF.preload('/yoga_mat_strap.glb');
 useGLTF.preload('/textured_bag.glb');
@@ -25,10 +27,12 @@ export const Loader = () => {
   );
 };
 
+// NOTE: SceneComposer is experimental. Swap with BasicScene as needed during local development. 
 export const RootCanvas = () => {
+
+  // Route-based frameloop execution. 
   const pathname = usePathname();
   const interactive = pathname === '/' || pathname.startsWith('/projects/');
-  const { NEAR, FAR, FOV, INITIAL_CAMERA_POSITION } = cameraConfigs;
 
   // function SceneRouter() {
   //   if (pathname === '/') return <HomeScene />;
@@ -51,7 +55,7 @@ export const RootCanvas = () => {
         <fog attach='fog' color={envColor} near={180} far={270} />
         <Environment shadows files={envImageUrl} environmentIntensity={0.5} />
         <Suspense fallback={<Loader />}>
-          <BasicScene />
+          <SceneComposer />
         </Suspense>
       </Canvas>
     </div>

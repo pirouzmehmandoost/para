@@ -6,23 +6,8 @@ export const portfolio = {
       displayName: 'Gerd',
       productData: {
         care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
-        description:
-        `Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy. 
-          Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.`,
-        dimensions:  `21.5 x 5" x 14"`,
+        description: `Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.`,
+        dimensions: `21.5" x 5" x 14"`,
         materialSpecs: 'Thermoplastic urethane',
         shortDescription: `A large 3D printed shoulder bag.`,
         weight: '1lb',
@@ -51,7 +36,7 @@ export const portfolio = {
       productData: {
         care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
         description: 'Large enough to fit essentials, small enough second as a table decoration. Lightweight and satisfyingly squishy.',
-        dimensions:  `16 x 4" x 12"`,
+        dimensions: `16" x 4" x 12"`,
         materialSpecs: 'Thermoplastic urethane',
         shortDescription: 'A small 3D printed shoulder bag.',
         weight: '1lb',
@@ -80,7 +65,7 @@ export const portfolio = {
       productData: {
         care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
         description: `A Yoga mat holder with a large handle for easy carrying. Lightweight to allow sitting rolled mats upright, adding sculptural qualities to idle exercise equipment.`,
-        dimensions:  `21.5 x 5" x 14"`,
+        dimensions: `21.5" x 5" x 14"`,
         materialSpecs: 'Thermoplastic urethane',
         shortDescription: `A yoga mat holder with a large handle.`,
         weight: '1lb',
@@ -99,7 +84,7 @@ export const portfolio = {
           defaultMaterialID: 'gloss_black',
           materialIDs: ['gloss_black', 'matte_black'],
         },
-        rotation: {x: 0, y: 1, z: 0 },
+        rotation: { x: 0, y: 1, z: 0 },
         rotationSpeed: 0.45,
         scale: 0.8,
       },
