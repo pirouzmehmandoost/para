@@ -19,7 +19,6 @@ const initialState = {
     animatePosition: false,
     animateRotation: true,
     fileData: { nodeName: '', url: '', },
-    groupName: '',
     materials: { defaultMaterialID: '', materialIDs: [], },
     position: {},
     rotation: { x: 0, y: 0, z: 0 },
