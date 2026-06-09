@@ -4,7 +4,7 @@
 
 TargetRegistry is a framework-agnostic TypeScript class that tracks Three.js Object3D targets through a promotion/demotion/removal lifecycle. It maintains an ordered list of world-space positions and a UUID-keyed map of tracked targets, driven by Three.js `added`/`removed` events.
 
-It is consumed by `ExperimentalRig` (via a thin React hook wrapper, `useTargetRegistry`) but has no dependency on React, React Three Fiber, or Zustand.
+It is consumed by `SceneRigV3` (via a thin React hook wrapper, `useTargetRegistry`) but has no dependency on React, React Three Fiber, or Zustand.
 
 ## Files
 
@@ -32,6 +32,8 @@ Sequence when `parent.add(child)` is called:
 5. `this.dispatchEvent({ type: 'childadded', child })` — `childadded` event fires on the parent.
 
 When an `added` listener fires, `child.parent` is already set and `child` is already in `parent.children`.
+
+`childadded` fires only on the direct parent. There is no event bubbling in `EventDispatcher`. The scene root does NOT receive `childadded` when an object is added to an intermediate parent already in the scene.
 
 ### Object3D.remove() — event timing
 
@@ -86,11 +88,11 @@ All claims in this section are verified against the local R3F clone at `/Users/p
 
 ### Reconciler mutations — synchronous, during React commit phase
 
-Source: `packages/fiber/src/core/reconciler.ts`.
+Source: `packages/fiber/src/core/reconciler.tsx`.
 
 - `appendChild` / `removeChild` call Three.js `object.add()` / `object.remove()` synchronously during React's commit phase.
 - No batching or deferral of scene graph mutations.
-- `insertBefore` manually splices into `parent.children` and dispatches `added`/`childadded` events directly (does not call `Object3D.add()`). The registry's `added` listener still fires correctly.
+- `insertBefore` manually splices into `parent.children` and dispatches `added`/`childadded` events directly (does not call `Object3D.add()`) when the child is new. For move operations (child already in parent), it splices without dispatching events. The registry's `added` listener fires correctly in the new-child case.
 
 ### Timing chain for removals
 
@@ -100,7 +102,9 @@ When React unmounts a component that owns a Three.js Object3D:
 2. **React `useLayoutEffect` cleanups** run.
 3. **React `useEffect` cleanups** run.
 
-Three.js `removed` events fire BEFORE both `useLayoutEffect` and `useEffect` cleanups. The registry's `_handleRemoved` can safely read its own state during the event — it runs while effects are still "live."
+Three.js `removed` events fire BEFORE both `useLayoutEffect` and `useEffect` cleanups. The registry's `_makeRemovedHandler` closure can safely read the registry's own state during the event — it runs while effects are still "live."
+
+R3F's `removeChild` recursively removes all children of the unmounted subtree, calling `parent.object.remove(child.object)` at each level. This means `removed` events fire on every Object3D in the subtree, not just the root.
 
 ### useFrame — independent of React render cycle
 
@@ -108,7 +112,7 @@ Source: `packages/fiber/src/core/hooks.tsx`.
 
 - `useFrame` callbacks run inside `requestAnimationFrame`, decoupled from React's render cycle.
 - Can execute between React's commit phase and passive-effects phase.
-- The registry's event-driven updates (`_handleAdded`, `_handleRemoved`) fire synchronously during commit, ensuring the registry is consistent before the next `useFrame` reads it.
+- The registry's event-driven updates (`_makeAddedHandler`, `_makeRemovedHandler`) fire synchronously during commit, ensuring the registry is consistent before the next `useFrame` reads it.
 
 ---
 
@@ -117,7 +121,7 @@ Source: `packages/fiber/src/core/hooks.tsx`.
 ### Classifications
 
 **Promoted:** A target is registered with the TargetRegistry and considered available. The registry tracks its world-space position in the positions array. A target is promoted when:
-- It is present in the scene graph at discovery time (`register()`), OR
+- It is present in the scene graph at discovery time (`register()` or `registerByFilter()`), OR
 - It re-enters the scene graph (the `added` event fires on a demoted target), OR
 - The consumer explicitly calls `promote(uuid)`.
 
@@ -129,22 +133,23 @@ A demoted target listens for the `added` event to auto-re-promote if it re-enter
 
 **Removed:** A target is permanently gone. Either:
 - The former parent (`parentUUID`) is no longer in the scene graph, OR
-- The target is no longer in the `targets` array (the consumer dropped it between renders).
+- The target is no longer in the `_targets` map (the consumer dropped it between re-registrations), OR
+- The consumer explicitly calls `removeTarget(uuid)`.
 
 Removed targets are cleaned up immediately. No pending state.
 
 ### Why `parentUUID` must be stored at promotion time
 
-The `removed` event fires after `child.parent = null` (Three.js `Object3D.remove()`, line 816). By the time the registry's `_handleRemoved` listener runs, `event.target.parent` is `null`. The only way to check whether the former parent is still in the scene graph — and therefore distinguish demotion from removal — is to have stored the parent's UUID beforehand.
+The `removed` event fires after `child.parent = null` (Three.js `Object3D.remove()`, line 816). By the time the registry's `_makeRemovedHandler` listener runs, `event.target.parent` is `null`. The only way to check whether the former parent is still in the scene graph — and therefore distinguish demotion from removal — is to have stored the parent's UUID beforehand.
 
 ### Demotion vs. removal — the heuristic
 
-When `_handleRemoved` fires for a tracked target:
+When `_makeRemovedHandler` fires for a tracked target:
 
 1. Look up the stored `parentUUID` for this target.
 2. Call `scene.getObjectByProperty('uuid', parentUUID)` to check if the former parent is still in the scene graph.
-3. Check if the target is still in the `targets` array.
-4. If the parent exists AND the target is still in `targets` → **demote**. Register an `added` listener on the target.
+3. Check if the target is still tracked: either `_activeFilter` is non-null (filter mode) or the UUID exists in `_targets` (array mode).
+4. If the parent exists AND the target is still tracked → **demote**. Register an `added` listener on the target.
 5. Otherwise → **remove**. Clean up the entry entirely.
 
 Note: `scene.getObjectByProperty()` is O(N). This call happens inside a `removed` event handler, which fires during React's commit phase — not per frame. The O(N) cost is acceptable here because removals are infrequent. The per-frame hot path (`useFrame`) never calls `getObjectByProperty`.
@@ -166,14 +171,17 @@ class TargetRegistry {
   constructor(scene: THREE.Object3D, defaultFallback?: THREE.Vector3);
 
   register(targets: THREE.Object3D[]): void;
+  registerByFilter(filter: (obj: THREE.Object3D) => boolean): void;
   setFallbackPosition(position: THREE.Vector3): void;
 
   getPositions(): readonly THREE.Vector3[];
   getPromoted(): Readonly<Record<string, RegistryEntry>>;
   getDemoted(): Readonly<Record<string, RegistryEntry>>;
-  resolveNameToUUID(name: string): string | undefined;
 
   refreshPosition(index: number, position: THREE.Vector3): void;
+
+  addTarget(target: THREE.Object3D): boolean;
+  removeTarget(uuid: string): boolean;
 
   demote(uuid: string): boolean;
   promote(uuid: string): boolean;
@@ -188,9 +196,11 @@ class TargetRegistry {
 
 ### Method contracts
 
-**`register(targets)`** — Called when the consumer's target list changes. Runs full discovery: traverses the scene graph, classifies each target as promoted or demoted, wires `added`/`removed` event listeners, initializes position slots with `defaultFallback`. Cleans up listeners from the previous target set. Targets with falsy or empty `uuid` are skipped.
+**`register(targets)`** — Called when the consumer's target list changes. Runs full discovery: traverses the scene graph, classifies each target as promoted or demoted, wires `added`/`removed` event listeners, initializes position slots with `defaultFallback`. Cleans up listeners from the previous target set. Targets with falsy or empty `uuid` are skipped. Internal `_targets` is built as a UUID-keyed `Record` via `Object.fromEntries`, which deduplicates by UUID.
 
-**`setFallbackPosition(position)`** — Overwrites the default fallback position. Copies the value (does not retain a reference, see [`THREE.Vector3.copy()`](https://threejs.org/docs/#Vector3.copy)).
+**`registerByFilter(filter)`** — Called when the consumer wants to track all scene objects matching a predicate. Traverses the scene graph at registration time and promotes every matching object. Attaches a `childadded` listener on the scene root to discover new matching objects added after registration. See "Filter mode discovery" below for coverage and limitations.
+
+**`setFallbackPosition(position)`** — Overwrites the default fallback position. Copies the value (does not retain a reference).
 
 **`getPositions()`** — Returns the internal position array as `readonly`. The caller must not mutate the array structure (no push/splice). Individual `Vector3` values are readable; the registry updates them in-place via `refreshPosition()`.
 
@@ -198,25 +208,37 @@ class TargetRegistry {
 
 **`getDemoted()`** — Returns the demoted targets map as `Readonly`. UUID-keyed.
 
-**`resolveNameToUUID(name)`** — Looks up a target name in the internal name-to-UUID map. Returns `undefined` if no promoted target has that name.
-
 **`refreshPosition(index, position)`** — Copies the given position into the internal positions array at the specified index. Called by the consumer's per-frame loop after computing the target's position (e.g., via `getAABBCenterFast`). Position computation is the consumer's responsibility — the registry does not depend on `positionUtils`.
+
+**`addTarget(target)`** — Adds a single Object3D to the registry after initial registration. Returns `false` if the UUID already exists in `_promoted` or `_demoted`, or if the target has a falsy/empty UUID. If the target is in the scene, it is promoted immediately. If not, it is demoted with an `added` listener.
+
+**`removeTarget(uuid)`** — Permanently removes a target from the registry. Cleans up the position slot (if promoted), adjusts indices, removes event listeners, and deletes from `_targets`. Returns `false` if the UUID is not found.
 
 **`demote(uuid)`** — Moves a promoted target to demoted state. Removes its position from the positions array, adjusts indices of all entries with higher indices, and marks the entry as consumer-demoted (not auto-re-promotable by `added` events). Returns `true` if the target was found and demoted, `false` if the UUID was not in the promoted map.
 
 **`promote(uuid)`** — Moves a demoted target back to promoted state. Verifies that both the target and its parent are in the scene graph before promoting; returns `false` if either check fails. Appends a position slot initialized to `defaultFallback`, clears the consumer-demoted flag, and wires a `removed` listener. Returns `true` on success.
 
-**`deregister()`** — Removes all `added`/`removed` event listeners from all tracked targets and clears internal state. The instance is reusable — `register()` can be called again after `deregister()`.
+**`deregister()`** — Removes all `added`/`removed`/`childadded` event listeners from all tracked targets and the scene, and clears internal state. The instance is reusable — `register()` or `registerByFilter()` can be called again after `deregister()`.
+
+### Filter mode discovery
+
+`registerByFilter(filter)` attaches a `childadded` listener on the scene root via `_attachSceneChildAddedListener`. When `childadded` fires on the scene, the handler traverses `event.child` and its descendants, promoting any object that matches the filter and is not already tracked.
+
+**Coverage**: Subtrees added as direct children of the scene are fully covered (the traverse reaches all descendants). This is the R3F mounting pattern — components render Object3Ds that are added to the scene root during React's commit phase.
+
+**Limitation**: Objects added to a parent that is already in the scene do NOT trigger `childadded` on the scene root. `childadded` fires on the direct parent only (Three.js `Object3D.js` line 776, no event bubbling). For these, the consumer must call `addTarget()` explicitly.
 
 ---
 
 ## React Hook Wrapper
 
 ```typescript
+type Targets = THREE.Object3D[] | ((obj: THREE.Object3D) => boolean);
+
 function useTargetRegistry(
   scene: THREE.Scene | null,
-  targets: THREE.Object3D[],
-  defaultFallback?: THREE.Vector3 | number[],
+  targets?: Targets,
+  defaultFallback?: THREE.Vector3,
 ): React.RefObject<TargetRegistry | null>;
 ```
 
@@ -224,15 +246,19 @@ function useTargetRegistry(
 
 **Responsibilities:**
 - Creates a `TargetRegistry` instance on mount (stored in a `useRef`). `defaultFallback` is read only during construction; to update it after mount, call `registryRef.current.setFallbackPosition()`.
-- Calls `registry.register(targets)` when `targets` or `scene` changes (`useEffect`). The effect cleanup calls `registry.deregister()` before each re-registration.
-- Calls `registry.deregister()` and nulls the ref on unmount (separate empty-deps effect).
+- If `targets` is an array, calls `registry.register(targets)`. If `targets` is a function, calls `registry.registerByFilter(targets)`.
+- Calls `registry.register()` or `registry.registerByFilter()` when `targets` or `scene` changes (`useEffect`). The effect cleanup calls `registry.deregister()` before each re-registration.
+- Tracks scene identity via `sceneRef`. When `scene.uuid` changes, nulls `registryRef.current` to force reconstruction on the next effect run.
+- Calls `registry.deregister()` and nulls both refs on unmount (separate empty-deps effect).
 - Returns a ref to the registry instance. Not a state value — avoids re-renders. The consumer reads the registry imperatively in `useFrame`.
+
+**Function reference stability:** Consumers passing a function as `targets` must provide a stable (memoized) reference. An unstable function reference creates a new reference on every React render, causing the `[scene, targets]` effect to re-run every render — silently destroying and rebuilding the entire registry each time. Use `useMemo` or `useCallback` to stabilize the function.
 
 ---
 
 ## Design rationale for consumer-driven demotion
 
-Stated broadly, scene graph membership is not the only criterion for target availability. Production applications need to exclude targets for reasons the registry cannot anticipate:
+Scene graph membership is not the only criterion for target availability. Production applications need to exclude targets for reasons the registry cannot anticipate:
 
 - **Visibility filtering:** A product configurator hides meshes by category. Hidden products should not be camera targets.
 - **Distance culling:** A large scene excludes targets beyond a camera distance threshold.
@@ -241,7 +267,7 @@ Stated broadly, scene graph membership is not the only criterion for target avai
 
 The `demote(uuid)` and `promote(uuid)` methods let the consumer drive availability transitions for any application-specific reason. The registry handles all bookkeeping (positions array, index adjustment, listener management). Consumers that only need scene-graph-driven lifecycle never call these methods — they are additive, not mandatory.
 
-Consumer-demoted targets are distinguished from scene-graph-demoted targets internally. A scene-graph-demoted target "auto-re-promotes" when it re-enters the scene graph (the `added` event fires). A consumer-demoted target does not auto-re-promote — the consumer owns the demotion reason and must explicitly call `promote(uuid)` to reverse it.
+Consumer-demoted targets are distinguished from scene-graph-demoted targets internally. A scene-graph-demoted target auto-re-promotes when it re-enters the scene graph (the `added` event fires). A consumer-demoted target does not auto-re-promote — the consumer owns the demotion reason and must explicitly call `promote(uuid)` to reverse it.
 
 ---
 
@@ -249,7 +275,7 @@ Consumer-demoted targets are distinguished from scene-graph-demoted targets inte
 
 1. **Zero CPU allocations in the per-frame path.** `getPositions()` returns the internal array by reference. `refreshPosition()` copies into existing Vector3 objects. No `new Vector3()`, no `clone()`, no object spread.
 
-2. **Event listeners must be cleaned up.** Every `addEventListener` call must have a corresponding `removeEventListener` in `deregister()` and in `register()` (when replacing a previous target set).
+2. **Event listeners must be cleaned up.** Every `addEventListener` call must have a corresponding `removeEventListener` in `deregister()` and in `register()`/`registerByFilter()` (when replacing a previous target set).
 
 3. **`parentUUID` must be captured at promotion time.** Cannot be recovered after `removed` fires.
 
@@ -259,35 +285,24 @@ Consumer-demoted targets are distinguished from scene-graph-demoted targets inte
 
 ---
 
-## Relationship to ExperimentalRig and SceneRig
+## Relationship to SceneRigV3 and SceneRig
 
-`ExperimentalRig.js` is a test copy of `SceneRig.js` wired to use the registry. Whereas SceneRig owns target lifecycle system logic, its is abstracted away in ExperimentalRig to consume the registry via `useTargetRegistry`.
+`SceneRigV3.js` is a copy of `SceneRig.js` wired to consume the registry via `useTargetRegistry`. `SceneComposer.js` mounts `SceneRigV3` with a filter function, so `registerByFilter` is the production path.
 
-
-After extraction, `ExperimentalRig` retains:
+After extraction, `SceneRigV3` retains:
 - Gesture/pointer handling (swipe detection, manual override)
 - Camera animation loop (`useFrame`)
 - Target cycling logic (dwell time, auto-advance, focus override)
 - Per-frame position computation via `getAABBCenterFast` and `registry.refreshPosition()`
 
-ExperimentalRig loses:
-- Target discovery effects (scene traversal, target classification)
-- Event listener wiring effects for `added`/`removed`
-- `targetsInSceneRef`, `targetsNotInSceneRef`, `nameToUUIDRef`, `cameraStopPositionsRef` refs
+`SceneRigV3` does not own:
+- Target discovery (scene traversal, target classification)
+- Event listener wiring for `added`/`removed`/`childadded`
 
-ExpermimentalRig gains:
-- `useTargetRegistry` hook call
+These are handled by the registry.
 
-These are replaced by reads from `registryRef.current.getPositions()`, `registryRef.current.getPromoted()`, and `registryRef.current.resolveNameToUUID()`.
+---
 
-## TO-DO
+## Known issues and pending work
 
-1. **Consolidate duplicated code in `_addTarget()`, `_promoteByObject()`
-
-2. `_attachSceneChildAddedListener()` iterates `_demoted` while `_promoteEntry()` deletes from it. 
-
-3. **Scope the registry's responsibility to lifecycle tracking.** Determine whether to remove `_positions` and `_defaultFallback`, related methods. For  purposes specifc to the app PARA, I could abstract existing positioning logic away to a new subclass.
-
-4. **Add a Usage Guide doc that links to this doc.**
-
-5. **Document function reference stability**  Both docs should warn users against providing an unstable function reference when `targets` is a function.
+Tracked in `REFACTOR.md`.
