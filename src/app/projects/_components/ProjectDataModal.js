@@ -11,7 +11,6 @@ import AutoModeIcon from '@mui/icons-material/AutoMode';
 import NotesIcon from '@mui/icons-material/Notes';
 import HomeIcon from '@mui/icons-material/Home';
 
-// const clearFocus = () => useSelection.getState().setFocusedName(null);  
 const reset = () => useSelection.getState().reset();
 
 const RotateActionButton = memo(({
@@ -190,13 +189,9 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
       } = {},
     } = project;
 
-    const {
-      UIData: {
-        displayName: selectionDisplayName,
-      } = {},
-    } = selection;
+    const selectionDisplayName = useSelection.getState().selection?.UIData?.displayName || null;
 
-    if (!selection || selectionDisplayName !== projectDisplayName) {
+    if (!selectionDisplayName || selectionDisplayName !== projectDisplayName) {
       const update = {
         ...project,
         focusedName: projectNodeName,
@@ -204,10 +199,9 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
       };
       setSelectionStore(update);
     }
-  }, [project, setSelectionStore, selection?.UIData?.DisplayName]);
+  }, [project, setSelectionStore]);
 
   const navigateToRoot = () => {
-    // clearFocus();
     reset();
     router.replace('/');
   };
