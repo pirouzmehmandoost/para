@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigatio
 import useSelection from '@stores/selectionStore';
 
 const clearFocus = () => {
-  useSelection.getState().setFocusedName(null);
+  useSelection.getState().setFocused(null, '', null);
 };
 
 export default function GlobalKeyboardShortcuts() {

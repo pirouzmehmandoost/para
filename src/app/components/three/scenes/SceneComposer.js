@@ -12,23 +12,23 @@ import SceneRigV3 from '../cameras/SceneRigV3';
 import Model from '../models/Model';
 import Ground from '../models/Ground';
 
-const { SWIPE_DELAY_MS, OFFSET_CAMERA_POSITION, INITIAL_CAMERA_POSITION } = cameraConfigs;
+const { SWIPE_DELAY_MS, OFFSET_CAMERA_POSITION } = cameraConfigs;
 const meshPositions = [
   new THREE.Vector3(-100, -18, -40),
   new THREE.Vector3(100, -10, -40),
   new THREE.Vector3(0, -105, 40)
 ];
+
 const defaultCameraPosition = new THREE.Vector3(OFFSET_CAMERA_POSITION[0], OFFSET_CAMERA_POSITION[1], OFFSET_CAMERA_POSITION[2]);
-const lookAtPosition = new THREE.Vector3(INITIAL_CAMERA_POSITION[0], INITIAL_CAMERA_POSITION[1], -1 * INITIAL_CAMERA_POSITION[2]);
+const offsetCameraPosition = new THREE.Vector3(0, 0, OFFSET_CAMERA_POSITION[2]);
+const lookAtPosition = new THREE.Vector3(0, 0, -1);
 
 const SceneComposer = () => {
-
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
 
   const resetSelectionStore = useSelection((state) => state.reset);
-  const setFocusAndMaterial = useSelection((state) => state.setFocusAndMaterial);
-
+  const setFocused = useSelection((state) => state.setFocused);
   const lastSwipeTimeRef = useRef(0);
 
   const targetKeys = useMemo(() =>
@@ -45,26 +45,24 @@ const SceneComposer = () => {
   const handlePointerMissed = useCallback((e) => {
     if (Date.now() - lastSwipeTimeRef.current < SWIPE_DELAY_MS) return;
 
-    startTransition(() => {
-      resetSelectionStore();
-    });
+    startTransition(() => { resetSelectionStore() });
   }, [resetSelectionStore]);
 
   const handleClick = useCallback((e) => {
     e.stopPropagation();
+    const clickedName = e.object.name || null;
+    const clickedUUID = e.object.uuid || null;
 
-    const clickedKey = e.object.name || null;
-    if (!clickedKey) return;
+    if (!clickedName || !clickedUUID) return;
 
-    if (useSelection.getState().selection.focusedName === clickedKey) return;
+    if (useSelection.getState().selection.focusedUUID === clickedUUID) return;
 
-    const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedKey);
+    const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedName);
     if (index < 0) return;
 
-    startTransition(() => {
-      setFocusAndMaterial(clickedKey, projects[index].sceneData.materials.defaultMaterialID);
-    });
-  }, [setFocusAndMaterial]);
+    const materialID = projects[index].sceneData.materials.defaultMaterialID;
+    startTransition(() => { setFocused(clickedName, materialID, clickedUUID) });
+  }, [setFocused]);
 
   const onSwipe = useCallback((e) => {
     lastSwipeTimeRef.current = Date.now();
@@ -147,6 +145,7 @@ const SceneComposer = () => {
         targets={targetFilter}
         defaultPosition={defaultCameraPosition}
         lookAtPosition={lookAtPosition}
+        offsetPosition={offsetCameraPosition}
       />
     </>
   );

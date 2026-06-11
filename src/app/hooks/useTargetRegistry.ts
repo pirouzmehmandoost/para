@@ -14,7 +14,6 @@ type Targets = THREE.Object3D[] | ((obj: THREE.Object3D) => boolean);
 export default function useTargetRegistry(
   scene: THREE.Scene | null,
   targets?: Targets,
-  defaultFallback?: THREE.Vector3,
 ): React.RefObject<TargetRegistry | null> {
   const registryRef = useRef<TargetRegistry | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -30,7 +29,7 @@ export default function useTargetRegistry(
     }
 
     if (!registryRef.current) {
-      registryRef.current = new TargetRegistry(sceneRef.current, defaultFallback);
+      registryRef.current = new TargetRegistry(sceneRef.current);
     }
 
     if (Array.isArray(targets)) {

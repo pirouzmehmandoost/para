@@ -168,7 +168,9 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
     } = {},
   } = projectData || {};
 
-  const selectedMaterialID = useMemo(() => selection?.materialID?.length ? selection.materialID : defaultMaterialID, [selection.materialID, defaultMaterialID]);
+  const selectedMaterialID = useMemo(() =>
+    selection?.focusedMaterialID?.length ? selection.focusedMaterialID : defaultMaterialID
+    , [selection.focusedMaterialID, defaultMaterialID]);
 
   // Hydration guard that handles direct visits to /projects/[slug] directly or refreshing browser tab. 
   // In both cases selectionStore initializes to initialState.

@@ -248,8 +248,8 @@ const Model = (props) => {
 
     if (!texturesReady) return;
 
-    const selectedMaterialID = selectedAndFocused && selection.materialID?.length
-      ? selection.materialID
+    const selectedMaterialID = selectedAndFocused && selection.focusedMaterialID?.length
+      ? selection.focusedMaterialID
       : defaultMaterialID;
 
     if (!materialReadyRef.current) {

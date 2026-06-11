@@ -3,7 +3,7 @@ import { create } from 'zustand';
 const initialState = {
   focusedName: null,
   focusedUUID: null,
-  materialID: '',
+  focusedMaterialID: '',
   UIData: {
     care: '',
     description: '',
@@ -71,16 +71,17 @@ const selectionStore = (set, get) => ({
     set((state) => ({
       selection: {
         ...isolateSelection(state.selection),
-        materialID: id,
+        focusedMaterialID: id,
       },
     })),
 
-  setFocusAndMaterial: (name, materialID) =>
+  setFocused: (name, materialID, uuid) =>
     set((state) => ({
       selection: {
         ...isolateSelection(state.selection),
         focusedName: name,
-        materialID: materialID,
+        focusedUUID: uuid,
+        focusedMaterialID: materialID,
       },
     })),
 

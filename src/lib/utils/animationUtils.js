@@ -1,3 +1,30 @@
+export const EPSILON_1e7 = 1e-7;
+export const EPSILON_3e3 = 3e-3;
+export const EPSILON_10e4 = 10e-4;
+
+export const angleDelta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
+
+export const eulerDistance = (current, target) =>
+  Math.abs(angleDelta(current.x, target.x)) +
+  Math.abs(angleDelta(current.y, target.y)) +
+  Math.abs(angleDelta(current.z, target.z));
+
+export const wrap = (value, min, max) => {
+  const range = max - min;
+  return ((((value - min) % range) + range) % range) + min;
+}
+
+export const RotationAnimationModes = {
+  MODE_IDLE: 'MODE_IDLE',
+  MODE_TURNTABLE: 'MODE_TURNTABLE',
+  MODE_MANUAL: 'MODE_MANUAL'
+}
+
+export const PositionAnimationModes = {
+  ENABLED: 'ENABLED',
+  DISABLED: 'DISABLED'
+}
+
 /*
 NOTES: 
 In MeshPhysicalMaterial, properties clearcoat, transmission, and dispersion have setter functions that increment
@@ -199,30 +226,3 @@ Implementation:
   - The per-frame GPU cost is negligible — a few extra ALU operations per fragment for evaluating clearcoat/transmission/dispersion with effectively-zero contributions.
   - The "high-gloss flash" I observed pre-upgrade will also be eliminated, because the clearcoat code path is always active — there is no frame where it suddenly appears.
 */
-
-export const EPSILON_1e7 = 1e-7;
-export const EPSILON_3e3 = 3e-3;
-export const EPSILON_10e4 = 10e-4;
-
-export const angleDelta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
-
-export const eulerDistance = (current, target) =>
-  Math.abs(angleDelta(current.x, target.x)) +
-  Math.abs(angleDelta(current.y, target.y)) +
-  Math.abs(angleDelta(current.z, target.z));
-
-export const wrap = (value, min, max) => {
-  const range = max - min;
-  return ((((value - min) % range) + range) % range) + min;
-}
-
-export const RotationAnimationModes = {
-  MODE_IDLE: 'MODE_IDLE',
-  MODE_TURNTABLE: 'MODE_TURNTABLE',
-  MODE_MANUAL: 'MODE_MANUAL'
-}
-
-export const PositionAnimationModes = {
-  ENABLED: 'ENABLED',
-  DISABLED: 'DISABLED'
-}
