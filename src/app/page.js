@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import useSelection from '@stores/selectionStore';
 import { getSlugFromName } from '@utils/slug';
-import { projects } from '@configs/globals';
+import { getProjectByNodeName } from '@configs/globals';
 
 const EASE_OUT = [0.215, 0.61, 0.355, 1];
 const EASE_IN_OUT = [0.76, 0, 0.24, 1];
@@ -41,13 +41,10 @@ const createVariants = (reduceMotion) => {
 
 const SelectionDisplayModal = () => {
   const focusedName = useSelection((state) => state.selection.focusedName);
-  const setSelection = useSelection((state) => state.setSelection);
   const shouldReduceMotion = useReducedMotion();
   const variants = createVariants(shouldReduceMotion);
 
-  const focusedProject = projects.find(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === focusedName);
-
-  const handleClick = () => { if (focusedProject) setSelection({ ...focusedProject }) };
+  const focusedProject = focusedName ? getProjectByNodeName(focusedName) : null;
 
   const {
     UIData: {
@@ -83,7 +80,6 @@ const SelectionDisplayModal = () => {
                   href={route}
                   rel='noopener noreferrer'
                   className='pointer-events-auto'
-                  onClick={handleClick}
                 >
                   <div className='cursor-pointer'> View Details </div>
                 </Link>

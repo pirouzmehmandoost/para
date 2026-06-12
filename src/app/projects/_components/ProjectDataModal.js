@@ -1,10 +1,9 @@
 'use client';
 
-import React, { memo, useLayoutEffect, useMemo, useState } from 'react';
+import React, { memo, useLayoutEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
-import { projects } from '@configs/globals';
-import { getProjectFromSlug } from '@utils/slug';
+import { getProjectBySlug } from '@configs/globals';
 import useMaterial from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
@@ -128,23 +127,17 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
   const router = useRouter();
   const pathname = usePathname();
   const materials = useMaterial((state) => state.materials);
-  const selection = useSelection((state) => state.selection);
-  const setSelectionStore = useSelection((state) => state.setSelection);
+  const focusedMaterialID = useSelection((state) => state.selection.focusedMaterialID);
+  const defaultRotationAnimationActive = useSelection((state) => state.selection.defaultRotationAnimationActive);
+  const setFocused = useSelection((state) => state.setFocused);
   const setMaterialID = useSelection((state) => state.setMaterialID);
 
   const toggleDefaultRotationAnimation = useSelection.getState().toggleDefaultRotationAnimation;
-  const defaultRotationAnimationActive = useSelection.getState().selection.sceneData.defaultRotationAnimationActive;
   const setRotation = useSelection.getState().setRotation;
 
   const [expanded, setExpanded] = useState(false);
 
-  const project = useMemo(() => {
-    if (!slug?.length) return null;
-
-    return getProjectFromSlug(slug, projects);
-  }, [slug]);
-
-  const projectData = project || selection;
+  const project = slug?.length ? getProjectBySlug(slug) : null;
 
   const {
     UIData: {
@@ -166,42 +159,18 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
         z: rz = 0
       } = {},
     } = {},
-  } = projectData || {};
+  } = project || {};
 
-  const selectedMaterialID = useMemo(() =>
-    selection?.focusedMaterialID?.length ? selection.focusedMaterialID : defaultMaterialID
-    , [selection.focusedMaterialID, defaultMaterialID]);
+  const selectedMaterialID = focusedMaterialID?.length ? focusedMaterialID : defaultMaterialID;
 
-  // Hydration guard that handles direct visits to /projects/[slug] directly or refreshing browser tab. 
-  // In both cases selectionStore initializes to initialState.
   useLayoutEffect(() => {
     if (!project) return;
 
-    const {
-      UIData: {
-        displayName: projectDisplayName,
-      } = {},
-      sceneData: {
-        fileData: {
-          nodeName: projectNodeName,
-        } = {},
-        materials: {
-          defaultMaterialID: projectDefaultMaterialID,
-        }
-      } = {},
-    } = project;
+    const nodeName = project.sceneData.fileData.nodeName;
+    if (useSelection.getState().selection.focusedName === nodeName) return;
 
-    const selectionDisplayName = useSelection.getState().selection?.UIData?.displayName || null;
-
-    if (!selectionDisplayName || selectionDisplayName !== projectDisplayName) {
-      const update = {
-        ...project,
-        focusedName: projectNodeName,
-        materialID: projectDefaultMaterialID,
-      };
-      setSelectionStore(update);
-    }
-  }, [project, setSelectionStore]);
+    setFocused(nodeName, project.sceneData.materials.defaultMaterialID, null);
+  }, [project, setFocused]);
 
   const navigateToRoot = () => {
     reset();
