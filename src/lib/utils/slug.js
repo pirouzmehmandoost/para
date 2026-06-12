@@ -8,16 +8,3 @@ export const getSlugFromName = (name) => {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
 };
-
-export const getProjectFromSlug = (slug, projects) => {
-  if (!slug || !projects) return null;
-
-  return projects.find(
-    ({
-      UIData: {
-        displayName
-      } = {}
-    }) =>
-      getSlugFromName(displayName) === slug
-  );
-};

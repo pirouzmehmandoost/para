@@ -4,7 +4,7 @@ import { startTransition, useCallback, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
-import { projects } from '@configs/globals';
+import { projects, getProjectByNodeName } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
@@ -57,10 +57,10 @@ const SceneComposer = () => {
 
     if (useSelection.getState().selection.focusedUUID === clickedUUID) return;
 
-    const index = projects.findIndex(({ sceneData: { fileData: { nodeName = '' } = {} } = {} }) => nodeName === clickedName);
-    if (index < 0) return;
+    const project = getProjectByNodeName(clickedName);
+    if (!project) return;
 
-    const materialID = projects[index].sceneData.materials.defaultMaterialID;
+    const materialID = project.sceneData.materials.defaultMaterialID;
     startTransition(() => { setFocused(clickedName, materialID, clickedUUID) });
   }, [setFocused]);
 

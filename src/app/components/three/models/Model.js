@@ -8,6 +8,7 @@ import { easing } from 'maath';
 import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { eulerDistance, EPSILON_3e3, EPSILON_10e4, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
+import { getProjectByNodeName } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 
 const { OFFSET_CAMERA_POSITION: [, , cameraOffsetDistance] } = cameraConfigs;
@@ -25,6 +26,7 @@ const Model = (props) => {
   } = props;
 
   const camera = useThree((state) => state.camera);
+  const project = getProjectByNodeName(nodeName);
 
   const {
     nodes: {
@@ -54,6 +56,20 @@ const Model = (props) => {
   const targetMaterialRef = useRef(null);
 
   useEffect(() => { if (meshRef.current && typeof onMeshReady === 'function') onMeshReady(meshRef.current) }, [onMeshReady]);
+
+  useEffect(() => {
+    if (!nodeName) return;
+
+    const tryFillUUID = () => {
+      const { focusedName, focusedUUID } = useSelection.getState().selection;
+      if (focusedName === nodeName && focusedUUID === null && meshRef.current) {
+        useSelection.getState().setFocusedUUID(meshRef.current.uuid);
+      }
+    };
+
+    tryFillUUID();
+    return useSelection.subscribe(tryFillUUID);
+  }, [nodeName]);
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -228,11 +244,11 @@ const Model = (props) => {
     const matState = useMaterial.getState();
     const texturesReady = matState.texturesInitialized?.length > 0;
     const { selection } = useSelection.getState();
-    const selectedAndFocused = selection.focusedName?.length > 0 && selection.focusedName === nodeName;
+    const selectedAndFocused = selection.focusedUUID !== null && selection.focusedUUID === meshRef.current?.uuid;
 
     updateCameraRelativeScale(cam, clampedDelta, false);
 
-    const positionMode = !selectedAndFocused || !selection.sceneData.animatePosition ? PositionAnimationModes.DISABLED : PositionAnimationModes.ENABLED;
+    const positionMode = !selectedAndFocused || !project?.sceneData.animatePosition ? PositionAnimationModes.DISABLED : PositionAnimationModes.ENABLED;
     updatePositionAnimation(
       positionMode,
       0,
@@ -241,10 +257,10 @@ const Model = (props) => {
       clampedDelta
     );
 
-    const rotationMode = !selectedAndFocused || !selection.sceneData.animateRotation
+    const rotationMode = !selectedAndFocused || !project?.sceneData.animateRotation
       ? RotationAnimationModes.MODE_IDLE
-      : (selection.sceneData.defaultRotationAnimationActive ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
-    updateRotationAnimation(rotationMode, selection.sceneData.deltaRotation, clampedDelta);
+      : (selection.defaultRotationAnimationActive ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
+    updateRotationAnimation(rotationMode, selection.deltaRotation, clampedDelta);
 
     if (!texturesReady) return;
 
@@ -275,7 +291,7 @@ const Model = (props) => {
       }
     }
 
-    if (selection.sceneData.animateMaterial && targetMaterialRef.current) {
+    if (project?.sceneData.animateMaterial && targetMaterialRef.current) {
       easeMaterialProperties(targetMaterialRef.current, clampedDelta);
       updateDeterministicMaterialProperties(targetMaterialRef.current);
     }
