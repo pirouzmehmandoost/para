@@ -58,7 +58,7 @@ const Model = (props) => {
 
   useEffect(() => { if (meshRef.current && typeof onMeshReady === 'function') onMeshReady(meshRef.current) }, [onMeshReady]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!nodeName) return;
 
     const tryFillUUID = () => {
