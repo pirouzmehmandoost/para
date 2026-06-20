@@ -8,13 +8,15 @@ import { easing } from 'maath';
 import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore';
 import useSelection from '@stores/selectionStore';
 import { eulerDistance, EPSILON_3e3, EPSILON_10e4, RotationAnimationModes, PositionAnimationModes, wrap } from '@utils/animationUtils';
-import { getProjectByNodeName } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 
 const { OFFSET_CAMERA_POSITION: [, , cameraOffsetDistance] } = cameraConfigs;
 
 const Model = (props) => {
   const {
+    animateMaterial = false,
+    animatePosition = false,
+    animateRotation = false,
     fileData: { nodeName = '', url = '' } = {},
     materials: { defaultMaterialID = 'matte_black', materialIDs = [], } = {},
     onClick = undefined,
@@ -26,7 +28,6 @@ const Model = (props) => {
   } = props;
 
   const camera = useThree((state) => state.camera);
-  const project = getProjectByNodeName(nodeName);
 
   const {
     nodes: {
@@ -248,7 +249,7 @@ const Model = (props) => {
 
     updateCameraRelativeScale(cam, clampedDelta, false);
 
-    const positionMode = !selectedAndFocused || !project?.sceneData.animatePosition ? PositionAnimationModes.DISABLED : PositionAnimationModes.ENABLED;
+    const positionMode = !selectedAndFocused || !animatePosition ? PositionAnimationModes.DISABLED : PositionAnimationModes.ENABLED;
     updatePositionAnimation(
       positionMode,
       0,
@@ -257,7 +258,7 @@ const Model = (props) => {
       clampedDelta
     );
 
-    const rotationMode = !selectedAndFocused || !project?.sceneData.animateRotation
+    const rotationMode = !selectedAndFocused || !animateRotation
       ? RotationAnimationModes.MODE_IDLE
       : (selection.defaultRotationAnimationActive ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
     updateRotationAnimation(rotationMode, selection.deltaRotation, clampedDelta);
@@ -291,7 +292,7 @@ const Model = (props) => {
       }
     }
 
-    if (project?.sceneData.animateMaterial && targetMaterialRef.current) {
+    if (animateMaterial && targetMaterialRef.current) {
       easeMaterialProperties(targetMaterialRef.current, clampedDelta);
       updateDeterministicMaterialProperties(targetMaterialRef.current);
     }

@@ -125,6 +125,9 @@ const SceneComposer = () => {
         return (
           <Model
             key={nodeName}
+            animateMaterial={sceneData.animateMaterial}
+            animatePosition={sceneData.animatePosition}
+            animateRotation={sceneData.animateRotation}
             fileData={sceneData.fileData}
             materials={sceneData.materials}
             onClick={handleClick}
