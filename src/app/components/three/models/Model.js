@@ -14,6 +14,9 @@ const { OFFSET_CAMERA_POSITION: [, , cameraOffsetDistance] } = cameraConfigs;
 
 const Model = (props) => {
   const {
+    animateMaterial = false,
+    animatePosition = false,
+    animateRotation = false,
     fileData: { nodeName = '', url = '' } = {},
     materials: { defaultMaterialID = 'matte_black', materialIDs = [], } = {},
     onClick = undefined,
@@ -54,6 +57,20 @@ const Model = (props) => {
   const targetMaterialRef = useRef(null);
 
   useEffect(() => { if (meshRef.current && typeof onMeshReady === 'function') onMeshReady(meshRef.current) }, [onMeshReady]);
+
+  useLayoutEffect(() => {
+    if (!nodeName) return;
+
+    const tryFillUUID = () => {
+      const { focusedName, focusedUUID } = useSelection.getState().selection;
+      if (focusedName === nodeName && focusedUUID === null && meshRef.current) {
+        useSelection.getState().setFocusedUUID(meshRef.current.uuid);
+      }
+    };
+
+    tryFillUUID();
+    return useSelection.subscribe(tryFillUUID);
+  }, [nodeName]);
 
   useLayoutEffect(() => {
     if (meshRef.current) {
@@ -228,11 +245,11 @@ const Model = (props) => {
     const matState = useMaterial.getState();
     const texturesReady = matState.texturesInitialized?.length > 0;
     const { selection } = useSelection.getState();
-    const selectedAndFocused = selection.focusedName?.length > 0 && selection.focusedName === nodeName;
+    const selectedAndFocused = selection.focusedUUID !== null && selection.focusedUUID === meshRef.current?.uuid;
 
     updateCameraRelativeScale(cam, clampedDelta, false);
 
-    const positionMode = !selectedAndFocused || !selection.sceneData.animatePosition ? PositionAnimationModes.DISABLED : PositionAnimationModes.ENABLED;
+    const positionMode = !selectedAndFocused || !animatePosition ? PositionAnimationModes.DISABLED : PositionAnimationModes.ENABLED;
     updatePositionAnimation(
       positionMode,
       0,
@@ -241,10 +258,10 @@ const Model = (props) => {
       clampedDelta
     );
 
-    const rotationMode = !selectedAndFocused || !selection.sceneData.animateRotation
+    const rotationMode = !selectedAndFocused || !animateRotation
       ? RotationAnimationModes.MODE_IDLE
-      : (selection.sceneData.defaultRotationAnimationActive ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
-    updateRotationAnimation(rotationMode, selection.sceneData.deltaRotation, clampedDelta);
+      : (selection.defaultRotationAnimationActive ? RotationAnimationModes.MODE_TURNTABLE : RotationAnimationModes.MODE_MANUAL);
+    updateRotationAnimation(rotationMode, selection.deltaRotation, clampedDelta);
 
     if (!texturesReady) return;
 
@@ -275,7 +292,7 @@ const Model = (props) => {
       }
     }
 
-    if (selection.sceneData.animateMaterial && targetMaterialRef.current) {
+    if (animateMaterial && targetMaterialRef.current) {
       easeMaterialProperties(targetMaterialRef.current, clampedDelta);
       updateDeterministicMaterialProperties(targetMaterialRef.current);
     }

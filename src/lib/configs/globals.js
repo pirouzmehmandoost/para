@@ -1,3 +1,5 @@
+import { getSlugFromName } from '@utils/slug';
+
 export const envImageUrl = '/para_ground_glare_fog.hdr';
 export const envColor = '#bcbcbc';
 export const projects = [
@@ -86,3 +88,14 @@ export const projects = [
     },
   },
 ];
+
+const _projectsByNodeName = Object.fromEntries(
+  projects.map((project) => [project.sceneData.fileData.nodeName, project])
+);
+
+const _projectsBySlug = Object.fromEntries(
+  projects.map((project) => [getSlugFromName(project.UIData.displayName), project])
+);
+
+export const getProjectByNodeName = (nodeName) => _projectsByNodeName[nodeName] ?? null;
+export const getProjectBySlug = (slug) => _projectsBySlug[slug] ?? null;
