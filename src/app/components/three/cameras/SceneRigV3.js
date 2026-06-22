@@ -26,11 +26,13 @@ const SceneRigV3 = ({
   const size = useThree((state) => state.size)
   const scene = useThree((state) => state.scene);
 
+  const registryRef = useTargetRegistry(scene, targets);
+
+  const initializeLookAtRef = useRef(false);
   const defaultPositionRef = useRef(new THREE.Vector3(0, 0, 0));
   const lookAtPositionRef = useRef(new THREE.Vector3(0, 0, 0));
   const offsetPositionRef = useRef(new THREE.Vector3(0, 0, 0));
-
-  const registryRef = useTargetRegistry(scene, targets);
+  const nextCameraPositionRef = useRef(new THREE.Vector3(0, 0, 0));
 
   const activePointerIdRef = useRef(null);
   const pointerStartRef = useRef(null);
@@ -38,7 +40,6 @@ const SceneRigV3 = ({
   const lastSwitchTimeRef = useRef(0);
   const manualOverrideTimeRef = useRef(-Infinity);
 
-  const nextCameraPositionRef = useRef(new THREE.Vector3());
   const targetIndexRef = useRef(0);
   const prevTargetIndexRef = useRef(-1);
 
@@ -50,7 +51,10 @@ const SceneRigV3 = ({
 
   useLayoutEffect(() => {
     if (lookAtPosition?.isVector3) {
-      if (!lookAtPositionRef.current.equals(lookAtPosition)) lookAtPositionRef.current.copy(lookAtPosition);
+      if (!lookAtPositionRef.current.equals(lookAtPosition)) {
+        lookAtPositionRef.current.copy(lookAtPosition);
+        initializeLookAtRef.current = true;
+      }
     }
   }, [lookAtPosition]);
 
@@ -128,13 +132,15 @@ const SceneRigV3 = ({
     const positions = registry ? registry.getPositions() : [];
     const promoted = registry ? registry.getPromoted() : null;
 
-    _scratchLookAtRef.current.set(
-      camera.position.x + lookAtPositionRef.current.x,
-      camera.position.y + lookAtPositionRef.current.y,
-      camera.position.z + lookAtPositionRef.current.z,
-    );
-    camera.lookAt(_scratchLookAtRef.current);
-    // easing.dampLookAt(camera, _scratchLookAtRef.current, 1, clampedDelta);
+    if (initializeLookAtRef.current === true) {
+      _scratchLookAtRef.current.set(
+        camera.position.x + lookAtPositionRef.current.x,
+        camera.position.y + lookAtPositionRef.current.y,
+        camera.position.z + lookAtPositionRef.current.z,
+      );
+      camera.lookAt(_scratchLookAtRef.current);
+      initializeLookAtRef.current = false;
+    };
 
     if (!registry || positions.length === 0 || !promoted) {
       easing.damp3(camera.position, defaultPositionRef.current, 1, clampedDelta);
@@ -197,18 +203,3 @@ const SceneRigV3 = ({
 };
 
 export default SceneRigV3;
-
-/*
-On an external display running over an HDMI frame pipeline,
-Chromium's compositor relies on the asynchronous input queue to map pointer captures.
-If the pointer coordinate update steps across a virtual scaling boundary,
-the browser's window layer can intermittently drop pointer capture ownership mid-gesture,
-firing a lostpointercapture or pointercancel before pointerup can fire.
-The implementation below handles this by immediately short-circuiting out via onPointerCancel, abandoning a swipe mid-flight.
-
-gesture logic potentially fails some displays
- because your swipe logic evaluates a fixed layout-pixel distance (SWIPE_DELTA_PX) using clientX and clientY.
- Because macOS heavily scales external monitor environments,
- the physical distance a human finger moves on the trackpad translates to fewer layout pixels in Chrome,
- failing your strict mathematical check
- */
