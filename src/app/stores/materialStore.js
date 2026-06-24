@@ -140,7 +140,6 @@ const _meshPhysicalMaterialConfigs = {
     roughness: 0.3,
     thickness: 20,
     transmission: 1,
-    opacity: 0.95,
     transparent: true,
     side: THREE.DoubleSide,
   },
