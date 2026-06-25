@@ -119,13 +119,13 @@ const _meshPhysicalMaterialConfigs = {
     side: THREE.DoubleSide,
   },
   stainedMatteBlackMaterial: {
-    bumpScale: -0.5,
-    color: '#4f4f4f',
+    bumpScale: -10,
+    color: '#c9c9c9',
     flatShading: false,
     name: 'stained_matte_black',
     reflectivity: 0.3,
-    ior: 1.8,
-    roughness: 1,
+    ior: 1.5,
+    roughness: 0.8,
     side: THREE.DoubleSide,
   },
   translucentGreyMaterial: {
@@ -200,9 +200,9 @@ const materialState = {
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
     material: new THREE.MeshPhysicalMaterial({ ..._meshPhysicalMaterialConfigs.stainedMatteBlackMaterial }),
     textures: {
-      map: '/textured_bag_color.jpg',
-      roughnessMap: '/textured_bag_roughness.jpg',
-      bumpMap: '/textured_bag_bump.jpg',
+      map: '/stained_matte_black_diffuse_closed_bag.jpg',
+      roughnessMap: '/stained_matte_black_roughness_closed_bag.jpg',
+      bumpMap: '/stained_matte_black_bump_closed_bag.jpg',
     },
   },
   translucent_grey: {

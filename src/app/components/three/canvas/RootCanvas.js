@@ -15,8 +15,8 @@ THREE.Cache.enabled = true;
 const { NEAR, FAR, FOV, INITIAL_CAMERA_POSITION } = cameraConfigs;
 
 useGLTF.preload('/yoga_mat_strap.glb');
-useGLTF.preload('/textured_bag.glb');
-useGLTF.preload('/sang.glb');
+useGLTF.preload('/closed_bag.glb');
+useGLTF.preload('/bean_bag.glb');
 useGLTF.preload('/env_ground_3-transformed.glb');
 
 export const Loader = () => {

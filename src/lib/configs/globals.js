@@ -5,8 +5,8 @@ export const envColor = '#bcbcbc';
 export const projects = [
   {
     UIData: {
-      care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
-      description: `Large enough to fit over your shoulder and thin enough to carry with comfort. Lightweight and satisfyingly squishy.`,
+      care: 'Hand wash with soap, air dry. Avoid contact with solvents containing acetone.',
+      description: `Gerd can be worn over a shoulder or held by the handle. It's slim profile and elastic properties conform to your body. To open the bag, press your fingers through the opening crease and spread them wide. The closure returns to its original form upon removal.`,
       dimensions: `21.5" x 5" x 14"`,
       displayName: 'Gerd',
       materialSpecs: 'Thermoplastic urethane',
@@ -19,8 +19,8 @@ export const projects = [
       animateRotation: true,
       defaultRotationAnimationActive: true,
       fileData: {
-        nodeName: 'textured_bag_simplified001',
-        url: '/textured_bag.glb'
+        nodeName: 'closed_bag_for_web',
+        url: '/closed_bag.glb'
       },
       materials: {
         defaultMaterialID: 'stained_matte_black',
@@ -33,13 +33,13 @@ export const projects = [
   },
   {
     UIData: {
-      care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
-      description: 'Lil bag. Gerd but little.',
-      dimensions: `16" x 4" x 12"`,
-      displayName: 'Sang',
+      care: 'Hand wash with soap, air dry. Avoid contact with solvents containing acetone.',
+      description: `Uglúk u bagronk sha pushdug Saruman-glob búb-hosh skai.`,
+      dimensions: `14" x 3" x 8"`,
+      displayName: 'Glob',
       materialSpecs: 'Thermoplastic urethane',
-      shortDescription: 'A small 3D printed shoulder bag.',
-      weight: '1lb',
+      shortDescription: `A handbag for stowing the essentials.`,
+      weight: '0.25lb',
     },
     sceneData: {
       animateMaterial: true,
@@ -47,21 +47,21 @@ export const projects = [
       animateRotation: true,
       defaultRotationAnimationActive: true,
       fileData: {
-        nodeName: 'sang',
-        url: '/sang.glb'
+        nodeName: 'bean_bag_for_web',
+        url: '/bean_bag.glb'
       },
       materials: {
-        defaultMaterialID: 'translucent_grey',
-        materialIDs: ['translucent_grey', 'matte_black'],
+        defaultMaterialID: 'gloss_black',
+        materialIDs: ['gloss_black', 'matte_black', 'translucent_grey'],
       },
       rotation: { x: 0, y: 0, z: 0 },
-      rotationSpeed: 0.45,
-      scale: 1,
+      rotationSpeed: 0.3,
+      scale: 0.8,
     },
   },
   {
     UIData: {
-      care: 'Hand wash with soap. Avoid contact with solvents containing acetone.',
+      care: 'Hand wash with soap, air dry. Avoid contact with solvents containing acetone.',
       description: `A Yoga mat holder with a large handle for easy carrying. Lightweight to allow sitting rolled mats upright, adding sculptural qualities to idle exercise equipment.`,
       dimensions: `21.5" x 5" x 14"`,
       displayName: 'Pí',
