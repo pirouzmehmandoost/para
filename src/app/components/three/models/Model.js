@@ -187,8 +187,6 @@ const Model = (props) => {
 
     if (!animateMaterialRef.current.color.equals(materialToUpdate.color)) easing.dampC(animateMaterialRef.current.color, materialToUpdate.color, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.opacity - materialToUpdate.opacity) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "opacity", materialToUpdate.opacity, 0.3, delta);
-
     if (Math.abs(animateMaterialRef.current.reflectivity - materialToUpdate.reflectivity) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "reflectivity", materialToUpdate.reflectivity, 0.3, delta);
 
     if (Math.abs(animateMaterialRef.current.roughness - materialToUpdate.roughness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "roughness", materialToUpdate.roughness, 0.3, delta);

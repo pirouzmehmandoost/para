@@ -120,11 +120,11 @@ const _meshPhysicalMaterialConfigs = {
   },
   stainedMatteBlackMaterial: {
     bumpScale: -10,
-    color: '#c9c9c9',
+    color: '#6f6f6f',
     flatShading: false,
     name: 'stained_matte_black',
     reflectivity: 0.3,
-    ior: 1.5,
+    ior: 1.8,
     roughness: 0.8,
     side: THREE.DoubleSide,
   },
