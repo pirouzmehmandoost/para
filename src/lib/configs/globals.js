@@ -1,7 +1,5 @@
 import { getSlugFromName } from '@utils/slug';
 
-export const envImageUrl = '/para_ground_glare_fog.hdr';
-export const envColor = '#bcbcbc';
 export const projects = [
   {
     UIData: {
