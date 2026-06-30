@@ -96,7 +96,7 @@ Carousel currently accesses TargetRegistry through the `useTargetRegistry` hook 
 
 ### 4 - getAABBCenterFast
 
-`getAABBCenterFast` (`src/lib/utils/positionUtils.ts`) computes the world-space center of an `Object3D`'s axis-aligned bounding box. `Carousel` calls it every frame for the current target to determine where to position the camera. The function is designed to be called at 60-120 fps without CPU allocation overhead **- this is an endoresement for calling it per-frame in production contexts-** per-frame calls in this app are strictly for showcasing purposes.
+`getAABBCenterFast` (`src/lib/utils/positionUtils.ts`) computes the world-space center of an `Object3D`'s axis-aligned bounding box. `Carousel` calls it every frame for the current target to determine where to position the camera. The function is designed to be called at 60-120 fps without CPU allocation overhead **- The design itself is NOT justification for flippantly calling it per-frame in production-** per-frame calls in this app are strictly for showcasing purposes.
 
 Three.js provides `Box3.setFromObject(target)` for bounding box computation. `setFromObject` calls `expandByObject`, which copies the geometry's cached `boundingBox`, then calls `Box3.applyMatrix4(matrixWorld)`. `Box3.applyMatrix4` transforms all 8 corners of the bounding box through the world matrix (8 `Vector3.applyMatrix4` calls), rebuilds the box via `setFromPoints`, then the caller calls `getCenter()` to average `min` and `max`. For objects with children, `expandByObject` recurses into every child.
 
