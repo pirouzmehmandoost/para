@@ -11,7 +11,7 @@ import useTargetRegistry from '@hooks/useTargetRegistry';
 
 const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS } = cameraConfigs;
 
-const SceneRigV3 = ({
+const Carousel = ({
   onSwipe = undefined,
   targets = undefined,
   defaultPosition = undefined,
@@ -202,4 +202,4 @@ const SceneRigV3 = ({
   });
 };
 
-export default SceneRigV3;
+export default Carousel;

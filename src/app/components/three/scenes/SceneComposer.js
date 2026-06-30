@@ -8,7 +8,7 @@ import { projects, getProjectByNodeName } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
-import SceneRigV3 from '../cameras/SceneRigV3';
+import Carousel from '../cameras/rigs/Carousel';
 import Model from '../models/Model';
 import Ground from '../models/Ground';
 
@@ -143,7 +143,7 @@ const SceneComposer = () => {
         rotation={[Math.PI / 4.5, Math.PI / 2, 0]}
         scale={[0.7, 0.7, 0.7]}
       />
-      <SceneRigV3
+      <Carousel
         onSwipe={onSwipe}
         targets={targetFilter}
         defaultPosition={defaultCameraPosition}

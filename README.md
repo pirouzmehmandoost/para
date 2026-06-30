@@ -1,216 +1,141 @@
 # PARA
 
-I'm developing this app to explore my growing love 3D computer graphics and mathematics. I share my to-do list here as well as light, and feedback I get from folks who play around with the app.
-PARA is a work in progress site. It displays 3D models and allows you to manipulate their animations, materials, and read about how I use them. 
-The models are simplified versions of designes that I've made and 3D print for fun- I also love to 3D print, explore using experimental materials, and have been teaching myself how to use Blender for about a year. In the future this app will share how-to's for building the tools I make and use in CAD-like workflows.
-For now, this app is mostly showcases of several implementations that I've had fun working on. These implementations can work as standalone React Three Fiber components and use cases for Zustand alongside Three.js and R3F.
-I'll be working on this app more while reading the _Computer Graphics from Scratch_ by Gabriel Gambetta, since it's become a hobby to learn of the mathematics of 3D graphcs.
+PARA is a case study that consumes custom utilities I develop for building performant, interactive `Three.js` and `React Three Fiber` applications.
 
-Interact with the live app [here](https://para-pi.vercel.app/). 
+It's a Next.js app that renders interactive 3D models of objects that I design and 3D print for fun.
 
-# Notable Implementations:
+Each model represents a 3D printing project. Selecting a model renders a link that lets you navigates `focused project view`. This view renders a modal that lets you to manipulate a model's animations, materials, and read details on the project.
 
-## 1. Materials and Textures
+Para renders a 3D product carousel component that drives scene exploration and interaction with 3D models, flying the camera around in a closed loop. I designed the carousel as a 3D analogy 2D product carousels commonly found on retail websites. As far as I've been aware no functionality like this is available out of the box from React Three Fiber or Drei.
 
-- The app allows users to focus a project and switch between a small set of intended material variants for that specific mesh. Because different projects support different finishes, I did not want project config to own full Three.js material objects.
-- I also did not want 3D objects with materials to contain hard-coded logic for loading a fixed number of texture maps. Texture loading is handled outside the React Three Fiber mesh components (`Model`) by `MaterialTextureInitializer`, which gathers the texture URLs referenced by the material registry, loads them separately, and writes them into the registered material instances with corrected texture color spaces via `src/lib/utils/materialUtils.js`.
-- Instead, predefined material definitions live in the Zustand store `src/app/stores/materialStore.js`. That store acts as a registry for reusable material instances, texture assignments, and related material metadata. Projects in `src/lib/configs/globals.js` only reference material IDs, declare which ones are allowed for a given mesh, and choose a default.
-- `selectionStore.js` is responsible for the active UI selection state, including which `materialID` is currently selected for the focused mesh. When a user changes materials in the UI, `selectionStore` updates that active `materialID`, and `Model` resolves it against the predefined materials in `materialStore` before interpolating the rendered mesh material toward the selected finish.
-- This structure gives material properties and texture assignments a single home, keeps project configuration separate from rendering logic, keeps texture-loading logic out of the scene's mesh components, and allows users to switch between intended finishes with smooth transitions instead of abrupt material swaps. Material definitions could also be shared across scenes if needed.
+You control the carousel with right and left swipe gestures and pause it in front of any Model by clicking it. This puts you into `focus mode`.
 
-Interact with the live app [here](https://para-pi.vercel.app/). 
+Defocus by clicking or tapping empty space, anything that isn't a model or a text link. On desktop you can also use the `Escape` key.
 
-## 2. Dynamic Mesh Positioning
+When the carousel is in focus mode, clicking on a different model shifts focus to it- the carousel will move toward whichever model you interacted with. Focus mode renders text and a link labeled "View Details." Click the link to enter focused project view.
 
-**this section is old. The components referenced are no longer in use or no longer exist.** 
-- After initial render, the position of a mesh is validated to ensure that no vertices intersect with a designated "ground" mesh, if it's defined. If there is intersection, it's translated up along the y-axis. There is no per-frame overhead since calculations only perform once. After rendering, the React Three Fiber component is forced to re-render if the mesh must be repositioned.
+Focused project view lets you control mesh animations, materials and read project details with a modal. Click the ≡ button to view details including technical specs. Exit by clicking the home button at the bottom left or `Escape` on your keyboard.
 
-- This was a WIP implementation in `DynamicPositioningModel.js`, but `Model.js` is used instead.
-
-  #### High level overview
-  - Dimensions of a mesh's bounding box are derived. 
-  - Points on a geometric circle are calculated, with the circle centered underneath the bounding box. As if the mesh is a packed in a box and set atop a circular pallet.
-  - The points represent the lower limit for mesh positions on the y-axis.
-  - A 3D vector is positioned at each point including the center.
-  - A single ray is cast upward along the y axis from each vector position.
-  - If a ray intersects with the ground mesh, then the vector is positioned below the ground. 
-  - The intersecting ray that travels the longest distance is used to calculate a new mesh position.
-  - The model is translated upward on the Y-axis to ensure that it will not intersect during animation.
-
-  #### Raycasting strategy
-  - Calculate the diagonal length of the underside of bounding box. This will be the circle radius:
-  ```   
-    x,z = bounding box size (3D Vector) x and z values  
-    r = \sqrt{x^2 + z^2} \over 2  
-  ```
-
-  - Calculate a given number points on a circle using the angle method. The center is the x and z coordinates of the bounding box's center (Three.js space y-up):
-  ```
-    l = 10
-    { a | 0 ≤ a < l, a ∈ ℤ}
-    c = (c_x,c_z)
-    θ = 2πa
-    x = c_x + rcos(θ)
-    z = c_z + rsin(θ)
-  ```
-
-  - Position a 3D Vector at each point including the center (11 Vectors).
-
-  - Cast a ray upward from each vector. 
-  
-  - Ignore intersections with all meshes but the ground.
-
-  - Ignore all rays that travel a distance > 2 * bounding box height.
-
-  - If a ray intersects with the ground than the vector's position is below the ground.
-
-  - If there are no intersections then a no mesh repositioning occurs. 
-
-  - Derive the intersecting ray with longest travel distance.
-    
-  - Derive a fraction of bounding box height, to be used like padding.
-
-  - Sum the two values, this is the new y-position for the mesh.
-
-  - Set the new y-position for the mesh.
-
-  - Animation Frame loop logic in `DynamicPositioningModel.js` interpolates positions between the old position and the new one.
-  
-  - ##### The visible effect is that the mesh floats up to its new position when the component re-renders.
-
-- ##### This implementation was implemented in order to be a fun way to learn about raycasting, as well as handling some buck wild edge cases for using certain React Hooks. It wasn't meant to be useful, as there are a several 3D animation and physics libraries that implement more performant solutions.
-
-- ##### This implementation is also a conservative approach to deriving a lower limit for mesh positions. If I refactor this logic, I'll likely update the logic that governs the y-position of all points/vectors.
-
-
-## 3. Animated Camera Rigs
-
-**This documentation is old and AnimatedRig.js wss replaced with SceneRig.js. Will update soon.**
-
-- Rigs in this project control a Three.js scene's camera (here it's a perspective camera), moving it along a circular path from one stopping position to another.
-- The stopping positons are center-front of an object.
-- A partifular Rig, `src/app/components/three/cameras/AnimatedRig.js` can move in either direction between stops along this path and hop from any stop to another.
-- `AnimatedRig` has an automatic and manual behavior.
-- The default behavior is automatic until the user interacts with the Rig. After a period of inactivity it defaults to automatic behavior. 
-- Any React component can drive the rig since using Zustand selectors subcribing to `selectionStore`. 
-- Pointer events also trigger Rig manual behavior namely for click events swipe gesture recognition. 
-- Swipe gesture recognition logic is owned by this rig.
-- Parents can govern manual behavior on swipe gestures by providing a callback that will fire on _pointerup_. 
-- Parents can govern manual behavior on click events via event handlers by triggering updates to the mentioned Zustand store. 
-- The Rig will return to automatic behavior after a predefined period of time which is set in a config object. See `/lib/configs/cameraConfigs.js`.
-- The Rig moves the camera between stopping positons with offset that is also set in the config object. 
-    - Here's how that works: 
-      - The Rig stops the camera at position _p_ relative to an object _O_ by calculating a 3D Vector target _t_. 
-      - If _O_ is a 3D Object then _t_ is the center the _O_'s bounding box.
-      - If _O_ is a 3D Vector then _t_ is that Vector. 
-      - In either cases is true then the camera's position is _p = {tx+sx, ty+sy, tz+sz}_ 
-      - Otherwise t is _(0,0,0)_ and and the camera's position is _p = {sx, sy, sz}_
-    - What this implies is elaborated at the end of section 3.
-
-- Since the origin of an object could be anywhere within its computed bounds, positioning logic relies on bounding and if it's a mesh then it's scale can relative to the viewport dimensions.
-- The rig positions the camera to look down the Z-axis at the center-front its target.
-
-- There are several types of components with special relationships with Rigs, `AnimatedRig` in particular:
-  - **Scenes**: Scene orchestrators, the parents of Rigs and Models. Any files in the directory `src/app/components/three/scenes/`
-  - **Models**: Load meshes from files and adds them to scenes. Any files in the directory `src/app/components/three/models/`
-
-- Following props are govern their relationships: 
-  - **Rigs** 
-   ~~- Prop: _targets_: 
-      - This is optional.
-      - It is An array of Object3D refs. Scenes Own this and declare it as _meshRefs_. 
-      - Each element is owned by a Model and declared internally as _meshRef_. It's defined when Models render and thus add geometry the Three.js scene.~~
-      - These refs used to calculate the camera's target(s) as well as offset positions for the camera.
-    - Prop: _fallbackPositions_:
-      - This is optional. 
-      - An array of 3D Vectors that it will swap with for any element of _targets_ that is not an Object3D.
-      - This is useful when Rigs mount before Models, or for using Rigs in Scenes with no Models or Object3D's, or there's no need to use the _targets_ prop. 
-    - Prop: _focusTarget_: 
-      - This is optional. 
-      - If defined it must be one of the Object3D elements provided to _targets_.
-      - The Rig will orient the camera toward this Object if it is defined.
-    - Prop: _onSwipe_: 
-      - This optional prop exists for a specific type of Rig named `AnimatedRig`.
-      - If defined it will fire on pointer events to calculate right and left swipe gestures, specifically on _pointerup_.
-      - `AnimatedRig` handles the lifecycle of listeners. 
-        - They are attached to the Canvas via `Drei`'s _useThree_ hook, which exposes gl.domElement.
-        - It is safe to use in production as long as you understand when they're attached and removed from the context canvas to avoid conflicting listeners and overriding events.
-        - See the effect defined in this component for more details.
-
-    - _targets_ and _fallbackPositions_ do not have to be parallel arrays, however:
-      - If _targets_[i] is not an Object3D and _fallbackPositions_[i] is a Vector3, the rig will operate on _fallbackPositions_[i] to orient the camera.
-      - If Both elements are not of those types then the rig will orient itself relative to the origin. Internally the Rig will operate on a default Vector(0,0,0) declared as _defaultFallbackPositionRef_.
-
-  - **Models** 
-    -  Prop: _onMeshReady_: 
-      - A callback function. This callback forwards a ref to the provider in the modern React fashion. _onMeshReady_ is conditionally fired from a Model's effect once _meshRef.current_ is defined.
-      - Scenes provide a state setter as the callback.
-
-  - **Scenes** 
-    - Scenes set several internal state variables and refs: 
-      - Prop: _meshrefs_: 
-        - an array every ref forwarded from every Model. Scenes can also provide this to Rigs as the _targets_ prop.
-      - Prop: _meshReadyFlags_ or _meshReadyFlag_: 
-        - A boolean ref or an array refs of boolean refs. Used to track refs forwarded; for every Model in the scene, meshreadyFlags.current[i] is true if meshrefs[i].current is defined.
-      - Prop: _meshesReady_ or _meshReady_:  
-        - A state setter. Sets to true when all child Models forward their refs. Specifically, when the number of defined, forwarded refs matches the number quantity flags flipped to true within _meshReadyFlags_.
-    - Scenes provide several props to Rigs: 
-      - _meshRefs_ is provided to _targets_.
-      - _meshPositions_ is provided to _fallbackPositions_.
-
-    - One particular Rig named `BasicScene` uses a Rig named `AnimatedRig`: 
-      - BasicScene provides _cameraTargets_ to _targets_.
-        - _cameraTargets_ is a guarded wrapper that returns _meshRefs.current_ if _meshesReady_ is true, or an empty array.
-
-- There is a current hack in use that I believe deems this component **not safe for use in production outside of this project**:
-- The Rig makes the scene camera look at itself, which fixes the camera quaternion to eliminate pitch yaw and roll. That is the intent of the hack.
-- Why I opted for this:
-  - A Three.js camera's _lookAt()_ method and the `maath` library's _easing.dampLookat()_ mutate camera quaternions. 
-  - I want complete control over these quaternions do mutate them as I see fit. 
-  
-- The visual result of this hack is: 
-  - Quaternions don't mutate when the camera's changes positons, no pitch yaw or roll.
-  - It faces directly down one designated axis (down the Z-axis to -z), position relative to an element of _targets_ or _fallbackPositions_. 
-
-I've written alternative approaches to controlling the camera's quaternion in`/lub/utils/quaternionUtils.js`. 
-My approaches to enable complete control over the quaternions are paused until I do more until I understand quaternions better.
-
-
-## 4. On-demand rendering: Next.js Route-based Canvas frameloop invalidation
-
-- Canvas frameloop toggles beween `demand`  and `interactive` depending on next.js routing, to invalidating the loop when the canvas is not visible to the user.
-
-- This optimizes overall performance when a canvas is not the intended punctum for a view.
-  
-- This also allows me to display a single frame as if it's a static image.
-
+## [Interact with the live app here](https://para-pi.vercel.app/)
 
 ---
 
+## Tech Stack
 
-## Graphics/Animation Libraries Used:
+| Scope | Dependencies |
+|-------|----------|
+| Application Layer | Next.js (App Router, Turbopack) |
+| 3D Graphics | Three.js, React Three Fiber, drei |
+| Application State | Zustand |
+| UI | MUI, Framer Motion, Tailwind CSS v4 |
+| Languages | TypeScript, JavaScript |
 
-- [Three.js](https://threejs.org/) JavaScript API for implementing WebGL. For rendering 2D/3D computer graphics on browsers.
-
-- [React Three Fiber](https://github.com/pmndrs/react-three-fiber) React renderer for Threejs.
-
-- [React Post-Processing](https://react-postprocessing.docs.pmnd.rs/) Library of functionalities for post-processing graphics- ie special effects to rendered graphics.
-
-- [Maath](https://github.com/pmndrs/maath) A collection of useful math helpers, random generators.
-
-- [Framer Motion](https://motion.dev/)
-
-- [GLTFJSX](https://github.com/pmndrs/gltfjsx) A CLI that turns GLTF assets into declarative and re-usable react-three-fiber JSX components. **I only use it for file compression and write all of my own React Three Fiber Components.**
+(see [Libraries used](#libraries-used))
 
 ---
 
-## Personal Notes:
+## Three.js Scene Architecture
 
-### Fonts Used:
+The 3D scene is built from five component types, organized by directory under `src/app/components/three/`:
+
+**Canvas** (`canvas/`) mounts the R3F `<Canvas>` once in the root layout. It persists across all client-side navigations. The frameloop toggles between `always` and `demand` based on the Next.js route — active on `/` and `/projects/*`, paused elsewhere — so there is no per-frame GPU work when the scene is not visible.
+
+**Scenes** (`scenes/`) orchestrate everything else. `SceneComposer` mounts the models, the camera rig, lights, and post-processing. It owns the click and pointer-miss handlers that write to `selectionStore` when a user clicks a mesh or taps empty space. It provides a target filter function to the camera rig so the rig knows which meshes to track. SceneComposer does not contain animation logic or 3D object state.
+
+**Models** (`models/`) load GLTF meshes via drei's `useGLTF`. Some model components are static — `Ground` applies a material from the store and renders a mesh with no per-frame logic. `Model` optionally animates rotation, position, and material properties, controlled by props (`animateRotation`, `animatePosition`, `animateMaterial`). When material animation is enabled and the user selects a different finish, Model eases scalar material properties per-frame toward the target values stored in the material store and swaps texture slot references. Model also computes viewport-relative scale per-frame so meshes maintain consistent visual size across aspect ratios. See [MaterialStore](#materialstore) below.
+
+**Rigs** (`cameras/rigs/`) Camera Rigs that control the scene camera. `Carousel` serves as an interactive 3D product carousel — it cycles a perspective camera between designated "target" objects on a dwell timer. It supports swipe gesture navigation, automatic and manual controls including pausing, and position computations. Consumers may provide camera orientation, offset position from targets, a default rest position, and target objects as an array or predicate function. It uses TargetRegistry to discover and track targets in the scene graph and `getAABBCenterFast()` for positon calculation. See [Carousel](#Carousel) and [getAABBCenterFast](#getAABBCenterFast).
+
+**Textures** (`textures/`) contains `MaterialTextureInitializer`, which collects unique texture URLs from the material store, loads each texture once via drei's `useTexture`, and writes clones (with corrected color spaces) into the store's material instances before the first render. Multiple materials can reference the same image file; the texture is loaded once and cloned per-slot.
+
+---
+
+### The interaction flow
+
+- A user clicks a mesh → SceneComposer's click handler writes the mesh name, UUID, and default material ID into `selectionStore` → on the next frame, Carousel reads the focused UUID and moves the camera to that target.
+
+- Model then reads the focused material ID and eases material property values toward the selected material, as well as any delta rotation and position values that toggle with focus. Only position and rotation values animate on click to a mesh. When in focued project view, UI buttons render to allow allow animating mesh rotation and material properties of the focused mesh.
+
+- tapping empty space or clicking `Escape` on a keyboard resets `selectionStore`, causing the Carousel/rig to resume automatic cycling and the model to ease back to its default material, position, and rotation.
+
+---
+
+## Custom Utilities and Components
+
+### MaterialStore
+
+The material store (`src/app/stores/materialStore.js`) is a Zustand store that centralizes ownership of all Three.js materials, their property values, and their texture map assignments at the application state level. Any component that needs a material reads it from the store via the `useMaterial` hook rather than constructing materials inline or loading textures locally. Materials are defined once with their properties and texture URLs, keyed by ID. Project configurations in `src/lib/configs/globals.js` declare which material IDs are allowed per mesh and which is the default — they do not contain Three.js objects or texture loading logic.
+
+Every material property value in the store is defined within a range that is safe for per-frame animation. In Three.js, `MeshPhysicalMaterial` has custom setters on `clearcoat` and `transmission` that increment `material.version` when the value crosses zero (e.g. `0 → 0.04`). A version bump forces the renderer to recompute the shader program cache key. If the key changes — because `HAS_CLEARCOAT` flipped, or a texture slot went from `null` to non-null — the renderer compiles a new GLSL program synchronously on the main thread. On Three.js r183+, this blocks for 100–300+ ms due to the restructured PBR shader. Any consumer that eases property values between two materials from this store will never cross a boundary that triggers recompilation, because the store enforces two constraints on every material it exposes:
+
+1. **Scratch DataTextures on every texture slot.** Every material's `bumpMap`, `map`, `roughnessMap`, and `transmissionMap` is pre-filled with a 32x32 `DataTexture` before the `MeshPhysicalMaterial` constructor runs. Slots are never `null`, so the renderer's `HAS_*MAP` booleans are always `true`.
+
+2. **Epsilon floors on zero-crossing properties.** `clearcoat` and `transmission` are floored at `1e-7` — too small to produce visible specular or transmission contribution, but strictly greater than zero. Because every material in the store uses `1e-7` as its floor, easing between any two materials never crosses zero, the setter never bumps `version`, and the cache key never changes.
+
+See [`materialStore.md`](src/app/stores/materialStore.md) for source-verified documentation of the full material and texture lifecycle, GPU resource accounting, and disposal strategy.
+
+### TargetRegistry
+
+`TargetRegistry` (`src/lib/targetRegistry/TargetRegistry.ts`) is a framework-agnostic TypeScript class that lets consumers dynamically track, add, remove, and control the availability of Three.js `Object3D` targets without passing props through the React component tree. It depends only on Three.js — no React, R3F, or Zustand.
+
+In a React Three Fiber app, objects enter and leave the scene graph as React mounts and unmounts components (Suspense boundaries resolving, conditional rendering, route changes). Passing target references as props to coordinate between components that need to know about each other — such as a camera rig that needs to know which meshes exist — couples those components and triggers re-renders in parts of the tree that should not re-render. TargetRegistry provides an event-driven alternative: it listens for Three.js `added`, `removed`, and `childadded` events on the scene graph, maintains a UUID-keyed map of tracked targets, and classifies them as **promoted** (in the scene graph, available) or **demoted** (registered but temporarily unavailable). Consumers can register targets by array or by filter predicate, and can promote or demote individual targets for application-specific reasons (visibility toggles, distance culling, LOD swaps) without touching the scene graph or React state.
+
+See [`TargetRegistry.md`](src/lib/targetRegistry/TargetRegistry.md) for the full public API, source-verified Three.js and R3F internal mechanics, and design rationale.
+
+### Carousel
+
+`Carousel` (`src/app/components/three/cameras/Carousel.js`) is an interactive 3D product carousel. No existing React Three Fiber or drei component provides this behavior — a camera rig that automatically cycles through scene objects, responds to swipe gestures for manual navigation, and repositions the camera to a clicked object.
+
+The component's props configure the carousel the same way a 2D carousel's props would configure its contents and layout:
+
+- **`targets`** — which objects the rig should treat as carousel items. Accepts either an `Object3D[]` array or a filter predicate `(obj: Object3D) => boolean`. In a 2D carousel, this is analogous to the list of content items (images, cards). The rig passes `targets` to TargetRegistry, which discovers matching objects in the scene graph and tracks them as they mount and unmount.
+- **`offsetPosition`** (`Vector3`) — the camera's offset from the current target. Controls how far and in what direction the camera sits relative to the object it is focused on.
+- **`lookAtPosition`** (`Vector3`) — the initial direction the camera faces.
+- **`defaultPosition`** (`Vector3`) — where the camera moves on mount or when no targets are available.
+- **`onSwipe`** (callback, optional) — fired when a horizontal swipe gesture is detected, allowing the parent to respond (e.g. resetting selection state).
+
+Carousel computes each target's world-space position every frame using `getAABBCenterFast` (see [getAABBCenterFast](#getaabbcenterfast) below) and writes the result back into the registry via `refreshPosition()`. This is what allows the camera to track targets whose world position changes between frames (e.g. a mesh whose parent is animating).
+
+Carousel currently accesses TargetRegistry through the `useTargetRegistry` hook (`src/app/hooks/useTargetRegistry.ts`), which instantiates and owns the registry. This ownership arrangement is temporary — a planned refactor will move registry ownership to a shared Zustand store so multiple consumers can access the same registry without each creating their own instance.
+
+### getAABBCenterFast
+
+`getAABBCenterFast` (`src/lib/utils/positionUtils.ts`) computes the world-space center of an `Object3D`'s axis-aligned bounding box. `Carousel` calls it every frame for the current target to determine where to position the camera. The function is designed to be called at 60-120 fps without CPU allocation overhead **- this is not recommended in production contexts -** per-frame calls in this app are strictly for showcasing.
+
+Three.js provides `Box3.setFromObject(target)` for bounding box computation. `setFromObject` calls `expandByObject`, which copies the geometry's cached `boundingBox`, then calls `Box3.applyMatrix4(matrixWorld)`. `Box3.applyMatrix4` transforms all 8 corners of the bounding box through the world matrix (8 `Vector3.applyMatrix4` calls), rebuilds the box via `setFromPoints`, then the caller calls `getCenter()` to average `min` and `max`. For objects with children, `expandByObject` recurses into every child.
+
+`getAABBCenterFast` replaces this with a fast path for target objects with no children in the scene graph ("targets that are leaf nodes"). It reads the geometry's cached `boundingBox`, computes its center in local space (`boundingBox.getCenter(out)` — one `addVectors` + `multiplyScalar`), then transforms that single point to world space (`out.applyMatrix4(target.matrixWorld)` — one matrix multiplication). This is 1 matrix multiplication on 1 point versus 8 matrix multiplications on 8 points, with no box reconstruction and no recursive traversal. In this app, all targets are Meshes which are not intermediate parents (they are leaf nodes).
+
+For intermediate parent objects, the function has a recursive traversal path that handles `Mesh`, `InstancedMesh`, `Points`, `Line`, `Light`, and `Camera` node types. `InstancedMesh` bounds are cached in a `WeakMap` keyed by the mesh instance, invalidated when the instance count changes or when the caller explicitly calls `invalidateAABBCache()`. This avoids recomputing the union of all per-instance bounding boxes every frame.
+
+The function writes into a caller-provided `out` `Vector3` and uses static scratch objects for all intermediate work. The `updateMatrices` option lets the caller skip `updateWorldMatrix` if matrices are already current (e.g. after R3F's render pass has already updated them).
+
+---
+
+### Libraries used
+
+- [Zustand](https://github.com/pmndrs/zustand) — state management framework.
+- [Three.js](https://threejs.org/) — WebGL rendering
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber) — React renderer for Three.js, used primarily for its convenient hooks and `react-postprocessing`.
+- [drei](https://github.com/pmndrs/drei) — R3F helpers and abstractions, used primarily for loaders.
+- [React Post-Processing](https://react-postprocessing.docs.pmnd.rs/) — for Post-processing effects used in `SceneComposer.js`.
+- [maath](https://github.com/pmndrs/maath) — for the easing functions used in `Model.js` and `Carousel.js`.
+- [Framer Motion](https://motion.dev/) — for UI animations on several React components.
+- [MUI](https://mui.com/) — for out of the box icons.
+- [GLTFJSX](https://github.com/pmndrs/gltfjsx) — for GLTF compression.
+- [Tailwind CSS](https://tailwindcss.com/) - for effortless styling.
+
+## Fonts Used
+
 - [Diatype](https://abcdinamo.com/typefaces/diatype)
 - [Halibut](https://www.collletttivo.it/typefaces/halibut)
 
-### Fonts to remember:
+---
+
+## Developer Notes
+
+### Fonts to remember
+
 - [Hedvig Letters Serif](https://fonts.google.com/specimen/Hedvig+Letters+Serif?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
 - [Amethysta](https://fonts.google.com/specimen/Amethysta?preview.text=Hey%20there!%20My%20name%20is%20Pirouz%20Mehmandoost%20H%20h%20M%20&categoryFilters=Serif:%2FSerif%2F*,%2FSlab%2F*)
 - [Handjet](https://fonts.google.com/specimen/Handjet?preview.text=Pirouz%20Mehmandoost&categoryFilters=Feeling:%2FExpressive%2FFuturistic;Technology:%2FTechnology%2FVariable&specimen.preview.text=Pirouz+Mehmandoost&preview.script=Latn&preview.lang=en_Latn)
@@ -220,15 +145,10 @@ My approaches to enable complete control over the quaternions are paused until I
 - [Medieval Sharp](https://fonts.google.com/specimen/MedievalSharp?preview.text=Pirouz%20Mehmandoost&categoryFilters=Appearance:%2FTheme%2FMedieval&specimen.preview.text=Pirouz+Mehmandoost)
 - [Jacquard 12](https://fonts.google.com/specimen/Jacquard+12?preview.text=Pirouz%20Mehmandoost&categoryFilters=Appearance:%2FTheme%2FMedieval&specimen.preview.text=Pirouz+Mehmandoost)
 
-## Next.js routing:
-- **A Parallel route** gives you an extra place to render UI (modal slot). [docs](https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes)
-- **An Intercepting route** decides when a URL should render into that extra place (modal on in-app navigation) vs render normally (canonical page on refresh/deep link). [docs](https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes)
+### Reading
 
-## Reading list:
-- [Post processing with WebGL](https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80)
-- [The Study of Shaders with React Three Fiber](https://blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/)
-- [Inigo Quilez- Raymarching distance fields](https://iquilezles.org/articles/raymarchingdf/)
-- [Metallic Flakes Material in Three.js and Next.js](https://www.sil3ntrunning.net/blog/metallic-flakes-material-in-three-js-and-next-js)
-- [The Book of Shaders](https://thebookofshaders.com/)
-
----
+- [Computer Graphics from Scratch](https://gabrielgambetta.com/computer-graphics-from-scratch/) - Gabriel Gambetta
+- [The Book of Shaders](https://thebookofshaders.com/) - Patricio Gonzalez Vivo and Jen Lowe.
+- [The Study of Shaders with React Three Fiber](https://blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/) - Maxime Heckel
+- [Raymarching Distance Fields](https://iquilezles.org/articles/raymarchingdf/) - Inigo Quilez
+- [Post Processing with WebGL](https://medium.com/@nicolasgiannantonio/post-processing-effect-18b9c3be1c80) - Nicolas Giannantonio
