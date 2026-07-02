@@ -6,17 +6,16 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
-import { getAABBCenterFast } from '@/lib/utils/positionUtils';
-import useTargetRegistry from '@hooks/useTargetRegistry';
+import useTargetRegistry from '@stores/targetRegistryStore';
+import { getAABBCenterFast } from '@utils/positionUtils';
 
 const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS } = cameraConfigs;
 
 const Carousel = ({
-  onSwipe = undefined,
-  targets = undefined,
   defaultPosition = undefined,
   lookAtPosition = undefined,
   offsetPosition = undefined,
+  onSwipe = undefined,
 }) => {
   const _scratchCenterRef = useRef(new THREE.Vector3());
   const _scratchLookAtRef = useRef(new THREE.Vector3());
@@ -24,9 +23,6 @@ const Carousel = ({
   const domElement = useThree((state) => state.gl.domElement);
   const stateClock = useThree((state) => state.clock);
   const size = useThree((state) => state.size)
-  const scene = useThree((state) => state.scene);
-
-  const registryRef = useTargetRegistry(scene, targets);
 
   const initializeLookAtRef = useRef(false);
   const defaultPositionRef = useRef(new THREE.Vector3(0, 0, 0));
@@ -91,7 +87,7 @@ const Carousel = ({
       const start = pointerStartRef.current;
       if (!start || activePointerIdRef.current !== e.pointerId) return;
 
-      const registry = registryRef.current;
+      const registry = useTargetRegistry.getState().registry;
       const positions = registry?.getPositions() ?? [];
       const deltaX = e.clientX - start.x;
       const deltaY = e.clientY - start.y;
@@ -124,11 +120,11 @@ const Carousel = ({
       domElement.removeEventListener('pointercancel', onPointerCancel);
       domElement.removeEventListener('lostpointercapture', onPointerCancel);
     };
-  }, [domElement, stateClock, onSwipe, registryRef, size]);
+  }, [domElement, stateClock, onSwipe, size]);
 
   useFrame(({ camera, clock }, delta) => {
     const clampedDelta = Math.min(delta, 0.08);
-    const registry = registryRef.current;
+    const registry = useTargetRegistry.getState().registry;
     const positions = registry ? registry.getPositions() : [];
     const promoted = registry ? registry.getPromoted() : null;
 
