@@ -80,24 +80,12 @@ class TargetRegistry {
       const found = sceneObjects[uuid] ?? null;
 
       if (found) {
-        const entry: RegistryEntry = {
-          target: found,
-          index: this._positions.length,
-          targetUUID: uuid,
-          parentUUID: found.parent?.uuid ?? '',
-          consumerDemoted: false,
-        };
+        const entry = this._createEntry(found, this._positions.length);
         this._promoted[uuid] = entry;
         this._positions.push(new THREE.Vector3());
         this._addListener(found, 'removed', this._makeRemovedHandler(uuid));
       } else {
-        const entry: RegistryEntry = {
-          target: t,
-          index: -1,
-          targetUUID: uuid,
-          parentUUID: t.parent?.uuid ?? '',
-          consumerDemoted: false,
-        };
+        const entry = this._createEntry(t, -1);
         this._demoted[uuid] = entry;
         this._addListener(t, 'added', this._makeAddedHandler(uuid));
       }
@@ -176,25 +164,13 @@ class TargetRegistry {
 
     const inScene = !!this._scene.getObjectByProperty('uuid', uuid);
     if (inScene) {
-      const entry: RegistryEntry = {
-        target,
-        index: this._positions.length,
-        targetUUID: uuid,
-        parentUUID: target.parent?.uuid ?? '',
-        consumerDemoted: false,
-      };
+      const entry = this._createEntry(target, this._positions.length);
       this._promoted[uuid] = entry;
       this._targets[uuid] = target;
       this._positions.push(new THREE.Vector3());
       this._addListener(target, 'removed', this._makeRemovedHandler(uuid));
     } else {
-      const entry: RegistryEntry = {
-        target,
-        index: -1,
-        targetUUID: uuid,
-        parentUUID: target.parent?.uuid ?? '',
-        consumerDemoted: false,
-      };
+      const entry = this._createEntry(target, -1);
       this._demoted[uuid] = entry;
       this._targets[uuid] = target;
       this._addListener(target, 'added', this._makeAddedHandler(uuid));
@@ -239,6 +215,16 @@ class TargetRegistry {
   }
 
   // Private methods
+  private _createEntry(target: THREE.Object3D, index: number): RegistryEntry {
+    const entry: RegistryEntry = {
+      target: target,
+      index: index,
+      targetUUID: target.uuid,
+      parentUUID: target.parent?.uuid ?? '',
+      consumerDemoted: false,
+    };
+    return entry;
+  }
 
   private _promoteEntry(entry: RegistryEntry): void {
     const uuid = entry.targetUUID;
@@ -302,13 +288,7 @@ class TargetRegistry {
     const uuid = obj.uuid;
     if (this._userRemoved.has(uuid)) return;
 
-    const entry: RegistryEntry = {
-      target: obj,
-      index: this._positions.length,
-      targetUUID: uuid,
-      parentUUID: obj.parent?.uuid ?? '',
-      consumerDemoted: false,
-    };
+    const entry = this._createEntry(obj, this._positions.length);
     this._promoted[uuid] = entry;
     this._targets[uuid] = obj;
     this._positions.push(new THREE.Vector3());
