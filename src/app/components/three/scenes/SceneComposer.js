@@ -1,12 +1,13 @@
 'use client';
 
-import { startTransition, useCallback, useEffect, useMemo, useRef } from 'react';
+import { startTransition, useCallback, useLayoutEffect, useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
 import { projects, getProjectByNodeName } from '@configs/globals';
 import cameraConfigs from '@configs/cameraConfigs';
 import useSelection from '@stores/selectionStore';
+import useTargetRegistry from '@stores/targetRegistryStore';
 import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 import Carousel from '../cameras/rigs/Carousel';
 import Model from '../models/Model';
@@ -26,6 +27,7 @@ const lookAtPosition = new THREE.Vector3(0, 0, -1);
 const SceneComposer = () => {
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
+  const scene = useThree((state) => state.scene);
 
   const resetSelectionStore = useSelection((state) => state.reset);
   const setFocused = useSelection((state) => state.setFocused);
@@ -70,6 +72,11 @@ const SceneComposer = () => {
       resetSelectionStore();
     });
   }, [resetSelectionStore]);
+
+  useLayoutEffect(() => {
+    useTargetRegistry.getState().initialize(scene, targetFilter);
+    return () => useTargetRegistry.getState().reset();
+  }, [scene, targetFilter]);
 
   useEffect(() => {
     const prev = get().onPointerMissed;
@@ -144,11 +151,10 @@ const SceneComposer = () => {
         scale={[0.7, 0.7, 0.7]}
       />
       <Carousel
-        onSwipe={onSwipe}
-        targets={targetFilter}
         defaultPosition={defaultCameraPosition}
         lookAtPosition={lookAtPosition}
         offsetPosition={offsetCameraPosition}
+        onSwipe={onSwipe}
       />
     </>
   );
