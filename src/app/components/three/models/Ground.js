@@ -5,37 +5,56 @@ import { useGLTF } from '@react-three/drei';
 import useMaterial from '@stores/materialStore';
 import groundConfigs from '@configs/groundConfigs';
 
-const { NODE_NAME, POSITION, ROTATION, SCALE, URL } = groundConfigs;
+const {
+  groundProps: {
+    nodeName: NODE_NAME,
+    position: POSITION,
+    rotation: ROTATION,
+    materialID: MATERIAL_ID,
+    scale: SCALE,
+    url: URL
+  },
+} = groundConfigs;
 
 const Ground = (props) => {
   const {
-    // onGroundReady = undefined,
     position = [],
     rotation = [],
     scale = [],
+    materialID = '',
+    nodeName = '',
+    url = '',
   } = props;
 
   const groundRef = useRef(undefined);
-  // const hasPositionedRef = useRef(false);
-  const geometry = useGLTF(URL).nodes?.Plane?.geometry ?? null;
-
-  const materials = useMaterial.getState().materials;
-  const material = materials[NODE_NAME].material;
+  // const materialRef = useRef(new THREE.MeshStandardMaterial({ ...defaultMeshStandardMaterialConfig }));
+  // const hasTextureMapsRef = useRef(false);
 
   const groundPosition = position?.length ? position : POSITION;
   const groundRotation = rotation?.length ? rotation : ROTATION;
   const groundScale = scale?.length === 3 ? scale : SCALE;
+  const groundMaterialID = materialID?.length ? materialID : MATERIAL_ID
+  const fileURL = url.length ? url : URL; 
+  const node = nodeName?.length? nodeName : NODE_NAME;
 
-  // useEffect(() => {
-  //   if (hasPositionedRef.current) return;
+  const geometry = useGLTF(fileURL).nodes?.[`${node}`]?.geometry ?? null;
+  const material = useMaterial.getState().materials[groundMaterialID].material;
+  // const texturesReady = useMaterial((state) => state.texturesInitialized);
 
-  //   if (groundRef.current) {
-  //     if (typeof onGroundReady === 'function') {
-  //       onGroundReady(groundRef.current);
-  //     }
-  //     hasPositionedRef.current = true;
+  // useLayoutEffect(() => {
+  //   const materialHasTextureMaps = useMaterial.getState().materials[groundMaterialID]?.textures || null;
+  //   if (!!materialHasTextureMaps) {
+  //     hasTextureMapsRef.current = true;
   //   }
-  // }, [onGroundReady]);
+  // }, [groundMaterialID]);
+
+  // useLayoutEffect(() => {
+  //   if (hasTextureMapsRef.current === true && texturesReady?.length > 0) {
+  //     const readyMaterial = useMaterial.getState().materials[groundMaterialID].material;
+  //     materialRef.current.copy(readyMaterial);
+  //     materialRef.current.needsUpdate = true;
+  //   }
+  // }, [texturesReady, groundMaterialID])
 
   return (
     <>
