@@ -16,6 +16,7 @@ export const getColorSpace = (property) => {
     case ('aoMap'):
     case ('bumpMap'):
     case ('clearcoatRoughnessMap'):
+    case ('displacementMap'):
     default:
       return THREE.NoColorSpace
   }
