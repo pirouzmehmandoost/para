@@ -50,7 +50,7 @@ export const projects = [
       },
       materials: {
         defaultMaterialID: 'gloss_black',
-        materialIDs: ['gloss_black', 'matte_black', 'translucent_grey'],
+        materialIDs: ['gloss_black', 'matte_black'],
       },
       rotation: { x: 0, y: 0, z: 0 },
       rotationSpeed: 0.3,
