@@ -179,7 +179,7 @@ const Model = (props) => {
 
     if (Math.abs(animateMaterialRef.current.clearcoat - materialToUpdate.clearcoat) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "clearcoat", materialToUpdate.clearcoat, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.transmission - materialToUpdate.transmission) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "transmission", materialToUpdate.transmission, 0.3, delta);
+    // if (Math.abs(animateMaterialRef.current.transmission - materialToUpdate.transmission) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "transmission", materialToUpdate.transmission, 0.3, delta);
 
     if (Math.abs(animateMaterialRef.current.bumpScale - materialToUpdate.bumpScale) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "bumpScale", materialToUpdate.bumpScale, 0.3, delta);
 
@@ -191,7 +191,7 @@ const Model = (props) => {
 
     if (Math.abs(animateMaterialRef.current.roughness - materialToUpdate.roughness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "roughness", materialToUpdate.roughness, 0.3, delta);
 
-    if (Math.abs(animateMaterialRef.current.thickness - materialToUpdate.thickness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "thickness", materialToUpdate.thickness, 0.3, delta);
+    // if (Math.abs(animateMaterialRef.current.thickness - materialToUpdate.thickness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "thickness", materialToUpdate.thickness, 0.3, delta);
   }
 
   function updateDeterministicMaterialProperties(materialToUpdate) {
@@ -202,13 +202,13 @@ const Model = (props) => {
       animateMaterialRef.current.needsUpdate = true;
     }
 
-    if (animateMaterialRef.current.transparent !== materialToUpdate.transparent) {
-      animateMaterialRef.current.transparent = materialToUpdate.transparent ?? false;
-      animateMaterialRef.current.needsUpdate = true;
-    }
+    // if (animateMaterialRef.current.transparent !== materialToUpdate.transparent) {
+    //   animateMaterialRef.current.transparent = materialToUpdate.transparent ?? false;
+    //   animateMaterialRef.current.needsUpdate = true;
+    // }
 
-    // If the two materials have different textures (including one being null and the other non-null), assign and set needsUpdate.
     // NOTE: For now map slots on any material in materialStore are never non-null. Set needsUpdate = true anyway.
+    // If the two materials have different textures (including one being null and the other non-null), assign and set needsUpdate.
     if (animateMaterialRef.current?.bumpMap &&
       animateMaterialRef.current.bumpMap.uuid !== materialToUpdate.bumpMap?.uuid) {
       animateMaterialRef.current.bumpMap = materialToUpdate?.bumpMap;
@@ -227,11 +227,11 @@ const Model = (props) => {
       animateMaterialRef.current.needsUpdate = true;
     }
 
-    if (animateMaterialRef.current?.transmissionMap &&
-      animateMaterialRef.current.transmissionMap.uuid !== materialToUpdate.transmissionMap?.uuid) {
-      animateMaterialRef.current.transmissionMap = materialToUpdate.transmissionMap;
-      animateMaterialRef.current.needsUpdate = true;
-    }
+    // if (animateMaterialRef.current?.transmissionMap &&
+    //   animateMaterialRef.current.transmissionMap.uuid !== materialToUpdate.transmissionMap?.uuid) {
+    //   animateMaterialRef.current.transmissionMap = materialToUpdate.transmissionMap;
+    //   animateMaterialRef.current.needsUpdate = true;
+    // }
   };
 
   useFrame(({ clock, camera: cam }, delta) => {
