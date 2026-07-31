@@ -20,7 +20,7 @@ const RotateActionButton = memo(({
 }) => {
   return (
     <button
-      className={`absolute appearance-none w-10 h-10 backdrop-blur-md cursor-pointer text-center text-sm ${styling} transition-all duration-500 ease-in-out ${!defaultRotationAnimationActive ? 'bg-neutral-300/60 hover:bg-neutral-400/60' : 'bg-neutral-500/50 hover:bg-neutral-406/50'}`}
+      className={`absolute appearance-none w-10 h-10 backdrop-blur-md cursor-pointer text-center text-sm ${styling} transition-all duration-500 ease-in-out ${!defaultRotationAnimationActive ? 'bg-neutral-300/60 hover:bg-neutral-400/60' : 'bg-neutral-500/50 hover:bg-neutral-400/50'}`}
       onClick={callback}
       type='button'
     >
@@ -192,7 +192,7 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
         y: Math.PI * ry,
         z: Math.PI * rz
       },
-      style: `transform-3d perspective-origin-top-left translate-x-0 -translate-y-4 rotate-x-60 rotate-y-0 rotate-z-45 backface-visible contrast-150 `
+      style: `transform-3d perspective-origin-top-left translate-x-0 -translate-y-4 rotate-x-60 rotate-y-0 rotate-z-45 backface-visible contrast-150 hover:contrast-175`
     },
     'FRONT': {
       text: 'FRONT',
@@ -201,7 +201,7 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
         y: Math.PI * (ry + 0.5),
         z: Math.PI * rz
       },
-      style: `transform-3d perspective-origin-top-left translate-x-3.5 translate-y-2 -rotate-x-30 rotate-y-45 rotate-z-0 backface-visible contrast-100`
+      style: `transform-3d perspective-origin-top-left translate-x-3.5 translate-y-2 -rotate-x-30 rotate-y-45 rotate-z-0 backface-visible contrast-100 hover:contrast-175`
     },
     'SIDE': {
       text: 'SIDE',
@@ -210,7 +210,7 @@ const ProjectDataModal = ({ slug, entryPoint }) => {
         y: 0,
         z: 0
       },
-      style: `transform-3d perspective-origin-top-left -translate-x-3.5 translate-y-2 -rotate-x-30 -rotate-y-45 rotate-z-0 backface-visible contrast-125`
+      style: `transform-3d perspective-origin-top-left -translate-x-3.5 translate-y-2 -rotate-x-30 -rotate-y-45 rotate-z-0 backface-visible contrast-125 hover:contrast-175`
     },
   };
 
