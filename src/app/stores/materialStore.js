@@ -194,10 +194,10 @@ for (const materialConfig in _meshPhysicalMaterialConfigs) {
 
   const dataTextures = _generateDataTextures({ bumpMap: true, map: true, roughnessMap: true });
 
-  _meshPhysicalMaterialConfigs[materialConfig].bumpMap = dataTextures.bumpDataTexture;
-  _meshPhysicalMaterialConfigs[materialConfig].map = dataTextures.diffuseDataTexture;
-  _meshPhysicalMaterialConfigs[materialConfig].roughnessMap = dataTextures.roughnessDataTexture;
-  // _meshPhysicalMaterialConfigs[materialConfig].transmissionMap = dataTextures.transmissionDataTexture;
+  _meshPhysicalMaterialConfigs[materialConfig].bumpMap = dataTextures.bumpMap;
+  _meshPhysicalMaterialConfigs[materialConfig].map = dataTextures.map;
+  _meshPhysicalMaterialConfigs[materialConfig].roughnessMap = dataTextures.roughnessMap;
+  // _meshPhysicalMaterialConfigs[materialConfig].transmissionMap = dataTextures.transmissionMap;
 }
 
 const materialState = {
