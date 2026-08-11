@@ -3,10 +3,10 @@ const _scratchMatrix = new THREE.Matrix4();
 const _scratchQuat = new THREE.Quaternion();
 const _scratchEuler = new THREE.Euler();
 const _dir = new THREE.Vector3();
-const _deltaQuat = new THREE.Quaternion();
-const _targetQuat = new THREE.Quaternion();
-const _targetYawQuat = new THREE.Quaternion();
-const _up = new THREE.Vector3(0, 1, 0);
+// const _deltaQuat = new THREE.Quaternion();
+// const _targetQuat = new THREE.Quaternion();
+// const _targetYawQuat = new THREE.Quaternion();
+// const _up = new THREE.Vector3(0, 1, 0);
 
 
 // euler.x = pitch (up/down tilt) 
