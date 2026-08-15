@@ -1,43 +1,42 @@
-'use client';
+'use client'
 
-import { Suspense } from 'react';
-import { usePathname } from 'next/navigation';
-import * as THREE from 'three';
-import { Canvas } from '@react-three/fiber';
-import { Environment, Html, useGLTF } from '@react-three/drei';
-import cameraConfigs from '@configs/cameraConfigs';
-import sceneConfigs from '@configs/sceneConfigs';
-import SceneComposer from '../scenes/SceneComposer';
+import { Suspense, useLayoutEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import * as THREE from 'three'
+import { Canvas } from '@react-three/fiber'
+import { Environment, Html, useGLTF } from '@react-three/drei'
+import cameraConfigs from '@configs/cameraConfigs'
+import sceneConfigs from '@configs/sceneConfigs'
+import useProjectStore from '@stores/projectStore'
+import SceneComposer from '../scenes/SceneComposer'
 
-THREE.ColorManagement.enabled = true;
-THREE.Cache.enabled = true;
+THREE.ColorManagement.enabled = true
+THREE.Cache.enabled = true
 
-const { NEAR, FAR, FOV, INITIAL_CAMERA_POSITION } = cameraConfigs;
-const { BACKGROUND_COLOR, ENV_IMG_URL } = sceneConfigs;
-
-useGLTF.preload('/yoga_mat_strap.glb');
-useGLTF.preload('/closed_bag.glb');
-useGLTF.preload('/bean_bag.glb');
-useGLTF.preload('/env_ground_3-transformed.glb');
+const { NEAR, FAR, FOV, INITIAL_CAMERA_POSITION } = cameraConfigs
+const { BACKGROUND_COLOR, ENV_IMG_URL } = sceneConfigs
 
 export const Loader = () => {
   return (
     <Html center className='text-black text-nowrap text-5xl'>
       Loading...
     </Html>
-  );
-};
+  )
+}
 
-export const RootCanvas = () => {
-  // Route-based frameloop execution. 
-  const pathname = usePathname();
-  const interactive = pathname === '/' || pathname.startsWith('/projects/');
+export const RootCanvas = ({ projects = []}) => {
+  const pathname = usePathname()
+  const interactive = pathname === '/' || pathname.startsWith('/projects/')
 
-  // function SceneRouter() {
-  //   if (pathname === '/') return <HomeScene />;
-  //   if (pathname.startsWith('/projects/')) return <ProjectScene />;
-  //   return <Loader />;
-  // };
+  useLayoutEffect(() => {
+    if (projects.length && (!useProjectStore.getState().projects?.length || null)) {
+      for (const projectData of projects) {
+        const { sceneData: { fileData: { url = '' } = {} } = {} } = projectData
+        if (url.length) useGLTF.preload(url)
+      }
+      useProjectStore.getState().setProjects(projects)
+    }
+  }, [projects])
 
   return (
     <div className={`fixed inset-0 bg-[${BACKGROUND_COLOR}] ${interactive ? 'pointer-events-auto' : 'pointer-events-none'}`}>
@@ -58,7 +57,7 @@ export const RootCanvas = () => {
         </Suspense>
       </Canvas>
     </div>
-  );
-};
+  )
+}
 
-export default RootCanvas;
+export default RootCanvas
