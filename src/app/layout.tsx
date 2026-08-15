@@ -1,9 +1,11 @@
 import './globals.css';
 import localFont from 'next/font/local';
 import sceneConfigs from '@configs/sceneConfigs';
+import { getAllProjects } from '@db/projects';
+import type { Project } from '../types/project'; 
 import MainMenu from '@ui/MainMenu';
-import RootCanvas from '@three/canvas/RootCanvas';
 import GlobalKeyboardShortcuts from '@ui/GlobalKeyboardShortcuts';
+import RootCanvas from '@three/canvas/RootCanvas';
 
 const { BACKGROUND_COLOR } = sceneConfigs;
 const myFont = localFont({
@@ -13,10 +15,12 @@ const myFont = localFont({
 
 export const metadata = {
   title: '℘讠 ⍨',
-  description: 'A showcase of custom Three.js and R3F utilities and components by Pirouz Mehmandoost',
+  description: 'A showcase of custom Three.js and React Three Fiber utilities by Pirouz Mehmandoost',
 };
 
-export default function RootLayout({ children, modal }) {
+export default async function RootLayout({ children, modal }) {
+  const projects: Project[] = await getAllProjects();
+
   return (
     <html lang='en'>
       <body className={`${myFont.className} bg-cover bg-[${BACKGROUND_COLOR}]`}>
@@ -25,7 +29,7 @@ export default function RootLayout({ children, modal }) {
         {modal}
         {children}
         <div className='fixed -z-10 inset-0 flex flex-col grow w-full h-full'>
-          <RootCanvas />
+          <RootCanvas projects={projects}/>
         </div>
       </body>
     </html>
