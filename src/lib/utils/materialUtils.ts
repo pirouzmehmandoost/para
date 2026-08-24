@@ -39,7 +39,7 @@ function _fillBuffer(arrayBuffer: Uint8Array, r: number = 255, g: number = 255, 
   }
 }
 
-function _generateArrayBuffer(resolution: number = 1024, mapType: string = 'map'): Uint8Array | void {
+export function generateArrayBuffer(resolution: number = 1024, mapType: string = 'map'): Uint8Array | void {
   if (!mapType.length) return
   if (resolution < 1024 || resolution % 1024 !== 0) return
 
@@ -66,9 +66,9 @@ function _generateArrayBuffer(resolution: number = 1024, mapType: string = 'map'
   return data
 }
 
-function _generateDataTexture(arrayBuffer: Uint8Array, mapType: string): DataTexture {
+export function generateDataTexture(arrayBuffer: Uint8Array, mapType: string): DataTexture {
   let data = {} as DataTexture | null
-  let size: number = Math.sqrt(arrayBuffer.length / 4)
+  let size: number = 0
 
   switch (mapType) {
     case 'displacementMap':
@@ -76,6 +76,7 @@ function _generateDataTexture(arrayBuffer: Uint8Array, mapType: string): DataTex
       data = new DataTexture(arrayBuffer, size, size, RedFormat, UnsignedByteType)
       break
     default:
+      size = Math.sqrt(arrayBuffer.length / 4)
       data = new DataTexture(arrayBuffer, size, size)
   }
 
@@ -86,18 +87,6 @@ function _generateDataTexture(arrayBuffer: Uint8Array, mapType: string): DataTex
   return data
 }
 
-const _bumpData = _generateArrayBuffer(1024, 'bumpMap')
-const _diffuseData = _generateArrayBuffer(1024, 'map')
-const _normalData = _generateArrayBuffer(4096, 'normalMap')
-const _roughnessData = _generateArrayBuffer(1024, 'roughnessMap')
-
-export const scratchDataTextures = {
-  bumpMap: _generateDataTexture(_bumpData as Uint8Array, 'bumpMap'),
-  map: _generateDataTexture(_diffuseData as Uint8Array, 'map'),
-  normalMap: _generateDataTexture(_normalData as Uint8Array, 'normalMap'),
-  roughnessMap: _generateDataTexture(_roughnessData as Uint8Array, 'roughnessMap'),
-}
-
-// function testGenerateDataTexture(mapType: string, resolution: number) {
-//   return generateDataTexture(_generateArrayBuffer(resolution, mapType) as Uint8Array, mapType)
+// export function _generateDataTexture(mapType: string, resolution: number) {
+//   return generateDataTexture(generateArrayBuffer(resolution, mapType) as Uint8Array, mapType)
 // }
