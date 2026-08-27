@@ -4,31 +4,41 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
-import cameraConfigs from '@configs/cameraConfigs';
+import carouselConfigs from '@configs/carouselConfigs';
 import useSelection from '@stores/selectionStore';
 import useTargetRegistry from '@stores/targetRegistryStore';
 import { getAABBCenterFast } from '@utils/positionUtils';
 
-const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS } = cameraConfigs;
+const { MANUAL_OVERRIDE_SECONDS, MIN_DWELL_SECONDS, SWIPE_DELTA_DISTANCE, SWIPE_DELTA_TIME_MS } = carouselConfigs;
 
 const Carousel = ({
   defaultPosition = undefined,
   lookAtPosition = undefined,
   offsetPosition = undefined,
   onSwipe = undefined,
+  autoDwellTime = undefined, // dwell time (seconds) for automatic position cycling in seconds.
+  manualDwellTime = undefined, // dwell time (seconds) after a valid swipe gesture triggers reposition.
+  swipeDistanceThrehold = undefined, // min "length" of a swip gesture in normalized device coordinates [0, 1]
+  swipeTimeThreshold = undefined, // minimum duration (milliseconds) for a valid swipe gesture.
 }) => {
   const _scratchCenterRef = useRef(new THREE.Vector3());
   const _scratchLookAtRef = useRef(new THREE.Vector3());
 
   const domElement = useThree((state) => state.gl.domElement);
   const stateClock = useThree((state) => state.clock);
-  const size = useThree((state) => state.size)
+  const size = useThree((state) => state.size);
+  const pointer = useThree((state) => state.pointer);
 
   const initializeLookAtRef = useRef(false);
   const defaultPositionRef = useRef(new THREE.Vector3(0, 0, 0));
   const lookAtPositionRef = useRef(new THREE.Vector3(0, 0, 0));
   const offsetPositionRef = useRef(new THREE.Vector3(0, 0, 0));
   const nextCameraPositionRef = useRef(new THREE.Vector3(0, 0, 0));
+
+  const minDwellTimeSecondsRef = useRef(MIN_DWELL_SECONDS);
+  const manualDwellTimeSecondsRef = useRef(MANUAL_OVERRIDE_SECONDS);
+  const swipeDistanceThresholdRef = useRef(SWIPE_DELTA_DISTANCE);
+  const swipeDeltaTimeMSRef = useRef(SWIPE_DELTA_TIME_MS);
 
   const activePointerIdRef = useRef(null);
   const pointerStartRef = useRef(null);
@@ -40,8 +50,42 @@ const Carousel = ({
   const prevTargetIndexRef = useRef(-1);
 
   useLayoutEffect(() => {
+    if (typeof swipeDistanceThrehold === 'number' && swipeDistanceThrehold > 0) {
+      if (swipeDistanceThrehold !== swipeDistanceThresholdRef.current) {
+        swipeDistanceThresholdRef.current = swipeDistanceThrehold;
+      }
+    }
+  }, [swipeDistanceThrehold]);
+
+  useLayoutEffect(() => {
+    if (typeof swipeTimeThreshold === 'number' && swipeTimeThreshold > 0) {
+      if (swipeTimeThreshold !== swipeDeltaTimeMSRef.current) {
+        swipeDeltaTimeMSRef.current = swipeTimeThreshold;
+      }
+    }
+  }, [swipeTimeThreshold]);
+
+  useLayoutEffect(() => {
+    if (typeof autoDwellTime === 'number' && autoDwellTime > 0) {
+      if (autoDwellTime !== minDwellTimeSecondsRef.current) {
+        minDwellTimeSecondsRef.current = autoDwellTime;
+      }
+    }
+  }, [autoDwellTime]);
+
+  useLayoutEffect(() => {
+    if (typeof manualDwellTime === 'number') {
+      if (manualDwellTime !== manualDwellTimeSecondsRef.current) {
+        manualDwellTimeSecondsRef.current = manualDwellTime;
+      }
+    }
+  }, [manualDwellTime]);
+
+  useLayoutEffect(() => {
     if (!!defaultPosition && defaultPosition?.isVector3) {
-      if (!defaultPositionRef.current.equals(defaultPosition)) defaultPositionRef.current.copy(defaultPosition);
+      if (!defaultPositionRef.current.equals(defaultPosition)) {
+        defaultPositionRef.current.copy(defaultPosition);
+      }
     }
   }, [defaultPosition]);
 
@@ -66,14 +110,30 @@ const Carousel = ({
     if (!domElement) return;
 
     const onPointerDown = (e) => {
+      // console.log("\x1b[32m onPointerDown start. e: \x1b[0m", e)
       if (!e.isPrimary) return;
 
       activePointerIdRef.current = e.pointerId;
       domElement.setPointerCapture?.(e.pointerId);
-      pointerStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
+      pointerStartRef.current = { x: pointer.x, y: pointer.y, time: Date.now() };
+      // pointerStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
+      // console.log("\x1b[32m onPointerDown end: \x1b[0m", pointerStartRef.current)
     };
 
+    // On extended screens, lostpointercapture events can occur between pointerDown and pointerup. 
+    // a listener on that event will onPointerCancel, which invokes finishPointer() to null out pointerStartRef.current. 
+    // onPointerUp returns early if pointerStartRef.current is null to prevent setting time and index refs and firing onSwipe().
+    // Since an intermediary lostPointerCapture event triggers on extended displays: 
+    // onPointerDown sets the ref-> onPointerCancel nulls it ->  onPointerUp returns early -> some valid swipes dont register.
+    
+    // I'm pre-emptively commenting out the line that adds a listener on lostPointerCancel.
+    // My rationale isnt concrete, however:
+    // - onPointerUp itself calls finishPointer() to clean after itself.
+    // - Native JavaScript pointerUp events are followed by lostPointerCapture events (meaning that onPointerCancel will fire 2 times regardless of an intermediary lostPointerCapture). 
+    // - without a listener on lostPointerCancel, onPointerUp's invokation of finishPointer() triggers the flow of logic is otherwise triggered by onPointerCancel.
+    // - The potentially redundant finishPointer() call becomes necessary.  
     const finishPointer = (e) => {
+      // console.log("\x1b[31m FINISHPOINTER. e: \x1b[0m", e)
       if (activePointerIdRef.current !== e.pointerId) return;
 
       domElement.releasePointerCapture?.(e.pointerId);
@@ -84,21 +144,29 @@ const Carousel = ({
     const onPointerCancel = (e) => finishPointer(e);
 
     const onPointerUp = (e) => {
+      e.stopPropagation();
       const start = pointerStartRef.current;
+      // console.log("\x1b[33m PointerUP: \x1b[0m", pointerStartRef.current);
       if (!start || activePointerIdRef.current !== e.pointerId) return;
 
       const registry = useTargetRegistry.getState().registry;
       const positions = registry?.getPositions() ?? [];
-      const deltaX = e.clientX - start.x;
-      const deltaY = e.clientY - start.y;
+      const deltaX = pointer.x - start.x; 
+      const deltaY = pointer.y - start.y;
+      // const deltaX = e.clientX - start.x;
+      // const deltaY = e.clientY - start.y;
+      // console.log("\n\x1b[33m deltaX: ", deltaX, " deltaY: ", deltaY, " theshold: \x1b[0m", swipeDistanceThresholdRef.current)
+
       const deltaTime = Date.now() - start.time;
-      const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_DELTA_PX && deltaTime < SWIPE_DELTA_TIME_MS;
+      // const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_DELTA_PX && deltaTime < SWIPE_DELTA_TIME_MS;
+      const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeDistanceThresholdRef.current && deltaTime < swipeDeltaTimeMSRef.current;
+
       if (isSwipe) {
         const count = positions.length;
         if (count > 0) {
           const step = deltaX > 0 ? 1 : -1;
           targetIndexRef.current = (targetIndexRef.current + step + count) % count;
-          manualOverrideTimeRef.current = stateClock.elapsedTime + MANUAL_OVERRIDE_SECONDS;
+          manualOverrideTimeRef.current = stateClock.elapsedTime + manualDwellTimeSecondsRef.current;
           lastSwitchTimeRef.current = stateClock.elapsedTime;
           onSwipe?.(e);
         }
@@ -112,15 +180,15 @@ const Carousel = ({
     domElement.addEventListener('pointerdown', onPointerDown);
     domElement.addEventListener('pointerup', onPointerUp);
     domElement.addEventListener('pointercancel', onPointerCancel);
-    domElement.addEventListener('lostpointercapture', onPointerCancel);
+    // domElement.addEventListener('lostpointercapture', onPointerCancel);
 
     return () => {
       domElement.removeEventListener('pointerdown', onPointerDown);
       domElement.removeEventListener('pointerup', onPointerUp);
       domElement.removeEventListener('pointercancel', onPointerCancel);
-      domElement.removeEventListener('lostpointercapture', onPointerCancel);
+      // domElement.removeEventListener('lostpointercapture', onPointerCancel);
     };
-  }, [domElement, stateClock, onSwipe, size]);
+  }, [domElement, stateClock, onSwipe, size, pointer]);
 
   useFrame(({ camera, clock }, delta) => {
     const clampedDelta = Math.min(delta, 0.08);
@@ -170,7 +238,7 @@ const Carousel = ({
     else {
       const currentIndex = targetIndexRef.current;
       const nextIndex = currentIndex >= positions.length - 1 ? 0 : currentIndex + 1;
-      const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > MIN_DWELL_SECONDS;
+      const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > minDwellTimeSecondsRef.current;
       if (canSwitch) {
         prevTargetIndexRef.current = currentIndex;
         lastSwitchTimeRef.current = elapsedTime;
