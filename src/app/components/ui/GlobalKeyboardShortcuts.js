@@ -4,9 +4,7 @@ import { useEffect } from 'react';
 import { usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import useSelection from '@stores/selectionStore';
 
-const clearFocus = () => {
-  useSelection.getState().setFocused(null, '', null);
-};
+const reset = useSelection.getState().reset
 
 export default function GlobalKeyboardShortcuts() {
   const pathname = usePathname();
@@ -15,21 +13,16 @@ export default function GlobalKeyboardShortcuts() {
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      let flag = false;
       if (e.key !== 'Escape') return;
 
-      if (segment?.length) {
-        router.back();
-        flag = true;
-      }
-      else if (pathname.startsWith('/projects/')) {
-        router.replace('/');
-        flag = true;
+      // The modal slot reports a segment on '/' as well, so the pathname decides
+      // whether there is a project route to leave.
+      if (pathname.startsWith('/projects/')) {
+        if (segment?.length) router.back();
+        else router.replace('/');
       }
 
-      if (flag) clearFocus();
-
-      return;
+      reset();
     };
 
     window.addEventListener('keydown', onKeyDown);
