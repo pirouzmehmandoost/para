@@ -1,227 +1,96 @@
 'use client'
-import { memo, useEffect } from 'react'
+import { memo, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
-import { AnimatePresence, motion, useReducedMotion, type Variants } from 'framer-motion'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import useMenu from '@stores/menuStore'
-import framerMotionConfigs from '@configs/framerMotionConfigs'
 
-const { EASE_OUT, EASE_IN_OUT } = framerMotionConfigs
+// interface MenuLink {
+//   title: string
+//   href: string
+//   disabled?: boolean
+// }
 
-type MenuVariants = {
-  menu: Variants
-  overlay: Variants
-  topLinks: Variants
-  bottomLinks: Variants
-}
+// const links: MenuLink[] = [
+//   { disabled: false, title: 'LinkedIn', href: 'https://www.linkedin.com/in/pirouzmehmandoost/' },
+//   { disabled: false, title: 'Github', href: 'https://github.com/pirouzmehmandoost/para/blob/main/README.md' },
+// ]
 
-interface  MenuLink {
-  title: string
-  href: string
-}
-interface TopLink extends MenuLink{
-  disabled?: boolean
-}
+const setVisible = useMenu.getState().setVisible
 
-const topLinks: TopLink[] = [
-  { title: 'View R3F Project (WIP)', disabled: true, href: '/' },
-]
-
-const bottomLinks: MenuLink[] = [
-  { title: 'LinkedIn', href: 'https://www.linkedin.com/in/pirouzmehmandoost/' },
-  { title: 'Github', href: 'https://github.com/pirouzmehmandoost/para/blob/main/README.md' },
-]
-
-const createVariants = (reduceMotion: boolean): MenuVariants => {
-  const dur = (seconds: number) => (reduceMotion ? 0 : seconds)
-  const delay = (seconds: number) => (reduceMotion ? 0 : seconds)
-
-  return {
-    topLinks: {
-      initial: {
-        opacity: 0,
-        rotateX: 90,
-        x: -20,
-        y: 80,
-      },
-      enter: (i) => ({
-        opacity: 1,
-        rotateX: 0,
-        x: 0,
-        y: 0,
-        transition: {
-          duration: dur(0.65),
-          delay: delay(0.5 + i * 0.1),
-          ease: EASE_OUT,
-          opacity: { duration: dur(0.35) },
-        },
-      }),
-      exit: (i) => ({
-        opacity: 0,
-        transition: {
-          duration: dur(0.45),
-          delay: delay(Math.max(0, 0.3 - i * 0.06)),
-          ease: EASE_IN_OUT,
-        },
-      }),
-    },
-    bottomLinks: {
-      initial: { opacity: 0, y: 20 },
-      enter: (i) => ({
-        opacity: 1,
-        y: 0,
-        transition: {
-          duration: dur(0.5),
-          delay: delay(0.75 + i * 0.1),
-          ease: EASE_OUT,
-        },
-      }),
-      exit: {
-        opacity: 0,
-        transition: { duration: dur(0.35), ease: EASE_IN_OUT },
-      },
-    },
-    menu: {
-      open: {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        transition: { duration: dur(0.55), ease: EASE_IN_OUT },
-      },
-      closed: {
-        opacity: 0,
-        scale: 0.98,
-        y: -6,
-        transition: { duration: dur(0.45), ease: EASE_IN_OUT },
-      },
-    },
-    overlay: {
-      open: { opacity: 1, transition: { duration: dur(0.35), ease: EASE_IN_OUT } },
-      closed: { opacity: 0, transition: { duration: dur(0.25), ease: EASE_IN_OUT } },
-    },
-  }
-}
+interface MenuButtonProps { phase: boolean }
+const ToggleMainMenuButton = memo(({ phase }: MenuButtonProps) => {
+  return (
+    <button
+      id='main-menu-button'
+      aria-label='toggle-main-menu'
+      className='fixed w-fit h-fit z-30 inset-0 top-6 left-6 p-2 rounded-full cursor-pointer backdrop-contrast-125 backdrop-blur-xl transition-all transition-discrete duration-500 ease-in-out text-neutral-600 hover:text-neutral-700 bg-neutral-600/20 hover:bg-neutral-600/30'
+      onClick={() => setVisible(!phase)}
+      type='button'
+    >
+      {phase === false ? <MenuIcon fontSize='large' /> : <CloseIcon fontSize='large' />}
+    </button>
+  )
+})
+ToggleMainMenuButton.displayName = "ToggleMainMenuButton"
 
 const MainMenu = () => {
-  const shouldReduceMotion = useReducedMotion()
-  const variants = createVariants(shouldReduceMotion)
   const menuVisible = useMenu(state => state.menuState.visible)
-  const setVisible = useMenu(state => state.setVisible)
   const firstPageVisited = useMenu((s) => s.firstPageVisited)
-  const setPageVisited = useMenu((s) => s.setPageVisited)
   const hasHydrated = useMenu((s) => s.hasHydrated)
 
   useEffect(() => {
-    if (!hasHydrated || firstPageVisited) return
+    if (hasHydrated && !firstPageVisited) {
+      useMenu.getState().setPageVisited()
+      setVisible(true)
+    }
+  }, [hasHydrated, firstPageVisited])
 
-    setPageVisited()
-    setVisible(true)
-  }, [hasHydrated, firstPageVisited, setPageVisited, setVisible])
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, disabled: boolean) => {
+  const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, disabled: boolean) => {
     setVisible(false)
     if (disabled) e.preventDefault()
-  }
+  }, [])
+
+  //  <div className='text-9xl text-blue-800 opacity-100 text-center self-center place-self-center-safe justify-center-safe select-none touch-none transition-all transition-discrete duration-1000 delay-2000 ease-in will-change-auto starting:opacity-0'>
+  //     Test
+  //   </div>
 
   return (
-    <div className='flex flex-col w-full h-full'>
-      <div className='relative flex w-full h-fit'>
-        <div className='relative flex flex-col grow w-fit h-fit z-10'>
-          <button
-            aria-label='Toggle main menu'
-            className='fixed w-fit h-fit z-20 inset-0 top-5 left-5 p-2 rounded-full cursor-pointer text-neutral-600 backdrop-contrast-125 bg-neutral-600/10 backdrop-blur-xl transition-all duration-500 ease-in-out hover:text-neutral-700 hover:bg-neutral-700/10'
-            onClick={() => setVisible(!menuVisible)}
-            type='button'
-          >
-            {!menuVisible ? <MenuIcon fontSize='large' /> : <CloseIcon fontSize='large' />}
-          </button>
-          <motion.div
-            animate={menuVisible ? 'open' : 'closed'}
-            className={`fixed flex inset-0 z-10 justify-center origin-center ${menuVisible ? 'pointer-events-auto' : 'pointer-events-none'}`}
-            initial='open'
-            variants={variants.menu}
-          >
-            <AnimatePresence>
-              {menuVisible && (
-                <div className='flex flex-col w-full h-full justify-around text-center text-4xl uppercase text-neutral-900 bg-neutral-300/0'>
-                  {/* Header */}
-                  <motion.div
-                    key='b_0'
-                    animate='enter'
-                    className='flex flex-row w-full h-fit justify-center text-nowrap perspective-origin-bottom bg-neutral-500/0'
-                    custom={0}
-                    exit='exit'
-                    initial='initial'
-                    style={{ maskImage: 'radial-gradient(ellipse 80% 100% at 50% 50% , #a3a3a3 30%, #a3a3a300 90%)', }}
-                    variants={variants.topLinks}
-                  >
-                    <div className='text-nowrap sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl 2xl:text-5xl md:px-1 xl:px-1 lg:px-1 2xl:px-1'>
-                      Pirouz Mehmandoost
-                    </div>
-                  </motion.div>
-                  {/* top links */}
-                  <div
-                    className='flex flex-col justify-evenly bg-neutral-500/0'
-                    style={{ maskImage: 'radial-gradient(ellipse 70% 80% at 50% 50% , #a3a3a3 30%, #a3a3a300 70%)', }}
-                  >
-                    {topLinks.map(({ title, href, disabled }, index) => {
-                      const i = index + 1
-                      return (
-                        <div key={`b_${i}`} className='perspective-origin-bottom my-2'>
-                          <motion.div
-                            animate='enter'
-                            custom={i}
-                            exit='exit'
-                            initial='initial'
-                            variants={variants.topLinks}
-                          >
-                            <Link
-                              className='cursor-pointer'
-                              href={href}
-                              onClick={(e) => handleClick(e, disabled)}
-                            >
-                              {title}
-                            </Link>
-                          </motion.div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                  {/* bottom links */}
-                  <motion.div
-                    className='flex flex-row w-full h-fit justify-between'
-                    style={{ maskImage: 'radial-gradient(ellipse 80% 100% at 50% 50% , #a3a3a3 30%, #a3a3a300 90%)', }}
-                  >
-                    {bottomLinks.map(({ title, href }, index) => {
-                      return (
-                        <motion.div
-                          key={`f_${index}`}
-                          animate='enter'
-                          className='flex flex-row w-full h-fit justify-center'
-                          custom={index}
-                          exit='exit'
-                          initial='initial'
-                          variants={variants.bottomLinks}
-                        >
-                          <Link className='cursor-pointer' href={href} rel='noopener noreferrer' target='_blank'> {title} </Link>
-                        </motion.div>
-                      )
-                    })}
-                  </motion.div>
-                </div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-          {/* blur everything behind MainMenu if open */}
-          <motion.div
-            animate={menuVisible ? 'open' : 'closed'}
-            className='fixed inset-0 -z-10 bg-neutral-400/0 backdrop-blur-md md:backdrop-blur-xl pointer-events-none'
-            initial='open'
-            variants={variants.overlay}
-          />
+    <div className='relative flex flex-col w-full h-full'>
+      <ToggleMainMenuButton phase={menuVisible} />
+      <div className={`fixed flex flex-col z-20 justify-center items-center inset-0 text-neutral-800 uppercase transition-all transition-discrete duration-500 ease-in-out ${menuVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        {/* {menuVisible && ( */}
+        <div className='flex flex-col w-full h-full space-y-6 p-6'>
+          <div className='flex flex-col w-fit h-fit mt-13 p-6 space-y-6 rounded-4xl bg-neutral-500/20 backdrop-blur-xl'>
+
+          <div className='w-fit h-fit place-self-center-safe text-nowrap sm:text-3xl md:text-3xl lg:text-4xl xl:text-4xl 2xl:text-4xl'>
+            Pirouz Mehmandoost
+          </div>
+            <div className='flex flex-col w-full h-full space-y-6'>
+              <Link
+                className='sm:text-lg md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl cursor-pointer transition-all transition-discrete duration-500 ease-in-out hover:text-neutral-500'
+                id='main-menu-link-linkedin'
+                href={'https://www.linkedin.com/in/pirouzmehmandoost/'}
+                rel='noopener noreferrer'
+                target='_blank'
+              >
+                LinkedIn
+              </Link>
+              <Link
+                className='sm:text-lg md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl cursor-pointer transition-all transition-discrete duration-500 ease-in-out hover:text-neutral-500'
+                id='main-menu-link-github'
+                href={'https://github.com/pirouzmehmandoost/para/blob/main/README.md'}
+                rel='noopener noreferrer'
+                target='_blank'
+              >
+                Github
+              </Link>
+            </div>
+          </div>
         </div>
+        {/* )} */}
       </div>
+      {/* <div className={`fixed inset-0 z-10 bg-neutral-400/0 backdrop-blur-md md:backdrop-blur-xl select-none pointer-events-none transition-all transition-discrete duration-500 ease-in-out ${menuVisible ? 'opacity-100' : 'opacity-0'}`} /> */}
     </div>
   )
 }
@@ -251,4 +120,4 @@ export default memo(MainMenu)
 //     </div>
 //   ));
 //   return <div className='-rotate-45 bg-blue-400 max-w-fit'> {diagonalBlock} </div>
-// };
+// // };

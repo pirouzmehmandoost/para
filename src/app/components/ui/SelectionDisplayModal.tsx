@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
+import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion, useReducedMotion, Variants } from 'framer-motion'
-import useProjectStore from '@/app/stores/projectStore'
-import useSelection from '@stores/selectionStore'
 import framerMotionConfigs from '@configs/framerMotionConfigs'
 import type { Project } from '@/types/project'
+import useProjectStore from '@/app/stores/projectStore'
+import useSelection from '@stores/selectionStore'
 
 const { EASE_OUT, EASE_IN_OUT } = framerMotionConfigs
 
@@ -39,11 +40,14 @@ const createVariants = (reduceMotion: boolean): FramerMotionVariants => {
 // NOTE: the route /projects/[slug] is an intercepting route that mounts over HomePage and renders ProjectDataModal.
 // SelectionDisplayModal conditionally renders and showModal is false on routes starting with '/projects/'
 const SelectionDisplayModal = () => {
+  const pathname = usePathname()
   const shouldReduceMotion = useReducedMotion()
-  const variants = createVariants(shouldReduceMotion)
-  const focusedName = useSelection((state) => state.selection.focusedName)
 
-  const focusedProject = focusedName ? useProjectStore.getState().getProjectByNodeName(focusedName) : null
+  const variants = useMemo(() => createVariants(shouldReduceMotion), [shouldReduceMotion])
+  const focusedName = useSelection((state) => state.selection.focusedName)
+  const focusedProject = useProjectStore((state) => (focusedName ? state.projectsByNodeName[focusedName] ?? null : null)) as Project
+
+  // const focusedProject = focusedName ? useProjectStore.getState().getProjectByNodeName(focusedName) : null
 
   const {
     UIData: {
@@ -53,39 +57,39 @@ const SelectionDisplayModal = () => {
     } = {},
   } = focusedProject || ({} as Project)
 
-  const showModal: boolean = slug.length ? true : false
+  const showModal: boolean = slug.length > 0 && !pathname.startsWith('/projects/') ? true : false
   const url = `/projects/${slug}`
 
   return (
-    <div className={`fixed flex flex-col grow w-full h-1/5 sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit top-32 md:left-10 lg:left-10 xl:left-10 2xl:left-10 place-self-center justify-center transition-all duration-500 ease-in-out ${showModal ? 'h-1/5' : 'h-fit'}`}>
-      <div className='relative flex flex-row grow w-full h-full z-10 justify-center bg-neutral-500/0 pointer-events-none'>
+    <div className={`fixed flex flex-col grow w-full sm:w-full md:w-full lg:w-fit xl:w-fit 2xl:w-fit h-1/5 top-32 md:left-10 lg:left-10 xl:left-10 2xl:left-10 place-self-center-safe justify-center-safe text-neutral-800 transition-all duration-500 ease-in-out ${showModal ? 'h-1/5' : 'h-fit'}`}>
+      {/* <div className='relative flex flex-row grow w-full h-full z-10 justify-center-safe'> */}
         <AnimatePresence mode='wait'>
           {showModal && (
             <motion.div
               id='modal-content'
-              className='flex flex-col w-fit h-full text-neutral-800 place-items-start'
+              className='flex flex-col grow w-fit h-fit place-self-center-safe'
               initial='hidden'
               animate='visible'
               exit='hidden'
               variants={variants.modalContainer}
             >
-              <motion.div variants={variants.modalItem} className='text-4xl place-self-center text-center perspective-origin-bottom'>
+              <motion.div variants={variants.modalItem} className='w-fit h-fit place-self-center-safe text-center text-5xl perspective-origin-bottom select-none'>
                 {displayName}
               </motion.div>
-              <motion.div variants={variants.modalItem} className='text-2xl text-center text-pretty perspective-origin-bottom'>
+              <motion.div variants={variants.modalItem} className='w-fit max-w-4/5 h-fit place-self-center-safe text-center text-2xl text-wrap perspective-origin-bottom select-none'>
                 {shortDescription}
               </motion.div>
-              <motion.div variants={variants.modalItem} className='text-3xl place-self-center text-center perspective-origin-bottom text-neutral-800'>
-                <Link href={url} rel='noopener noreferrer' className='pointer-events-auto'>
-                  <div className='cursor-pointer animate-pulse'> View Details </div>
+              <motion.div variants={variants.modalItem} className='w-fit h-fit place-self-center perspective-origin-bottom'>
+                <Link href={url} rel='noopener noreferrer'>
+                  <div className='w-fit h-fit place-self-center-safe text-center text-3xl text-neutral-700 cursor-pointer animate-pulse'>
+                    View Details
+                  </div>
                 </Link>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-      {/* <div className='transition-all duration-900 transition-discrete will-change-opacity text-9xl delay-500 text-blue-800 ease-in-out starting:opacity-0 opacity-100 select-none touch-none'>
-      </div> */}
+      {/* </div> */}
     </div>
   )
 }

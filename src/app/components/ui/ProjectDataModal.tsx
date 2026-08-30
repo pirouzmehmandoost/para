@@ -7,6 +7,7 @@ import useSelection from '@stores/selectionStore'
 import AutoModeIcon from '@mui/icons-material/AutoMode'
 import NotesIcon from '@mui/icons-material/Notes'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import type { Project } from '../../../types/project'
 import type { MaterialRecord } from '../../../types/material'
 import useMaterial from '@stores/materialStore'
@@ -60,7 +61,7 @@ interface ToggleDetailsButtonProps {
 }
 const ToggleDetailsButton = memo(({ expanded, callback }: ToggleDetailsButtonProps) => {
   return (
-    <div className='flex flex-col min-w-40 h-fit p-5 gap-y-1 items-center-safe rounded-4xl backdrop-blur-md backdrop-brightness-200'>
+    <div className='flex flex-col w-full h-fit p-4 gap-y-1 items-center-safe rounded-4xl backdrop-blur-md backdrop-brightness-200'>
       Technical Specs
       <button
         aria-label={expanded ? 'Collapse details' : 'Expand details'}
@@ -87,9 +88,9 @@ const DetailsPanel = memo(
   ({ expanded, care = '', description = '', dimensions = '', materialSpecs = '', weight = '' }: DetailsPanelProps) => {
     const cells = { 'Dimensions': dimensions, 'Weight': weight, 'Materials': materialSpecs, 'Care': care }
     return (
-      <div className={`flex flex-col w-fit h-full space-y-4 items-center-safe select-none transition-all duration-200 ease-linear ${expanded ? 'opacity-100' : 'opacity-0'}`}>
-        <div className='max-w-5/6 text-center'> {description}</div>
-        <div className='max-w-fit select-none text-neutral-900 text-sm text-left font-medium whitespace-nowrap'>
+      <div className={`flex flex-col w-fit h-full space-y-4 items-center-safe select-none transition-all transition-discrete duration-200 ease-in-out ${expanded ? 'opacity-100' : 'opacity-0'}`}>
+        <div className='max-w-5/6 h-full text-center'> {description}</div>
+        <div className='max-w-fit h-full select-none text-neutral-900 text-sm text-left font-medium whitespace-nowrap'>
           <table className='table-auto divide-inherit border-collapse border'>
             <tbody>
               {Object.entries(cells).map(([key, value]) => (
@@ -121,7 +122,7 @@ const MaterialControlsPanel = memo(
   ({ callback, materials, materialIDs, selectedID }: MaterialControlsPanelProps) => {
     return (
       <div className='flex flex-col min-w-40 h-fit p-5 gap-y-1 items-center text-center rounded-4xl backdrop-blur-md backdrop-brightness-200 text-nowrap text-md'>
-        <div className='flex flex-row w-full place-content-center justify-center gap-x-3 xs:gap-x-3 sm:gap-x-3 md:gap-x-3 lg:gap-x-5 xl:gap-x-6 2xl:gap-x-6'>
+        <div className='flex flex-row w-full place-content-center-safe justify-center-safe gap-x-3 xs:gap-x-3 sm:gap-x-3 md:gap-x-3 lg:gap-x-5 xl:gap-x-6 2xl:gap-x-6'>
           {materialIDs
             .filter((entry) => Boolean(materials?.[entry]))
             .map((entry) => {
@@ -144,14 +145,14 @@ const MaterialControlsPanel = memo(
 )
 MaterialControlsPanel.displayName = 'MaterialControlsPanel'
 
-interface AssProps {
+interface RotationControlsPanelProps {
   handleAutoRotate: () => void
   handleManualRotate: (rotation: EulerValue) => void
   autoRotateActive: boolean
   rotation: EulerValue
 }
 const RotationControlsPanel = memo(
-  ({ handleAutoRotate, handleManualRotate, autoRotateActive, rotation }: AssProps) => {
+  ({ handleAutoRotate, handleManualRotate, autoRotateActive, rotation }: RotationControlsPanelProps) => {
     //models face the camera laterally, so the SIDE button resets rotation.
     const rotateActionButtonValues: Record<string, ButtonVals> = {
       TOP: {
@@ -296,11 +297,14 @@ const ProjectDataModal = ({ slug, entryPoint }: ProjectDataModalProps) => {
       <div className='mt-12 text-center text-7xl select-none'>
         {displayName}
       </div>
-      <div className='fixed w-full h-fit bottom-0 inset-x-0 p-7'>
-        <div className='flex flex-col w-fit md:w-full lg:w-full xl:w-full 2xl:w-full items-center justify-center space-y-2'>
-          <div className='flex flex-row w-full lg:place-self-start xl:place-self-start 2xl:place-self-start space-x-4 items-end-safe justify-between lg:justify-start xl:justify-start 2xl:justify-start'>
-            <div className='flex flex-col h-full space-y-2'>
-              <div className='flex flex-col items-center-safe'>
+      <div className='fixed flex grow w-full h-fit bottom-0 inset-x-0 p-6'>
+        <div className='flex grow flex-col w-full h-full items-center-safe justify-center-safe'>
+          <div className='flex flex-row w-full h-full lg:place-self-start xl:place-self-start 2xl:place-self-start space-x-4 items-end-safe justify-between lg:justify-start xl:justify-start 2xl:justify-start'>
+              {/* row 1: buttons/panels row2: UIData */}
+            <div className='flex flex-col w-fit h-full space-y-2'>
+              {/* <div className='flex flex-col h-full p-6 rounded-4xl items-center-safe text-center'> */}
+              <div className='flex flex-col w-full h-fit p-4 gap-y-1 items-center-safe rounded-4xl backdrop-blur-md backdrop-brightness-200'>
+                Go Back
                 <button
                   aria-label='Navigate back'
                   className='appearance-none flex p-4 w-fit h-fit rounded-full bg-neutral-500/10 backdrop-blur-md backdrop-invert-10 cursor-pointer transition-all duration-500 ease-in-out text-neutral-900 hover:text-neutral-700'
