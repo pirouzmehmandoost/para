@@ -1,13 +1,13 @@
 import { create } from 'zustand'
-import * as THREE from 'three'
+import { Object3D, Scene } from 'three'
 import TargetRegistry from '@targetRegistry'
 
-type Targets = THREE.Object3D[] | ((obj: THREE.Object3D) => boolean)
+type Targets = Object3D[] | ((obj: Object3D) => boolean)
 
 type TargetRegistryState = {
   registry: TargetRegistry | null
   _uuid: string | null
-  initialize: (scene: THREE.Scene, targets: Targets) => boolean
+  initialize: (scene: Scene, targets: Targets) => boolean
   reset: () => void
 }
 
@@ -22,7 +22,7 @@ const initialState: {
 const useTargetRegistry = create<TargetRegistryState>()((set, get) => ({
   ...initialState,
 
-  initialize: (scene: THREE.Scene, targets: Targets) => {
+  initialize: (scene: Scene, targets: Targets) => {
     if (!scene?.isScene) return false
 
     const { registry, _uuid } = get()

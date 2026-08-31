@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import * as THREE from 'three';
+import {  MeshStandardMaterial, MeshPhysicalMaterial, DoubleSide } from 'three';
 import { EPSILON_1e7 } from '@utils/animationUtils';
 import { getColorSpace, generateDataTexture, generateArrayBuffer} from '@utils/materialUtils'
 
@@ -39,7 +39,7 @@ export const defaultMeshPhysicalMaterialConfig = {
   ior: 1.5,
   map: _map2,
   roughnessMap: _roughnessMap2,
-  side: THREE.DoubleSide,
+  side: DoubleSide,
 };
 
 const materialConfigs = {
@@ -52,7 +52,7 @@ const materialConfigs = {
     ior: 1.5,
     name: 'gloss_black',
     roughness: 0.45,
-    side: THREE.DoubleSide,
+    side: DoubleSide,
     bumpMap: _scratchDataTextures.bumpMap,
     map: _scratchDataTextures.map,
     roughnessMap: _scratchDataTextures.roughnessMap,
@@ -66,7 +66,7 @@ const materialConfigs = {
     ior: 1.7,
     name: 'matte_black',
     roughness: 0.75,
-    side: THREE.DoubleSide,
+    side: DoubleSide,
     bumpMap: _scratchDataTextures.bumpMap,
     map: _scratchDataTextures.map,
     roughnessMap: _scratchDataTextures.roughnessMap,
@@ -80,7 +80,7 @@ const materialConfigs = {
     ior: 1.5,
     name: 'stained_matte_black',
     roughness: 0.8,
-    side: THREE.DoubleSide,
+    side: DoubleSide,
     bumpMap: _scratchDataTextures.bumpMap,
     map: _scratchDataTextures.map,
     roughnessMap: _scratchDataTextures.roughnessMap,
@@ -90,9 +90,9 @@ const materialConfigs = {
     flatShading: false,
     metalness: 0.8,
     name: 'ground',
-    // normalScale: new THREE.Vector2(1, -1),
+    // normalScale: new Vector2(1, -1),
     roughness: 1,
-    side: THREE.DoubleSide,
+    side: DoubleSide,
     // normalMap: _scratchDataTextures.normalMap
   }
 }
@@ -101,22 +101,22 @@ const materialState = {
   gloss_black: {
     displayName: 'Gloss Black',
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
-    material: new THREE.MeshPhysicalMaterial({ ...materialConfigs.gloss_black }),
+    material: new MeshPhysicalMaterial({ ...materialConfigs.gloss_black }),
   },
   ground: {
     displayName: 'Ground',
     tailwindColor: `bg-zinc-900`,
-    material: new THREE.MeshStandardMaterial({ ...materialConfigs.ground }),
+    material: new MeshStandardMaterial({ ...materialConfigs.ground }),
   },
   matte_black: {
     displayName: 'Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
-    material: new THREE.MeshPhysicalMaterial({...materialConfigs.matte_black }),
+    material: new MeshPhysicalMaterial({...materialConfigs.matte_black }),
   },
   stained_matte_black: {
     displayName: 'Stained Matte Black',
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
-    material: new THREE.MeshPhysicalMaterial({ ...materialConfigs.stained_matte_black }),
+    material: new MeshPhysicalMaterial({ ...materialConfigs.stained_matte_black }),
     textures: {
       map: '/stained_black_diffuse.ktx2',
       roughnessMap: '/stained_black_roughness.ktx2',
