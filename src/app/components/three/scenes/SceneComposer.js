@@ -1,7 +1,7 @@
 'use client';
 
 import { startTransition, useCallback, useLayoutEffect, useEffect, useMemo, useRef } from 'react';
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 import { useThree } from '@react-three/fiber';
 // import { EffectComposer, N8AO } from '@react-three/postprocessing';
 import carouselConfigs from '@configs/carouselConfigs';
@@ -16,12 +16,12 @@ import Ground from '../models/Ground';
 const { SWIPE_DELAY_MS } = carouselConfigs;
 
 const meshPositions = [
-  new THREE.Vector3(-100, -18, -40),
-  new THREE.Vector3(100, -10, -40),
-  new THREE.Vector3(0, -105, 40)
+  new Vector3(-100, -18, -40),
+  new Vector3(100, -10, -40),
+  new Vector3(0, -105, 40)
 ];
-const offsetCameraPosition = new THREE.Vector3(0, 0, 200);
-const lookAtPosition = new THREE.Vector3(0, 0, -1);
+const offsetCameraPosition = new Vector3(0, 0, 200);
+const lookAtPosition = new Vector3(0, 0, -1);
 
 const SceneComposer = () => {
   const set = useThree((state) => state.set);

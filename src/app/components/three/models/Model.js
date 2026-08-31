@@ -1,7 +1,7 @@
 'use client'
 
 import { memo, useEffect, useLayoutEffect, useRef } from 'react'
-import * as THREE from 'three'
+import { DoubleSide, Euler, MeshPhysicalMaterial, Vector3 } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { easing } from 'maath'
@@ -35,14 +35,14 @@ const Model = (props) => {
   const camera = useThree((state) => state.camera)
   const { nodes: { [nodeName]: { geometry = null } = {} } = {} } = useGLTF(url) || null
 
-  const _scratchSizeRef = useRef(new THREE.Vector3())
+  const _scratchSizeRef = useRef(new Vector3())
   const meshRef = useRef(undefined)
-  const scaleRef = useRef(new THREE.Vector3(0, 0, 0))
-  const defaultRotationRef = useRef(new THREE.Euler(rx, ry, rz))
-  const animateRotationRef = useRef(new THREE.Euler(rx, ry, rz))
+  const scaleRef = useRef(new Vector3(0, 0, 0))
+  const defaultRotationRef = useRef(new Euler(rx, ry, rz))
+  const animateRotationRef = useRef(new Euler(rx, ry, rz))
   const rotationModeRef = useRef(null)
-  const defaultPositionRef = useRef(new THREE.Vector3(px, py, pz))
-  const animateMaterialRef = useRef(new THREE.MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }))
+  const defaultPositionRef = useRef(new Vector3(px, py, pz))
+  const animateMaterialRef = useRef(new MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }))
   const materialReadyRef = useRef(false)
   const targetMaterialIDRef = useRef(null)
   const targetMaterialRef = useRef(null)
@@ -130,7 +130,7 @@ const Model = (props) => {
     const scaleFactor = scale * targetSize / (maxBoundingBoxDimension > 0 ? maxBoundingBoxDimension : 1)
 
     if (setOnMount) {
-      scaleRef.current = new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor)
+      scaleRef.current = new Vector3(scaleFactor, scaleFactor, scaleFactor)
       meshRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor)
       return
     }
@@ -164,7 +164,7 @@ const Model = (props) => {
     if (!materialToUpdate) return
 
     if (animateMaterialRef.current.side !== materialToUpdate.side) {
-      animateMaterialRef.current.side = materialToUpdate.side ?? THREE.DoubleSide
+      animateMaterialRef.current.side = materialToUpdate.side ?? DoubleSide
       animateMaterialRef.current.needsUpdate = true
     }
 

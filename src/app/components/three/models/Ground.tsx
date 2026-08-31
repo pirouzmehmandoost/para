@@ -4,7 +4,7 @@ import { memo, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import useMaterial from '@stores/materialStore'
 import groundConfigs from '@configs/groundConfigs'
-import * as THREE from 'three'
+import { BufferGeometry, Euler, Mesh, Vector3 } from 'three'
 
 const {
   groundProps: {
@@ -21,9 +21,9 @@ interface GroundProps {
   materialID: string
   nodeName: string
   url: string
-  position: THREE.Vector3
-  rotation: THREE.Euler
-  scale: THREE.Vector3
+  position: Vector3
+  rotation: Euler
+  scale: Vector3
 }
 
 const Ground = ({ materialID, nodeName, url, position, rotation, scale }: GroundProps) => {
@@ -37,8 +37,8 @@ const Ground = ({ materialID, nodeName, url, position, rotation, scale }: Ground
   const node = nodeName?.length ? nodeName : NODE_NAME
   // const geometry = useGLTF(fileURL).nodes?.[`${node}`]?.geometry ?? null;
   const { nodes } = useGLTF(fileURL)
-  const mesh = nodes?.[node] as THREE.Mesh | null
-  const geometry = mesh?.geometry as THREE.BufferGeometry | null
+  const mesh = nodes?.[node] as Mesh | null
+  const geometry = mesh?.geometry as BufferGeometry | null
   const material = useMaterial.getState().materials[groundMaterialID].material
 
   return (
