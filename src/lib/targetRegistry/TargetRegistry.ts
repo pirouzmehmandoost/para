@@ -1,375 +1,379 @@
-import * as THREE from 'three';
-import type { EventListener } from 'three';
+import type { EventListener } from 'three'
+import { Object3D, Object3DEventMap, Scene, Vector3 } from 'three'
 
-type Object3DEventTypes = 'added' | 'removed';
+type Object3DEventTypes = 'added' | 'removed'
 
 type Object3DEventHandler = EventListener<
-  THREE.Object3DEventMap[Object3DEventTypes],
+  Object3DEventMap[Object3DEventTypes],
   Object3DEventTypes,
-  THREE.Object3D
->;
+  Object3D
+>
 
 type ChildAddedHandler = EventListener<
-  THREE.Object3DEventMap['childadded'],
+  Object3DEventMap['childadded'],
   'childadded',
-  THREE.Object3D
->;
+  Object3D
+>
 
 export interface RegistryEntry {
-  target: THREE.Object3D;
-  index: number;
-  targetUUID: string;
-  parentUUID: string;
-  consumerDemoted: boolean;
+  target: Object3D
+  index: number
+  targetUUID: string
+  parentUUID: string
+  consumerDemoted: boolean
 }
 
 interface ListenerRecord {
-  target: THREE.Object3D;
-  type: Object3DEventTypes;
-  handler: Object3DEventHandler;
+  target: Object3D
+  type: Object3DEventTypes
+  handler: Object3DEventHandler
 }
 
 class TargetRegistry {
-  private _scene: THREE.Scene;
-  private _targets: Record<string, THREE.Object3D> = {};
+  private _scene: Scene
+  private _targets: Record<string, Object3D> = {};
   private _promoted: Record<string, RegistryEntry> = {};
   private _demoted: Record<string, RegistryEntry> = {};
-  private _positions: THREE.Vector3[] = [];
+  private _positions: Vector3[] = [];
   private _listeners: ListenerRecord[] = [];
   private _userRemoved: Set<string> = new Set();
-  private _activeFilter: ((obj: THREE.Object3D) => boolean) | null = null;
+  private _activeFilter: ((obj: Object3D) => boolean) | null = null;
   private _sceneChildAddedHandler: ChildAddedHandler | null = null;
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: Scene) {
     if (!scene) {
-      throw new TypeError('TargetRegistry.ts: scene must be of type THREE.Scene.');
-    } else {
-      this._scene = scene;
+      throw new TypeError('TargetRegistry.ts: scene must be of type Scene.')
+    }
+    else {
+      this._scene = scene
     }
   }
 
   // Public methods:
+  register(targets: Object3D[]): void {
+    this._cleanupListeners()
+    this._removeSceneChildAddedListener()
+    this._promoted = {}
+    this._demoted = {}
+    this._positions = []
+    this._userRemoved.clear()
+    this._targets = {}
+    this._activeFilter = null
 
-  register(targets: THREE.Object3D[]): void {
-    this._cleanupListeners();
-    this._removeSceneChildAddedListener();
-    this._promoted = {};
-    this._demoted = {};
-    this._positions = [];
-    this._userRemoved.clear();
-    this._targets = {};
-    this._activeFilter = null;
-
-    if (!targets.length) return;
+    if (!targets.length) return
 
     this._targets = Object.fromEntries(
       targets.filter((t) => t?.isObject3D).map((t) => [t.uuid, t]),
-    );
+    )
 
-    const sceneObjects: Record<string, THREE.Object3D> = {};
+    const sceneObjects: Record<string, Object3D> = {}
 
     this._scene.traverse((obj) => {
-      if (obj.isObject3D) sceneObjects[obj.uuid] = obj;
-    });
+      if (obj.isObject3D) sceneObjects[obj.uuid] = obj
+    })
 
     for (const key in this._targets) {
-      const t = this._targets[key];
-      if (!t?.uuid?.length) continue;
+      const t = this._targets[key]
+      if (!t?.uuid?.length) continue
 
-      const uuid = t.uuid;
-      const found = sceneObjects[uuid] ?? null;
+      const uuid = t.uuid
+      const found = sceneObjects[uuid] ?? null
 
       if (found) {
-        const entry = this._createEntry(found, this._positions.length);
-        this._promoted[uuid] = entry;
-        this._positions.push(new THREE.Vector3());
-        this._addListener(found, 'removed', this._makeRemovedHandler(uuid));
-      } else {
-        const entry = this._createEntry(t, -1);
-        this._demoted[uuid] = entry;
-        this._addListener(t, 'added', this._makeAddedHandler(uuid));
+        const entry = this._createEntry(found, this._positions.length)
+        this._promoted[uuid] = entry
+        this._positions.push(new Vector3())
+        this._addListener(found, 'removed', this._makeRemovedHandler(uuid))
+      }
+      else {
+        const entry = this._createEntry(t, -1)
+        this._demoted[uuid] = entry
+        this._addListener(t, 'added', this._makeAddedHandler(uuid))
       }
     }
   }
 
-  registerByFilter(filter: (obj: THREE.Object3D) => boolean): void {
-    this._cleanupListeners();
-    this._removeSceneChildAddedListener();
-    this._promoted = {};
-    this._demoted = {};
-    this._positions = [];
-    this._userRemoved.clear();
-    this._targets = {};
-    this._activeFilter = filter;
+  registerByFilter(filter: (obj: Object3D) => boolean): void {
+    this._cleanupListeners()
+    this._removeSceneChildAddedListener()
+    this._promoted = {}
+    this._demoted = {}
+    this._positions = []
+    this._userRemoved.clear()
+    this._targets = {}
+    this._activeFilter = filter
     this._scene.traverse((obj) => {
-      if (filter(obj)) this._promoteByObject(obj);
-    });
-    this._attachSceneChildAddedListener();
+      if (filter(obj)) this._promoteByObject(obj)
+    })
+    this._attachSceneChildAddedListener()
   }
 
-  getPositions(): readonly THREE.Vector3[] {
-    return this._positions;
+  getPositions(): readonly Vector3[] {
+    return this._positions
   }
 
   getPromoted(): Readonly<Record<string, RegistryEntry>> {
-    return this._promoted;
+    return this._promoted
   }
 
   getDemoted(): Readonly<Record<string, RegistryEntry>> {
-    return this._demoted;
+    return this._demoted
   }
 
-  refreshPosition(index: number, position: THREE.Vector3): void {
+  refreshPosition(index: number, position: Vector3): void {
     if (index >= 0 && index < this._positions.length && this._positions[index]) {
-      this._positions[index].copy(position);
+      this._positions[index].copy(position)
     }
   }
 
   demote(uuid: string): boolean {
-    const entry = this._promoted[uuid];
-    if (!entry) return false;
+    const entry = this._promoted[uuid]
+    if (!entry) return false
 
-    const demotedIndex = entry.index;
-    this._removePositionAtIndex(demotedIndex);
-    this._decrementPromotedIndicesAbove(demotedIndex);
-    delete this._promoted[uuid];
-    entry.index = -1;
-    entry.consumerDemoted = true;
-    this._demoted[uuid] = entry;
-    this._removeListenersForTarget(entry.target, 'removed');
-    return true;
+    const demotedIndex = entry.index
+    this._removePositionAtIndex(demotedIndex)
+    this._decrementPromotedIndicesAbove(demotedIndex)
+    delete this._promoted[uuid]
+    entry.index = -1
+    entry.consumerDemoted = true
+    this._demoted[uuid] = entry
+    this._removeListenersForTarget(entry.target, 'removed')
+    return true
   }
 
   promote(uuid: string): boolean {
-    const entry = this._demoted[uuid];
-    if (!entry) return false;
+    const entry = this._demoted[uuid]
+    if (!entry) return false
 
-    const isEntryInScene = this._scene.getObjectByProperty('uuid', entry.target.uuid);
-    const parentUUID = entry.target.parent?.uuid;
+    const isEntryInScene = this._scene.getObjectByProperty('uuid', entry.target.uuid)
+    const parentUUID = entry.target.parent?.uuid
     const isParentInScene = parentUUID
       ? this._scene?.getObjectByProperty('uuid', parentUUID)?.isObject3D
-      : null;
-    if (!isEntryInScene || !isParentInScene) return false;
+      : null
+    if (!isEntryInScene || !isParentInScene) return false
 
-    this._promoteEntry(entry);
+    this._promoteEntry(entry)
 
-    return true;
+    return true
   }
 
-  addTarget(target: THREE.Object3D): boolean {
-    if (!target?.uuid?.length) return false;
+  addTarget(target: Object3D): boolean {
+    if (!target?.uuid?.length) return false
 
-    const uuid = target.uuid;
-    if (this._promoted[uuid] || this._demoted[uuid]) return false;
+    const uuid = target.uuid
+    if (this._promoted[uuid] || this._demoted[uuid]) return false
 
-    const inScene = !!this._scene.getObjectByProperty('uuid', uuid);
+    const inScene = !!this._scene.getObjectByProperty('uuid', uuid)
     if (inScene) {
-      const entry = this._createEntry(target, this._positions.length);
-      this._promoted[uuid] = entry;
-      this._targets[uuid] = target;
-      this._positions.push(new THREE.Vector3());
-      this._addListener(target, 'removed', this._makeRemovedHandler(uuid));
-    } else {
-      const entry = this._createEntry(target, -1);
-      this._demoted[uuid] = entry;
-      this._targets[uuid] = target;
-      this._addListener(target, 'added', this._makeAddedHandler(uuid));
+      const entry = this._createEntry(target, this._positions.length)
+      this._promoted[uuid] = entry
+      this._targets[uuid] = target
+      this._positions.push(new Vector3())
+      this._addListener(target, 'removed', this._makeRemovedHandler(uuid))
+    }
+    else {
+      const entry = this._createEntry(target, -1)
+      this._demoted[uuid] = entry
+      this._targets[uuid] = target
+      this._addListener(target, 'added', this._makeAddedHandler(uuid))
     }
 
-    if (this._userRemoved.has(uuid)) this._userRemoved.delete(uuid);
+    if (this._userRemoved.has(uuid)) this._userRemoved.delete(uuid)
 
-    return true;
+    return true
   }
 
   removeTarget(uuid: string): boolean {
-    const promoted = this._promoted[uuid];
+    const promoted = this._promoted[uuid]
     if (promoted) {
-      const removedIndex = promoted.index;
-      this._removeListenersForTarget(promoted.target, 'removed');
-      this._removePositionAtIndex(removedIndex);
-      this._decrementPromotedIndicesAbove(removedIndex);
-      delete this._promoted[uuid];
-    } else {
-      const demoted = this._demoted[uuid];
-      if (!demoted) return false;
+      const removedIndex = promoted.index
+      this._removeListenersForTarget(promoted.target, 'removed')
+      this._removePositionAtIndex(removedIndex)
+      this._decrementPromotedIndicesAbove(removedIndex)
+      delete this._promoted[uuid]
+    }
+    else {
+      const demoted = this._demoted[uuid]
+      if (!demoted) return false
 
-      this._removeListenersForTarget(demoted.target, 'added');
-      delete this._demoted[uuid];
+      this._removeListenersForTarget(demoted.target, 'added')
+      delete this._demoted[uuid]
     }
 
-    this._userRemoved.add(uuid);
-    if (this._targets[uuid]) delete this._targets[uuid];
+    this._userRemoved.add(uuid)
+    if (this._targets[uuid]) delete this._targets[uuid]
 
-    return true;
+    return true
   }
 
   deregister(): void {
-    this._cleanupListeners();
-    this._removeSceneChildAddedListener();
-    this._promoted = {};
-    this._demoted = {};
-    this._positions = [];
-    this._userRemoved.clear();
-    this._targets = {};
-    this._activeFilter = null;
+    this._cleanupListeners()
+    this._removeSceneChildAddedListener()
+    this._promoted = {}
+    this._demoted = {}
+    this._positions = []
+    this._userRemoved.clear()
+    this._targets = {}
+    this._activeFilter = null
   }
 
   // Private methods
-  private _createEntry(target: THREE.Object3D, index: number): RegistryEntry {
+  private _createEntry(target: Object3D, index: number): RegistryEntry {
     const entry: RegistryEntry = {
       target: target,
       index: index,
       targetUUID: target.uuid,
       parentUUID: target.parent?.uuid ?? '',
       consumerDemoted: false,
-    };
-    return entry;
+    }
+    return entry
   }
 
   private _promoteEntry(entry: RegistryEntry): void {
-    const uuid = entry.targetUUID;
-    delete this._demoted[uuid];
-    entry.consumerDemoted = false;
-    entry.index = this._positions.length;
-    entry.parentUUID = entry.target.parent?.uuid ?? '';
-    this._promoted[uuid] = entry;
-    this._positions.push(new THREE.Vector3());
-    this._removeListenersForTarget(entry.target, 'added');
-    this._addListener(entry.target, 'removed', this._makeRemovedHandler(uuid));
+    const uuid = entry.targetUUID
+    delete this._demoted[uuid]
+    entry.consumerDemoted = false
+    entry.index = this._positions.length
+    entry.parentUUID = entry.target.parent?.uuid ?? ''
+    this._promoted[uuid] = entry
+    this._positions.push(new Vector3())
+    this._removeListenersForTarget(entry.target, 'added')
+    this._addListener(entry.target, 'removed', this._makeRemovedHandler(uuid))
   }
 
   private _makeRemovedHandler(uuid: string): Object3DEventHandler {
     const handler: Object3DEventHandler = () => {
-      const entry = this._promoted[uuid];
-      if (!entry) return;
+      const entry = this._promoted[uuid]
+      if (!entry) return
 
-      const staleIndex = entry.index;
-      if (this._scene.getObjectByProperty('uuid', uuid)) return;
+      const staleIndex = entry.index
+      if (this._scene.getObjectByProperty('uuid', uuid)) return
 
-      this._removePositionAtIndex(staleIndex);
-      this._decrementPromotedIndicesAbove(staleIndex);
-      delete this._promoted[uuid];
-      this._demoted[uuid] = entry;
-      const parent = this._scene.getObjectByProperty('uuid', entry.parentUUID);
-      const isTracked = this._activeFilter !== null || !!this._targets[uuid];
+      this._removePositionAtIndex(staleIndex)
+      this._decrementPromotedIndicesAbove(staleIndex)
+      delete this._promoted[uuid]
+      this._demoted[uuid] = entry
+      const parent = this._scene.getObjectByProperty('uuid', entry.parentUUID)
+      const isTracked = this._activeFilter !== null || !!this._targets[uuid]
 
       if (!parent || !isTracked) {
-        delete this._demoted[uuid];
-        this._removeListenersForTarget(entry.target, 'removed');
-      } else {
-        entry.index = -1;
-        entry.consumerDemoted = false;
-        this._removeListenersForTarget(entry.target, 'removed');
-        this._addListener(entry.target, 'added', this._makeAddedHandler(uuid));
+        delete this._demoted[uuid]
+        this._removeListenersForTarget(entry.target, 'removed')
       }
-    };
-    return handler;
+      else {
+        entry.index = -1
+        entry.consumerDemoted = false
+        this._removeListenersForTarget(entry.target, 'removed')
+        this._addListener(entry.target, 'added', this._makeAddedHandler(uuid))
+      }
+    }
+    return handler
   }
 
   private _makeAddedHandler(uuid: string): Object3DEventHandler {
     const handler: Object3DEventHandler = () => {
-      const entry = this._demoted[uuid];
-      if (!entry) return;
+      const entry = this._demoted[uuid]
+      if (!entry) return
 
-      if (entry.consumerDemoted) return;
+      if (entry.consumerDemoted) return
 
-      const parentUUID = entry.target.parent?.uuid;
-      if (!parentUUID) return;
+      const parentUUID = entry.target.parent?.uuid
+      if (!parentUUID) return
 
-      const parentInScene = this._scene.getObjectByProperty('uuid', parentUUID);
-      if (!parentInScene?.isObject3D) return;
+      const parentInScene = this._scene.getObjectByProperty('uuid', parentUUID)
+      if (!parentInScene?.isObject3D) return
 
-      this._promoteEntry(entry);
-    };
-    return handler;
+      this._promoteEntry(entry)
+    }
+    return handler
   }
 
-  private _promoteByObject(obj: THREE.Object3D): void {
-    const uuid = obj.uuid;
-    if (this._userRemoved.has(uuid)) return;
+  private _promoteByObject(obj: Object3D): void {
+    const uuid = obj.uuid
+    if (this._userRemoved.has(uuid)) return
 
-    const entry = this._createEntry(obj, this._positions.length);
-    this._promoted[uuid] = entry;
-    this._targets[uuid] = obj;
-    this._positions.push(new THREE.Vector3());
-    this._addListener(obj, 'removed', this._makeRemovedHandler(uuid));
+    const entry = this._createEntry(obj, this._positions.length)
+    this._promoted[uuid] = entry
+    this._targets[uuid] = obj
+    this._positions.push(new Vector3())
+    this._addListener(obj, 'removed', this._makeRemovedHandler(uuid))
   }
 
   private _attachSceneChildAddedListener(): void {
-    if (this._sceneChildAddedHandler || !this._activeFilter) return;
+    if (this._sceneChildAddedHandler || !this._activeFilter) return
 
-    const filter = this._activeFilter;
+    const filter = this._activeFilter
     this._sceneChildAddedHandler = (event) => {
       event.child.traverse((obj) => {
         if (filter(obj) && !this._promoted[obj.uuid] && !this._demoted[obj.uuid]) {
-          this._promoteByObject(obj);
+          this._promoteByObject(obj)
         }
-      });
+      })
 
       for (const uuid in this._demoted) {
-        const entry = this._demoted[uuid];
-        if (entry.consumerDemoted) continue;
+        const entry = this._demoted[uuid]
+        if (entry.consumerDemoted) continue
 
-        const parentUUID = entry.target.parent?.uuid;
-        if (!parentUUID) continue;
+        const parentUUID = entry.target.parent?.uuid
+        if (!parentUUID) continue
 
-        const parentInScene = this._scene.getObjectByProperty('uuid', parentUUID);
-        if (!parentInScene?.isObject3D) continue;
+        const parentInScene = this._scene.getObjectByProperty('uuid', parentUUID)
+        if (!parentInScene?.isObject3D) continue
 
-        this._promoteEntry(entry);
+        this._promoteEntry(entry)
       }
-    };
+    }
 
-    this._scene.addEventListener('childadded', this._sceneChildAddedHandler);
+    this._scene.addEventListener('childadded', this._sceneChildAddedHandler)
   }
 
   private _removeSceneChildAddedListener(): void {
-    if (!this._sceneChildAddedHandler) return;
+    if (!this._sceneChildAddedHandler) return
 
-    this._scene.removeEventListener('childadded', this._sceneChildAddedHandler);
-    this._sceneChildAddedHandler = null;
+    this._scene.removeEventListener('childadded', this._sceneChildAddedHandler)
+    this._sceneChildAddedHandler = null
   }
 
   private _removePositionAtIndex(index: number): void {
     if (index >= 0 && index < this._positions.length) {
-      this._positions.splice(index, 1);
+      this._positions.splice(index, 1)
     }
   }
 
   private _decrementPromotedIndicesAbove(threshold: number): void {
     for (const key in this._promoted) {
       if (this._promoted[key].index > threshold) {
-        this._promoted[key].index -= 1;
+        this._promoted[key].index -= 1
       }
     }
   }
 
   private _addListener(
-    target: THREE.Object3D,
+    target: Object3D,
     type: Object3DEventTypes,
     handler: Object3DEventHandler,
   ): void {
-    target.addEventListener(type, handler);
-    this._listeners.push({ target, type, handler });
+    target.addEventListener(type, handler)
+    this._listeners.push({ target, type, handler })
   }
 
-  private _removeListenersForTarget(target: THREE.Object3D, type: Object3DEventTypes): void {
+  private _removeListenersForTarget(target: Object3D, type: Object3DEventTypes): void {
     for (let i = this._listeners.length - 1; i >= 0; i--) {
-      const rec = this._listeners[i];
+      const rec = this._listeners[i]
       if (rec.target === target && rec.type === type) {
-        rec.target.removeEventListener(rec.type, rec.handler);
-        this._listeners.splice(i, 1);
+        rec.target.removeEventListener(rec.type, rec.handler)
+        this._listeners.splice(i, 1)
       }
     }
   }
 
   private _cleanupListeners(): void {
     for (let i = 0; i < this._listeners.length; i++) {
-      const rec = this._listeners[i];
-      rec.target.removeEventListener(rec.type, rec.handler);
+      const rec = this._listeners[i]
+      rec.target.removeEventListener(rec.type, rec.handler)
     }
-    this._listeners = [];
+    this._listeners = []
   }
 }
 
-export default TargetRegistry;
+export default TargetRegistry
