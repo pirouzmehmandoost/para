@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import { useEffect, useMemo } from 'react';
-import { useTexture, useKTX2} from '@react-three/drei'
-import useMaterial from '@stores/materialStore';
+import { useEffect, useMemo } from 'react'
+import { useTexture, useKTX2 } from '@react-three/drei'
+import useMaterial from '@stores/materialStore'
 import type { MaterialRecord } from '../../../../types/material'
 
 interface Payload {
@@ -30,19 +30,19 @@ const TextureInitializer = () => {
       }
     }
     return { img, ktx2 } as Payload
-  }, []);
+  }, [])
 
-  const textures = useTexture(texturesToLoad.img);
-  const ktx2Textures = useKTX2(texturesToLoad.ktx2);
+  const textures = useTexture(texturesToLoad.img)
+  const ktx2Textures = useKTX2(texturesToLoad.ktx2)
 
   useEffect(() => {
     for (const url of Object.keys(texturesToLoad.img)) { if (!textures[url]) return }
     for (const url of Object.keys(texturesToLoad.ktx2)) { if (!ktx2Textures[url]) return }
 
-    setMaterialTextures({...textures, ...ktx2Textures});
-  }, [setMaterialTextures, textures, ktx2Textures, texturesToLoad]);
+    setMaterialTextures({ ...textures, ...ktx2Textures })
+  }, [setMaterialTextures, textures, ktx2Textures, texturesToLoad])
 
-  return null;
+  return null
 }
 
-export default TextureInitializer;
+export default TextureInitializer
