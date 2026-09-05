@@ -1,9 +1,23 @@
 'use client'
 
 import { memo, useLayoutEffect, useMemo, useRef } from 'react'
-import * as THREE from 'three'
+import { BufferGeometry, Euler, InstancedMesh, Matrix4, Mesh, Object3D, Vector3 } from 'three'
 import { useGLTF } from '@react-three/drei'
 import useMaterial from '@stores/materialStore'
+
+const dummy = new Object3D();
+const instanceMatrix = new Matrix4();
+const axis = new Vector3(0,1,0)
+
+
+function rotateInstance(instancedMesh: InstancedMesh, instanceId: number, rotationAxis: Vector3, angleAmount: number) {
+  instancedMesh.getMatrixAt(instanceId, instanceMatrix);
+  instanceMatrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
+  dummy.rotateOnAxis(rotationAxis, angleAmount);
+  dummy.updateMatrix();
+  instancedMesh.setMatrixAt(instanceId, dummy.matrix);
+  instancedMesh.instanceMatrix.needsUpdate = true;
+}
 
 function checkCellValue(value: number): number {
   return typeof value === 'number' ? Math.max(1, Math.ceil(value)) : 1
@@ -28,14 +42,14 @@ interface TerrainProps {
   materialID: string
   nodeName: string
   url: string
-  position: THREE.Vector3
-  rotation: THREE.Euler
-  scale: THREE.Vector3
+  position: Vector3
+  rotation: Euler
+  scale: Vector3
   gridRows: number
   gridColumns: number
   gridSpacing: number
 }
-const Terrain = (props: TerrainProps) => {
+const TerrainGrid = (props: TerrainProps) => {
   const {
     materialID,
     nodeName,
@@ -48,20 +62,23 @@ const Terrain = (props: TerrainProps) => {
     gridSpacing,
   } = props
 
-  const _scratchSizeRef = useRef(new THREE.Vector3())
-  const _scratchCenterRef = useRef(new THREE.Vector3())
+  // const _scratchPositionRef = useRef(new Vector3())
+  // const _scratchQuaternionRef = useRef(new Quaternion())
+  // const _scratchScaleRef = useRef(new Vector3())
+  const _scratchSizeRef = useRef(new Vector3())
+  const _scratchCenterRef = useRef(new Vector3())
   const instancedMeshRef = useRef(undefined)
-  const instanceRef = useRef(new THREE.Object3D())
+  const instanceRef = useRef(new Object3D())
   const gridRef = useRef([1, 1])
   const totalInstancesRef = useRef(1)
 
   const { nodes } = useGLTF(url)
-  const mesh = nodes?.[nodeName] as THREE.Mesh | null
-  const geometry = mesh?.geometry as THREE.BufferGeometry | null
+  const mesh = nodes?.[nodeName] as Mesh | null
+  const geometry = mesh?.geometry as BufferGeometry | null
 
   const material = useMaterial.getState().materials[materialID].material
 
-  const totalInstances = useMemo(() =>  checkCellValue(gridRows) * checkCellValue(gridColumns), [gridRows, gridColumns])
+  const totalInstances = useMemo(() => checkCellValue(gridRows) * checkCellValue(gridColumns), [gridRows, gridColumns])
 
   useLayoutEffect(() => {
     const total = checkGridSize(gridRows, gridColumns, gridRef.current)
@@ -96,6 +113,7 @@ const Terrain = (props: TerrainProps) => {
         instanceRef.current.position.set(x, y, z)
         instanceRef.current.updateMatrix()
         instancedMeshRef.current.setMatrixAt(instanceIndex, instanceRef.current.matrix)
+        rotateInstance(instancedMeshRef.current, instanceIndex, axis, 0)
         instanceIndex++
       }
     }
@@ -112,7 +130,6 @@ const Terrain = (props: TerrainProps) => {
         <instancedMesh
           ref={instancedMeshRef}
           args={[geometry, material, totalInstances]}
-          // material={material}
           castShadow={true}
           receiveShadow={true}
         />
@@ -121,4 +138,4 @@ const Terrain = (props: TerrainProps) => {
   )
 }
 
-export default memo(Terrain)
+export default memo(TerrainGrid)

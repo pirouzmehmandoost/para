@@ -1,35 +1,34 @@
 'use client';
 
 import { startTransition, useCallback, useLayoutEffect, useEffect, useMemo, useRef } from 'react';
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 import { useThree } from '@react-three/fiber';
-import { EffectComposer, N8AO, Vignette } from '@react-three/postprocessing';
-import { projects, getProjectByNodeName } from '@configs/globals';
-import cameraConfigs from '@configs/cameraConfigs';
+// import { EffectComposer, N8AO } from '@react-three/postprocessing';
+import carouselConfigs from '@configs/carouselConfigs';
+import groundConfigs  from '@configs/groundConfigs'
+import useProjectStore from '@stores/projectStore';
 import useSelection from '@stores/selectionStore';
 import useTargetRegistry from '@stores/targetRegistryStore';
-import MaterialTextureInitializer from '../textures/MaterialTextureInitializer';
 import Carousel from '../cameras/rigs/Carousel';
 import Model from '../models/Model';
 import Ground from '../models/Ground';
 
-const { SWIPE_DELAY_MS, OFFSET_CAMERA_POSITION } = cameraConfigs;
-const meshPositions = [
-  new THREE.Vector3(-100, -18, -40),
-  new THREE.Vector3(100, -10, -40),
-  new THREE.Vector3(0, -105, 40)
-];
+const { SWIPE_DELAY_MS } = carouselConfigs;
 
-const defaultCameraPosition = new THREE.Vector3(OFFSET_CAMERA_POSITION[0], OFFSET_CAMERA_POSITION[1], OFFSET_CAMERA_POSITION[2]);
-const offsetCameraPosition = new THREE.Vector3(0, 0, OFFSET_CAMERA_POSITION[2]);
-const lookAtPosition = new THREE.Vector3(0, 0, -1);
+const meshPositions = [
+  new Vector3(-100, -18, -40),
+  new Vector3(100, -10, -40),
+  new Vector3(0, -105, 40)
+];
+const offsetCameraPosition = new Vector3(0, 0, 200);
+const lookAtPosition = new Vector3(0, 0, -1);
 
 const SceneComposer = () => {
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
   const scene = useThree((state) => state.scene);
 
-  const resetSelectionStore = useSelection((state) => state.reset);
+  const projects = useProjectStore((state) => state.projects);
   const setFocused = useSelection((state) => state.setFocused);
   const lastSwipeTimeRef = useRef(0);
 
@@ -39,39 +38,35 @@ const SceneComposer = () => {
         .map((p) => `${p.sceneData?.fileData?.nodeName}`)
         .filter((key) => key !== 'undefined')
     ),
-    [],
+    [projects],
   );
 
   const targetFilter = useMemo(() => (obj) => targetKeys.has(obj.name), [targetKeys]);
 
   const handlePointerMissed = useCallback((e) => {
-    if (Date.now() - lastSwipeTimeRef.current < SWIPE_DELAY_MS) return;
-
-    startTransition(() => { resetSelectionStore() });
-  }, [resetSelectionStore]);
+    startTransition(() => { useSelection.getState().reset() });
+  }, []);
 
   const handleClick = useCallback((e) => {
     e.stopPropagation();
-    const clickedName = e.object.name || null;
+    if (Date.now() - lastSwipeTimeRef.current < SWIPE_DELAY_MS) return;
+
+    const clickedName = e.object.name || null; // e.object.name is the nodeName
     const clickedUUID = e.object.uuid || null;
+    if (!clickedName || !clickedUUID || useSelection.getState().selection.focusedUUID === clickedUUID) return;
 
-    if (!clickedName || !clickedUUID) return;
-
-    if (useSelection.getState().selection.focusedUUID === clickedUUID) return;
-
-    const project = getProjectByNodeName(clickedName);
+    const project = useProjectStore.getState().getProjectByNodeName(clickedName);
     if (!project) return;
 
-    const materialID = project.sceneData.materials.defaultMaterialID;
-    startTransition(() => { setFocused(clickedName, materialID, clickedUUID) });
+    startTransition(() => {
+      setFocused(clickedName, project.sceneData.materials.defaultMaterialID, clickedUUID)
+    });
   }, [setFocused]);
 
   const onSwipe = useCallback((e) => {
     lastSwipeTimeRef.current = Date.now();
-    startTransition(() => {
-      resetSelectionStore();
-    });
-  }, [resetSelectionStore]);
+    startTransition(() => { useSelection.getState().reset() });
+  }, []);
 
   useLayoutEffect(() => {
     useTargetRegistry.getState().initialize(scene, targetFilter);
@@ -87,74 +82,52 @@ const SceneComposer = () => {
 
   return (
     <>
-      <MaterialTextureInitializer />
       <directionalLight
         castShadow={true}
         color={'#fff6e8'}
-        intensity={2}
+        intensity={1}
         position={[0, 120, 80]}
-        shadow-bias={-0.004}
-        shadow-camera-fov={50}
-        shadow-camera-near={1}
-        shadow-camera-far={270}
-        shadow-camera-top={250}
-        shadow-camera-bottom={-250}
-        shadow-camera-left={-250}
-        shadow-camera-right={250}
-        shadow-mapSize={2048}
       />
-      <EffectComposer
+      {/* <EffectComposer
         autoClear={false}
         disableNormalPass
         multisampling={0}
       >
         <N8AO
-          aoRadius={50}
-          distanceFalloff={0.3}
-          intensity={0.5}
+          aoRadius={15}
+          distanceFalloff={1}
+          intensity={1}
           screenSpaceRadius
           halfRes
         />
-        <Vignette
-          eskil={false}
-          offset={0.01}
-          darkness={0.75}
-        />
-      </EffectComposer>
+      </EffectComposer> */}
+
       {projects.map(({
-        sceneData = {},
-        sceneData: {
-          fileData: {
-            nodeName
-          } = {}
-        } = {}
+        UIData: { slug } = {},
+        sceneData: { fileData, materials, rotation, rotationSpeed, scale } = {},
       }, index) => {
         return (
           <Model
-            key={nodeName}
-            animateMaterial={sceneData.animateMaterial}
-            animatePosition={sceneData.animatePosition}
-            animateRotation={sceneData.animateRotation}
-            fileData={sceneData.fileData}
-            materials={sceneData.materials}
+            key={slug}
+            fileData={fileData}
+            materials={materials}
             onClick={handleClick}
             position={meshPositions[index]}
-            rotation={sceneData.rotation}
-            rotationSpeed={sceneData.rotationSpeed}
-            scale={sceneData.scale}
+            rotation={rotation}
+            rotationSpeed={rotationSpeed}
+            scale={scale}
           />
-        );
+        )
       })}
-      <Ground
-        position={[0, -90, -15]}
-        rotation={[Math.PI / 4.5, Math.PI / 2, 0]}
-        scale={[0.7, 0.7, 0.7]}
-      />
+      <Ground {...groundConfigs.groundProps}/>
       <Carousel
-        defaultPosition={defaultCameraPosition}
         lookAtPosition={lookAtPosition}
         offsetPosition={offsetCameraPosition}
         onSwipe={onSwipe}
+        autoDwellTime={12} 
+        manualDwellTime={15} 
+        swipeDistanceThreshold={0.2}
+        swipeTimeThreshold={600}
       />
     </>
   );
