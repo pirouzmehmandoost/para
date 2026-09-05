@@ -1,10 +1,10 @@
-import ProjectDataModal from '../../../components/ui/ProjectDataModal';
+import ProjectDataModalTest from '../../../components/ui/ProjectDataModalTest'
 
 interface ProjectDataModalProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }
 
 export default async function ProjectModalPage({ params }: ProjectDataModalProps) {
-  const { slug } = await params;
-  return <ProjectDataModal slug={slug} entryPoint={'modal'} />;
+  const { slug } = await params
+  return <ProjectDataModalTest slug={slug} entryPoint={'modal'} />
 }
