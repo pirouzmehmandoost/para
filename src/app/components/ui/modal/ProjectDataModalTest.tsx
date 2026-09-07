@@ -26,8 +26,10 @@ interface NavigationPanelProps {
 }
 const NavigationPanel = memo(({ callback }: NavigationPanelProps) => {
   return (
-    <div className='flex flex-col min-w-20 max-w-32 min-h-16 max-h-20 gap-y-1 justify-center-safe items-center-safe'>
-      <div id='w-full h-fit text-nowrap'> Go Back </div>
+    <div className='flex flex-col min-w-20 max-w-32 min-h-20 max-h-24 gap-y-1 justify-center-safe items-center-safe'>
+      <div id='w-full h-fit text-center text-nowrap'>
+        Go Back
+      </div>
       <ActionButton id='back-button' ariaLabel={`Go back`} callback={callback}>
         <ArrowBackIcon fontSize='medium' />
       </ActionButton>
@@ -42,8 +44,10 @@ interface ToggleDisplayPanelProps {
 }
 const ToggleDisplayPanel = memo(({ expanded, callback }: ToggleDisplayPanelProps) => {
   return (
-    <div className='flex flex-col min-w-20 max-w-32 min-h-16 max-h-20 gap-y-1 justify-center-safe items-center-safe'>
-      <div className='w-full h-fit text-nowrap'> Technical Specs </div>
+    <div className='flex flex-col min-w-20 max-w-32 min-h-20 max-h-24 gap-y-1 justify-center-safe items-center-safe'>
+      <div className='w-full h-fit text-center text-nowrap'>
+        Technical Specs
+      </div>
       <ActionButton id='details' callback={() => callback((x) => !x)} ariaLabel={'Toggle details panel'}>
         {expanded ? <CloseFullscreenIcon fontSize='medium' /> : <NotesIcon fontSize='medium' />}
       </ActionButton>
@@ -51,41 +55,6 @@ const ToggleDisplayPanel = memo(({ expanded, callback }: ToggleDisplayPanelProps
   )
 })
 ToggleDisplayPanel.displayName = 'ToggleDisplayPanel'
-
-interface UIDataPanelProps {
-  care: string
-  description: string
-  dimensions: string
-  materialSpecs: string
-  weight: string
-}
-const UIDataPanel = memo(({ care = '', description = '', dimensions = '', materialSpecs = '', weight = '' }: UIDataPanelProps) => {
-  const tableData: Record<string, string> = { 'Dimensions': dimensions, 'Weight': weight, 'Materials': materialSpecs, 'Care': care }
-  return (
-    <div className='flex flex-col w-full h-full p-3 sm:p-3 md:p-3 lg:p-6 xl:p-6 2xl:p-6 gap-y-4 justify-end-safe items-center-safe'>
-      <div className='flex flex-row w-full max-w-5/6 max-h-fit justify-center-safe text-start'>
-        {description}
-      </div>
-      <div className='flex flex-row w-full max-w-5/6 max-h-fit'>
-        <table className='w-full h-fit table-auto divide-inherit border border-collapse border-header'>
-          <tbody>
-            {Object.entries(tableData).map(([key, value]) => (
-              <tr key={key} className='border border-collapse'>
-                <th scope='col' className='w-1/12 px-3 sm:px-3 md:px-3 lg:px-6 xl:px-6 2xl:px-6 py-3 sm:py-3 md:py-3 lg:py-3 xl:py-3 2xl:py-3 border text-start whitespace-nowrap'>
-                  {key}
-                </th>
-                <td scope='col' className='w-11/12 px-3 sm:px-3 md:px-6 text-start'>
-                  {value}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
-})
-UIDataPanel.displayName = 'UIDataPanel'
 
 interface MaterialControlsPanelProps {
   callback: (id: string) => void
@@ -95,8 +64,8 @@ interface MaterialControlsPanelProps {
 }
 const MaterialControlsPanel = memo(({ callback, materials, materialIDs, selectedID }: MaterialControlsPanelProps) => {
   return (
-    <div className='flex grow flex-col w-full min-w-28 max-w-36 h-full min-h-20 max-h-24 gap-y-1 justify-center-safe items-center-safe'>
-      <div className='w-full h-fit text-nowrap'>
+    <div className='flex flex-col min-w-28 max-w-36 min-h-20 max-h-24 gap-y-1 justify-center-safe items-center-safe'>
+      <div className='w-full h-fit text-center text-nowrap'>
         Colors
       </div>
       <div className='flex flex-row w-full h-fit place-content-center-safe justify-center-safe gap-x-3'>
@@ -116,7 +85,7 @@ const MaterialControlsPanel = memo(({ callback, materials, materialIDs, selected
             )
           })}
       </div>
-      <div className='w-full h-fit text-nowrap'>
+      <div className='w-full h-fit text-center text-nowrap'>
         {materials[selectedID]?.displayName?.length && materials[selectedID].displayName}
       </div>
     </div>
@@ -132,7 +101,7 @@ interface RotationControlsPanelProps {
 }
 const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, autoRotateActive, rotation }: RotationControlsPanelProps) => {
   return (
-    <div className='flex flex-col min-w-30 p-1 sm:min-w-30 md:min-w-full min-h-20 gap-y-1 justify-center items-center'>
+    <div className='flex flex-col min-w-30 sm:min-w-30 md:min-w-36 min-h-20 p-1 sm:p-1 md:p-2 gap-y-0.5 justify-center items-center'>
       <div className='w-full h-fit text-center'>
         Rotation
       </div>
@@ -160,6 +129,41 @@ const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, auto
   )
 })
 RotationControlsPanel.displayName = 'RotationControlsPanel'
+
+interface UIDataPanelProps {
+  care: string
+  description: string
+  dimensions: string
+  materialSpecs: string
+  weight: string
+}
+const UIDataPanel = memo(({ care = '', description = '', dimensions = '', materialSpecs = '', weight = '' }: UIDataPanelProps) => {
+  const tableData: Record<string, string> = { 'Dimensions': dimensions, 'Weight': weight, 'Materials': materialSpecs, 'Care': care }
+  return (
+    <div className='flex flex-col w-full h-full p-3 sm:p-3 md:p-3 lg:p-6 xl:p-6 2xl:p-6 gap-y-4 justify-end-safe items-center-safe'>
+      <div className='flex flex-row w-full max-w-5/6 max-h-fit justify-center text-start'>
+        {description}
+      </div>
+      <div className='flex flex-row w-full max-w-5/6 max-h-fit'>
+        <table className='w-full h-fit table-auto divide-inherit border border-collapse border-header'>
+          <tbody>
+            {Object.entries(tableData).map(([key, value]) => (
+              <tr key={key} className='border border-collapse'>
+                <th scope='col' className='w-1/12 px-3 sm:px-3 md:px-3 lg:px-6 xl:px-6 2xl:px-6 py-3 sm:py-3 md:py-3 lg:py-3 xl:py-3 2xl:py-3 border text-start whitespace-nowrap'>
+                  {key}
+                </th>
+                <td scope='col' className='w-11/12 px-3 sm:px-3 md:px-6 text-start'>
+                  {value}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+})
+UIDataPanel.displayName = 'UIDataPanel'
 
 // NOTE: ProjectDataModal has a full-screen fixed container so event listeners attached to canvas won't receive events.
 interface ProjectDataModalProps {

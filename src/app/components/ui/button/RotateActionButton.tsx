@@ -12,7 +12,7 @@ export const AutoRotateButton = memo(({ callback, active }: RotateButtonProps) =
     <button
       id='auto-rotate-button'
       aria-label='Toggle auto rotation'
-      className={`appearance-none group flex w-fit h-fit rounded-full backdrop-blur-xl cursor-pointer transition-all duration-500 ease-in-out ${active ? 'bg-neutral-300 hover:bg-neutral-400 animate-pulse' : 'bg-neutral-500 hover:bg-neutral-400 animate-none'}`}
+      className={`appearance-none group flex w-fit h-fit rounded-full backdrop-blur-xl cursor-pointer transition-all transition-discrete duration-500 ease-in-out ${active ? 'bg-neutral-400 hover:bg-container constrast-200 text-header animate-pulse' : 'bg-container contrast-50 hover:bg-neutral-400 text-link opacity-75 animate-none'}`}
       onClick={callback}
       type='button'
     >
@@ -31,7 +31,6 @@ export const AutoRotateButton = memo(({ callback, active }: RotateButtonProps) =
 })
 AutoRotateButton.displayName = 'AutoRotateButton'
 
-
 interface ManualRotationButtonProps extends RotateButtonProps {
   injectStyle: string
   text: string
@@ -41,7 +40,7 @@ const ManualRotationButton = memo(({ id, callback, active, injectStyle, text }: 
   return (
     <button
       id={id}
-      className={`absolute appearance-none w-10 h-10 z-100 text-center text-xs sm:text-xs md:text-sm lg:text-sm xl:text-md 2xl:text-md transform-3d perspective-origin-top-left scale-[78.5%] backface-visible  ${injectStyle} transition-all transition-discrete duration-500 ease-in-out ${active ? 'bg-container hover:bg-neutral-400 text-header' : 'bg-neutral-400/50 hover:bg-container/50 text-link'}`}
+      className={`absolute appearance-none w-10 h-10 z-100 text-center text-xs sm:text-xs md:text-sm lg:text-sm xl:text-md 2xl:text-md transform-3d perspective-origin-top-left scale-[78.5%] backface-visible ${injectStyle} transition-all transition-discrete duration-500 ease-in-out ${active ? 'bg-neutral-400 hover:bg-container text-header animate-pulse' : 'bg-container hover:bg-neutral-400 text-link opacity-75 animate-none'}`}
       onClick={callback}
       type='button'
     >
@@ -60,12 +59,12 @@ export const ManualRotateButtonGroup = memo(({ handleManualRotate, autoRotateAct
   const rotateActionButtonValues = {
     TOP: {
       text: 'TOP',
-      rotation: { x: rotation.x+Math.PI/2, y: rotation.y, z: rotation.z },
+      rotation: { x: rotation.x + Math.PI / 2, y: rotation.y, z: rotation.z },
       injectStyle: `translate-x-0 -translate-y-3.25 rotate-x-60 rotate-y-0 rotate-z-45 contrast-200`,
     },
     FRONT: {
       text: 'FRONT',
-      rotation: { x: rotation.x, y: rotation.y+Math.PI/2, z: rotation.z },
+      rotation: { x: rotation.x, y: rotation.y + Math.PI / 2, z: rotation.z },
       injectStyle: `translate-x-2.75 translate-y-1.5 -rotate-x-30 rotate-y-45 rotate-z-0 contrast-125`,
     },
     SIDE: {
@@ -76,17 +75,19 @@ export const ManualRotateButtonGroup = memo(({ handleManualRotate, autoRotateAct
   }
 
   return (
-    <div className='relative flex flex-row min-w-10 max-w-fit min-h-10 h-full justify-center-safe items-center-safe'>
-      {Object.entries(rotateActionButtonValues).map(([key, { rotation, injectStyle, text }]) => (
-        <ManualRotationButton
-          key={`rotation_button_${key}`}
-          id={`rotation_button_${key}`}
-          callback={() => { handleManualRotate(rotation) }}
-          active={autoRotateActive}
-          injectStyle={injectStyle}
-          text={text}
-        />
-      ))}
+    <div className='flex flex-row min-w-12 min-h-12 aspect-square max-w-full max-h-full rounded-full justify-center items-center'>
+      <div className='relative flex flex-row min-w-10 max-w-fit min-h-10 h-full justify-center items-center'>
+        {Object.entries(rotateActionButtonValues).map(([key, { rotation, injectStyle, text }]) => (
+          <ManualRotationButton
+            key={`rotation_button_${key}`}
+            id={`rotation_button_${key}`}
+            callback={() => { handleManualRotate(rotation) }}
+            active={!autoRotateActive}
+            injectStyle={injectStyle}
+            text={text}
+          />
+        ))}
+      </div>
     </div>
   )
 })
