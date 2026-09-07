@@ -12,6 +12,7 @@ import type { EulerValue } from '../button/types'
 import useProjectStore from '@stores/projectStore'
 import useSelection from '@stores/selectionStore'
 import useMaterial from '@stores/materialStore'
+import useMenu from '@stores/menuStore'
 import ModalContainer from '../container/ModalContainer'
 import ActionButton from '../button/ActionButton'
 import { AutoRotateButton, ManualRotateButtonGroup } from '../button/RotateActionButton'
@@ -25,15 +26,9 @@ interface NavigationPanelProps {
 }
 const NavigationPanel = memo(({ callback }: NavigationPanelProps) => {
   return (
-    <div className='flex flex-col w-full h-full gap-y-1 justify-center-safe items-center-safe'>
-      <div id='w-full h-fit text-nowrap'>
-        Go Back
-      </div>
-      <ActionButton
-        id='back-button'
-        ariaLabel={`Go back`}
-        callback={callback}
-      >
+    <div className='flex flex-col min-w-20 max-w-32 min-h-16 max-h-20 gap-y-1 justify-center-safe items-center-safe'>
+      <div id='w-full h-fit text-nowrap'> Go Back </div>
+      <ActionButton id='back-button' ariaLabel={`Go back`} callback={callback}>
         <ArrowBackIcon fontSize='medium' />
       </ActionButton>
     </div>
@@ -47,19 +42,10 @@ interface ToggleDisplayPanelProps {
 }
 const ToggleDisplayPanel = memo(({ expanded, callback }: ToggleDisplayPanelProps) => {
   return (
-    <div className='flex flex-col w-full h-full gap-y-1 justify-center-safe items-center-safe'>
-      <div id='w-full h-fit text-nowrap'>
-        Technical Specs
-      </div>
-      <ActionButton
-        id='details'
-        callback={() => callback((x) => !x)}
-        ariaLabel={'Toggle details panel'}
-      >
-        {expanded
-          ? <CloseFullscreenIcon fontSize='medium' />
-          : <NotesIcon fontSize='medium' />
-        }
+    <div className='flex flex-col min-w-20 max-w-32 min-h-16 max-h-20 gap-y-1 justify-center-safe items-center-safe'>
+      <div className='w-full h-fit text-nowrap'> Technical Specs </div>
+      <ActionButton id='details' callback={() => callback((x) => !x)} ariaLabel={'Toggle details panel'}>
+        {expanded ? <CloseFullscreenIcon fontSize='medium' /> : <NotesIcon fontSize='medium' />}
       </ActionButton>
     </div>
   )
@@ -109,7 +95,7 @@ interface MaterialControlsPanelProps {
 }
 const MaterialControlsPanel = memo(({ callback, materials, materialIDs, selectedID }: MaterialControlsPanelProps) => {
   return (
-    <div className='flex flex-col w-full h-fit gap-y-1 justify-center-safe items-center-safe'>
+    <div className='flex grow flex-col w-full min-w-28 max-w-36 h-full min-h-20 max-h-24 gap-y-1 justify-center-safe items-center-safe'>
       <div className='w-full h-fit text-nowrap'>
         Colors
       </div>
@@ -188,7 +174,8 @@ const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
   const isAutoRotationActive = useSelection((state) => state.selection.defaultRotationAnimationActive)
   const setFocused = useSelection((state) => state.setFocused)
   const setMaterialID = useSelection((state) => state.setMaterialID)
-  const [expanded, setExpanded] = useState(false)
+  const [displayPanelsVisible, setDisplayPanelsVisible] = useState(false)
+  const visible = useMenu((state) => state.menuState.visible)
 
   const project: Project = slug?.length ? useProjectStore.getState().getProjectBySlug(slug) : null
 
@@ -209,13 +196,13 @@ const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
       startTransition(() => setFocused(nodeName, defaultMaterialID, null))
     }
 
+    useMenu.getState().setVisible(true)
+
     return () => { startTransition(() => reset()) }
   }, [project, setFocused, nodeName, defaultMaterialID])
 
   const handleSelectMaterial = useCallback((id: string) => {
-    if (id.length > 0 && selectedMaterialID !== id) {
-      startTransition(() => setMaterialID(id))
-    }
+    if (id.length > 0 && selectedMaterialID !== id) startTransition(() => setMaterialID(id))
   }, [selectedMaterialID, setMaterialID])
 
   const handleManualRotate = useCallback((rotation: EulerValue) => {
@@ -223,23 +210,33 @@ const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
   }, [])
 
   const dismiss = useCallback(() => {
-    if (entryPoint === 'modal') {
-      router.back()
-    }
-    else {
-      router.replace('/')
-    }
-  }, [entryPoint, router])
+    if (displayPanelsVisible === true) setDisplayPanelsVisible(false)
+
+    setTimeout(() => {
+      if (entryPoint === 'modal') router.back()
+      else router.replace('/')
+    }, 500)
+
+  }, [entryPoint, router, displayPanelsVisible, setDisplayPanelsVisible])
 
   const ControlPanels: ReactNode[] = [
     <NavigationPanel callback={dismiss} />,
-    <ToggleDisplayPanel expanded={expanded} callback={setExpanded} />,
+    <ToggleDisplayPanel expanded={displayPanelsVisible} callback={setDisplayPanelsVisible} />,
     <MaterialControlsPanel callback={handleSelectMaterial} materials={materials} materialIDs={materialIDs} selectedID={selectedMaterialID} />,
     <RotationControlsPanel rotation={rotation} handleAutoRotate={toggleAutoRotation} handleManualRotate={handleManualRotate} autoRotateActive={isAutoRotationActive} />
   ]
   const DisplayPanels: ReactNode[] = [<UIDataPanel {...UIData as UIDataPanelProps} />]
 
-  return (<ModalContainer dataRoute={pathname} header={displayName} visible={true} controlPanels={ControlPanels} displayPanels={DisplayPanels} />)
+  return (
+    <ModalContainer
+      dataRoute={pathname}
+      header={displayName}
+      visible={visible}
+      displayPanelsVisible={displayPanelsVisible}
+      controlPanels={ControlPanels}
+      displayPanels={DisplayPanels}
+    />
+  )
 }
 
 export default memo(ProjectDataModalTest)
