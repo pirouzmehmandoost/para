@@ -1,4 +1,4 @@
-import ProjectDataModalTest from '../../../components/ui/ProjectDataModalTest'
+import ProjectDataModalTest from '../../../components/ui/modal/ProjectDataModalTest'
 
 interface ProjectDataModalProps {
   params: Promise<{ slug: string }>

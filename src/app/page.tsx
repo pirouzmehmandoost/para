@@ -1,4 +1,4 @@
-import SelectionDisplayModal from '@components/ui/SelectionDisplayModal'
+import SelectionDisplayModal from './components/ui/modal/SelectionDisplayModal'
 
 const Home = () => {
   return (
