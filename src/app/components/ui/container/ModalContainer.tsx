@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import type { ReactNode } from 'react'
 
-
 interface ContainerProps {
   id: string
   children?: ReactNode
@@ -9,20 +8,14 @@ interface ContainerProps {
 }
 
 const ControlPanel = memo(({ id, visible, children }: ContainerProps) =>
-  <div
-    id={id}
-    className={`flex flex-col w-full h-full justify-center items-center rounded-3xl backdrop-blur-sm backdrop-invert-37 transition-all transition-discrete duration-500 ease-in-out ${visible ? 'opacity-100' : 'opacity-0'}`}
-  >
+  <div id={id} className={`flex flex-col w-full h-full justify-center items-center rounded-3xl backdrop-blur-sm backdrop-invert-37 transition-all transition-discrete duration-500 ease-in-out ${visible ? 'opacity-100' : 'opacity-0'}`}>
     {children}
   </div>
 )
 ControlPanel.displayName = 'ControlPanel'
 
 const DisplayPanel = memo(({ id, visible, children }: ContainerProps) =>
-  <div
-    id={id}
-    className={`flex flex-col w-full h-full justify-center items-center rounded-3xl backdrop-blur-sm backdrop-invert-37 transition-all transition-discrete duration-400 ease-in-out ${visible ? 'opacity-100' : 'opacity-0'}`}
-  >
+  <div id={id} className={`flex flex-col w-full h-full justify-center items-center rounded-3xl backdrop-blur-sm backdrop-invert-37 transition-all transition-discrete duration-500 ease-in-out ${visible ? 'opacity-100' : 'opacity-0'}`}>
     {children}
   </div>
 )
