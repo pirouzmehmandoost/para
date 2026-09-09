@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import type { EulerValue } from './types'
 import AutoModeIcon from '@mui/icons-material/AutoMode'
 
@@ -12,7 +12,7 @@ export const AutoRotateButton = memo(({ callback, active }: RotateButtonProps) =
     <button
       id='auto-rotate-button'
       aria-label='Toggle auto rotation'
-      className={`appearance-none group flex w-fit h-fit rounded-full backdrop-blur-xl cursor-pointer transition-all transition-discrete duration-500 ease-in-out ${active ? 'bg-neutral-400 hover:bg-container constrast-200 text-header animate-pulse' : 'bg-container contrast-50 hover:bg-neutral-400 text-link opacity-75 animate-none'}`}
+      className={`appearance-none group flex w-fit h-fit rounded-full backdrop-blur-xl cursor-pointer transition-all transition-discrete duration-500 ease-in-out ${active ? 'bg-neutral-400 hover:bg-container contrast-200 text-header animate-pulse' : 'bg-container contrast-50 hover:bg-neutral-400 text-link opacity-75 animate-none'}`}
       onClick={callback}
       type='button'
     >
@@ -56,33 +56,36 @@ interface ManualRotateButtonGroupProps {
   rotation: EulerValue
 }
 export const ManualRotateButtonGroup = memo(({ handleManualRotate, autoRotateActive, rotation }: ManualRotateButtonGroupProps) => {
-  const rotateActionButtonValues = {
-    TOP: {
-      text: 'TOP',
-      rotation: { x: rotation.x + Math.PI / 2, y: rotation.y, z: rotation.z },
-      injectStyle: `translate-x-0 -translate-y-3.25 rotate-x-60 rotate-y-0 rotate-z-45 contrast-200`,
-    },
-    FRONT: {
-      text: 'FRONT',
-      rotation: { x: rotation.x, y: rotation.y + Math.PI / 2, z: rotation.z },
-      injectStyle: `translate-x-2.75 translate-y-1.5 -rotate-x-30 rotate-y-45 rotate-z-0 contrast-125`,
-    },
-    SIDE: {
-      text: 'SIDE',
-      rotation: { x: 0, y: 0, z: 0 },
-      injectStyle: `-translate-x-2.75 translate-y-1.5 -rotate-x-30 -rotate-y-45 rotate-z-0 contrast-150`,
+
+  const rotateActionButtonValues = useMemo(() => {
+    return {
+      TOP: {
+        text: 'TOP',
+        callback: () => handleManualRotate({ x: rotation.x + Math.PI / 2, y: rotation.y, z: rotation.z }),
+        injectStyle: `translate-x-0 -translate-y-3.25 rotate-x-60 rotate-y-0 rotate-z-45 contrast-200`,
+      },
+      FRONT: {
+        text: 'FRONT',
+        callback: () => handleManualRotate({ x: rotation.x, y: rotation.y + Math.PI / 2, z: rotation.z }),
+        injectStyle: `translate-x-2.75 translate-y-1.5 -rotate-x-30 rotate-y-45 rotate-z-0 contrast-125`,
+      },
+      SIDE: {
+        text: 'SIDE',
+        callback: () => handleManualRotate({ x:0, y:0, z:0 }),
+        injectStyle: `-translate-x-2.75 translate-y-1.5 -rotate-x-30 -rotate-y-45 rotate-z-0 contrast-150`,
+      }
     }
-  }
+  }, [rotation.x, rotation.y, rotation.z, handleManualRotate])
 
   return (
     <div className='flex flex-row min-w-12 min-h-12 aspect-square max-w-full max-h-full rounded-full justify-center items-center'>
       <div className='relative flex flex-row min-w-10 max-w-fit min-h-10 h-full justify-center items-center'>
-        {Object.entries(rotateActionButtonValues).map(([key, { rotation, injectStyle, text }]) => (
+        {Object.entries(rotateActionButtonValues).map(([key, { callback, injectStyle, text }]) => (
           <ManualRotationButton
             key={`rotation_button_${key}`}
             id={`rotation_button_${key}`}
-            callback={() => { handleManualRotate(rotation) }}
             active={!autoRotateActive}
+            callback={callback}
             injectStyle={injectStyle}
             text={text}
           />
