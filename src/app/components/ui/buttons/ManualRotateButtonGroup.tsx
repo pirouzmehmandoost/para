@@ -6,9 +6,9 @@ interface ManualRotateButtonGroupProps {
   callback:  (rotation: EulerValue, buttonID: string) => void
   active: boolean
   rotation: EulerValue
-  clicked: string
+  clickedButtonID: string
 }
-export const ManualRotateButtonGroup = memo(({ callback, active, rotation, clicked}: ManualRotateButtonGroupProps) => {
+const ManualRotateButtonGroup = memo(({ callback, active, rotation, clickedButtonID}: ManualRotateButtonGroupProps) => {
 
   const rotateActionButtonValues = useMemo(() => {
     return {
@@ -34,15 +34,15 @@ export const ManualRotateButtonGroup = memo(({ callback, active, rotation, click
   }, [rotation.x, rotation.y, rotation.z, callback])
 
   return (
-    <div className='flex flex-row min-w-12 min-h-12 aspect-square max-w-full max-h-full rounded-full justify-center items-center'>
-      <div className={`relative flex flex-row min-w-10 max-w-fit min-h-10 h-full justify-center items-center transition-all duration-500 ease-in-out ${active ? 'text-header' : 'text-link'}`}>
+    <div className='flex flex-row aspect-square min-w-12 min-h-12 max-w-full max-h-full rounded-full justify-center items-center'>
+      <div className={`relative flex flex-row min-w-10 min-h-10 max-w-fit h-full justify-center items-center transition-all duration-500 ease-in-out ${active ? 'text-header' : 'text-link'}`}>
         {Object.entries(rotateActionButtonValues).map(([_, { callback, id, injectStyle, text }]) => {
           return (
             <ManualRotationButton
               key={id}
               id={id}
               active={active}
-              clicked={clicked === id}
+              clicked={clickedButtonID === id}
               callback={callback}
               injectStyle={injectStyle}
               text={text}

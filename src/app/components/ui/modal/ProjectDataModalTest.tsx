@@ -103,15 +103,15 @@ interface RotationControlsPanelProps {
   rotation: EulerValue
 }
 const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, autoRotateActive, rotation }: RotationControlsPanelProps) => {
-  const [clicked, setClicked] = useState('rotation-button-side')
+  const [clickedButtonID, setClickedButtonID] = useState('rotation-button-side')
 
   const onAutoRotate = useCallback(() => {
-    setClicked('rotation-button-side')
+    setClickedButtonID('rotation-button-side')
     handleAutoRotate()
   }, [handleAutoRotate])
 
   const onManualRotate = useCallback((next: EulerValue, buttonID: string) => {
-    setClicked(buttonID)
+    setClickedButtonID(buttonID)
     handleManualRotate(next)
   }, [handleManualRotate])
 
@@ -126,7 +126,7 @@ const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, auto
         </div>
         <div className='relative flex flex-row w-full h-full basis-1/2 justify-center items-center'>
           <div className='relative flex flex-row w-fit h-fit aspect-square justify-center items-center'>
-            <ManualRotateButtonGroup active={!autoRotateActive} callback={onManualRotate} rotation={rotation} clicked={clicked} />
+            <ManualRotateButtonGroup active={!autoRotateActive} callback={onManualRotate} rotation={rotation} clickedButtonID={clickedButtonID} />
           </div>
         </div>
       </div>
@@ -203,9 +203,9 @@ const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
 
   useLayoutEffect(() => {
     if (project && useSelection.getState().selection.focusedName !== nodeName) setFocused(nodeName, defaultMaterialID, null)
-
-    return (() => reset())
   }, [project, setFocused, nodeName, defaultMaterialID])
+
+  useLayoutEffect(()=> { return (() => reset())}, [])
 
   const handleSelectMaterial = useCallback((id: string) => {
     if (id.length > 0 && selectedMaterialID !== id) startTransition(() => setMaterialID(id))
@@ -216,13 +216,9 @@ const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
   }, [])
 
   const handleBackNav = useCallback(() => {
-    if (displayPanelsVisible === true) setDisplayPanelsVisible(false)
-
-    if (visible === true) setVisible(false)
-
     if (entryPoint === 'modal') router.back()
     else router.replace('/')
-  }, [entryPoint, router, visible, setVisible, displayPanelsVisible, setDisplayPanelsVisible])
+  }, [entryPoint, router])
 
   const injectStyle = 'max-w-fit max-h-fit'
 

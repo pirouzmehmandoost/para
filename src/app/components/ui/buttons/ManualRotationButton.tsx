@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { RotateButtonProps } from './types'
 
 interface ManualRotationButtonProps extends RotateButtonProps {
@@ -6,7 +7,7 @@ interface ManualRotationButtonProps extends RotateButtonProps {
   id: string
   clicked: boolean
 }
-const ManualRotationButton = ({ id, callback, active, clicked, injectStyle, text }: ManualRotationButtonProps) => {
+const ManualRotationButton = memo(({ id, callback, active, clicked, injectStyle, text }: ManualRotationButtonProps) => {
   return (
     <button
       id={id}
@@ -17,6 +18,7 @@ const ManualRotationButton = ({ id, callback, active, clicked, injectStyle, text
       {text}
     </button>
   )
-}
+})
+ManualRotationButton.displayName = 'ManualRotationButton'
 
 export default ManualRotationButton
