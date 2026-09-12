@@ -119,6 +119,7 @@ const materialState = {
     material: new MeshPhysicalMaterial({ ...materialConfigs.stained_matte_black }),
     textures: {
       map: '/stained_black_diffuse.ktx2',
+      bumpMap: '/stained_black_roughness.ktx2',
       roughnessMap: '/stained_black_roughness.ktx2',
     },
   },
@@ -178,13 +179,17 @@ const materialStore = (set, get) => ({
 
     for (const material in materials) {
       const designatedTextures = materials[material]?.textures;
+
       if (!designatedTextures) continue;
+
       for (const materialProperty in designatedTextures) {
         const textureToAssign = textures[designatedTextures[materialProperty]] ?? null;
+
         if (!textureToAssign || !textureToAssign.isTexture) {
           console.warn(`Warning: setMaterialTextures() => Missing or invalid texture for material '${material}', property '${materialProperty}'. Got:`, textureToAssign);
           return;
         }
+
         staged.push({
           target: materials[material].material,
           property: materialProperty,
@@ -214,7 +219,7 @@ const materialStore = (set, get) => ({
     if (texturesInitialized === initialized) return;
 
     for (const entry in materials) {
-      // object mapping material property names to a image urls
+      // object mapping material property names to image urls
       const textureUrls = materials[entry]?.textures; 
 
       if (!textureUrls) continue;
@@ -223,11 +228,11 @@ const materialStore = (set, get) => ({
         // check if arg has a Texture with matching url 
         const textureObject = textures[textureUrls[slot]] ?? null;
 
-
-        if (!textureObject || !textureToAssign.isTexture) {
-          console.warn(`Warning: setMaterialTextures() => Missing or invalid texture for material '${entry}', property '${slot}'. Got:`, textureObject);
+        if (!textureObject || !textureObject.isTexture) {
+          console.warn(`Warning: setTextures() => Missing or invalid texture for material '${entry}', property '${slot}'. Got:`, textureObject);
           return;
         }
+
         staged.push({
           target: materials[entry].material,
           property: slot,
