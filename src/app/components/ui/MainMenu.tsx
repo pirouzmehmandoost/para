@@ -5,7 +5,7 @@ import Link from 'next/link'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 // import useMenu from '@stores/menuStore'
-import ActionButton from './button/ActionButton'
+import ActionButton from './buttons/ActionButton'
 
 // const setVisible = useMenu.getState().setVisible
 
@@ -34,7 +34,7 @@ const MainMenu = () => {
   }, [])
 
   return (
-    <div className='flex flex-col grow place-items-start max-w-fit max-h-fit p-6 text-body select-none'>
+    <div className='flex flex-col grow place-items-start max-w-fit max-h-fit p-6 text-link select-none'>
       <div className='fixed z-30'>
         <ActionButton
           id='main-menu-button'

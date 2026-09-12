@@ -20,7 +20,7 @@ const meshPositions = [
   new Vector3(100, -10, -40),
   new Vector3(0, -105, 40)
 ];
-const offsetCameraPosition = new Vector3(0, 0, 200);
+const offsetCameraPosition = new Vector3(0, 10, 190);
 const lookAtPosition = new Vector3(0, 0, -1);
 
 const SceneComposer = () => {

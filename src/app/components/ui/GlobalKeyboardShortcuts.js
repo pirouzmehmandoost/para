@@ -3,10 +3,8 @@
 import { useEffect } from 'react'
 import { usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import useSelection from '@stores/selectionStore'
-import useMenu from '@/app/stores/menuStore'
 
 const reset = useSelection.getState().reset
-const setVisible = useMenu.getState().setVisible
 
 export default function GlobalKeyboardShortcuts() {
   const pathname = usePathname()
@@ -15,16 +13,14 @@ export default function GlobalKeyboardShortcuts() {
 
   useEffect(() => {
     const onKeyDown = (e) => {
+
       if (e.key !== 'Escape') return
 
       if (pathname.startsWith('/projects/')) {
-        setTimeout(() => {
           if (segment?.length) router.back()
           else router.replace('/')
-        }, 500)
       }
 
-      setVisible(false)
       reset()
     }
 

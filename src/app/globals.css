@@ -7,14 +7,12 @@ canvas {
 @theme {
   /*neutral-900 */
   --color-header: oklch(20.5% 0 none);
-  /*neutral-800 */
-  --color-body: oklch(26.9% 0 none);
   /*neutral-700 */
   --color-link: oklch(37.1% 0 none);
   /*neutral-500 */
-  --color-container: oklch(55.6% 0 none);
+  --color-inactive: oklch(55.6% 0 none);
   /*neutral-400 */
-  --color-inactive: oklch(70.8% 0 none);
+  --color-container: oklch(70.8% 0 none);
 
   --animate-morph: morph 3s linear infinite;
 
