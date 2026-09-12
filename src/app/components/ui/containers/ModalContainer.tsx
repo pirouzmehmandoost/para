@@ -1,4 +1,3 @@
-import { memo } from 'react'
 import type { ReactNode } from 'react'
 
 interface ModalContainerProps {
@@ -9,7 +8,7 @@ interface ModalContainerProps {
   display: ReactNode
 }
 
-const ModalContainer = memo(({ header, dataRoute, controls, display, visible }: ModalContainerProps) => {
+const ModalContainer = ({ header, dataRoute, controls, display, visible }: ModalContainerProps) => {
   return (
     <div id='container-root' data-route={dataRoute} className={`fixed inset-0 flex flex-col w-full h-full justify-between p-6 text-header touch-none select-none text-xs sm:text-xs md:text-sm lg:text-sm xl:text-md 2xl:text-md subpixel-antialiased`}>
       {/* header text*/}
@@ -30,7 +29,6 @@ const ModalContainer = memo(({ header, dataRoute, controls, display, visible }: 
       </div>
     </div>
   )
-})
-ModalContainer.displayName = 'ModalContainer'
+}
 
 export default ModalContainer
