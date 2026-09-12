@@ -1,4 +1,4 @@
-import ProjectDataModalTest from '../../components/ui/modal/ProjectDataModalTest'
+import ProjectDataModal from '../../components/ui/modals/ProjectDataModal'
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>
@@ -6,5 +6,5 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params
-  return <ProjectDataModalTest slug={slug} entryPoint='page' />
+  return <ProjectDataModal slug={slug} entryPoint='page' />
 }
