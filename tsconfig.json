@@ -3,10 +3,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "@public/*": ["./public/*"],
+      "@db/*": ["./src/db/*"],
       "@utils/*": ["./src/lib/utils/*"],
       "@configs/*": ["./src/lib/configs/*"],
       "@targetRegistry": ["./src/lib/targetRegistry/TargetRegistry.ts"],
-      "@hooks/*": ["./src/app/hooks/*"],
+      "@api/*": ["./src/app/api/*"],
       "@stores/*": ["./src/app/stores/*"],
       "@projects/*": ["./src/app/projects/*"],
       "@components/*": ["./src/app/components/*"],

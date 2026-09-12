@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-type OpenReason = '' | 'user-toggle' | 'route-change' | 'firstPageVisit';
+type OpenReason = '' | 'user-toggle' | 'route-change' | 'first-page-visit';
 
 type MenuState = {
   activeSection: string;
@@ -14,7 +14,7 @@ type MenuState = {
 
 type MenuStore = {
   menuState: MenuState;
-  firstPageVisited: boolean;
+  isFirstPageVisit: boolean;
   hasHydrated: boolean;
   getMenuState: () => MenuState;
   setMenuState: (partial: Partial<MenuState>) => void;
@@ -24,7 +24,7 @@ type MenuStore = {
   reset: () => void;
 };
 
-const initialMenuState: MenuState = {
+const initialState: MenuState = {
   activeSection: '',
   isBackgroundEnabled: true,
   lastInteractionAt: 0,
@@ -36,8 +36,8 @@ const initialMenuState: MenuState = {
 const useMenu = create<MenuStore>()(
   persist(
     (set, get) => ({
-      menuState: initialMenuState,
-      firstPageVisited: false,
+      menuState: initialState,
+      isFirstPageVisit: false,
       hasHydrated: false,
 
       getMenuState: () => get().menuState,
@@ -52,15 +52,15 @@ const useMenu = create<MenuStore>()(
           menuState: { ...state.menuState, visible },
         })),
 
-      setPageVisited: () => set({ firstPageVisited: true }),
+      setPageVisited: () => set({ isFirstPageVisit: true }),
       setHasHydrated: (v) => set({ hasHydrated: v }),
 
-      reset: () => set({ menuState: { ...initialMenuState } }),
+      reset: () => set({ menuState: { ...initialState } }),
     }),
     {
       name: 'para.userSession',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ firstPageVisited: state.firstPageVisited }),
+      partialize: (state) => ({ isFirstPageVisit: state.isFirstPageVisit }),
       onRehydrateStorage: () => (state) => { state?.setHasHydrated(true) },
     }
   )

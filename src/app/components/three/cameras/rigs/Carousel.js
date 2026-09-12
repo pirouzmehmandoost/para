@@ -1,64 +1,84 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
-import cameraConfigs from '@configs/cameraConfigs';
+import carouselConfigs from '@configs/carouselConfigs';
 import useSelection from '@stores/selectionStore';
 import useTargetRegistry from '@stores/targetRegistryStore';
 import { getAABBCenterFast } from '@utils/positionUtils';
 
-const { MIN_DWELL_SECONDS, MANUAL_OVERRIDE_SECONDS, SWIPE_DELTA_PX, SWIPE_DELTA_TIME_MS } = cameraConfigs;
+const { MANUAL_DWELL_SECONDS, AUTO_DWELL_SECONDS, SWIPE_DELTA_DISTANCE, SWIPE_DELTA_TIME_MS, OFFSET_CAMERA_POSITION } = carouselConfigs;
+
+const positiveOr = (value, fallback) => (typeof value === 'number' && value > 0 ? value : fallback);
 
 const Carousel = ({
   defaultPosition = undefined,
   lookAtPosition = undefined,
   offsetPosition = undefined,
   onSwipe = undefined,
+  autoDwellTime = AUTO_DWELL_SECONDS, // seconds
+  manualDwellTime = MANUAL_DWELL_SECONDS, // seconds
+  swipeDistanceThreshold = SWIPE_DELTA_DISTANCE, // NDC
+  swipeTimeThreshold = SWIPE_DELTA_TIME_MS, // milliseconds
 }) => {
-  const _scratchCenterRef = useRef(new THREE.Vector3());
-  const _scratchLookAtRef = useRef(new THREE.Vector3());
+  const _scratchCenterRef = useRef(new Vector3());
+  const _scratchLookAtRef = useRef(new Vector3());
+  const _scratchPositionRef = useRef(new Vector3());
+  const defaultPositionRef = useRef(new Vector3());
+  const offsetPositionRef = useRef(new Vector3(OFFSET_CAMERA_POSITION[0], OFFSET_CAMERA_POSITION[1], OFFSET_CAMERA_POSITION[2]));
+  const lookAtPositionRef = useRef(new Vector3(0,0,-1));
 
   const domElement = useThree((state) => state.gl.domElement);
-  const stateClock = useThree((state) => state.clock);
-  const size = useThree((state) => state.size)
+  const get = useThree((state) => state.get);
 
-  const initializeLookAtRef = useRef(false);
-  const defaultPositionRef = useRef(new THREE.Vector3(0, 0, 0));
-  const lookAtPositionRef = useRef(new THREE.Vector3(0, 0, 0));
-  const offsetPositionRef = useRef(new THREE.Vector3(0, 0, 0));
-  const nextCameraPositionRef = useRef(new THREE.Vector3(0, 0, 0));
+  const isCameraOrientationSet = useRef(false);
+
+  const autoDwellTimeRef = useRef(AUTO_DWELL_SECONDS);
+  const manualDwellTimeRef = useRef(MANUAL_DWELL_SECONDS);
+  const swipeDistanceThresholdRef = useRef(SWIPE_DELTA_DISTANCE);
+  const swipeDeltaTimeRef = useRef(SWIPE_DELTA_TIME_MS);
 
   const activePointerIdRef = useRef(null);
   const pointerStartRef = useRef(null);
 
-  const lastSwitchTimeRef = useRef(0);
-  const manualOverrideTimeRef = useRef(-Infinity);
+  const dwellRemainingRef = useRef(0);
+  const phaseRef = useRef(0);
 
   const targetIndexRef = useRef(0);
-  const prevTargetIndexRef = useRef(-1);
 
   useLayoutEffect(() => {
-    if (!!defaultPosition && defaultPosition?.isVector3) {
-      if (!defaultPositionRef.current.equals(defaultPosition)) defaultPositionRef.current.copy(defaultPosition);
+    swipeDistanceThresholdRef.current = positiveOr(swipeDistanceThreshold, swipeDistanceThresholdRef.current);
+    swipeDeltaTimeRef.current = positiveOr(swipeTimeThreshold, swipeDeltaTimeRef.current);
+    manualDwellTimeRef.current = positiveOr(manualDwellTime, manualDwellTimeRef.current);
+    autoDwellTimeRef.current = positiveOr(autoDwellTime, autoDwellTimeRef.current);
+    dwellRemainingRef.current = autoDwellTimeRef.current;
+  }, [autoDwellTime, manualDwellTime, swipeDistanceThreshold, swipeTimeThreshold]);
+
+  useLayoutEffect(() => {
+    if (!defaultPosition?.isVector3) return;
+    
+    if (!defaultPositionRef.current.equals(defaultPosition)) {
+      defaultPositionRef.current.copy(defaultPosition);
     }
   }, [defaultPosition]);
 
   useLayoutEffect(() => {
-    if (lookAtPosition?.isVector3) {
-      if (!lookAtPositionRef.current.equals(lookAtPosition)) {
-        lookAtPositionRef.current.copy(lookAtPosition);
-        initializeLookAtRef.current = true;
-      }
+    if (!lookAtPosition?.isVector3) return;
+
+    if (!lookAtPositionRef.current.equals(lookAtPosition)) {
+      lookAtPositionRef.current.copy(lookAtPosition);
+      isCameraOrientationSet.current = false;
     }
-  }, [lookAtPosition]);
+    
+}, [lookAtPosition]);
 
   useLayoutEffect(() => {
-    if (offsetPosition?.isVector3) {
-      if (!offsetPositionRef.current.equals(offsetPosition)) {
-        offsetPositionRef.current.copy(offsetPosition);
-      }
+    if (!offsetPosition?.isVector3) return;
+
+    if (!offsetPositionRef.current.equals(offsetPosition)) {
+      offsetPositionRef.current.copy(offsetPosition)
     }
   }, [offsetPosition]);
 
@@ -70,7 +90,10 @@ const Carousel = ({
 
       activePointerIdRef.current = e.pointerId;
       domElement.setPointerCapture?.(e.pointerId);
-      pointerStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
+      const size = get().size;
+      const x = (e.offsetX / size.width) * 2 - 1;
+      const y = -(e.offsetY / size.height) * 2 + 1;
+      pointerStartRef.current = { x: x, y: y, time: Date.now() };
     };
 
     const finishPointer = (e) => {
@@ -89,22 +112,28 @@ const Carousel = ({
 
       const registry = useTargetRegistry.getState().registry;
       const positions = registry?.getPositions() ?? [];
-      const deltaX = e.clientX - start.x;
-      const deltaY = e.clientY - start.y;
+      const size = get().size;
+      const x = (e.offsetX / size.width) * 2 - 1;
+      const y = -(e.offsetY / size.height) * 2 + 1;
+      const deltaX = x - start.x;
+      const deltaY = y - start.y;
+
       const deltaTime = Date.now() - start.time;
-      const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_DELTA_PX && deltaTime < SWIPE_DELTA_TIME_MS;
+      const isSwipe = (
+        Math.abs(deltaX) > Math.abs(deltaY) &&
+        Math.abs(deltaX) > swipeDistanceThresholdRef.current &&
+        deltaTime < swipeDeltaTimeRef.current
+      );
+
       if (isSwipe) {
         const count = positions.length;
         if (count > 0) {
           const step = deltaX > 0 ? 1 : -1;
           targetIndexRef.current = (targetIndexRef.current + step + count) % count;
-          manualOverrideTimeRef.current = stateClock.elapsedTime + MANUAL_OVERRIDE_SECONDS;
-          lastSwitchTimeRef.current = stateClock.elapsedTime;
+          dwellRemainingRef.current = manualDwellTimeRef.current;
           onSwipe?.(e);
         }
-      } else {
-        manualOverrideTimeRef.current = -Infinity;
-      }
+      };
 
       finishPointer(e);
     };
@@ -112,30 +141,36 @@ const Carousel = ({
     domElement.addEventListener('pointerdown', onPointerDown);
     domElement.addEventListener('pointerup', onPointerUp);
     domElement.addEventListener('pointercancel', onPointerCancel);
-    domElement.addEventListener('lostpointercapture', onPointerCancel);
 
     return () => {
+      if (activePointerIdRef.current !== null) {
+        domElement.releasePointerCapture?.(activePointerIdRef.current);
+        activePointerIdRef.current = null;
+        pointerStartRef.current = null;
+      };
+
       domElement.removeEventListener('pointerdown', onPointerDown);
       domElement.removeEventListener('pointerup', onPointerUp);
       domElement.removeEventListener('pointercancel', onPointerCancel);
-      domElement.removeEventListener('lostpointercapture', onPointerCancel);
     };
-  }, [domElement, stateClock, onSwipe, size]);
+  }, [domElement, get, onSwipe]);
 
-  useFrame(({ camera, clock }, delta) => {
+  useFrame(({ camera }, delta) => {
     const clampedDelta = Math.min(delta, 0.08);
+    phaseRef.current += clampedDelta;
+
     const registry = useTargetRegistry.getState().registry;
     const positions = registry ? registry.getPositions() : [];
     const promoted = registry ? registry.getPromoted() : null;
 
-    if (initializeLookAtRef.current === true) {
+    if (isCameraOrientationSet.current === false) {
       _scratchLookAtRef.current.set(
         camera.position.x + lookAtPositionRef.current.x,
         camera.position.y + lookAtPositionRef.current.y,
         camera.position.z + lookAtPositionRef.current.z,
       );
       camera.lookAt(_scratchLookAtRef.current);
-      initializeLookAtRef.current = false;
+      isCameraOrientationSet.current = true;
     };
 
     if (!registry || positions.length === 0 || !promoted) {
@@ -143,58 +178,50 @@ const Carousel = ({
       return;
     };
 
-    const elapsedTime = clock.elapsedTime;
-    const sine = Math.sin(elapsedTime);
-    const xOffset = offsetPositionRef.current.x + sine;
-    const yOffset = offsetPositionRef.current.y + (-2 * sine);
-    const zOffset = offsetPositionRef.current.z + sine;
-    const focusedUUID = useSelection.getState().selection.focusedUUID;
-
     if (targetIndexRef.current >= positions.length || targetIndexRef.current < 0) {
       targetIndexRef.current = 0;
     };
 
-    const promotedEntries = Object.values(promoted);
+    dwellRemainingRef.current -= clampedDelta;
+
     let nextPosition = positions[0];
+    const focusedUUID = useSelection.getState().selection.focusedUUID;
+    const promotedEntries = Object.values(promoted);
     const focusedEntry = focusedUUID ? promoted[focusedUUID] : undefined;
     const focusedIndex = focusedEntry?.index ?? -1;
-    const isManualOverrideActive = elapsedTime < manualOverrideTimeRef.current;
 
     if (focusedIndex >= 0 && positions[focusedIndex]) {
-      prevTargetIndexRef.current = targetIndexRef.current;
       targetIndexRef.current = focusedIndex;
-    }
-    else if (isManualOverrideActive && positions[targetIndexRef.current]) {
-      // manual override active and current index valid — hold position
+      dwellRemainingRef.current = autoDwellTimeRef.current;
     }
     else {
       const currentIndex = targetIndexRef.current;
       const nextIndex = currentIndex >= positions.length - 1 ? 0 : currentIndex + 1;
-      const canSwitch = (elapsedTime - lastSwitchTimeRef.current) > MIN_DWELL_SECONDS;
-      if (canSwitch) {
-        prevTargetIndexRef.current = currentIndex;
-        lastSwitchTimeRef.current = elapsedTime;
+
+      if (dwellRemainingRef.current <= 0) {
+        dwellRemainingRef.current = autoDwellTimeRef.current
         targetIndexRef.current = nextIndex;
       }
     }
 
     const currentEntry = promotedEntries.find(e => e.index === targetIndexRef.current);
+  
     if (currentEntry?.target?.isObject3D) {
       getAABBCenterFast(currentEntry.target, _scratchCenterRef.current);
       registry.refreshPosition(targetIndexRef.current, _scratchCenterRef.current);
-      prevTargetIndexRef.current = targetIndexRef.current;
       nextPosition = _scratchCenterRef.current;
     }
     else {
       nextPosition = positions[targetIndexRef.current] ?? positions[0];
     }
 
-    nextCameraPositionRef.current.set(
-      nextPosition.x + xOffset,
-      nextPosition.y + yOffset,
-      nextPosition.z + zOffset,
+    const sine = Math.sin(phaseRef.current)
+    _scratchPositionRef.current.set(
+      nextPosition.x + offsetPositionRef.current.x + sine,
+      nextPosition.y + offsetPositionRef.current.y + (-2 * sine),
+      nextPosition.z + offsetPositionRef.current.z + sine
     );
-    easing.damp3(camera.position, nextCameraPositionRef.current, 1, clampedDelta);
+    easing.damp3(camera.position, _scratchPositionRef.current, 1, clampedDelta);
   });
 };
 
