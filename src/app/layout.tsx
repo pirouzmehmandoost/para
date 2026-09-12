@@ -1,8 +1,9 @@
 import './globals.css';
 import localFont from 'next/font/local';
+import type { JSX, ReactNode } from 'react'
 import sceneConfigs from '@configs/sceneConfigs';
+import type { Project } from '../types/project';
 import { getAllProjects } from '@db/projects';
-import type { Project } from '../types/project'; 
 import MainMenu from '@ui/MainMenu';
 import GlobalKeyboardShortcuts from '@ui/GlobalKeyboardShortcuts';
 import RootCanvas from '@three/canvas/RootCanvas';
@@ -18,7 +19,11 @@ export const metadata = {
   description: 'A showcase of custom Three.js and React Three Fiber utilities by Pirouz Mehmandoost',
 };
 
-export default async function RootLayout({ children, modal }) {
+interface RootLayoutProps { 
+  children: ReactNode
+  modal: ReactNode
+}
+export default async function RootLayout({ children, modal }: RootLayoutProps): Promise<JSX.Element> {
   const projects: Project[] = await getAllProjects();
 
   return (
