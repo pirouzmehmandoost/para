@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import {  MeshStandardMaterial, MeshPhysicalMaterial, DoubleSide } from 'three';
+import {  MeshStandardMaterial, MeshPhysicalMaterial, DoubleSide, Vector2 } from 'three';
 import { EPSILON_1e7 } from '@utils/animationUtils';
 import { getColorSpace, generateDataTexture, generateArrayBuffer} from '@utils/materialUtils'
 
@@ -63,9 +63,9 @@ const materialConfigs = {
     clearcoatRoughness: 1,
     color: '#101010',
     flatShading: false,
-    ior: 1.7,
+    ior: 1.6,
     name: 'matte_black',
-    roughness: 0.75,
+    roughness: 0.85,
     side: DoubleSide,
     bumpMap: _scratchDataTextures.bumpMap,
     map: _scratchDataTextures.map,
@@ -85,15 +85,15 @@ const materialConfigs = {
     map: _scratchDataTextures.map,
     roughnessMap: _scratchDataTextures.roughnessMap,
   },
-  ground: {
+  terrain: {
     color: '#101010',
     flatShading: false,
     metalness: 0.8,
-    name: 'ground',
-    // normalScale: new Vector2(1, -1),
+    name: 'terrain',
+    normalScale: new Vector2(1, -1),
     roughness: 1,
     side: DoubleSide,
-    // normalMap: _scratchDataTextures.normalMap
+    normalMap: _scratchDataTextures.normalMap
   }
 }
 
@@ -103,10 +103,13 @@ const materialState = {
     tailwindColor: `bg-radial-[at_40%_35%] from-zinc-500 via-zinc-950 via-37% to-zinc-500 to-100%`,
     material: new MeshPhysicalMaterial({ ...materialConfigs.gloss_black }),
   },
-  ground: {
-    displayName: 'Ground',
-    tailwindColor: `bg-zinc-900`,
-    material: new MeshStandardMaterial({ ...materialConfigs.ground }),
+  terrain: {
+    displayName: 'terrain',
+    tailwindColor: ``,
+    material: new MeshStandardMaterial({ ...materialConfigs.terrain }),
+    textures: {
+      normalMap: 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/textures/terrain_normal.ktx2',
+    }
   },
   matte_black: {
     displayName: 'Matte Black',
