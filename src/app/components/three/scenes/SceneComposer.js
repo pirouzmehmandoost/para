@@ -16,11 +16,11 @@ import Ground from '../models/Ground';
 const { SWIPE_DELAY_MS } = carouselConfigs;
 
 const meshPositions = [
-  new Vector3(-100, -18, -40),
-  new Vector3(100, -10, -40),
-  new Vector3(0, -105, 40)
+  new Vector3(-100 ,-18, -40),
+  new Vector3(155, 70, -60),
+  new Vector3(50, -110, 50)
 ];
-const offsetCameraPosition = new Vector3(0, 10, 190);
+const offsetCameraPosition = new Vector3(0, 0, 180);
 const lookAtPosition = new Vector3(0, 0, -1);
 
 const SceneComposer = () => {
