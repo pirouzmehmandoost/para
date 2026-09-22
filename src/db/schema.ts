@@ -1,5 +1,4 @@
 import {
-  boolean,
   check,
   doublePrecision,
   integer,
@@ -10,9 +9,6 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
-// import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-orm/typebox';
-// import { Type } from 'typebox';
-// import { Value } from 'typebox/value';
 
 export const projectsTable = pgTable(
   'projects',
@@ -35,10 +31,6 @@ export const projectsTable = pgTable(
     nodeName: text('node_name').notNull(),
     defaultMaterialID: text('default_material_id').notNull(),
     materialIDs: text('material_ids').array().notNull(),
-
-    animateMaterial: boolean('animate_material').notNull().default(true),
-    animatePosition: boolean('animate_position').notNull().default(false),
-    animateRotation: boolean('animate_rotation').notNull().default(true),
 
     rotation: jsonb('rotation')
       .$type<{ x: number; y: number; z: number }>()

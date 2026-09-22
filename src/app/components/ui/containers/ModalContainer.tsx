@@ -10,7 +10,7 @@ interface ModalContainerProps {
 
 const ModalContainer = ({ header, dataRoute, controls, display, visible }: ModalContainerProps) => {
   return (
-    <div id='container-root' data-route={dataRoute} className={`fixed inset-0 flex flex-col w-full h-full justify-between p-6 text-header touch-none select-none text-xs sm:text-xs md:text-sm lg:text-sm xl:text-md 2xl:text-md subpixel-antialiased`}>
+    <div id='container-root' data-route={dataRoute} className={`flex flex-col w-full h-full justify-between p-6 text-header touch-none select-none text-xs sm:text-xs md:text-sm lg:text-sm xl:text-md 2xl:text-md subpixel-antialiased`}>
       {/* header text*/}
       <div id={'header-wrapper'} className={`flex flex-row w-full h-fit justify-center items-center text-center text-header text-5xl sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-6xl transition-all transition-discrete duration-500 ease-in-out starting:opacity-0 ${visible ? 'opacity-100 visible' : 'opacity-0 collapse'}`}>
         {header}

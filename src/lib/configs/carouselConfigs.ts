@@ -4,8 +4,9 @@ interface CarouselConfigs {
   SWIPE_DELAY_MS: number // Latency period between calculating swipe gestures.
   SWIPE_DELTA_DISTANCE: number // Min distance between pointerDown and pointerUp in NDC.
   SWIPE_DELTA_TIME_MS: number // max time duration for a swipe gesture (max time delta between pointerp and pointerdown.
-  OFFSET_CAMERA_POSITION: number[] | [x: number, y: number, z: number] | Record<string, number>
-};
+  OFFSET_POSITION: number[] | [x: number, y: number, z: number] | Record<string, number>
+  LOOKAT_POSITION: number[] | [x: number, y: number, z: number] | Record<string, number>
+}
 
 const carouselConfigs: CarouselConfigs = {
   AUTO_DWELL_SECONDS: 12,
@@ -13,7 +14,8 @@ const carouselConfigs: CarouselConfigs = {
   SWIPE_DELAY_MS: 200,
   SWIPE_DELTA_DISTANCE: 0.2,
   SWIPE_DELTA_TIME_MS: 600,
-  OFFSET_CAMERA_POSITION: [0, 10, 180],
+  OFFSET_POSITION: [0, 0, 180],
+  LOOKAT_POSITION: [0, 0, -1]
 }
 
 export default carouselConfigs

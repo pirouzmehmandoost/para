@@ -2,6 +2,7 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+  cacheComponents: true,
   transpilePackages: [
     "@react-three/fiber",
     "@react-three/drei", 

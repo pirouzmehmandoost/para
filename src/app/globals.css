@@ -53,3 +53,8 @@ canvas {
     }
   }
 }
+
+/* @utility blur-bleed {
+  filter: drop-shadow(30px 30px 30px currentColor);
+  will-change: filter;
+} */

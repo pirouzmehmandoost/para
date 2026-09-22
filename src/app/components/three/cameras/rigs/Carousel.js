@@ -9,7 +9,7 @@ import useSelection from '@stores/selectionStore';
 import useTargetRegistry from '@stores/targetRegistryStore';
 import { getAABBCenterFast } from '@utils/positionUtils';
 
-const { MANUAL_DWELL_SECONDS, AUTO_DWELL_SECONDS, SWIPE_DELTA_DISTANCE, SWIPE_DELTA_TIME_MS, OFFSET_CAMERA_POSITION } = carouselConfigs;
+const { MANUAL_DWELL_SECONDS, AUTO_DWELL_SECONDS, SWIPE_DELTA_DISTANCE, SWIPE_DELTA_TIME_MS, OFFSET_POSITION } = carouselConfigs;
 
 const positiveOr = (value, fallback) => (typeof value === 'number' && value > 0 ? value : fallback);
 
@@ -27,7 +27,7 @@ const Carousel = ({
   const _scratchLookAtRef = useRef(new Vector3());
   const _scratchPositionRef = useRef(new Vector3());
   const defaultPositionRef = useRef(new Vector3());
-  const offsetPositionRef = useRef(new Vector3(OFFSET_CAMERA_POSITION[0], OFFSET_CAMERA_POSITION[1], OFFSET_CAMERA_POSITION[2]));
+  const offsetPositionRef = useRef(new Vector3(OFFSET_POSITION[0], OFFSET_POSITION[1], OFFSET_POSITION[2]));
   const lookAtPositionRef = useRef(new Vector3(0,0,-1));
 
   const domElement = useThree((state) => state.gl.domElement);
@@ -185,7 +185,7 @@ const Carousel = ({
     dwellRemainingRef.current -= clampedDelta;
 
     let nextPosition = positions[0];
-    const focusedUUID = useSelection.getState().selection.focusedUUID;
+    const focusedUUID = useSelection.getState().focusedUUID;
     const promotedEntries = Object.values(promoted);
     const focusedEntry = focusedUUID ? promoted[focusedUUID] : undefined;
     const focusedIndex = focusedEntry?.index ?? -1;

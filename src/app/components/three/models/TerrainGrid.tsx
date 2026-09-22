@@ -1,22 +1,21 @@
 'use client'
 
 import { memo, useLayoutEffect, useMemo, useRef } from 'react'
-import { BufferGeometry, Euler, InstancedMesh, Matrix4, Mesh, Object3D, Vector3 } from 'three'
+import { Box3, BufferGeometry, Euler, Group, InstancedMesh, Matrix4, Mesh, Object3D, Vector3 } from 'three'
 import { useGLTF } from '@react-three/drei'
 import useMaterial from '@stores/materialStore'
 
-const dummy = new Object3D();
-const instanceMatrix = new Matrix4();
-const axis = new Vector3(0,1,0)
-
+const _dummy = new Object3D()
+const _instanceMatrix = new Matrix4()
+const _axis = new Vector3(0, 1, 0)
 
 function rotateInstance(instancedMesh: InstancedMesh, instanceId: number, rotationAxis: Vector3, angleAmount: number) {
-  instancedMesh.getMatrixAt(instanceId, instanceMatrix);
-  instanceMatrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
-  dummy.rotateOnAxis(rotationAxis, angleAmount);
-  dummy.updateMatrix();
-  instancedMesh.setMatrixAt(instanceId, dummy.matrix);
-  instancedMesh.instanceMatrix.needsUpdate = true;
+  instancedMesh.getMatrixAt(instanceId, _instanceMatrix)
+  _instanceMatrix.decompose(_dummy.position, _dummy.quaternion, _dummy.scale)
+  _dummy.rotateOnAxis(rotationAxis, angleAmount)
+  _dummy.updateMatrix()
+  instancedMesh.setMatrixAt(instanceId, _dummy.matrix)
+  instancedMesh.instanceMatrix.needsUpdate = true
 }
 
 function checkCellValue(value: number): number {
@@ -38,39 +37,40 @@ function checkGridSize(r: number, c: number, arr: number[]): number {
   return rows * columns
 }
 
-interface TerrainProps {
+interface TerrainGridProps {
   materialID: string
-  nodeName: string
+  nodeName: string,
   url: string
-  position: Vector3
-  rotation: Euler
-  scale: Vector3
-  gridRows: number
-  gridColumns: number
-  gridSpacing: number
+  position: { x: number, y: number, z: number } | [x: number, y: number, z: number] | Euler
+  rotation: { x: number, y: number, z: number } | [x: number, y: number, z: number] | Vector3
+  scale: { x: number, y: number, z: number } | [x: number, y: number, z: number] | Vector3
+  gridColumns: number,
+  gridRows: number,
+  gridSpacing: [row: number, column: number],
 }
-const TerrainGrid = (props: TerrainProps) => {
-  const {
-    materialID,
-    nodeName,
-    url,
-    position,
-    rotation,
-    scale,
-    gridRows,
-    gridColumns,
-    gridSpacing,
-  } = props
 
-  // const _scratchPositionRef = useRef(new Vector3())
-  // const _scratchQuaternionRef = useRef(new Quaternion())
-  // const _scratchScaleRef = useRef(new Vector3())
-  const _scratchSizeRef = useRef(new Vector3())
-  const _scratchCenterRef = useRef(new Vector3())
-  const instancedMeshRef = useRef(undefined)
-  const instanceRef = useRef(new Object3D())
-  const gridRef = useRef([1, 1])
-  const totalInstancesRef = useRef(1)
+const TerrainGrid = ({
+  materialID = 'terrain',
+  nodeName = 'terrain_2_low_poly',
+  url = 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/meshes/terrain_2.glb',
+  position = [0, 0, -80],
+  rotation = [Math.PI / 2.5, 0, 0],
+  scale = [0.55, 0.55, 0.55],
+  gridColumns = 3,
+  gridRows = 3,
+  gridSpacing = [1, 0.989],
+}: TerrainGridProps) => {
+  const _scratchSizeRef = useRef<Vector3>(new Vector3())
+  const _scratchCenterRef = useRef<Vector3>(new Vector3())
+  const instancedMeshRef = useRef<InstancedMesh>(null)
+  const instanceRef = useRef<Object3D>(new Object3D())
+  const gridRef = useRef<number[]>([1, 1])
+  const totalInstancesRef = useRef<number>(1)
+  const groupRef = useRef<Group>(null)
+
+  const rotationRef = useRef<Euler>(new Euler(rotation[0], rotation[1], rotation[2]))
+  const positionRef = useRef<Vector3>(new Vector3(position[0], position[1], position[2]))
+  const scaleRef = useRef<Vector3>(new Vector3(scale[0], scale[1], scale[2]))
 
   const { nodes } = useGLTF(url)
   const mesh = nodes?.[nodeName] as Mesh | null
@@ -81,60 +81,70 @@ const TerrainGrid = (props: TerrainProps) => {
   const totalInstances = useMemo(() => checkCellValue(gridRows) * checkCellValue(gridColumns), [gridRows, gridColumns])
 
   useLayoutEffect(() => {
-    const total = checkGridSize(gridRows, gridColumns, gridRef.current)
-    if (totalInstancesRef.current !== total) totalInstancesRef.current = total
+    const totalInstances: number = checkGridSize(gridRows, gridColumns, gridRef.current)
+    if (totalInstancesRef.current !== totalInstances) totalInstancesRef.current = totalInstances
   }, [gridRows, gridColumns])
 
   useLayoutEffect(() => {
-    if (!instancedMeshRef.current) return
+    positionRef.current.set(position[0], position[1], position[2])
+    rotationRef.current.set(rotation[0], rotation[1], rotation[2])
+    scaleRef.current.set(scale[0], scale[1], scale[2])
 
-    let instanceIndex = 0
-    instancedMeshRef.current.geometry.computeBoundingBox()
-
-    const box = instancedMeshRef.current.geometry.boundingBox
-    box.getSize(_scratchSizeRef.current)
-    box.getCenter(_scratchCenterRef.current)
-
-    const instanceSizeX = _scratchSizeRef.current.x
-    const instanceSizeZ = _scratchSizeRef.current.z
-    const rows = gridRef.current[0]
-    const columns = gridRef.current[1]
-    const gridSizeX = rows * instanceSizeX
-    const gridSizeZ = columns * instanceSizeZ
-    const gridCenterX = (((-1 * gridSizeX) + instanceSizeX) / 2)
-    const gridCenterZ = (((-1 * gridSizeZ) + instanceSizeZ) / 2)
-
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < columns; c++) {
-        const x = (r * instanceSizeX * gridSpacing) + gridCenterX
-        const y = 0
-        const z = (c * instanceSizeZ * gridSpacing) + gridCenterZ
-
-        instanceRef.current.position.set(x, y, z)
-        instanceRef.current.updateMatrix()
-        instancedMeshRef.current.setMatrixAt(instanceIndex, instanceRef.current.matrix)
-        rotateInstance(instancedMeshRef.current, instanceIndex, axis, 0)
-        instanceIndex++
-      }
+    if (groupRef.current) {
+      groupRef.current.position.set(positionRef.current.x, positionRef.current.y, positionRef.current.z)
+      groupRef.current.rotation.set(rotationRef.current.x, rotationRef.current.y, rotationRef.current.z)
+      groupRef.current.scale.set(scaleRef.current.x, scaleRef.current.y, scaleRef.current.z)
     }
-    instancedMeshRef.current.instanceMatrix.needsUpdate = true
+  }, [position, rotation, scale])
+
+  useLayoutEffect(() => {
+    if (instancedMeshRef.current !== null) {
+      let instanceIndex: number = 0
+      instancedMeshRef.current.geometry.computeBoundingBox()
+
+      const box: Box3 = instancedMeshRef.current.geometry.boundingBox
+      box.getSize(_scratchSizeRef.current)
+      box.getCenter(_scratchCenterRef.current)
+
+      const instanceSizeX: number = _scratchSizeRef.current.x
+      const instanceSizeZ: number = _scratchSizeRef.current.z
+      const rows: number = gridRef.current[0]
+      const columns: number = gridRef.current[1]
+      const gridSizeX: number = rows * instanceSizeX
+      const gridSizeZ: number = columns * instanceSizeZ
+      const gridCenterX: number = (((-1 * gridSizeX) + instanceSizeX) / 2)
+      const gridCenterZ: number = (((-1 * gridSizeZ) + instanceSizeZ) / 2)
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+          const x: number = (r * instanceSizeX * gridSpacing[0]) + gridCenterX
+          const y: number = 0
+          const z: number = (c * instanceSizeZ * gridSpacing[1]) + gridCenterZ
+
+          instanceRef.current.position.set(x, y, z)
+          instanceRef.current.updateMatrix()
+          instancedMeshRef.current.setMatrixAt(instanceIndex, instanceRef.current.matrix)
+          rotateInstance(instancedMeshRef.current, instanceIndex, _axis, 0)
+          instanceIndex++
+        }
+      }
+      instancedMeshRef.current.instanceMatrix.needsUpdate = true
+    }
   }, [gridSpacing])
 
   return (
-    <group
-      rotation={rotation}
-      position={position}
-      scale={scale}
-    >
-      {geometry && (
-        <instancedMesh
-          ref={instancedMeshRef}
-          args={[geometry, material, totalInstances]}
-          castShadow={true}
-          receiveShadow={true}
-        />
+    <>
+      {geometry && nodeName && (
+        <group ref={groupRef}>
+          <instancedMesh
+            ref={instancedMeshRef}
+            args={[geometry, material, totalInstances]}
+            castShadow
+            receiveShadow
+          />
+        </group>
       )}
-    </group>
+    </>
   )
 }
 

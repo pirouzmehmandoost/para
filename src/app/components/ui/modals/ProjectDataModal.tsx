@@ -6,10 +6,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import NotesIcon from '@mui/icons-material/Notes'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import type { Project } from '../../../../types/project'
 import type { MaterialRecord } from '../../../../types/material'
-import type { EulerValue } from '../buttons/types'
-import useProjectStore from '@stores/projectStore'
+import type { EulerValue } from '../../../../types/EulerValue'
 import useSelection from '@stores/selectionStore'
 import useMaterial from '@stores/materialStore'
 import ModalContainer from '../containers/ModalContainer'
@@ -17,10 +15,12 @@ import Panel from '../containers/Panel'
 import ActionButton from '../buttons/ActionButton'
 import AutoRotateButton from '../buttons/AutoRotateButton'
 import ManualRotateButtonGroup from '../buttons/ManualRotateButtonGroup'
+import type { Project } from '@/types/project'
 
 const reset = () => useSelection.getState().reset()
 const setRotation = useSelection.getState().setRotation
-const toggleAutoRotation = useSelection.getState().toggleDefaultRotationAnimation
+const toggleAutoRotation = useSelection.getState().toggleAutoRotation
+const setFocused = useSelection.getState().setFocused
 
 interface NavigationPanelProps {
   callback: () => void
@@ -100,9 +100,8 @@ interface RotationControlsPanelProps {
   handleAutoRotate: () => void
   handleManualRotate: (rotation: EulerValue) => void
   autoRotateActive: boolean
-  rotation: EulerValue
 }
-const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, autoRotateActive, rotation }: RotationControlsPanelProps) => {
+const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, autoRotateActive }: RotationControlsPanelProps) => {
   const [clickedButtonID, setClickedButtonID] = useState('rotation-button-side')
 
   const onAutoRotate = useCallback(() => {
@@ -126,7 +125,7 @@ const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, auto
         </div>
         <div className='relative flex flex-row w-full h-full basis-1/2 justify-center items-center'>
           <div className='relative flex flex-row w-fit h-fit aspect-square justify-center items-center'>
-            <ManualRotateButtonGroup active={!autoRotateActive} callback={onManualRotate} rotation={rotation} clickedButtonID={clickedButtonID} />
+            <ManualRotateButtonGroup active={!autoRotateActive} callback={onManualRotate} clickedButtonID={clickedButtonID} />
           </div>
         </div>
       </div>
@@ -167,45 +166,37 @@ const UIDataPanel = memo(({ care = '', description = '', dimensions = '', materi
   )
 })
 UIDataPanel.displayName = 'UIDataPanel'
-
-// NOTE: ProjectDataModal has a full-screen fixed container so that event listeners on canvas won't receive events.
+// NOTE: ProjectDataModal is a full-screen absolute container so that event listeners on canvas won't receive events.
 interface ProjectDataModalProps {
-  slug: string
+  project: Project
   entryPoint: 'modal' | 'page'
 }
-const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
+const ProjectDataModal = ({ project, entryPoint }: ProjectDataModalProps) => {
   const router = useRouter()
   const pathname = usePathname()
-
   const materials = useMaterial((state) => state.materials)
-  const project = useProjectStore((state) => (slug?.length ? state.projectsBySlug[slug] ?? null : null))
-  const currentMaterialID = useSelection((state) => state.selection.focusedMaterialID)
-  const isAutoRotationActive = useSelection((state) => state.selection.defaultRotationAnimationActive)
-
-  const setFocused = useSelection((state) => state.setFocused)
+  const currentMaterialID = useSelection((state) => state.focusedMaterialID)
+  const isAutoRotationActive = useSelection((state) => state.autoRotationActive)
   const setMaterialID = useSelection((state) => state.setMaterialID)
 
   const [displayPanelsVisible, setDisplayPanelsVisible] = useState(false)
-  const [visible, setVisible] = useState(true)
 
   const {
-    UIData: { displayName = '', care = '', description = '', dimensions = '', materialSpecs = '', weight = '' } = {},
-    sceneData: {
-      rotation = { x: 0, y: 0, z: 0 } as EulerValue,
-      materials: { defaultMaterialID = '', materialIDs = [] as string[] } = {},
-      fileData: { nodeName = '' } = {},
-    } = {},
-  } = project || ({} as Project)
+    UIData: { displayName, care, description, dimensions, materialSpecs, weight },
+    sceneData: { defaultMaterialID, materialIDs, nodeName },
+  } = project
 
-  const selectedMaterialID = useMemo((): string => {
-    return currentMaterialID?.length ? currentMaterialID : defaultMaterialID
-  }, [currentMaterialID, defaultMaterialID])
+  const selectedMaterialID = useMemo((): string =>
+    currentMaterialID?.length ? currentMaterialID : defaultMaterialID
+    , [currentMaterialID, defaultMaterialID])
 
   useLayoutEffect(() => {
-    if (project && useSelection.getState().selection.focusedName !== nodeName) setFocused(nodeName, defaultMaterialID, null)
-  }, [project, setFocused, nodeName, defaultMaterialID])
+    if (useSelection.getState().focusedName !== nodeName) setFocused(nodeName, defaultMaterialID, null)
+  }, [project, nodeName, defaultMaterialID])
 
-  useLayoutEffect(()=> { return (() => reset())}, [])
+  useLayoutEffect(() => {
+    return (() => reset())
+  }, [])
 
   const handleSelectMaterial = useCallback((id: string) => {
     if (id.length > 0 && selectedMaterialID !== id) startTransition(() => setMaterialID(id))
@@ -216,6 +207,7 @@ const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
   }, [])
 
   const handleBackNav = useCallback(() => {
+    reset()
     if (entryPoint === 'modal') router.back()
     else router.replace('/')
   }, [entryPoint, router])
@@ -223,21 +215,23 @@ const ProjectDataModalTest = ({ slug, entryPoint }: ProjectDataModalProps) => {
   const injectStyle = 'max-w-fit max-h-fit'
 
   return (
-    <ModalContainer
-      dataRoute={pathname}
-      visible={visible}
-      header={displayName}
-      controls={
-        <>
-          <Panel id='panel-navigation' injectStyle={injectStyle} visible={visible}><NavigationPanel callback={handleBackNav} /></Panel>
-          <Panel id='panel-uidata-toggle' injectStyle={injectStyle} visible={visible}><ToggleDisplayPanel visible={displayPanelsVisible} callback={setDisplayPanelsVisible} /></Panel>
-          <Panel id='panel-materials' injectStyle={injectStyle} visible={visible}><MaterialControlsPanel callback={handleSelectMaterial} materials={materials} materialIDs={materialIDs} selectedID={selectedMaterialID} /></Panel>
-          <Panel id='panel-rotation' injectStyle={injectStyle} visible={visible}><RotationControlsPanel rotation={rotation} handleAutoRotate={toggleAutoRotation} handleManualRotate={handleManualRotate} autoRotateActive={isAutoRotationActive} /></Panel>
-        </>
-      }
-      display={<Panel id='panel-uidata' visible={visible && displayPanelsVisible}><UIDataPanel care={care} description={description} dimensions={dimensions} materialSpecs={materialSpecs} weight={weight} /></Panel>}
-    />
+    <div className='absolute inset-0 flex grow flex-col w-full h-full z-1'>
+      <ModalContainer
+        dataRoute={pathname}
+        visible={true}
+        header={displayName}
+        controls={
+          <>
+            <Panel id='panel-navigation' injectStyle={injectStyle} visible={true}><NavigationPanel callback={handleBackNav} /></Panel>
+            <Panel id='panel-uidata-toggle' injectStyle={injectStyle} visible={true}><ToggleDisplayPanel visible={displayPanelsVisible} callback={setDisplayPanelsVisible} /></Panel>
+            <Panel id='panel-materials' injectStyle={injectStyle} visible={true}><MaterialControlsPanel callback={handleSelectMaterial} materials={materials} materialIDs={materialIDs} selectedID={selectedMaterialID} /></Panel>
+            <Panel id='panel-rotation' injectStyle={injectStyle} visible={true}><RotationControlsPanel handleAutoRotate={toggleAutoRotation} handleManualRotate={handleManualRotate} autoRotateActive={isAutoRotationActive} /></Panel>
+          </>
+        }
+        display={<Panel id='panel-uidata' visible={displayPanelsVisible}><UIDataPanel care={care} description={description} dimensions={dimensions} materialSpecs={materialSpecs} weight={weight} /></Panel>}
+      />
+    </div>
   )
 }
 
-export default memo(ProjectDataModalTest)
+export default memo(ProjectDataModal)

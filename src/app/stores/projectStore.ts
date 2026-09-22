@@ -1,24 +1,24 @@
-import { create } from 'zustand';
-import type { ProjectRecord } from '../../db/projects';
+import { create } from 'zustand'
+import type { Project } from '../../types/project'
 
 type ProjectState = {
-  projects: ProjectRecord[] | null;
-  projectsByNodeName: Record<string, ProjectRecord>;
-  projectsBySlug: Record<string, ProjectRecord>;
-  _key: string | null;
+  projects: Project[] | null
+  projectsByNodeName: Record<string, Project> | null
+  projectsBySlug: Record<string, Project> | null
+  _key: string | null
 
-  setProjects: (projects: ProjectRecord[]) => void;
-  reset: () => void;
-  getProjectByNodeName: (nodeName: string) => ProjectRecord | null;
-  getProjectBySlug: (slug: string) => ProjectRecord | null;
-};
+  setProjects: (projects: Project[]) => void
+  reset: () => void
+  getProjectByNodeName: (nodeName: string) => Project | null
+  getProjectBySlug: (slug: string) => Project | null
+}
 
 const initialState = {
   projects: null,
   projectsByNodeName: {},
   projectsBySlug: {},
   _key: null,
-};
+}
 
 /*
  * Lookup maps are built here.
@@ -32,18 +32,20 @@ const initialState = {
 const useProjectStore = create<ProjectState>()((set, get) => ({
   ...initialState,
 
-  setProjects: (projects: ProjectRecord[]) => {
-    const key = JSON.stringify(projects);
+  setProjects: (projects: Project[]) => {
+    const key = JSON.stringify(projects)
 
-    if (get()._key === key) return;
+    if (get()._key === key) return
 
-    const cloned = structuredClone(projects);
-    const projectsByNodeName = {};
-    const projectsBySlug = {};
+    if (!projects.length ) return
+
+    const cloned = structuredClone(projects)
+    const projectsByNodeName = {}
+    const projectsBySlug = {}
 
     for (const project of cloned) {
-      projectsByNodeName[project.sceneData.fileData.nodeName] = project;
-      projectsBySlug[project.UIData.slug] = project;
+      projectsByNodeName[project.sceneData.nodeName] = project
+      projectsBySlug[project.UIData.slug] = project
     }
 
     set({
@@ -51,7 +53,7 @@ const useProjectStore = create<ProjectState>()((set, get) => ({
       projectsByNodeName,
       projectsBySlug,
       _key: key,
-    });
+    })
   },
 
   reset: () => set({ ...initialState }),
@@ -59,6 +61,6 @@ const useProjectStore = create<ProjectState>()((set, get) => ({
   getProjectByNodeName: (nodeName: string) => get().projectsByNodeName[nodeName] ?? null,
 
   getProjectBySlug: (slug: string) => get().projectsBySlug[slug] ?? null,
-}));
+}))
 
-export default useProjectStore;
+export default useProjectStore

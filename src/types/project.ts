@@ -10,17 +10,10 @@ export type Project = {
     slug: string;
   },
   sceneData: {
-    animateMaterial: boolean;
-    animatePosition: boolean;
-    animateRotation: boolean;
-    fileData: {
-      nodeName: string;
-      url: string;
-    };
-    materials: {
-      defaultMaterialID: string;
-      materialIDs: string[];
-    };
+    nodeName: string;
+    url: string;
+    defaultMaterialID: string;
+    materialIDs: string[];
     rotation: {
       x: number;
       y: number;

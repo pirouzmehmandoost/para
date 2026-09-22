@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {  MeshStandardMaterial, MeshPhysicalMaterial, DoubleSide, Vector2 } from 'three';
 import { EPSILON_1e7 } from '@utils/animationUtils';
-import { getColorSpace, generateDataTexture, generateArrayBuffer} from '@utils/materialUtils'
+import { getColorSpace, generateDataTexture, generateArrayBuffer} from '@utils/materialUtils';
 
 const _buildCacheKey = (obj) => {
   if (Array.isArray(obj)) return obj.join('|');
@@ -9,26 +9,26 @@ const _buildCacheKey = (obj) => {
   return Object.keys(obj).sort().join('|');
 };
 
-const _bumpData = generateArrayBuffer(1024, 'bumpMap')
-const _diffuseData = generateArrayBuffer(1024, 'map') 
-const _normalData = generateArrayBuffer(1024, 'normalMap') 
-const _roughnessData = generateArrayBuffer(1024, 'roughnessMap')
+const _bumpData = generateArrayBuffer(1024, 'bumpMap');
+const _diffuseData = generateArrayBuffer(1024, 'map');
+const _normalData = generateArrayBuffer(1024, 'normalMap');
+const _roughnessData = generateArrayBuffer(1024, 'roughnessMap');
 
-const _bumpMap  =  generateDataTexture(_bumpData, 'bumpMap')
-const _map =  generateDataTexture(_diffuseData, 'map')
-const _normalMap  =  generateDataTexture(_normalData, 'normalMap')
-const _roughnessMap =  generateDataTexture(_roughnessData, 'roughnessMap')
+const _bumpMap = generateDataTexture(_bumpData, 'bumpMap');
+const _map = generateDataTexture(_diffuseData, 'map');
+const _normalMap = generateDataTexture(_normalData, 'normalMap');
+const _roughnessMap = generateDataTexture(_roughnessData, 'roughnessMap');
 
 const _scratchDataTextures = {
   bumpMap: _bumpMap,
   map: _map, 
   normalMap: _normalMap,
   roughnessMap: _roughnessMap,
-}
+};
 
-const _bumpMap2 = generateDataTexture(_bumpData, 'bumpMap')
-const _map2 =  generateDataTexture(_diffuseData, 'map')
-const _roughnessMap2 =  generateDataTexture(_roughnessData, 'roughnessMap')
+const _bumpMap2 = generateDataTexture(_bumpData, 'bumpMap');
+const _map2 = generateDataTexture(_diffuseData, 'map');
+const _roughnessMap2 = generateDataTexture(_roughnessData, 'roughnessMap');
 
 export const defaultMeshPhysicalMaterialConfig = {
   bumpMap:  _bumpMap2,
@@ -90,12 +90,12 @@ const materialConfigs = {
     flatShading: false,
     metalness: 0.8,
     name: 'terrain',
-    normalScale: new Vector2(1, -1),
+    normalScale: new Vector2(1.5, -1),
     roughness: 1,
     side: DoubleSide,
     normalMap: _scratchDataTextures.normalMap
   }
-}
+};
 
 const materialState = {
   gloss_black: {
@@ -108,7 +108,7 @@ const materialState = {
     tailwindColor: ``,
     material: new MeshStandardMaterial({ ...materialConfigs.terrain }),
     textures: {
-      normalMap: 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/textures/terrain_normal.ktx2',
+      normalMap: 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/images/materials/terrain/terrain_normal_2_2k.ktx2',
     }
   },
   matte_black: {
@@ -121,9 +121,9 @@ const materialState = {
     tailwindColor: `bg-radial-[at_35%_35%] from-zinc-500 to-zinc-900 to-65%`,
     material: new MeshPhysicalMaterial({ ...materialConfigs.stained_matte_black }),
     textures: {
-      map: '/stained_black_diffuse.ktx2',
-      bumpMap: '/stained_black_roughness.ktx2',
-      roughnessMap: '/stained_black_roughness.ktx2',
+      map: 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/images/materials/stained_matte_black/stained_black_diffuse.ktx2',
+      bumpMap: 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/images/materials/stained_matte_black/stained_black_roughness.ktx2',
+      roughnessMap: 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/images/materials/stained_matte_black/stained_black_roughness.ktx2',
     },
   },
 };
@@ -213,48 +213,48 @@ const materialStore = (set, get) => ({
     }));
   },
 
-  setTextures: (textures) => {
-    const staged = [];
-    const materials = get().materials;
-    const texturesInitialized = get().texturesInitialized;
-    const initialized = _buildCacheKey(textures);
+  // setTextures: (textures) => {
+  //   const staged = [];
+  //   const materials = get().materials;
+  //   const texturesInitialized = get().texturesInitialized;
+  //   const initialized = _buildCacheKey(textures);
 
-    if (texturesInitialized === initialized) return;
+  //   if (texturesInitialized === initialized) return;
 
-    for (const entry in materials) {
-      // object mapping material property names to image urls
-      const textureUrls = materials[entry]?.textures; 
+  //   for (const entry in materials) {
+  //     // object mapping material property names to image urls
+  //     const textureUrls = materials[entry]?.textures; 
 
-      if (!textureUrls) continue;
+  //     if (!textureUrls) continue;
 
-      for (const slot in textureUrls) {
-        // check if arg has a Texture with matching url 
-        const textureObject = textures[textureUrls[slot]] ?? null;
+  //     for (const slot in textureUrls) {
+  //       // check if arg has a Texture with matching url 
+  //       const textureObject = textures[textureUrls[slot]] ?? null;
 
-        if (!textureObject || !textureObject.isTexture) {
-          console.warn(`Warning: setTextures() => Missing or invalid texture for material '${entry}', property '${slot}'. Got:`, textureObject);
-          return;
-        }
+  //       if (!textureObject || !textureObject.isTexture) {
+  //         console.warn(`Warning: setTextures() => Missing or invalid texture for material '${entry}', property '${slot}'. Got:`, textureObject);
+  //         return;
+  //       }
 
-        staged.push({
-          target: materials[entry].material,
-          property: slot,
-          texture: textureObject
-        });
-      }
-    }
+  //       staged.push({
+  //         target: materials[entry].material,
+  //         property: slot,
+  //         texture: textureObject
+  //       });
+  //     }
+  //   }
 
-    for (const { target, property, texture } of staged) {
-      target[property] = texture.clone();
-      target[property].flipY = false;
-      target[property].colorSpace = getColorSpace(property);
-    }
+  //   for (const { target, property, texture } of staged) {
+  //     target[property] = texture.clone();
+  //     target[property].flipY = false;
+  //     target[property].colorSpace = getColorSpace(property);
+  //   }
 
-    set(() => ({
-      texturesInitialized: initialized,
-      materials: { ...materials },
-    }));
-  },
+  //   set(() => ({
+  //     texturesInitialized: initialized,
+  //     materials: { ...materials },
+  //   }));
+  // },
 });
 
 const useMaterial = create(materialStore);

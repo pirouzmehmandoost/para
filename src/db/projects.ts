@@ -1,23 +1,23 @@
-import { asc, eq } from 'drizzle-orm';
-import { db } from './db';
-import { projectsTable } from './schema';
-import type { Project } from '../types/project';
+import { asc, eq } from 'drizzle-orm'
+import { db } from './db'
+import { projectsTable } from './schema'
+import type { Project } from '../types/project'
+import { cacheLife, cacheTag } from 'next/cache'
 
-export type ProjectRecord = Project;
 
-type ProjectRow = typeof projectsTable.$inferSelect;
+type ProjectRow = typeof projectsTable.$inferSelect
 
 function toBlobUrl(pathname: string): string {
-  const base = process.env.PARA_PUBLIC_BLOB_STORE_BASE_URL;
+  const base = process.env.PARA_PUBLIC_BLOB_STORE_BASE_URL
 
   if (!base) {
-    throw new Error('PARA_PUBLIC_BLOB_STORE_BASE_URL is not set.');
+    throw new Error('PARA_PUBLIC_BLOB_STORE_BASE_URL is not set.')
   }
 
-  return `${base.replace(/\/$/, '')}/${pathname.replace(/^\//, '')}`;
+  return `${base.replace(/\/$/, '')}/${pathname.replace(/^\//, '')}`
 }
 
-function toProject(row: ProjectRow): ProjectRecord {
+function toProject(row: ProjectRow): Project {
   return {
     UIData: {
       care: row.care,
@@ -30,17 +30,10 @@ function toProject(row: ProjectRow): ProjectRecord {
       weight: row.weight,
     },
     sceneData: {
-      animateMaterial: row.animateMaterial,
-      animatePosition: row.animatePosition,
-      animateRotation: row.animateRotation,
-      fileData: {
-        nodeName: row.nodeName,
-        url: toBlobUrl(row.url),
-      },
-      materials: {
-        defaultMaterialID: row.defaultMaterialID,
-        materialIDs: [...row.materialIDs],
-      },
+      nodeName: row.nodeName,
+      url: toBlobUrl(row.url),
+      defaultMaterialID: row.defaultMaterialID,
+      materialIDs: [...row.materialIDs],
       rotation: {
         x: row.rotation.x,
         y: row.rotation.y,
@@ -49,35 +42,47 @@ function toProject(row: ProjectRow): ProjectRecord {
       rotationSpeed: row.rotationSpeed,
       scale: row.scale,
     },
-  };
+  }
 }
 
-export async function getAllProjects(): Promise<ProjectRecord[]> {
+export async function getAllProjects(): Promise<Project[]> {
+  'use cache'
+  cacheTag('projects')
+  cacheLife('max')
+
   const rows = await db
     .select()
     .from(projectsTable)
-    .orderBy(asc(projectsTable.displayOrder));
+    .orderBy(asc(projectsTable.displayOrder))
 
-  return rows.map(toProject);
+  return rows.map(toProject)
 }
 
-export async function getProjectBySlug(slug: string): Promise<ProjectRecord | null> {
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  'use cache'
+  cacheTag('projects')
+  cacheLife('max')
+
   const rows = await db
     .select()
     .from(projectsTable)
     .where(eq(projectsTable.slug, slug))
-    .limit(1);
+    .limit(1)
 
-  return rows.length ? toProject(rows[0]) : null;
+  return rows.length ? toProject(rows[0]) : null
 }
 
 // node_name carries no unique constraint, so this returns the first matching row.
-export async function getProjectByNodeName(nodeName: string): Promise<ProjectRecord | null> {
+export async function getProjectByNodeName(nodeName: string): Promise<Project | null> {
+  'use cache'
+  cacheTag('projects')
+  cacheLife('max')
+
   const rows = await db
     .select()
     .from(projectsTable)
     .where(eq(projectsTable.nodeName, nodeName))
-    .limit(1);
+    .limit(1)
 
-  return rows.length ? toProject(rows[0]) : null;
+  return rows.length ? toProject(rows[0]) : null
 }
