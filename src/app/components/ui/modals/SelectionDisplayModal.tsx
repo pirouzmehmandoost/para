@@ -77,7 +77,7 @@ const SelectionDisplayModal = () => {
             </motion.div>
             <motion.div variants={variants.item} className='w-fit h-fit'>
               <Link href={`/projects/${focusedSlug}`}>
-                <div className='appearance-none w-fit h-fit text-2xl sm:text-2xl md:text-3xl lg4:text-4xl text-neutral-600 cursor-pointer animate-pulse'>
+                <div className='appearance-none w-fit h-fit text-2xl sm:text-2xl md:text-3xl lg:text-4xl text-neutral-600 cursor-pointer animate-pulse'>
                   View Details
                 </div>
               </Link>
