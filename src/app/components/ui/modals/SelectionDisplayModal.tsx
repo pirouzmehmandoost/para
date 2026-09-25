@@ -46,7 +46,7 @@ const SelectionDisplayModal = () => {
   const shortDescription = focusedProject?.UIData.shortDescription ?? ''
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => { if (e.key == 'Escape' && showModal) { console.log("resetting"); reset() } }
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key == 'Escape' && showModal) reset() }
 
     window.addEventListener('keydown', onKeyDown)
 
