@@ -252,37 +252,3 @@ const ProjectDataModal = ({ project, entryPoint }: ProjectDataModalProps) => {
 }
 
 export default memo(ProjectDataModal)
-
-// return (
-//   <div data-route={pathname} className='absolute inset-0 z-1 flex grow flex-col w-full h-full'>
-//     <ModalContainer2
-//       controls={
-//         <>
-//           {/* <Panel id='panel-title' injectStyle={injectStyle2} visible={modalVisible}><LabelPanel label={displayName}/></Panel> */}
-//           <Panel id='panel-navigation' injectStyle={injectStyle} visible={modalVisible}><NavigationPanel callback={handleBackNav} /></Panel>
-//           <Panel id='panel-uidata-toggle' injectStyle={injectStyle} visible={modalVisible}><ToggleDisplayPanel visible={displayPanelsVisible} callback={setDisplayPanelsVisible} /></Panel>
-//           <HamburgerPanel label={'Colors'} id='panel-materials' injectStyle={injectStyle} visible={modalVisible}><MaterialControlsPanel callback={handleSelectMaterial} materials={materials} materialIDs={materialIDs} selectedID={selectedMaterialID} /></HamburgerPanel>
-//           <HamburgerPanel label={'Rotation'} id='panel-rotation' injectStyle={injectStyle} visible={modalVisible}><RotationControlsPanel handleAutoRotate={toggleAutoRotation} handleManualRotate={handleManualRotate} autoRotateActive={isAutoRotationActive} /></HamburgerPanel>
-//         </>
-//       }
-//       display={<Panel id='panel-uidata' visible={modalVisible && displayPanelsVisible}><UIDataPanel care={care} description={description} dimensions={dimensions} materialSpecs={materialSpecs} weight={weight} /></Panel>}
-//     />
-//   </div>
-// )
-
-
-
-// interface LabelPanelProps {
-//   label: string
-// }
-// const LabelPanel = memo(({ label = '' }: LabelPanelProps) => {
-//   return (
-//     <div className='flex flex-col min-w-20 sm:min-w-20 md:min-w-30 max-w-32 min-h-20 sm:min-h-20 md:min-h-24 max-h-24 gap-y-0 sm:gap-y-0 md:gap-y-1 justify-center items-center'>
-//       <div className='w-full h-fit text-center text-nowrap hidden sm:hidden md:block text-4xl'>
-//         {label}
-//       </div>
-//     </div>
-//   )
-// })
-// LabelPanel.displayName = 'LabelPanel'
-

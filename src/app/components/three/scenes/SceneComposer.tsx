@@ -11,7 +11,7 @@ import useTargetRegistry from '@stores/targetRegistryStore'
 import type { Predicate } from '@stores/targetRegistryStore'
 import Carousel from '../rigs/Carousel'
 import ProjectMesh from '../meshes/ProjectMesh'
-import TerrainGrid from '../groups/TerrainGrid'
+import TerrainGrid from '../instancedMeshes/TerrainGrid'
 
 const {
   SWIPE_DELAY_MS,

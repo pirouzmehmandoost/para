@@ -57,7 +57,6 @@ const SelectionDisplayModal = () => {
     <div
       id='selection-display-modal'
       className={`absolute inset-y-6 inset-x-0 z-30 flex shrink flex-col w-fit h-fit justify-self-center items-center text-header transition-all transition-discrete duration-700 ease-in-out ${showModal ? 'opacity-100' : 'opacity-0'}`}
-    // className={`absolute inset-y-1/8 inset-x-6 sm:inset-x-6 md:inset-x-12 z-30 flex shrink flex-col w-fit h-fit justify-center items-center text-header transition-all transition-discrete duration-700 ease-in-out ${showModal ? 'opacity-100' : 'opacity-0'}`}
     >
       <AnimatePresence mode='wait'>
         {showModal && (
