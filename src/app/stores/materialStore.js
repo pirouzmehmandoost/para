@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {  MeshStandardMaterial, MeshPhysicalMaterial, DoubleSide, Vector2 } from 'three';
 import { EPSILON_1e7 } from '@utils/animationUtils';
-import { getColorSpace, generateDataTexture, generateArrayBuffer} from '@utils/materialUtils';
+import { getColorSpace, generateDataTexture, generateUint8ArrayBuffer} from '@utils/materialUtils';
 
 const _buildCacheKey = (obj) => {
   if (Array.isArray(obj)) return obj.join('|');
@@ -9,10 +9,10 @@ const _buildCacheKey = (obj) => {
   return Object.keys(obj).sort().join('|');
 };
 
-const _bumpData = generateArrayBuffer(1024, 'bumpMap');
-const _diffuseData = generateArrayBuffer(1024, 'map');
-const _normalData = generateArrayBuffer(1024, 'normalMap');
-const _roughnessData = generateArrayBuffer(1024, 'roughnessMap');
+const _bumpData = generateUint8ArrayBuffer(1024, 'bumpMap');
+const _diffuseData = generateUint8ArrayBuffer(1024, 'map');
+const _normalData = generateUint8ArrayBuffer(1024, 'normalMap');
+const _roughnessData = generateUint8ArrayBuffer(1024, 'roughnessMap');
 
 const _bumpMap = generateDataTexture(_bumpData, 'bumpMap');
 const _map = generateDataTexture(_diffuseData, 'map');
@@ -38,6 +38,7 @@ export const defaultMeshPhysicalMaterialConfig = {
   flatShading: false,
   ior: 1.5,
   map: _map2,
+  name: 'materialstore_default',
   roughnessMap: _roughnessMap2,
   side: DoubleSide,
 };
@@ -90,7 +91,7 @@ const materialConfigs = {
     flatShading: false,
     metalness: 0.8,
     name: 'terrain',
-    normalScale: new Vector2(1.5, -1),
+    normalScale: new Vector2(1, -1),
     roughness: 1,
     side: DoubleSide,
     normalMap: _scratchDataTextures.normalMap

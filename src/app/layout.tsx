@@ -4,7 +4,6 @@ import { Suspense, type JSX, type ReactNode } from 'react'
 import type { Project } from '../types/project'
 import { getAllProjects } from '../db/projects'
 import Sidebar from './components/ui/Sidebar'
-import GlobalKeyboardShortcuts from './components/ui/GlobalKeyboardShortcuts'
 import RootCanvas from './components/three/canvas/RootCanvas'
 import SidebarButton from './components/ui/buttons/SidebarButton'
 
@@ -39,20 +38,23 @@ export default async function RootLayout({ children, modal }: RootLayoutProps): 
   return (
     <html lang='en'>
       <body className={`${myFont.className} bg-cover bg-neutral-300`}>
-        <Suspense fallback={null}>
-          <GlobalKeyboardShortcuts />
-        </Suspense>
-        <SidebarButton />
-        <div className='absolute inset-0 flex grow flex-row w-full h-full'>
-          <Sidebar />
-          <div className='relative flex grow flex-col w-full h-full'>
+        <div className='fixed inset-0 flex grow flex-col w-full h-full'>
+          <Suspense fallback={null}>
+            <SidebarButton />
+          </Suspense>
+          <div className='absolute inset-0 flex grow flex-row w-full h-full'>
             <Suspense fallback={null}>
-              {modal}
-              {children}
+              <Sidebar />
             </Suspense>
-            <Suspense fallback={null}>
-              <RootCanvas projects={projects} />
-            </Suspense>
+            <div className='relative flex grow flex-col w-full h-full'>
+              <Suspense fallback={null}>
+                {modal}
+                {children}
+              </Suspense>
+              <Suspense fallback={null}>
+                <RootCanvas projects={projects} />
+              </Suspense>
+            </div>
           </div>
         </div>
       </body>

@@ -2,16 +2,14 @@ import { create } from 'zustand'
 import type { EulerValue } from '../../types/EulerValue'
 
 type SelectionValues = {
-  focusedName: string | null
-  focusedUUID: string | null
+  focusedSlug: string | null
   focusedMaterialID: string | null
   autoRotationActive: boolean
   deltaRotation: EulerValue
 }
 
 type SelectionActions = {
-  setFocused: (name: string, materialID: string, uuid: string | null) => void
-  setFocusedUUID: (uuid: string) => void
+  setFocused: (materialID: string, slug: string) => void
   setRotation: (rotation: EulerValue) => void
   toggleAutoRotation: () => void
   setMaterialID: (id: string) => void
@@ -21,22 +19,20 @@ type SelectionActions = {
 type SelectionState = SelectionValues & SelectionActions
 
 const initialState: SelectionValues = {
-  focusedName: null,
-  focusedUUID: null,
+  focusedSlug: null,
   focusedMaterialID: null,
-  autoRotationActive: true,
+  autoRotationActive: false,
   deltaRotation: { x: 0, y: 0, z: 0 },
 }
 
 const useSelection = create<SelectionState>()((set, get) => ({
   ...initialState,
 
-  setFocused: (name: string, materialID: string, uuid: string | null) => {
+  setFocused: (materialID: string, slug: string) => {
     set((state) => ({
       ...state,
-      focusedName: name,
-      focusedUUID: uuid,
       focusedMaterialID: materialID,
+      focusedSlug: slug,
     }))
   },
 
@@ -46,11 +42,6 @@ const useSelection = create<SelectionState>()((set, get) => ({
       focusedMaterialID: id,
     })),
 
-  setFocusedUUID: (uuid: string) =>
-    set((state) => ({
-      ...state,
-      focusedUUID: uuid,
-    })),
 
   setRotation: (rotation: EulerValue) => {
     const {

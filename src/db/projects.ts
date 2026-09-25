@@ -34,6 +34,11 @@ function toProject(row: ProjectRow): Project {
       url: toBlobUrl(row.url),
       defaultMaterialID: row.defaultMaterialID,
       materialIDs: [...row.materialIDs],
+      position: {
+        x: row.position.x,
+        y: row.position.y,
+        z: row.position.z,
+      },
       rotation: {
         x: row.rotation.x,
         y: row.rotation.y,

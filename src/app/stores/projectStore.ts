@@ -3,19 +3,16 @@ import type { Project } from '../../types/project'
 
 type ProjectState = {
   projects: Project[] | null
-  projectsByNodeName: Record<string, Project> | null
   projectsBySlug: Record<string, Project> | null
   _key: string | null
 
   setProjects: (projects: Project[]) => void
   reset: () => void
-  getProjectByNodeName: (nodeName: string) => Project | null
   getProjectBySlug: (slug: string) => Project | null
 }
 
 const initialState = {
   projects: null,
-  projectsByNodeName: {},
   projectsBySlug: {},
   _key: null,
 }
@@ -37,28 +34,23 @@ const useProjectStore = create<ProjectState>()((set, get) => ({
 
     if (get()._key === key) return
 
-    if (!projects.length ) return
+    if (!projects.length) return
 
     const cloned = structuredClone(projects)
-    const projectsByNodeName = {}
     const projectsBySlug = {}
 
     for (const project of cloned) {
-      projectsByNodeName[project.sceneData.nodeName] = project
       projectsBySlug[project.UIData.slug] = project
     }
 
     set({
       projects: cloned,
-      projectsByNodeName,
       projectsBySlug,
       _key: key,
     })
   },
 
   reset: () => set({ ...initialState }),
-
-  getProjectByNodeName: (nodeName: string) => get().projectsByNodeName[nodeName] ?? null,
 
   getProjectBySlug: (slug: string) => get().projectsBySlug[slug] ?? null,
 }))

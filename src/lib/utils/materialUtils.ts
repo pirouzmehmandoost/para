@@ -30,18 +30,35 @@ export function getColorSpace(property: string): string {
   }
 }
 
-function _fillBuffer(arrayBuffer: Uint8Array, r: number = 255, g: number = 255, b: number = 255, a: number = 255): void {
-  for (let i = 0; i < arrayBuffer.length; i += 4) {
-    arrayBuffer[i] = r
-    arrayBuffer[i + 1] = g
-    arrayBuffer[i + 2] = b
-    arrayBuffer[i + 3] = a
+function _fillArrayBuffer(
+  uint8ArrayBuffer: Uint8Array,
+  r: number = 255,
+  g: number = 255,
+  b: number = 255,
+  a?: number
+): void {
+  if (typeof a === 'number') {
+    for (let i = 0; i < uint8ArrayBuffer.length; i += 4) {
+      uint8ArrayBuffer[i] = r
+      uint8ArrayBuffer[i + 1] = g
+      uint8ArrayBuffer[i + 2] = b
+      uint8ArrayBuffer[i + 3] = a
+    }
+  }
+  else {
+    for (let i = 0; i < uint8ArrayBuffer.length; i += 3) {
+      uint8ArrayBuffer[i] = r
+      uint8ArrayBuffer[i + 1] = g
+      uint8ArrayBuffer[i + 2] = b
+    }
   }
 }
 
-export function generateArrayBuffer(resolution: number = 1024, mapType: string = 'map'): Uint8Array | void {
-  if (!mapType.length) return
-  if (resolution < 1024 || resolution % 1024 !== 0) return
+export function generateUint8ArrayBuffer(
+  resolution: number = 1024,
+  mapType: string = 'map'
+): Uint8Array | void {
+  if (!mapType.length || resolution < 1024 || resolution % 1024 !== 0) return
 
   const data = new Uint8Array(resolution)
 
@@ -52,7 +69,7 @@ export function generateArrayBuffer(resolution: number = 1024, mapType: string =
       break
     case 'clearcoatNormalMap':
     case 'normalMap':
-      _fillBuffer(data, 128, 128, 255, 255)
+      _fillArrayBuffer(data, 128, 128, 255, 255)
       break
     case 'map':
     case 'clearcoatMap':
@@ -60,7 +77,7 @@ export function generateArrayBuffer(resolution: number = 1024, mapType: string =
     case 'roughnessMap':
     case 'transmissionMap':
     default:
-      _fillBuffer(data, 255, 255, 255, 255)
+      _fillArrayBuffer(data, 255, 255, 255, 255)
       break
   }
   return data
@@ -88,5 +105,5 @@ export function generateDataTexture(arrayBuffer: Uint8Array, mapType: string): D
 }
 
 // export function _generateDataTexture(mapType: string, resolution: number) {
-//   return generateDataTexture(generateArrayBuffer(resolution, mapType) as Uint8Array, mapType)
+//   return generateDataTexture(generateUint8ArrayBuffer(resolution, mapType) as Uint8Array, mapType)
 // }

@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, startTransition, useCallback, useLayoutEffect, useState, useMemo } from 'react'
+import { memo, startTransition, useCallback, useLayoutEffect, useState, useMemo, useRef } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
@@ -65,7 +65,7 @@ interface MaterialControlsPanelProps {
 }
 const MaterialControlsPanel = memo(({ callback, materials, materialIDs, selectedID }: MaterialControlsPanelProps) => {
   return (
-    <div className='flex flex-col min-w-28 sm:min-w-28 md:min-w-30 max-w-36 min-h-20 sm:min-h-20 md:min-h-24 max-h-24 gap-y-1 justify-center items-center'>
+    <div className='flex flex-col min-w-26 sm:min-26 md:min-w-30 max-w-36 min-h-20 sm:min-h-20 md:min-h-24 max-h-24 gap-y-1 justify-center items-center'>
       <div className='w-full h-fit text-center text-nowrap hidden sm:hidden md:block'>
         Colors
       </div>
@@ -149,13 +149,13 @@ const UIDataPanel = memo(({ care = '', description = '', dimensions = '', materi
   const tableData: Record<string, string> = useMemo(() => ({ 'Dimensions': dimensions, 'Weight': weight, 'Materials': materialSpecs, 'Care': care }), [dimensions, weight, materialSpecs, care])
   return (
     <div className='flex grow flex-col w-full min-h-11/12 p-3 sm:p-3 md:p-3 lg:p-6 xl:p-6 2xl:p-6 gap-y-4 justify-end items-center'>
-      <div className='flex grow flex-row w-2/3 h-full items-end'>{description}</div>
+      <div className='flex grow flex-row w-2/3 max-h-fit items-end'>{description}</div>
       <div className='flex flex-row w-2/3 h-fit'>
-        <table className='w-full h-full table-auto divide-inherit border border-collapse border-header'>
+        <table className='w-full h-full table-auto divide-inherit'>
           <tbody>
             {Object.entries(tableData).map(([key, value]) => (
-              <tr key={key} className='border border-collapse'>
-                <th scope='row' className='w-1/12 px-3 sm:px-3 md:px-3 lg:px-6 xl:px-6 2xl:px-6 py-3 sm:py-3 md:py-3 lg:py-3 xl:py-3 2xl:py-3 border text-start whitespace-nowrap'>{key}</th>
+              <tr key={key} className='border border-collapse border-header'>
+                <th scope='row' className='w-1/12 px-3 sm:px-3 md:px-3 lg:px-6 xl:px-6 2xl:px-6 py-3 sm:py-3 md:py-3 lg:py-3 xl:py-3 2xl:py-3 border-r text-start whitespace-nowrap'>{key}</th>
                 <td className='w-11/12 px-3 sm:px-3 md:px-6 text-start'>{value}</td>
               </tr>
             ))}
@@ -179,11 +179,14 @@ const ProjectDataModal = ({ project, entryPoint }: ProjectDataModalProps) => {
   const isAutoRotationActive = useSelection((state) => state.autoRotationActive)
   const setMaterialID = useSelection((state) => state.setMaterialID)
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   const [displayPanelsVisible, setDisplayPanelsVisible] = useState(false)
+  const [modalVisible, setModalVisible] = useState(true)
 
   const {
-    UIData: { displayName, care, description, dimensions, materialSpecs, weight },
-    sceneData: { defaultMaterialID, materialIDs, nodeName },
+    UIData: { displayName, care, description, dimensions, materialSpecs, weight, slug },
+    sceneData: { defaultMaterialID, materialIDs },
   } = project
 
   const selectedMaterialID = useMemo((): string =>
@@ -191,11 +194,17 @@ const ProjectDataModal = ({ project, entryPoint }: ProjectDataModalProps) => {
     , [currentMaterialID, defaultMaterialID])
 
   useLayoutEffect(() => {
-    if (useSelection.getState().focusedName !== nodeName) setFocused(nodeName, defaultMaterialID, null)
-  }, [project, nodeName, defaultMaterialID])
+    if (useSelection.getState().focusedSlug !== slug) setFocused(defaultMaterialID, slug)
+  }, [project, slug, defaultMaterialID])
 
   useLayoutEffect(() => {
-    return (() => reset())
+    return (() => {
+      const { focusedSlug: checkSlug, focusedMaterialID: checkMaterialID } = useSelection.getState()
+
+      if (checkSlug !== null || checkMaterialID !== null) reset()
+
+      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current)
+    })
   }, [])
 
   const handleSelectMaterial = useCallback((id: string) => {
@@ -208,30 +217,72 @@ const ProjectDataModal = ({ project, entryPoint }: ProjectDataModalProps) => {
 
   const handleBackNav = useCallback(() => {
     reset()
-    if (entryPoint === 'modal') router.back()
-    else router.replace('/')
-  }, [entryPoint, router])
+    setModalVisible(false)
 
-  const injectStyle = 'max-w-fit max-h-fit'
+    if (timeoutRef.current !== null) return
+
+    const handleNav = () => {
+      if (entryPoint === 'modal') router.back()
+      else router.replace('/')
+    }
+    timeoutRef.current = setTimeout(() => handleNav(), 400)
+
+  }, [entryPoint, router, setModalVisible])
+
+  const injectStyle = 'max-w-fit'
+
 
   return (
-    <div className='absolute inset-0 flex grow flex-col w-full h-full z-1'>
+    <div data-route={pathname} className='absolute inset-0 z-1 flex grow flex-col w-full h-full'>
       <ModalContainer
-        dataRoute={pathname}
-        visible={true}
+        visible={modalVisible}
         header={displayName}
         controls={
           <>
-            <Panel id='panel-navigation' injectStyle={injectStyle} visible={true}><NavigationPanel callback={handleBackNav} /></Panel>
-            <Panel id='panel-uidata-toggle' injectStyle={injectStyle} visible={true}><ToggleDisplayPanel visible={displayPanelsVisible} callback={setDisplayPanelsVisible} /></Panel>
-            <Panel id='panel-materials' injectStyle={injectStyle} visible={true}><MaterialControlsPanel callback={handleSelectMaterial} materials={materials} materialIDs={materialIDs} selectedID={selectedMaterialID} /></Panel>
-            <Panel id='panel-rotation' injectStyle={injectStyle} visible={true}><RotationControlsPanel handleAutoRotate={toggleAutoRotation} handleManualRotate={handleManualRotate} autoRotateActive={isAutoRotationActive} /></Panel>
+            <Panel id='panel-navigation' injectStyle={injectStyle} visible={modalVisible}><NavigationPanel callback={handleBackNav} /></Panel>
+            <Panel id='panel-uidata-toggle' injectStyle={injectStyle} visible={modalVisible}><ToggleDisplayPanel visible={displayPanelsVisible} callback={setDisplayPanelsVisible} /></Panel>
+            <Panel id='panel-materials' injectStyle={injectStyle} visible={modalVisible}><MaterialControlsPanel callback={handleSelectMaterial} materials={materials} materialIDs={materialIDs} selectedID={selectedMaterialID} /></Panel>
+            <Panel id='panel-rotation' injectStyle={injectStyle} visible={modalVisible}><RotationControlsPanel handleAutoRotate={toggleAutoRotation} handleManualRotate={handleManualRotate} autoRotateActive={isAutoRotationActive} /></Panel>
           </>
         }
-        display={<Panel id='panel-uidata' visible={displayPanelsVisible}><UIDataPanel care={care} description={description} dimensions={dimensions} materialSpecs={materialSpecs} weight={weight} /></Panel>}
+        display={<Panel id='panel-uidata' visible={modalVisible && displayPanelsVisible}><UIDataPanel care={care} description={description} dimensions={dimensions} materialSpecs={materialSpecs} weight={weight} /></Panel>}
       />
     </div>
   )
 }
 
 export default memo(ProjectDataModal)
+
+// return (
+//   <div data-route={pathname} className='absolute inset-0 z-1 flex grow flex-col w-full h-full'>
+//     <ModalContainer2
+//       controls={
+//         <>
+//           {/* <Panel id='panel-title' injectStyle={injectStyle2} visible={modalVisible}><LabelPanel label={displayName}/></Panel> */}
+//           <Panel id='panel-navigation' injectStyle={injectStyle} visible={modalVisible}><NavigationPanel callback={handleBackNav} /></Panel>
+//           <Panel id='panel-uidata-toggle' injectStyle={injectStyle} visible={modalVisible}><ToggleDisplayPanel visible={displayPanelsVisible} callback={setDisplayPanelsVisible} /></Panel>
+//           <HamburgerPanel label={'Colors'} id='panel-materials' injectStyle={injectStyle} visible={modalVisible}><MaterialControlsPanel callback={handleSelectMaterial} materials={materials} materialIDs={materialIDs} selectedID={selectedMaterialID} /></HamburgerPanel>
+//           <HamburgerPanel label={'Rotation'} id='panel-rotation' injectStyle={injectStyle} visible={modalVisible}><RotationControlsPanel handleAutoRotate={toggleAutoRotation} handleManualRotate={handleManualRotate} autoRotateActive={isAutoRotationActive} /></HamburgerPanel>
+//         </>
+//       }
+//       display={<Panel id='panel-uidata' visible={modalVisible && displayPanelsVisible}><UIDataPanel care={care} description={description} dimensions={dimensions} materialSpecs={materialSpecs} weight={weight} /></Panel>}
+//     />
+//   </div>
+// )
+
+
+
+// interface LabelPanelProps {
+//   label: string
+// }
+// const LabelPanel = memo(({ label = '' }: LabelPanelProps) => {
+//   return (
+//     <div className='flex flex-col min-w-20 sm:min-w-20 md:min-w-30 max-w-32 min-h-20 sm:min-h-20 md:min-h-24 max-h-24 gap-y-0 sm:gap-y-0 md:gap-y-1 justify-center items-center'>
+//       <div className='w-full h-fit text-center text-nowrap hidden sm:hidden md:block text-4xl'>
+//         {label}
+//       </div>
+//     </div>
+//   )
+// })
+// LabelPanel.displayName = 'LabelPanel'
+

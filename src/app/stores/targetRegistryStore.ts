@@ -2,19 +2,22 @@ import { create } from 'zustand'
 import { Object3D, Scene } from 'three'
 import TargetRegistry from '@targetRegistry'
 
-type Targets = Object3D[] | ((obj: Object3D) => boolean)
+export type Predicate = ((obj: Object3D) => boolean)
 
-type TargetRegistryState = {
-  registry: TargetRegistry | null
-  _uuid: string | null
+type Targets = Object3D[] | Predicate
+
+type TargetRegistryActions = {
   initialize: (scene: Scene, targets: Targets) => boolean
   reset: () => void
 }
 
-const initialState: {
+type TargetRegistryValues = {
   registry: TargetRegistry | null
   _uuid: string | null
-} = {
+}
+type TargetRegistryState = TargetRegistryActions & TargetRegistryValues
+
+const initialState: TargetRegistryValues = {
   registry: null,
   _uuid: null,
 }

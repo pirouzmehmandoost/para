@@ -1,13 +1,17 @@
 'use client'
 
 import { memo, useLayoutEffect, useMemo, useRef } from 'react'
-import { Box3, BufferGeometry, Euler, Group, InstancedMesh, Matrix4, Mesh, Object3D, Vector3 } from 'three'
+import { Box3, BufferGeometry, Euler, Group, InstancedMesh, Matrix4, Mesh, MeshStandardMaterial, Object3D, Vector3 } from 'three'
 import { useGLTF } from '@react-three/drei'
 import useMaterial from '@stores/materialStore'
+import type { EulerValue } from '@/types/EulerValue'
 
 const _dummy = new Object3D()
 const _instanceMatrix = new Matrix4()
 const _axis = new Vector3(0, 1, 0)
+
+interface Position extends EulerValue {}
+interface Scale extends EulerValue {}
 
 function rotateInstance(instancedMesh: InstancedMesh, instanceId: number, rotationAxis: Vector3, angleAmount: number) {
   instancedMesh.getMatrixAt(instanceId, _instanceMatrix)
@@ -38,15 +42,15 @@ function checkGridSize(r: number, c: number, arr: number[]): number {
 }
 
 interface TerrainGridProps {
-  materialID: string
-  nodeName: string,
-  url: string
-  position: { x: number, y: number, z: number } | [x: number, y: number, z: number] | Euler
-  rotation: { x: number, y: number, z: number } | [x: number, y: number, z: number] | Vector3
-  scale: { x: number, y: number, z: number } | [x: number, y: number, z: number] | Vector3
-  gridColumns: number,
-  gridRows: number,
-  gridSpacing: [row: number, column: number],
+  materialID?: string
+  nodeName?: string,
+  url?: string
+  position?: [x: number, y: number, z: number] | Position | Euler
+  rotation?: [x: number, y: number, z: number] | EulerValue | Vector3
+  scale?: [x: number, y: number, z: number] | Scale | Vector3
+  gridColumns?: number,
+  gridRows?: number,
+  gridSpacing?: [row: number, column: number],
 }
 
 const TerrainGrid = ({
@@ -76,9 +80,13 @@ const TerrainGrid = ({
   const mesh = nodes?.[nodeName] as Mesh | null
   const geometry = mesh?.geometry as BufferGeometry | null
 
-  const material = useMaterial.getState().materials[materialID].material
+  const material: MeshStandardMaterial = useMaterial.getState().materials[materialID].material
 
-  const totalInstances = useMemo(() => checkCellValue(gridRows) * checkCellValue(gridColumns), [gridRows, gridColumns])
+  const totalInstances = useMemo((): number => checkCellValue(gridRows) * checkCellValue(gridColumns), [gridRows, gridColumns])
+
+  useLayoutEffect(() => {
+    useGLTF.preload(url)
+  }, [url])
 
   useLayoutEffect(() => {
     const totalInstances: number = checkGridSize(gridRows, gridColumns, gridRef.current)

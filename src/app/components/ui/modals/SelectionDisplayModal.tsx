@@ -1,12 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion, useReducedMotion, Variants } from 'framer-motion'
 import { type Easing } from 'framer-motion'
 import useProjectStore from '@/app/stores/projectStore'
 import useSelection from '@stores/selectionStore'
+
+const reset = useSelection.getState().reset
 
 const EASE_OUT: Easing = [0.215, 0.61, 0.355, 1]
 const EASE_IN_OUT: Easing = [0.76, 0, 0.24, 1]
@@ -34,28 +36,35 @@ const createVariants = (reduceMotion: boolean): FramerMotionVariants => {
 const SelectionDisplayModal = () => {
   const pathname = usePathname()
   const shouldReduceMotion = useReducedMotion()
+  const focusedSlug = useSelection((state) => state.focusedSlug)
+  const focusedProject = useProjectStore((state) => focusedSlug ? state.projectsBySlug[focusedSlug] ?? null : null)
 
+  const showModal = useMemo((): boolean => focusedProject !== null && pathname === '/', [pathname, focusedProject])
   const variants = useMemo(() => createVariants(shouldReduceMotion), [shouldReduceMotion])
-  const focusedName = useSelection((state) => state.focusedName)
-  const focusedProject = useProjectStore((state) => (focusedName ? state.projectsByNodeName[focusedName] ?? null : null))
 
   const displayName = focusedProject?.UIData.displayName ?? ''
   const shortDescription = focusedProject?.UIData.shortDescription ?? ''
-  const slug = focusedProject?.UIData.slug ?? ''
-  const showModal: boolean = slug.length > 0 && pathname === '/'
-  const url = `/projects/${slug}`
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key == 'Escape' && showModal) { console.log("resetting"); reset() } }
+
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [pathname, showModal])
 
   return (
     <div
       id='selection-display-modal'
-      className={`fixed inset-y-1/8 inset-x-6 sm:inset-x-6 md:inset-x-12 z-30 flex shrink flex-col w-fit h-fit justify-center items-center text-header transition-all transition-discrete duration-700 ease-in-out ${showModal ? 'opacity-100' : 'opacity-0'}`}
+      className={`absolute inset-y-6 inset-x-0 z-30 flex shrink flex-col w-fit h-fit justify-self-center items-center text-header transition-all transition-discrete duration-700 ease-in-out ${showModal ? 'opacity-100' : 'opacity-0'}`}
+    // className={`absolute inset-y-1/8 inset-x-6 sm:inset-x-6 md:inset-x-12 z-30 flex shrink flex-col w-fit h-fit justify-center items-center text-header transition-all transition-discrete duration-700 ease-in-out ${showModal ? 'opacity-100' : 'opacity-0'}`}
     >
       <AnimatePresence mode='wait'>
         {showModal && (
           <motion.div
-            key={slug}
+            key={focusedSlug}
             id='modal-content'
-            className='flex flex-col w-fit h-fit place-self-center justify-center items-center gap-y-1'
+            className='flex flex-col w-fit h-fit items-center gap-y-1'
             initial='hidden'
             animate='visible'
             exit='hidden'
@@ -68,7 +77,7 @@ const SelectionDisplayModal = () => {
               {shortDescription}
             </motion.div>
             <motion.div variants={variants.item} className='w-fit h-fit'>
-              <Link href={url}>
+              <Link href={`/projects/${focusedSlug}`}>
                 <div className='appearance-none w-fit h-fit text-2xl sm:text-2xl md:text-3xl lg4:text-4xl text-neutral-600 cursor-pointer animate-pulse'>
                   View Details
                 </div>

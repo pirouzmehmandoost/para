@@ -40,7 +40,6 @@ export const RootCanvas = ({ projects = [] as Project[] }) => {
     if (projects.length && check) useProjectStore.getState().setProjects(projects)
   }, [projects])
 
-
   useLayoutEffect(() => {
     const check: boolean = !useProjectStore.getState().projects?.length || null
     if (projects.length && check) {
@@ -51,24 +50,26 @@ export const RootCanvas = ({ projects = [] as Project[] }) => {
   }, [projects])
 
   return (
-    <div className={`flex flex-row w-full h-full min-h-1/2 select-none touch-none ${renderMode.pointerEvents}`}>
+    <div className={`flex grow flex-row w-full h-full min-h-1/2 select-none touch-none ${renderMode.pointerEvents}`}>
       <Suspense fallback={<GenericLoader />}>
         <Canvas
           camera={{
-            near,
-            far,
-            fov,
+            near, far, fov,
             position: [INITIAL_POSITION[0], INITIAL_POSITION[1], INITIAL_POSITION[2]]
           }}
           dpr={[1, 1.5]}
           fallback={<GenericLoader />}
           frameloop={renderMode.frameLoop}
-          gl={{ antialias: true }}
           orthographic={false}
-          shadows={{ type: PCFShadowMap }}
+          shadows={{ enabled: true, autoUpdate: true, type: PCFShadowMap }}
         >
           <color args={[BACKGROUND_COLOR]} attach='background' />
           <fog attach='fog' color={BACKGROUND_COLOR} near={FOG_NEAR} far={FOG_FAR} />
+          <directionalLight
+            color={'#FFFFFF'}
+            intensity={1}
+            position={[0, 100, 90]}
+            />
           <Environment files={ENVIRONMENT_HDR_URL} environmentIntensity={ENVIRONMENT_INTENSITY} />
           <Suspense fallback={<ThreeLoader str={'Textures'} injectStyle={'text-blue-500 text-nowrap'} />}>
             <TextureInitializer />
@@ -83,3 +84,17 @@ export const RootCanvas = ({ projects = [] as Project[] }) => {
 }
 
 export default RootCanvas
+
+
+      // {/* <directionalLight
+      //   castShadow
+      //   color={'#FFFFFF'}
+      //   intensity={3}
+      //   position={[0, 180, 0]}
+      //   shadow-mapSize={[2048, 2048]}
+      //   shadow-bias={-0.005}
+      // >
+      //   <orthographicCamera attach='shadow-camera' aargs={[-300, 300, 300, -300, 10, 400]} />
+      // </directionalLight> */}
+
+ 

@@ -37,6 +37,11 @@ export const projectsTable = pgTable(
       .notNull()
       .default({ x: 0, y: 0, z: 0 }),
 
+    position: jsonb('position')
+      .$type<{ x: number; y: number; z: number }>()
+      .notNull()
+      .default({ x: 0, y: 0, z: 0 }),
+
     rotationSpeed: doublePrecision('rotation_speed').notNull().default(0.5),
     scale: doublePrecision('scale').notNull().default(1.0),
 
@@ -67,6 +72,12 @@ export const projectsTable = pgTable(
       sql`jsonb_typeof(${table.rotation} -> 'x') = 'number'
         AND jsonb_typeof(${table.rotation} -> 'y') = 'number'
         AND jsonb_typeof(${table.rotation} -> 'z') = 'number'`,
+    ),
+    check(
+      'position_components_are_numbers',
+      sql`jsonb_typeof(${table.position} -> 'x') = 'number'
+        AND jsonb_typeof(${table.position} -> 'y') = 'number'
+        AND jsonb_typeof(${table.position} -> 'z') = 'number'`,
     ),
   ],
 );
