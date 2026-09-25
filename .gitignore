@@ -27,9 +27,11 @@ yarn-error.log*
 
 # local env files
 .env*.local
+*.env*
 
 # local dev
-/src/app/components/three/.legacyComponents/
+*src/app/components/.legacyComponents
+AGENTS.md
 
 # vercel
 .vercel
@@ -46,3 +48,4 @@ next-env.d.ts
 *.mp4
 *.glb
 *.mind
+*.ktx2
