@@ -3,17 +3,9 @@ import { Object3D, Object3DEventMap, Scene, Vector3 } from 'three'
 
 type Object3DEventTypes = 'added' | 'removed'
 
-type Object3DEventHandler = EventListener<
-  Object3DEventMap[Object3DEventTypes],
-  Object3DEventTypes,
-  Object3D
->
+type Object3DEventHandler = EventListener<Object3DEventMap[Object3DEventTypes], Object3DEventTypes, Object3D>
 
-type ChildAddedHandler = EventListener<
-  Object3DEventMap['childadded'],
-  'childadded',
-  Object3D
->
+type ChildAddedHandler = EventListener<Object3DEventMap['childadded'], 'childadded', Object3D>
 
 export interface RegistryEntry {
   target: Object3D
@@ -39,14 +31,11 @@ class TargetRegistry {
   private _userRemoved: Set<string> = new Set();
   private _activeFilter: ((obj: Object3D) => boolean) | null = null;
   private _sceneChildAddedHandler: ChildAddedHandler | null = null;
+  private _childAddedHandler: ChildAddedHandler | null = null;
 
   constructor(scene: Scene) {
-    if (!scene) {
-      throw new TypeError('TargetRegistry.ts: scene must be of type Scene.')
-    }
-    else {
-      this._scene = scene
-    }
+    if (!scene) throw new TypeError('TargetRegistry.ts: scene must be of type Scene.')
+    else this._scene = scene
   }
 
   // Public methods:
@@ -96,12 +85,25 @@ class TargetRegistry {
   registerByFilter(filter: (obj: Object3D) => boolean): void {
     this._cleanupListeners()
     this._removeSceneChildAddedListener()
+    this._removeChildAddedListeners()
     this._promoted = {}
     this._demoted = {}
     this._positions = []
     this._userRemoved.clear()
     this._targets = {}
     this._activeFilter = filter
+    this._childAddedHandler = (event) => {
+      event.child.traverse((child) => {
+        if (
+          filter(child) &&
+          !this._promoted[child.uuid] &&
+          !this._demoted[child.uuid]
+        ) {
+          this._promoteByObject(child)
+        }
+      })
+    }
+
     this._scene.traverse((obj) => {
       if (filter(obj)) this._promoteByObject(obj)
     })
@@ -127,7 +129,7 @@ class TargetRegistry {
   }
 
   demote(uuid: string): boolean {
-    const entry = this._promoted[uuid]
+    const entry = this._promoted[uuid] ?? null
     if (!entry) return false
 
     const demotedIndex = entry.index
@@ -142,14 +144,13 @@ class TargetRegistry {
   }
 
   promote(uuid: string): boolean {
-    const entry = this._demoted[uuid]
+    const entry: RegistryEntry | null = this._demoted[uuid] ?? null
     if (!entry) return false
 
     const isEntryInScene = this._scene.getObjectByProperty('uuid', entry.target.uuid)
     const parentUUID = entry.target.parent?.uuid
-    const isParentInScene = parentUUID
-      ? this._scene?.getObjectByProperty('uuid', parentUUID)?.isObject3D
-      : null
+    const isParentInScene = parentUUID ? this._scene?.getObjectByProperty('uuid', parentUUID)?.isObject3D : null
+
     if (!isEntryInScene || !isParentInScene) return false
 
     this._promoteEntry(entry)
@@ -187,6 +188,7 @@ class TargetRegistry {
     const promoted = this._promoted[uuid]
     if (promoted) {
       const removedIndex = promoted.index
+      this._removeChildAddedListenerForTarget(promoted.target)
       this._removeListenersForTarget(promoted.target, 'removed')
       this._removePositionAtIndex(removedIndex)
       this._decrementPromotedIndicesAbove(removedIndex)
@@ -196,6 +198,7 @@ class TargetRegistry {
       const demoted = this._demoted[uuid]
       if (!demoted) return false
 
+      this._removeChildAddedListenerForTarget(demoted.target)
       this._removeListenersForTarget(demoted.target, 'added')
       delete this._demoted[uuid]
     }
@@ -209,12 +212,14 @@ class TargetRegistry {
   deregister(): void {
     this._cleanupListeners()
     this._removeSceneChildAddedListener()
+    this._removeChildAddedListeners()
     this._promoted = {}
     this._demoted = {}
     this._positions = []
     this._userRemoved.clear()
     this._targets = {}
     this._activeFilter = null
+    this._childAddedHandler = null
   }
 
   // Private methods
@@ -257,6 +262,7 @@ class TargetRegistry {
       const isTracked = this._activeFilter !== null || !!this._targets[uuid]
 
       if (!parent || !isTracked) {
+        this._removeChildAddedListenerForTarget(entry.target)
         delete this._demoted[uuid]
         this._removeListenersForTarget(entry.target, 'removed')
       }
@@ -297,6 +303,7 @@ class TargetRegistry {
     this._targets[uuid] = obj
     this._positions.push(new Vector3())
     this._addListener(obj, 'removed', this._makeRemovedHandler(uuid))
+    this._attachChildAddedListener(obj)
   }
 
   private _attachSceneChildAddedListener(): void {
@@ -355,6 +362,40 @@ class TargetRegistry {
   ): void {
     target.addEventListener(type, handler)
     this._listeners.push({ target, type, handler })
+  }
+
+  private _attachChildAddedListener(target: Object3D): void {
+    if (this._childAddedHandler && !target.hasEventListener('childadded', this._childAddedHandler)) {
+      target.addEventListener('childadded', this._childAddedHandler)
+    }
+  }
+
+  private _removeChildAddedListeners(): void {
+    const handler = this._childAddedHandler
+    if (handler === null) return
+
+    for (const key in this._promoted) {
+      const target = this._promoted[key].target
+      if (target.hasEventListener('childadded', handler)) {
+        target.removeEventListener('childadded', handler)
+      }
+    }
+
+    for (const key in this._demoted) {
+      const target = this._demoted[key].target
+      if (target.hasEventListener('childadded', handler)) {
+        target.removeEventListener('childadded', handler)
+      }
+    }
+  }
+
+  private _removeChildAddedListenerForTarget(target: Object3D): void {
+    const handler = this._childAddedHandler
+    if (handler === null) return
+
+    if (target.hasEventListener('childadded', handler)) {
+      target.removeEventListener('childadded', handler)
+    }
   }
 
   private _removeListenersForTarget(target: Object3D, type: Object3DEventTypes): void {
