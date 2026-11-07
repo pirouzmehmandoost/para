@@ -1,16 +1,39 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useRef } from 'react'
-import { Vector3 } from 'three'
+import { Euler, Object3D, Quaternion, Vector3 } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
-import { easing } from 'maath'
+import { easing as oldEasing } from 'maath'
 import carouselConfigs from '@configs/carouselConfigs'
 import useSelection from '@stores/selectionStore'
 import useTargetRegistry from '@stores/targetRegistryStore'
 import { getAABBCenterFast } from '@utils/positionUtils'
+import { setTransformData } from '@utils/validation'
+import type { Transform3 } from '../../../../types/Transform3'
 import type { RegistryEntry } from '@/lib/targetRegistry/TargetRegistry'
+import { quat, vec3, remapClamp } from 'math'
+import type { Vec3, Quat } from 'math'
+import { easing } from 'math/time'
 
-const { MANUAL_DWELL_SECONDS, AUTO_DWELL_SECONDS, SWIPE_DELTA_DISTANCE, SWIPE_DELTA_TIME_MS, OFFSET_POSITION } = carouselConfigs
+const lookAtQuaternion: Quat = quat.create()
+const currentQuaternion: Quat = quat.create()
+const cameraForward: Vec3 = [0, 0, -1]
+const restDirection: Vec3 = [0, 0, 0]
+const aimDirection: Vec3 = [0, 0, 0]
+const restQuat: Quat = quat.create()
+const aimQuat: Quat = quat.create()
+const inner = 100
+const outer = 400
+
+const {
+  MANUAL_DWELL_SECONDS,
+  AUTO_DWELL_SECONDS,
+  SWIPE_DELTA_DISTANCE,
+  SWIPE_DELTA_TIME_MS,
+  DEFAULT_POSITION,
+  OFFSET_POSITION,
+  LOOKAT_POSITION
+} = carouselConfigs
 
 const positiveOr = (value: number, fallback: number): number => (value > 0 ? value : fallback)
 
@@ -21,9 +44,9 @@ interface PointerData {
 }
 
 interface CarouselTestProps {
-  defaultPosition?: Vector3
-  lookAtPosition?: Vector3
-  offsetPosition?: Vector3
+  defaultPosition?: [x: number, y: number, z: number] | Transform3 | Vector3
+  lookAtPosition?: [x: number, y: number, z: number] | Transform3 | Euler
+  offsetPosition?: [x: number, y: number, z: number] | Transform3 | Vector3
   onSwipe?: (e: PointerEvent) => void
   autoDwellTime?: number
   manualDwellTime?: number
@@ -44,8 +67,13 @@ const Carousel = ({
   const _scratchLookAtRef = useRef<Vector3>(new Vector3())
   const _scratchPositionRef = useRef<Vector3>(new Vector3())
   const defaultPositionRef = useRef<Vector3>(new Vector3())
-  const offsetPositionRef = useRef<Vector3>(new Vector3(OFFSET_POSITION[0], OFFSET_POSITION[1], OFFSET_POSITION[2]))
-  const lookAtPositionRef = useRef<Vector3>(new Vector3(0, 0, -1))
+  const offsetPositionRef = useRef<Vector3>(new Vector3())
+  const lookAtPositionRef = useRef<Vector3>(new Vector3())
+
+  const lastSampleTargetRef = useRef<Object3D | null>(null)
+  const lastSamplePositionRef = useRef<Vector3>(new Vector3())
+  const lastSampleQuaternionRef = useRef<Quaternion>(new Quaternion())
+  const lastSampleScaleRef = useRef<Vector3>(new Vector3())
 
   const domElement = useThree((state) => state.gl.domElement)
   const get = useThree((state) => state.get)
@@ -74,29 +102,20 @@ const Carousel = ({
   }, [autoDwellTime, manualDwellTime, swipeDistanceThreshold, swipeTimeThreshold])
 
   useLayoutEffect(() => {
-    if (!defaultPosition?.isVector3) return
-
-    if (!defaultPositionRef.current.equals(defaultPosition)) {
-      defaultPositionRef.current.copy(defaultPosition)
-    }
+    if (!!defaultPosition) setTransformData(defaultPositionRef.current, defaultPosition)
+    else setTransformData(defaultPositionRef.current, DEFAULT_POSITION)
   }, [defaultPosition])
 
   useLayoutEffect(() => {
-    if (!lookAtPosition?.isVector3) return
+    if (!!lookAtPosition) setTransformData(lookAtPositionRef.current, lookAtPosition)
+    else setTransformData(lookAtPositionRef.current, LOOKAT_POSITION)
 
-    if (!lookAtPositionRef.current.equals(lookAtPosition)) {
-      lookAtPositionRef.current.copy(lookAtPosition)
-      isCameraOrientationSet.current = false
-    }
-
+    isCameraOrientationSet.current = false
   }, [lookAtPosition])
 
   useLayoutEffect(() => {
-    if (!offsetPosition?.isVector3) return
-
-    if (!offsetPositionRef.current.equals(offsetPosition)) {
-      offsetPositionRef.current.copy(offsetPosition)
-    }
+    if (!!offsetPosition) setTransformData(offsetPositionRef.current, offsetPosition)
+    else setTransformData(defaultPositionRef.current, OFFSET_POSITION)
   }, [offsetPosition])
 
   useEffect(() => {
@@ -197,7 +216,7 @@ const Carousel = ({
         defaultPositionRef.current.y - 2 * sine,
         defaultPositionRef.current.z + sine
       )
-      easing.damp3(camera.position, _scratchPositionRef.current, 1, clampedDelta)
+      oldEasing.damp3(camera.position, _scratchPositionRef.current, 1, clampedDelta)
       return
     };
 
@@ -219,8 +238,6 @@ const Carousel = ({
         }
       }
     }
-
-
 
     if (focusedIndex >= 0 && positions[focusedIndex]) {
       targetIndexRef.current = focusedIndex
@@ -244,9 +261,30 @@ const Carousel = ({
       }
     }
 
+    // old logic
+    // if (currentEntry?.target?.isObject3D) {
+    //   getAABBCenterFast(currentEntry.target, _scratchCenterRef.current)
+    //   registry.refreshPosition(targetIndexRef.current, _scratchCenterRef.current)
+    //   nextPosition = _scratchCenterRef.current
+    // }
+
+    //new logic
     if (currentEntry?.target?.isObject3D) {
-      getAABBCenterFast(currentEntry.target, _scratchCenterRef.current)
-      registry.refreshPosition(targetIndexRef.current, _scratchCenterRef.current)
+      const target = currentEntry.target
+      const targetChanged = lastSampleTargetRef.current !== target
+      const positionChanged = lastSamplePositionRef.current.distanceTo(target.position) > 1
+      const rotationChanged = lastSampleQuaternionRef.current.angleTo(target.quaternion) > 1
+      const scaleChanged = lastSampleScaleRef.current.distanceTo(target.scale) > 10e-2
+
+      if (targetChanged || positionChanged || rotationChanged || scaleChanged) {
+        getAABBCenterFast(target, _scratchCenterRef.current)
+        registry.refreshPosition(targetIndexRef.current, _scratchCenterRef.current)
+        lastSampleTargetRef.current = target
+        lastSamplePositionRef.current.copy(target.position)
+        lastSampleQuaternionRef.current.copy(target.quaternion)
+        lastSampleScaleRef.current.copy(target.scale)
+      };
+
       nextPosition = _scratchCenterRef.current
     }
     else {
@@ -258,7 +296,37 @@ const Carousel = ({
       nextPosition.y + offsetPositionRef.current.y + (-2 * sine),
       nextPosition.z + offsetPositionRef.current.z + sine
     )
-    easing.damp3(camera.position, _scratchPositionRef.current, 1, clampedDelta)
+    oldEasing.damp3(camera.position, _scratchPositionRef.current, 1, clampedDelta)
+
+    const distanceToNextPosition = camera.position.distanceTo(nextPosition)
+    const proximity = remapClamp(distanceToNextPosition, outer, inner, 0, 1)
+    const t1 = easing.sineInOut(proximity)
+    const turnTime = 1 - proximity // 0.6 * (1 - proximity) + 0.15
+
+    restDirection[0] = lookAtPositionRef.current.x
+    restDirection[1] = lookAtPositionRef.current.y
+    restDirection[2] = lookAtPositionRef.current.z
+
+    vec3.normalize(restDirection, restDirection)
+
+    aimDirection[0] = nextPosition.x - camera.position.x
+    aimDirection[1] = nextPosition.y - camera.position.y
+    aimDirection[2] = nextPosition.z - camera.position.z
+
+    vec3.normalize(aimDirection, aimDirection)
+    quat.rotationTo(restQuat, cameraForward, restDirection)
+    quat.rotationTo(aimQuat, cameraForward, aimDirection)
+    quat.slerp(lookAtQuaternion, restQuat, aimQuat, t1)
+
+    currentQuaternion[0] = camera.quaternion.x
+    currentQuaternion[1] = camera.quaternion.y
+    currentQuaternion[2] = camera.quaternion.z
+    currentQuaternion[3] = camera.quaternion.w
+
+    const t2 = 1 - Math.exp(-clampedDelta / (turnTime+1))
+    quat.slerp(currentQuaternion, currentQuaternion, lookAtQuaternion, t2)
+
+    camera.quaternion.set(...currentQuaternion)
   })
 
   return null

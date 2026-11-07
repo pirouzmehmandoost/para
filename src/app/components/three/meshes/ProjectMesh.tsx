@@ -1,20 +1,19 @@
 'use client'
 
 import { memo, useEffect, useLayoutEffect, useRef } from 'react'
-import { BufferGeometry, Camera, DoubleSide, Euler, Mesh, MeshPhysicalMaterial, OrthographicCamera, PerspectiveCamera, Vector3 } from 'three'
+import { BufferGeometry, Camera, DoubleSide, Euler, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, OrthographicCamera, PerspectiveCamera, Vector3 } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { easing } from 'maath'
-import useMaterial, { defaultMeshPhysicalMaterialConfig } from '@stores/materialStore'
+import useMaterial, { defaultPhysicalMaterialProperties, type MaterialStoreState } from '@/app/stores/materialStore'
 import useSelection from '@stores/selectionStore'
 import { eulerDistance, EPSILON_3e3, EPSILON_10e4, fitToPerspectiveCameraFrustum, wrap } from '@utils/animationUtils'
 import carouselConfigs from '@configs/carouselConfigs'
-import type { EulerValue } from '@/types/EulerValue'
+import type { Transform3 } from '../../../../types/Transform3'
 
-interface PositionValue extends EulerValue { }
-
-const cameraDistanceZ: number = carouselConfigs.OFFSET_POSITION[2]
+const { OFFSET_POSITION } = carouselConfigs
+const cameraDistanceZ: number = (OFFSET_POSITION as Transform3).z
 const FOCUS_Z_OFFSET = 20
 
 const PositionAnimationModes: Record<string, string> = {
@@ -34,8 +33,8 @@ interface Props {
   nodeName: string
   onClick?: (event: ThreeEvent<MouseEvent>) => void
   onMeshReady?: (arg: Mesh) => void
-  position: PositionValue
-  rotation: EulerValue
+  position: Transform3
+  rotation: Transform3
   rotationSpeed: number
   scale: number
   url: string
@@ -77,7 +76,7 @@ const ProjectMesh = (props: Props) => {
   const animateRotationRef = useRef<Euler>(new Euler(rx, ry, rz))
   const defaultRotationRef = useRef<Euler>(new Euler(rx, ry, rz))
 
-  const animateMaterialRef = useRef<MeshPhysicalMaterial>(new MeshPhysicalMaterial({ ...defaultMeshPhysicalMaterialConfig }))
+  const animateMaterialRef = useRef<MeshPhysicalMaterial>(new MeshPhysicalMaterial({ ...defaultPhysicalMaterialProperties }))
   const targetMaterialRef = useRef<MeshPhysicalMaterial | null>(null)
 
   const materialReadyRef = useRef<boolean>(false)
@@ -87,14 +86,15 @@ const ProjectMesh = (props: Props) => {
   }, [onMeshReady, geometry])
 
   useEffect(() => {
-    const material = animateMaterialRef.current
+    const material: MeshPhysicalMaterial = animateMaterialRef.current
+
+    if (meshRef.current) meshRef.current.material = animateMaterialRef.current
+
     return () => material.dispose()
   }, [])
 
   useLayoutEffect(() => {
-    if (geometry && meshRef.current) {
-      meshRef.current.userData.slug = slug
-    }
+    if (geometry && meshRef.current) meshRef.current.userData.slug = slug
   }, [geometry, slug])
 
   useLayoutEffect(() => {
@@ -106,50 +106,57 @@ const ProjectMesh = (props: Props) => {
 
   useLayoutEffect(() => {
     if (meshRef.current && geometry) {
-      meshRef.current.geometry.computeBoundingBox()
-      meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current)
-      // updateCameraRelativeScale(camera as PerspectiveCamera, true, 0.08)
-      if (camera instanceof PerspectiveCamera) fitToPerspectiveCameraFrustum(camera, _scratchSizeRef.current, scaleRef.current, meshRef.current, scale, true, 0.08, cameraDistanceZ)
+      if (meshRef.current?.geometry && meshRef.current.geometry.boundingBox) {
+        meshRef.current.geometry.computeBoundingBox()
+        meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current)
+        if (camera instanceof PerspectiveCamera) fitToPerspectiveCameraFrustum(camera, _scratchSizeRef.current, scaleRef.current, meshRef.current, scale, true, 0.08, cameraDistanceZ)
+      }
     }
   }, [camera, geometry, scale])
 
   function updateRotationAnimation(
     rotationMode: string,
-    deltaRotation: EulerValue,
+    deltaRotation: Transform3,
     frameDelta: number
   ) {
-    const hasRotationModeChanged: boolean = rotationMode !== rotationModeRef.current
+    if (meshRef.current) {
+      const hasRotationModeChanged: boolean = rotationMode !== rotationModeRef.current
 
-    if (hasRotationModeChanged) {
-      animateRotationRef.current.copy(meshRef.current.rotation)
+      if (hasRotationModeChanged) {
+        animateRotationRef.current.copy(meshRef.current.rotation)
+        rotationModeRef.current = rotationMode
+      }
+
+      const refToUpdate: Euler = rotationMode === RotationAnimationModes.IDLE ? defaultRotationRef.current : animateRotationRef.current
+      const smoothTime: number = rotationMode === RotationAnimationModes.IDLE ? 1.5 : 1
+
+      if (rotationMode === RotationAnimationModes.AUTO) {
+        const y: number = animateRotationRef.current.y + frameDelta * rotationSpeed
+        const wY: number = wrap(y, 0, (Math.PI * 2))
+        animateRotationRef.current.set(defaultRotationRef.current.x, wY, defaultRotationRef.current.z)
+      }
+      else if (rotationMode === RotationAnimationModes.MANUAL) {
+        const { x = 0, y = 0, z = 0 } = deltaRotation
+        animateRotationRef.current.set(defaultRotationRef.current.x + x, defaultRotationRef.current.y + y, defaultRotationRef.current.z + z)
+      }
+      else if (rotationMode === RotationAnimationModes.IDLE) {
+        animateRotationRef.current.set(defaultRotationRef.current.x, defaultRotationRef.current.y, defaultRotationRef.current.z)
+      }
+
+      if (eulerDistance(meshRef.current.rotation, refToUpdate) > EPSILON_3e3) {
+        easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, frameDelta)
+      }
+
       rotationModeRef.current = rotationMode
     }
-
-    const refToUpdate: Euler = rotationMode === RotationAnimationModes.IDLE ? defaultRotationRef.current : animateRotationRef.current
-    const smoothTime: number = rotationMode === RotationAnimationModes.IDLE ? 1.5 : 1
-
-    if (rotationMode === RotationAnimationModes.AUTO) {
-      const y: number = animateRotationRef.current.y + frameDelta * rotationSpeed
-      const wY: number = wrap(y, 0, (Math.PI * 2))
-      animateRotationRef.current.set(defaultRotationRef.current.x, wY, defaultRotationRef.current.z)
-    }
-    else if (rotationMode === RotationAnimationModes.MANUAL) {
-      const { x = 0, y = 0, z = 0 } = deltaRotation
-      animateRotationRef.current.set(defaultRotationRef.current.x + x, defaultRotationRef.current.y + y, defaultRotationRef.current.z + z)
-    }
-    else if (rotationMode === RotationAnimationModes.IDLE) {
-      animateRotationRef.current.set(defaultRotationRef.current.x, defaultRotationRef.current.y, defaultRotationRef.current.z)
-    }
-
-    if (eulerDistance(meshRef.current.rotation, refToUpdate) > EPSILON_3e3) {
-      easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, frameDelta)
-    }
-
-    rotationModeRef.current = rotationMode
-  };
+  }
 
   function updatePositionAnimation(positionMode: string, xOffset = 0, yOffset = 0, zOffset = 0, frameDelta: number) {
-    if (positionMode !== positionModeRef.current) positionModeRef.current = positionMode
+    if (!meshRef.current) return
+
+    if (positionMode !== positionModeRef.current) {
+      positionModeRef.current = positionMode
+    }
 
     if (positionMode === PositionAnimationModes.ENABLED) {
       animatePositionRef.current.set(defaultPositionRef.current.x + xOffset, defaultPositionRef.current.y + yOffset, defaultPositionRef.current.z + zOffset)
@@ -158,8 +165,10 @@ const ProjectMesh = (props: Props) => {
       animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y, defaultPositionRef.current.z)
     }
 
-    if (meshRef.current.position.distanceTo(animatePositionRef.current) > EPSILON_3e3) easing.damp3(meshRef.current.position, animatePositionRef.current, 1, frameDelta)
-  };
+    if (meshRef.current.position.distanceTo(animatePositionRef.current) > EPSILON_3e3) {
+      easing.damp3(meshRef.current.position, animatePositionRef.current, 1.15, frameDelta)
+    }
+  }
 
   function easeMaterialProperties(materialToUpdate: MeshPhysicalMaterial, frameDelta: number) {
     if (materialToUpdate) {
@@ -216,14 +225,9 @@ const ProjectMesh = (props: Props) => {
     if (meshRef.current && nodeName?.length) {
 
       const clampedDelta: number = Math.min(delta, 0.08)
-      const materialStore = useMaterial.getState()
+      const materialStore: MaterialStoreState = useMaterial.getState()
       const texturesReady: boolean = materialStore.texturesInitialized?.length > 0
-      const {
-        focusedSlug,
-        autoRotationActive,
-        focusedMaterialID,
-        deltaRotation
-      } = useSelection.getState()
+      const { focusedSlug, autoRotationActive, focusedMaterialID, deltaRotation } = useSelection.getState()
       const selectedAndFocused: boolean = focusedSlug !== null && focusedSlug === slug
       const selectedMaterialID: string = selectedAndFocused && focusedMaterialID?.length ? focusedMaterialID : defaultMaterialID
 
@@ -240,9 +244,9 @@ const ProjectMesh = (props: Props) => {
         // one-shot
         if (!materialReadyRef.current) {
           const variants = materialStore.getSelectedMaterials(materialIDs)
-          const defaultMaterial: MeshPhysicalMaterial | null = variants[defaultMaterialID]
+          const defaultMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = variants[defaultMaterialID]
 
-          if (defaultMaterial) {
+          if (defaultMaterial !== null && defaultMaterial instanceof MeshPhysicalMaterial) {
             animateMaterialRef.current.copy(defaultMaterial)
             animateMaterialRef.current.needsUpdate = true
             targetMaterialIDRef.current = defaultMaterialID
@@ -255,9 +259,9 @@ const ProjectMesh = (props: Props) => {
 
         if (selectedMaterialID !== targetMaterialIDRef.current) {
           const variants = materialStore.getSelectedMaterials(materialIDs)
-          const targetMaterial: MeshPhysicalMaterial | null = variants[selectedMaterialID]
+          const targetMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = variants[selectedMaterialID]
 
-          if (targetMaterial) {
+          if (targetMaterial !== null && targetMaterial instanceof MeshPhysicalMaterial) {
             targetMaterialIDRef.current = selectedMaterialID
             targetMaterialRef.current = targetMaterial
           }
@@ -278,7 +282,7 @@ const ProjectMesh = (props: Props) => {
         castShadow
         receiveShadow
         geometry={geometry}
-        material={animateMaterialRef.current}
+        // material={animateMaterialRef.current}
         name={nodeName}
         onClick={onClick}
         rotation={[rx, ry, rz]}

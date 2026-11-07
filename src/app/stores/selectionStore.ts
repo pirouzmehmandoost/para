@@ -1,16 +1,16 @@
 import { create } from 'zustand'
-import type { EulerValue } from '../../types/EulerValue'
+import type { Transform3 } from '../../types/Transform3'
 
 type SelectionValues = {
   focusedSlug: string | null
   focusedMaterialID: string | null
   autoRotationActive: boolean
-  deltaRotation: EulerValue
+  deltaRotation: Transform3
 }
 
 type SelectionActions = {
   setFocused: (materialID: string, slug: string) => void
-  setRotation: (rotation: EulerValue) => void
+  setRotation: (rotation: Transform3) => void
   toggleAutoRotation: () => void
   setMaterialID: (id: string) => void
   reset: () => void
@@ -43,7 +43,7 @@ const useSelection = create<SelectionState>()((set, get) => ({
     })),
 
 
-  setRotation: (rotation: EulerValue) => {
+  setRotation: (rotation: Transform3) => {
     const {
       deltaRotation: currentRotation,
       autoRotationActive: isAutoRotationActive

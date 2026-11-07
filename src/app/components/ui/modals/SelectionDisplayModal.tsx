@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion, Variants } from 'framer-moti
 import { type Easing } from 'framer-motion'
 import useProjectStore from '@/app/stores/projectStore'
 import useSelection from '@stores/selectionStore'
+import type { Project } from '@/types/project'
 
 const reset = useSelection.getState().reset
 
@@ -17,7 +18,7 @@ interface FramerMotionVariants {
   container: Variants
   item: Variants
 }
-const createVariants = (reduceMotion: boolean): FramerMotionVariants => {
+const createVariants = (reduceMotion: boolean | null): FramerMotionVariants => {
   const dur = (ms: number) => (reduceMotion ? 0 : ms)
   const delay = (ms: number) => (reduceMotion ? 0 : ms)
 
@@ -35,15 +36,16 @@ const createVariants = (reduceMotion: boolean): FramerMotionVariants => {
 
 const SelectionDisplayModal = () => {
   const pathname = usePathname()
-  const shouldReduceMotion = useReducedMotion()
-  const focusedSlug = useSelection((state) => state.focusedSlug)
-  const focusedProject = useProjectStore((state) => focusedSlug ? state.projectsBySlug[focusedSlug] ?? null : null)
+  const shouldReduceMotion: boolean | null = useReducedMotion()
+
+  const focusedSlug: string | null = useSelection((state) => state.focusedSlug)
+  const focusedProject: Project | null = useProjectStore((state) => focusedSlug && state.projectsBySlug !== null ? state.projectsBySlug[focusedSlug] ?? null : null)
 
   const showModal = useMemo((): boolean => focusedProject !== null && pathname === '/', [pathname, focusedProject])
-  const variants = useMemo(() => createVariants(shouldReduceMotion), [shouldReduceMotion])
+  const variants = useMemo((): FramerMotionVariants => createVariants(shouldReduceMotion), [shouldReduceMotion])
 
-  const displayName = focusedProject?.UIData.displayName ?? ''
-  const shortDescription = focusedProject?.UIData.shortDescription ?? ''
+  const displayName: string = focusedProject?.UIData.displayName ?? ''
+  const shortDescription: string = focusedProject?.UIData.shortDescription ?? ''
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => { if (e.key == 'Escape' && showModal) reset() }

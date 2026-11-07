@@ -54,47 +54,44 @@ function _fillArrayBuffer(
   }
 }
 
-export function generateUint8ArrayBuffer(
-  resolution: number = 1024,
-  mapType: string = 'map'
-): Uint8Array | void {
-  if (!mapType.length || resolution < 1024 || resolution % 1024 !== 0) return
-
-  const data = new Uint8Array(resolution)
-
-  switch (mapType) {
-    case 'bumpMap':
-    case 'displacementMap':
-      data.fill(0)
-      break
-    case 'clearcoatNormalMap':
-    case 'normalMap':
-      _fillArrayBuffer(data, 128, 128, 255, 255)
-      break
-    case 'map':
-    case 'clearcoatMap':
-    case 'clearcoatRoughnessMap':
-    case 'roughnessMap':
-    case 'transmissionMap':
-    default:
-      _fillArrayBuffer(data, 255, 255, 255, 255)
-      break
+export function generateUint8ArrayBuffer(resolution: number = 1024, mapType: string = 'map'): Uint8Array | null {
+  if (mapType.length && resolution > 0 && (resolution & (resolution - 1)) === 0) {
+    const data = new Uint8Array(resolution)
+    switch (mapType) {
+      case 'bumpMap':
+      case 'displacementMap':
+        data.fill(0)
+        break
+      case 'clearcoatNormalMap':
+      case 'normalMap':
+        _fillArrayBuffer(data, 128, 128, 255, 255)
+        break
+      case 'map':
+      case 'clearcoatMap':
+      case 'clearcoatRoughnessMap':
+      case 'roughnessMap':
+      case 'transmissionMap':
+      default:
+        _fillArrayBuffer(data, 255, 255, 255, 255)
+        break
+    }
+    return data
   }
-  return data
+  return null
 }
 
 export function generateDataTexture(arrayBuffer: Uint8Array, mapType: string): DataTexture {
   let data = {} as DataTexture | null
-  let size: number = 0
+  let resolution: number = 0
 
   switch (mapType) {
     case 'displacementMap':
-      size = Math.sqrt(arrayBuffer.length)
-      data = new DataTexture(arrayBuffer, size, size, RedFormat, UnsignedByteType)
+      resolution = Math.sqrt(arrayBuffer.length)
+      data = new DataTexture(arrayBuffer, resolution, resolution, RedFormat, UnsignedByteType)
       break
     default:
-      size = Math.sqrt(arrayBuffer.length / 4)
-      data = new DataTexture(arrayBuffer, size, size)
+      resolution = Math.sqrt(arrayBuffer.length / 4)
+      data = new DataTexture(arrayBuffer, resolution, resolution)
   }
 
   data.colorSpace = getColorSpace(mapType)

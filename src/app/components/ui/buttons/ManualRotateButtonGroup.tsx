@@ -1,9 +1,9 @@
 import { memo, useMemo } from 'react'
-import type { EulerValue } from '../../../../types/EulerValue'
+import type { Transform3 } from '../../../../types/Transform3'
 import ManualRotationButton from './ManualRotationButton'
 
 interface ManualRotateButtonGroupProps {
-  callback: (rotation: EulerValue, buttonID: string) => void
+  callback: (rotation: Transform3, buttonID: string) => void
   active: boolean
   clickedButtonID: string
 }
