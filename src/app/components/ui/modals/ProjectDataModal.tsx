@@ -7,7 +7,7 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import NotesIcon from '@mui/icons-material/Notes'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import type { MaterialRecord } from '../../../../types/material'
-import type { EulerValue } from '../../../../types/EulerValue'
+import type { Transform3 } from '../../../../types/Transform3'
 import useSelection from '@stores/selectionStore'
 import useMaterial from '@stores/materialStore'
 import ModalContainer from '../containers/ModalContainer'
@@ -98,7 +98,7 @@ MaterialControlsPanel.displayName = 'MaterialControlsPanel'
 
 interface RotationControlsPanelProps {
   handleAutoRotate: () => void
-  handleManualRotate: (rotation: EulerValue) => void
+  handleManualRotate: (rotation: Transform3) => void
   autoRotateActive: boolean
 }
 const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, autoRotateActive }: RotationControlsPanelProps) => {
@@ -109,7 +109,7 @@ const RotationControlsPanel = memo(({ handleAutoRotate, handleManualRotate, auto
     handleAutoRotate()
   }, [handleAutoRotate])
 
-  const onManualRotate = useCallback((next: EulerValue, buttonID: string) => {
+  const onManualRotate = useCallback((next: Transform3, buttonID: string) => {
     setClickedButtonID(buttonID)
     handleManualRotate(next)
   }, [handleManualRotate])
@@ -211,7 +211,7 @@ const ProjectDataModal = ({ project, entryPoint }: ProjectDataModalProps) => {
     if (id.length > 0 && selectedMaterialID !== id) startTransition(() => setMaterialID(id))
   }, [selectedMaterialID, setMaterialID])
 
-  const handleManualRotate = useCallback((rotation: EulerValue) => {
+  const handleManualRotate = useCallback((rotation: Transform3) => {
     startTransition(() => setRotation(rotation))
   }, [])
 

@@ -4,6 +4,20 @@ canvas {
   touch-action: none;
 }
 
+.not-found-container {
+  min-height: 100vh;
+  min-width: 100vw;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  background: oklch(87% 0 none);
+  color: oklch(20.5% 0 none);
+}
+
 @theme {
   /*neutral-900 */
   --color-header: oklch(20.5% 0 none);

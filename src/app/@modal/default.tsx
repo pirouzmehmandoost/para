@@ -1,4 +1,3 @@
-
-export default function AssModal() {
+export default function Default() {
   return null
 }

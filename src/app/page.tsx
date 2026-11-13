@@ -1,6 +1,6 @@
 import SelectionDisplayModal from './components/ui/modals/SelectionDisplayModal'
 
-const Home = () => {
+const HomePage = () => {
   return (
     <main className='flex flex-col w-fit h-fit'>
       <SelectionDisplayModal />
@@ -8,4 +8,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default HomePage

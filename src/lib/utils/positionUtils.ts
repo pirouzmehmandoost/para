@@ -1,4 +1,4 @@
-import { Box3, BufferGeometry, InstancedMesh, Matrix4, Mesh, Object3D, Vector3, } from 'three'
+import { Box3, BufferGeometry, InstancedMesh, Matrix4, Mesh, Object3D, Vector3 } from 'three'
 
 const _scratchCenter = new Vector3()
 const _scratchBox = new Box3()
@@ -14,26 +14,6 @@ class Scratch {
 export interface AABBCenterOptions {
   updateMatrices?: boolean // Caller controls the "hidden" cost of matrix updates
   preciseInstances?: boolean // Accuracy vs. speed toggle for InstancedMesh
-}
-
-/**
- * When getAABBCenterFast is called per-frame in a R3F component,
- * I'm comparing its computational and time complexity against GetAABBCenterSlow().
- * That's the basis for my claim in README.md about its performance. This is the basic block of logic that runs 
- * when calculating the bounding box of an upject per-frame and I'm trying to outperform it-
- * especially in cases where the target is a Mesh with no children.
- */
-export function getAABBCenterSlow(
-  target: Object3D,
-  updateParents: boolean = true,
-  updateChildren: boolean = false,
-): Vector3 {
-  if (!target) return
-
-  _scratchBox.makeEmpty()
-  target.updateWorldMatrix(updateParents, updateChildren)
-  _scratchBox.setFromObject(target).getCenter(_scratchCenter)
-  return _scratchCenter
 }
 
 /**

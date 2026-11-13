@@ -1,17 +1,37 @@
 'use client'
 
 import { memo, useLayoutEffect, useMemo, useRef } from 'react'
-import { Box3, BufferGeometry, Euler, Group, InstancedMesh, Matrix4, Mesh, MeshStandardMaterial, Object3D, Vector3 } from 'three'
+import { Box3, BufferGeometry, DataTexture, Euler, Group, InstancedMesh, Matrix4, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, PerspectiveCamera, Side, Texture, Vector2, Vector3 } from 'three'
 import { useGLTF } from '@react-three/drei'
-import useMaterial from '@stores/materialStore'
-import type { EulerValue } from '@/types/EulerValue'
+import { useFrame } from '@react-three/fiber'
+import useMaterial, { defaultMeshStandardMaterialProperties, type MaterialStoreState } from '@/app/stores/materialStore'
+import type { Transform3 } from '../../../../types/Transform3'
+import { fitToPerspectiveCameraFrustum } from '@utils/animationUtils'
+import { setTransformData } from '@utils/validation'
+import terrainConfigs from '@configs/terrainConfigs'
+import carouselConfigs from '@configs/carouselConfigs'
+
+const { OFFSET_POSITION } = carouselConfigs
+const cameraDistanceZ: number = (OFFSET_POSITION as Transform3).z
+const maxRetryCount = 50
+
+const {
+  TERRAIN_MATERIAL_ID,
+  TERRAIN_NODE_NAME,
+  TERRAIN_URL,
+  TERRAIN_POSITION,
+  TERRAIN_ROTATION,
+  TERRAIN_SCALE,
+  TERRAIN_GRID_COLUMNS,
+  TERRAIN_GRID_ROWS,
+  TERRAIN_GRID_SPACING
+} = terrainConfigs
+
+useGLTF.preload(TERRAIN_URL)
 
 const _dummy = new Object3D()
 const _instanceMatrix = new Matrix4()
 const _axis = new Vector3(0, 1, 0)
-
-interface Position extends EulerValue {}
-interface Scale extends EulerValue {}
 
 function rotateInstance(instancedMesh: InstancedMesh, instanceId: number, rotationAxis: Vector3, angleAmount: number) {
   instancedMesh.getMatrixAt(instanceId, _instanceMatrix)
@@ -22,83 +42,95 @@ function rotateInstance(instancedMesh: InstancedMesh, instanceId: number, rotati
   instancedMesh.instanceMatrix.needsUpdate = true
 }
 
-function checkCellValue(value: number): number {
-  return typeof value === 'number' ? Math.max(1, Math.ceil(value)) : 1
-};
-
-function checkGridSize(r: number, c: number, arr: number[]): number {
-  const rows = checkCellValue(r)
-  const columns = checkCellValue(c)
-
-  if (!arr.length) {
-    arr.push(rows)
-    arr.push(columns)
+function checkNumericValue(value: number, wholeNumber: boolean = true): number {
+  if (typeof value === 'number' && !Number.isNaN(value)) {
+    return wholeNumber ? Math.max(1, Math.ceil(value)) : value
   }
-  else {
-    if (arr[0] !== rows) arr[0] = rows
-    if (arr[1] !== columns) arr[1] = columns
-  }
-  return rows * columns
+  return wholeNumber ? 1 : 0
+}
+
+interface TerrainMaterialProperties {
+  color: string
+  flatShading: boolean
+  name: string
+  side: Side
+  metalness: number
+  normalMap: DataTexture | Texture
+  normalScale: Vector2
+  roughness: number
 }
 
 interface TerrainGridProps {
   materialID?: string
-  nodeName?: string,
+  node?: string,
   url?: string
-  position?: [x: number, y: number, z: number] | Position | Euler
-  rotation?: [x: number, y: number, z: number] | EulerValue | Vector3
-  scale?: [x: number, y: number, z: number] | Scale | Vector3
-  gridColumns?: number,
-  gridRows?: number,
-  gridSpacing?: [row: number, column: number],
+  position?: [x: number, y: number, z: number] | Transform3 | Vector3
+  rotation?: [x: number, y: number, z: number] | Transform3 | Euler
+  scale?: [x: number, y: number, z: number] | Transform3 | Vector3
+  columns?: number,
+  rows?: number,
+  spacing?: [row: number, column: number],
 }
-
 const TerrainGrid = ({
-  materialID = 'terrain',
-  nodeName = 'terrain_2_low_poly',
-  url = 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/meshes/terrain_2.glb',
-  position = [0, 0, -80],
-  rotation = [Math.PI / 2.5, 0, 0],
-  scale = [0.55, 0.55, 0.55],
-  gridColumns = 3,
-  gridRows = 3,
-  gridSpacing = [1, 0.989],
+  materialID = undefined,
+  node = undefined,
+  url = undefined,
+  position = undefined,
+  rotation = undefined,
+  scale = undefined,
+  columns = undefined,
+  rows = undefined,
+  spacing = undefined,
 }: TerrainGridProps) => {
   const _scratchSizeRef = useRef<Vector3>(new Vector3())
   const _scratchCenterRef = useRef<Vector3>(new Vector3())
+  const _scratchGroupSizeRef = useRef<Vector3>(new Vector3())
+
   const instancedMeshRef = useRef<InstancedMesh>(null)
   const instanceRef = useRef<Object3D>(new Object3D())
-  const gridRef = useRef<number[]>([1, 1])
-  const totalInstancesRef = useRef<number>(1)
   const groupRef = useRef<Group>(null)
 
-  const rotationRef = useRef<Euler>(new Euler(rotation[0], rotation[1], rotation[2]))
-  const positionRef = useRef<Vector3>(new Vector3(position[0], position[1], position[2]))
-  const scaleRef = useRef<Vector3>(new Vector3(scale[0], scale[1], scale[2]))
+  const retryCountRef = useRef<number>(0)
 
-  const { nodes } = useGLTF(url)
-  const mesh = nodes?.[nodeName] as Mesh | null
-  const geometry = mesh?.geometry as BufferGeometry | null
+  const rotationRef = useRef<Euler>(new Euler(TERRAIN_ROTATION.x, TERRAIN_ROTATION.y, TERRAIN_ROTATION.z))
+  const positionRef = useRef<Vector3>(new Vector3(TERRAIN_POSITION.x, TERRAIN_POSITION.y, TERRAIN_POSITION.z))
+  const scaleRef = useRef<Vector3>(new Vector3(TERRAIN_SCALE.x, TERRAIN_SCALE.y, TERRAIN_SCALE.z))
+  const materialRef = useRef<MeshStandardMaterial>(new MeshStandardMaterial({ ...defaultMeshStandardMaterialProperties as TerrainMaterialProperties }))
+  const materialReadyRef = useRef<boolean>(false)
 
-  const material: MeshStandardMaterial = useMaterial.getState().materials[materialID].material
+  const dummyMaterial = useMemo((): MeshStandardMaterial => new MeshStandardMaterial({ ...defaultMeshStandardMaterialProperties as TerrainMaterialProperties }), [])
 
-  const totalInstances = useMemo((): number => checkCellValue(gridRows) * checkCellValue(gridColumns), [gridRows, gridColumns])
+  const glbUrl = useMemo((): string => (!!url && typeof url === 'string' && url.length > 0) ? url : TERRAIN_URL, [url])
+  const nodeName = useMemo((): string => (!!node && typeof node === 'string' && node.length > 0) ? node : TERRAIN_NODE_NAME, [node])
+  const matID = useMemo((): string => !!materialID && typeof materialID === 'string' && materialID.length > 0 ? materialID : TERRAIN_MATERIAL_ID, [materialID])
+
+  const { nodes } = useGLTF(glbUrl)
+
+  const mesh = useMemo((): Mesh | null => nodes?.[nodeName] as Mesh | null, [nodes, nodeName])
+  const geometry = useMemo((): BufferGeometry | null => mesh?.geometry as BufferGeometry | null, [mesh])
+  const gridRows = useMemo((): number => typeof rows === 'number' ? checkNumericValue(rows) : checkNumericValue(TERRAIN_GRID_ROWS), [rows])
+  const gridColumns = useMemo((): number => typeof columns === 'number' ? checkNumericValue(columns) : checkNumericValue(TERRAIN_GRID_COLUMNS), [columns])
+  const totalInstances = useMemo((): number => gridRows * gridColumns, [gridRows, gridColumns])
+  const gridSpacing = useMemo((): [row: number, column: number] => typeof spacing === 'object' && spacing.length === 2
+    ? [checkNumericValue(spacing[0], false), checkNumericValue(spacing[1], false)]
+    : [checkNumericValue(TERRAIN_GRID_SPACING[0], false), checkNumericValue(TERRAIN_GRID_SPACING[1], false)]
+    , [spacing])
 
   useLayoutEffect(() => {
-    useGLTF.preload(url)
+    const material: MeshStandardMaterial = materialRef.current
+    return () => material.dispose()
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!!url && typeof url === 'string' && url.length > 0) useGLTF.preload(url)
   }, [url])
 
   useLayoutEffect(() => {
-    const totalInstances: number = checkGridSize(gridRows, gridColumns, gridRef.current)
-    if (totalInstancesRef.current !== totalInstances) totalInstancesRef.current = totalInstances
-  }, [gridRows, gridColumns])
+    if (groupRef.current !== null) {
+      if (!!position) setTransformData(positionRef.current, position)
+      if (!!rotation) setTransformData(rotationRef.current, rotation)
+      if (!!scale) setTransformData(scaleRef.current, scale)
 
-  useLayoutEffect(() => {
-    positionRef.current.set(position[0], position[1], position[2])
-    rotationRef.current.set(rotation[0], rotation[1], rotation[2])
-    scaleRef.current.set(scale[0], scale[1], scale[2])
-
-    if (groupRef.current) {
       groupRef.current.position.set(positionRef.current.x, positionRef.current.y, positionRef.current.z)
       groupRef.current.rotation.set(rotationRef.current.x, rotationRef.current.y, rotationRef.current.z)
       groupRef.current.scale.set(scaleRef.current.x, scaleRef.current.y, scaleRef.current.z)
@@ -106,28 +138,29 @@ const TerrainGrid = ({
   }, [position, rotation, scale])
 
   useLayoutEffect(() => {
-    if (instancedMeshRef.current !== null) {
+    if (instancedMeshRef.current !== null && instancedMeshRef.current?.geometry && geometry) {
       let instanceIndex: number = 0
       instancedMeshRef.current.geometry.computeBoundingBox()
 
-      const box: Box3 = instancedMeshRef.current.geometry.boundingBox
-      box.getSize(_scratchSizeRef.current)
-      box.getCenter(_scratchCenterRef.current)
+      const box: Box3 | null = instancedMeshRef.current.geometry.boundingBox
+
+      if (box instanceof Box3) {
+        box.getSize(_scratchSizeRef.current)
+        box.getCenter(_scratchCenterRef.current)
+      }
 
       const instanceSizeX: number = _scratchSizeRef.current.x
       const instanceSizeZ: number = _scratchSizeRef.current.z
-      const rows: number = gridRef.current[0]
-      const columns: number = gridRef.current[1]
-      const gridSizeX: number = rows * instanceSizeX
-      const gridSizeZ: number = columns * instanceSizeZ
+      const gridSizeX: number = gridRows * instanceSizeX
+      const gridSizeZ: number = gridColumns * instanceSizeZ
       const gridCenterX: number = (((-1 * gridSizeX) + instanceSizeX) / 2)
       const gridCenterZ: number = (((-1 * gridSizeZ) + instanceSizeZ) / 2)
 
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns; c++) {
-          const x: number = (r * instanceSizeX * gridSpacing[0]) + gridCenterX
+      for (let i = 0; i < gridRows; i++) {
+        for (let j = 0; j < gridColumns; j++) {
+          const x: number = (i * instanceSizeX * gridSpacing[0]) + gridCenterX
           const y: number = 0
-          const z: number = (c * instanceSizeZ * gridSpacing[1]) + gridCenterZ
+          const z: number = (j * instanceSizeZ * gridSpacing[1]) + gridCenterZ
 
           instanceRef.current.position.set(x, y, z)
           instanceRef.current.updateMatrix()
@@ -136,9 +169,59 @@ const TerrainGrid = ({
           instanceIndex++
         }
       }
+
       instancedMeshRef.current.instanceMatrix.needsUpdate = true
+
+      const spanX: number = instanceSizeX * ((gridRows - 1) * gridSpacing[0] + 1)
+      const spanY: number = _scratchSizeRef.current.y
+      const spanZ: number = instanceSizeZ * ((gridColumns - 1) * gridSpacing[1] + 1)
+      const cosX: number = Math.abs(Math.cos(rotationRef.current.x))
+      const sinX: number = Math.abs(Math.sin(rotationRef.current.x))
+
+      _scratchGroupSizeRef.current.set(
+        spanX,
+        (spanY * cosX) + (spanZ * sinX),
+        (spanY * sinX) + (spanZ * cosX),
+      )
     }
-  }, [gridSpacing])
+  }, [geometry, gridRows, gridColumns, gridSpacing])
+
+  useFrame(({ camera: cam }, delta) => {
+    if (geometry && groupRef.current && nodeName?.length) {
+      const clampedDelta: number = Math.min(delta, 0.08)
+      const materialStore: MaterialStoreState = useMaterial.getState()
+      const texturesReady: boolean = materialStore.texturesInitialized?.length > 0
+
+      if (cam instanceof PerspectiveCamera) {
+        fitToPerspectiveCameraFrustum(
+          cam,
+          _scratchGroupSizeRef.current,
+          scaleRef.current,
+          groupRef.current,
+          8.5,
+          false,
+          clampedDelta,
+          cameraDistanceZ,
+          0.3,
+        )
+      }
+
+      // one-shot
+      if (texturesReady && materialReadyRef.current === false && retryCountRef.current < maxRetryCount) {
+        const storeMaterial: Record<string, MeshPhysicalMaterial | MeshStandardMaterial> = materialStore.getSelectedMaterials([matID])
+        const readyMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = storeMaterial[matID] ?? null
+
+        if (!readyMaterial) retryCountRef.current++
+
+        if (!!readyMaterial && readyMaterial instanceof MeshStandardMaterial && readyMaterial?.isMeshStandardMaterial) {
+          materialRef.current.copy(readyMaterial)
+          materialRef.current.needsUpdate = true
+          materialReadyRef.current = true
+          if (instancedMeshRef.current !== null) instancedMeshRef.current.material = materialRef.current
+        }
+      }
+    }
+  })
 
   return (
     <>
@@ -146,7 +229,7 @@ const TerrainGrid = ({
         <group ref={groupRef}>
           <instancedMesh
             ref={instancedMeshRef}
-            args={[geometry, material, totalInstances]}
+            args={[geometry, dummyMaterial, totalInstances]}
             castShadow
             receiveShadow
           />
