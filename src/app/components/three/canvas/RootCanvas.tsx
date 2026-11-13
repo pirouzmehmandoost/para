@@ -48,10 +48,10 @@ export const RootCanvas = ({ projects = [] as Project[] }: RootCanvasProps) => {
 
   useLayoutEffect(() => {
     const check: boolean = projects !== null && projects.length > 0
-    if (check) {
-      for (const { sceneData: { url = '' } = {} } of projects) {
-        if (url.length > 0 && url.endsWith('.glb')) useGLTF.preload(url)
-      }
+    if (!check) return
+
+    for (const { sceneData: { url = '' } = {} } of projects) {
+      if (url.length > 0 && url.endsWith('.glb')) useGLTF.preload(url)
     }
   }, [projects])
 
