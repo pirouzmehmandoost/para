@@ -2,26 +2,24 @@
 
 ## Purpose
 
-TargetRegistry is a framework-agnostic TypeScript class that tracks Three.js Object3D targets through a promotion/demotion/removal lifecycle. It maintains an ordered list of world-space positions and a UUID-keyed map of tracked targets, driven by Three.js `added`/`removed` events.
+TargetRegistry is a framework-agnostic TypeScript class that tracks Three.js Object3D instances through a promotion/demotion/removal lifecycle. It maintains an ordered list of world-space positions and a UUID-keyed map of tracked targets, driven by Three.js `added`/`removed`/`childadded` events.
 
-It is consumed by `SceneRigV3` (via a thin React hook wrapper, `useTargetRegistry`) but has no dependency on React, React Three Fiber, or Zustand.
+It is consumed by [Carousel](src/app/components/three/rigs/Carousel.tsx) and [SceneComposer](src/app/components/three/scenes/SceneComposer.tsx) via a thin Zustand wrapper, [useTargetRegistry](src/app/stores/targetRegistryStore.ts) but has no dependency on React, React Three Fiber, or Zustand.
 
 ## Files
 
 | File | Role |
 |------|------|
-| `src/lib/targetRegistry/TargetRegistry.ts` | Framework-agnostic class. Depends only on Three.js. |
-| `src/app/hooks/useTargetRegistry.ts` | Thin React hook wrapper. Bridges React lifecycle to the class. |
+| `src/lib/targetRegistry/TargetRegistry.ts` | Class declaration |
+| `src/app/stores/targetRegistryStore.ts` | Thin React Zustand store wrapper. Bridges consumers to an intance of `TargetRegistry`. |
 
 ---
 
-## Three.js Internals (source-verified)
+## Three.js Internals
 
-All claims in this section are verified against the local Three.js clone at `/Users/pirouz/Documents/github/three.js`. Re-verify after any Three.js version upgrade.
+### Object3D.add() - Event Timing
 
-### Object3D.add() — event timing
-
-Source: `src/core/Object3D.js`, lines 746-787.
+Source: `src/core/Object3D.js`.
 
 Sequence when `parent.add(child)` is called:
 
@@ -31,11 +29,11 @@ Sequence when `parent.add(child)` is called:
 4. `child.dispatchEvent({ type: 'added' })` — `added` event fires on the child.
 5. `this.dispatchEvent({ type: 'childadded', child })` — `childadded` event fires on the parent.
 
-When an `added` listener fires, `child.parent` is already set and `child` is already in `parent.children`.
+When an `added` listener fires, `child` is already in `parent.children` and `child.parent` is already set.
 
-`childadded` fires only on the direct parent. There is no event bubbling in `EventDispatcher`. The scene root does NOT receive `childadded` when an object is added to an intermediate parent already in the scene.
+`childadded` fires only on the direct parent. There is no event bubbling in `EventDispatcher`. The scene root does not receive `childadded` when an object is added to an intermediate parent already in the scene.
 
-### Object3D.remove() — event timing
+### Object3D.remove() — Event Timing
 
 Source: `src/core/Object3D.js`, lines 798-829.
 
@@ -82,9 +80,7 @@ Source: `src/scenes/Scene.js`.
 
 ---
 
-## React Three Fiber Internals (source-verified)
-
-All claims in this section are verified against the local R3F clone at `/Users/pirouz/Documents/github/react-three-fiber`. Re-verify after any R3F version upgrade.
+## React Three Fiber Internals
 
 ### Reconciler mutations — synchronous, during React commit phase
 
@@ -120,38 +116,39 @@ Source: `packages/fiber/src/core/hooks.tsx`.
 
 ### Classifications
 
-**Promoted:** A target is registered with the TargetRegistry and considered available. The registry tracks its world-space position in the positions array. A target is promoted when:
+1. **Promoted:** A target is registered with the TargetRegistry and considered available. The registry tracks its world-space position in the positions array. A target is promoted when:
 
-- It is present in the scene graph at discovery time (`register()` or `registerByFilter()`), OR
-- It re-enters the scene graph (the `added` event fires on a demoted target), OR
-- The consumer explicitly calls `promote(uuid)`.
+  - It is present in the scene graph at discovery time (`register()` or `registerByFilter()`), OR
+  - It re-enters the scene graph (the `added` event fires on a demoted target), OR
+  - The consumer explicitly calls `promote(uuid)`.
 
-**Demoted:** A target is registered but considered unavailable. Its position is removed from the positions array. A target is demoted when:
+2. **Demoted:** A target is registered but considered unavailable. Its position is removed from the positions array. A target is demoted when:
 
-- It is removed from the scene graph and the demotion heuristic classifies it as recoverable (see below), OR
-- The consumer explicitly calls `demote(uuid)` for any application-specific reason (visibility change, distance culling, UI toggle, etc.).
+  - It is removed from the scene graph and the demotion heuristic classifies it as recoverable (see below), OR
+  - The consumer explicitly calls `demote(uuid)` for any application-specific reason (visibility change, distance culling, UI toggle, etc.).
 
-A demoted target listens for the `added` event to auto-re-promote if it re-enters the scene graph. Consumer-demoted targets (via `demote()`) are not auto-re-promoted by `added` events — they require an explicit `promote()` call from the consumer, because the consumer owns the reason for demotion.
+  A demoted target listens for the `added` event to auto-re-promote if it re-enters the scene graph. Consumer-demoted targets (via `demote()`) are not auto-re-promoted by `added` events — they require an explicit `promote()` call from the consumer, because the consumer owns the reason for demotion.
 
-**Removed:** A target is permanently gone. Either:
+3. **Removed:** A target is permanently gone. Either:
 
-- The former parent (`parentUUID`) is no longer in the scene graph, OR
-- The target is no longer in the `_targets` map (the consumer dropped it between re-registrations), OR
-- The consumer explicitly calls `removeTarget(uuid)`.
+  - The former parent (`parentUUID`) is no longer in the scene graph, OR
+  - The target is no longer in the `_targets` map (the consumer dropped it between re-registrations), OR
+  - The consumer explicitly calls `removeTarget(uuid)`.
 
-Removed targets are cleaned up immediately. No pending state.
+  Removed targets are cleaned up immediately. No pending state.
+
 
 ### Why `parentUUID` must be stored at promotion time
 
 The `removed` event fires after `child.parent = null` (Three.js `Object3D.remove()`, line 816). By the time the registry's `_makeRemovedHandler` listener runs, `event.target.parent` is `null`. The only way to check whether the former parent is still in the scene graph — and therefore distinguish demotion from removal — is to have stored the parent's UUID beforehand.
 
-### Demotion vs. removal — the heuristic
+### Target Demotion vs. Removal
 
 When `_makeRemovedHandler` fires for a tracked target:
 
 1. Look up the stored `parentUUID` for this target.
 2. Call `scene.getObjectByProperty('uuid', parentUUID)` to check if the former parent is still in the scene graph.
-3. Check if the target is still tracked: either `_activeFilter` is non-null (filter mode) or the UUID exists in `_targets` (array mode).
+3. Check if the target is still tracked; either `_activeFilter` is non-null (filter mode), or the UUID exists in `_targets` (array mode).
 4. If the parent exists AND the target is still tracked → **demote**. Register an `added` listener on the target.
 5. Otherwise → **remove**. Clean up the entry entirely.
 
