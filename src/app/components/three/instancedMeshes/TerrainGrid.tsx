@@ -11,8 +11,7 @@ import { setTransformData } from '@utils/validation'
 import terrainConfigs from '@configs/terrainConfigs'
 import carouselConfigs from '@configs/carouselConfigs'
 
-const { OFFSET_POSITION } = carouselConfigs
-const cameraDistanceZ: number = (OFFSET_POSITION as Transform3).z
+const cameraDistanceZ: number = (carouselConfigs.OFFSET_POSITION as Transform3).z
 const maxRetryCount = 50
 
 const {
@@ -27,7 +26,7 @@ const {
   TERRAIN_GRID_SPACING
 } = terrainConfigs
 
-useGLTF.preload(TERRAIN_URL)
+if (typeof window !== 'undefined') useGLTF.preload(TERRAIN_URL)
 
 const _dummy = new Object3D()
 const _instanceMatrix = new Matrix4()
