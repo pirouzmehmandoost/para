@@ -9,7 +9,8 @@ import type { Project } from '@/types/project'
 import cameraConfigs from '@configs/cameraConfigs'
 import sceneConfigs from '@configs/sceneConfigs'
 import useProjectStore from '@stores/projectStore'
-import { GenericLoader, ThreeLoader } from '@ui/skeletons/Loader'
+import GenericLoader from '@ui/skeletons/GenericLoader'
+import ThreeLoader from '@three/loaders/ThreeLoader'
 import SceneComposer from '../scenes/SceneComposer'
 import TextureInitializer from '../textures/TextureInitializer'
 
@@ -19,7 +20,7 @@ Cache.enabled = true
 const { NEAR: near, FAR: far, FOV: fov, INITIAL_POSITION } = cameraConfigs
 const { BACKGROUND_COLOR, ENVIRONMENT_HDR_URL, ENVIRONMENT_INTENSITY, FOG_FAR, FOG_NEAR } = sceneConfigs
 
-useEnvironment.preload({ files: ENVIRONMENT_HDR_URL })
+if (typeof window !== 'undefined') useEnvironment.preload({ files: ENVIRONMENT_HDR_URL })
 
 interface RenderMode {
   frameLoop: 'always' | 'demand'
