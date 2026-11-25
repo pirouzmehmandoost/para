@@ -42,8 +42,8 @@ yarn-error.log*
 *.exr
 *.glb
 *.gltf
-*.ktx2
 *.hdr
+*.ktx2
 *.mp4
 *.mind
 
