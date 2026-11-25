@@ -1,9 +1,8 @@
 import { Box3, BufferGeometry, InstancedMesh, Matrix4, Mesh, Object3D, Vector3 } from 'three'
 
-const _scratchCenter = new Vector3()
-const _scratchBox = new Box3()
 // WeakMap associates metadata with an object's identity without memory leaks. Automatic garbage collection of cached data
 const _aabbCache = new WeakMap<InstancedMesh,{ box: Box3; count: number }>()
+
 // Re-entrant object to avoid cross-call variable corruption (keep variables localized for re-entrancy)
 class Scratch {
   static box = new Box3();
