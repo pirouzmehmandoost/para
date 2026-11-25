@@ -8,3 +8,8 @@ export const getSlugFromName = (name: string): string => {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
 }
+
+export const toBlobUrl = (base: string | undefined, pathname: string): string => {
+  if (typeof base !== 'string' || !base || !base.length) throw new Error('is not set.')
+  return `${base.replace(/\/$/, '')}/${pathname.replace(/^\//, '')}`
+}
