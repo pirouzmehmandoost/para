@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import type { Transform3 } from '../../../../types/Transform3'
+import type { Transform3 } from '../../../../types/transform3'
 import ManualRotationButton from './ManualRotationButton'
 
 interface ManualRotateButtonGroupProps {

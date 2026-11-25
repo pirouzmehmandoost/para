@@ -1,4 +1,4 @@
-import type { Transform3 } from '../../types/Transform3'
+import type { Transform3 } from '../../types/transform3'
 import { Euler, Vector3 } from 'three'
 
 interface CarouselConfigs {

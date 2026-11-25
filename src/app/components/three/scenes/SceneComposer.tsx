@@ -4,15 +4,15 @@ import { startTransition, useCallback, useLayoutEffect, useEffect, useMemo, useR
 import { Vector3, Object3D } from 'three'
 import type { ThreeEvent } from '@react-three/fiber'
 import { useThree } from '@react-three/fiber'
+import type { Transform3 } from '../../../../types/transform3'
+import type { Predicate } from '@stores/targetRegistryStore'
+import useTargetRegistry from '@stores/targetRegistryStore'
 import carouselConfigs from '@configs/carouselConfigs'
 import useProjectStore from '@stores/projectStore'
 import useSelection from '@stores/selectionStore'
-import useTargetRegistry from '@stores/targetRegistryStore'
-import type { Predicate } from '@stores/targetRegistryStore'
 import Carousel from '../rigs/Carousel'
 import ProjectMesh from '../meshes/ProjectMesh'
 import TerrainGrid from '../instancedMeshes/TerrainGrid'
-import type { Transform3 } from '@/types/Transform3'
 
 const {
   SWIPE_DELAY_MS,
