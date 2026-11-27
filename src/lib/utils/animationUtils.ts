@@ -1,4 +1,4 @@
-import { Euler, Mesh, Group, MeshPhysicalMaterial, PerspectiveCamera, Vector3 } from 'three'
+import { DoubleSide, Euler, Mesh, Group, MeshPhysicalMaterial, PerspectiveCamera, Vector3 } from 'three'
 import { spring3 } from 'math/time'
 import type { Spring } from 'math/time'
 import type { Vec3 } from 'math'
@@ -85,4 +85,28 @@ export function easeMaterialProperties(
   if (Math.abs(current.ior - target.ior) > EPSILON_10e4) easing.damp(current, "ior", target.ior, 0.3, frameDelta)
 
   if (Math.abs(current.roughness - target.roughness) > EPSILON_10e4) easing.damp(current, "roughness", target.roughness, 0.3, frameDelta)
+}
+
+export function updateMaterialCacheParameters(
+  material: MeshPhysicalMaterial,
+  target: MeshPhysicalMaterial
+): void {
+  if (!target || !material) return
+
+  if (material.side !== target.side) {
+    material.side = target.side ?? DoubleSide
+    material.needsUpdate = true
+  }
+  if (material?.bumpMap?.uuid && material.bumpMap.uuid !== target.bumpMap?.uuid) {
+    material.bumpMap = target?.bumpMap
+    material.needsUpdate = true
+  }
+  if (material?.map?.uuid && material.map.uuid !== target.map?.uuid) {
+    material.map = target?.map
+    material.needsUpdate = true
+  }
+  if (material?.roughnessMap?.uuid && material.roughnessMap.uuid !== target.roughnessMap?.uuid) {
+    material.roughnessMap = target.roughnessMap
+    material.needsUpdate = true
+  }
 }
