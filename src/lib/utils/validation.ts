@@ -1,3 +1,5 @@
+import type { TextureType } from '../../types/material'
+
 export const EPSILON_10e2: number = 10e-2 // 0.1
 export const EPSILON_10e3: number = 10e-3 // 0.01
 export const EPSILON_3e3: number = 3e-3 // 0.003
@@ -20,7 +22,7 @@ export function validateNumberArray(value: unknown): value is number[] {
 
 // Returns true if a string is a valid texture map type.
 // Compared against all known texture map types for all Materials.
-export function validateTextureMapType(mapType: string): boolean {
+export function validateTextureMapType(mapType: string): mapType is TextureType {
   switch (mapType) {
     case 'alphaMap':
     case 'anisotropyMap':

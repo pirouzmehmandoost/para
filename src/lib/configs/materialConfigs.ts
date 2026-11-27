@@ -1,9 +1,9 @@
-import { DataTexture, DoubleSide, Vector2 } from 'three'
+import { DoubleSide, Vector2 } from 'three'
 import type { MaterialProperties } from '../../types/material'
 import { createPlaceholderTexture } from '@utils/textureUtils'
 import { EPSILON_1e7 } from '@utils/validation'
 
-const _defaultTextures: Record<string, DataTexture> = {
+const _defaultTextures = {
   bumpMap: createPlaceholderTexture('bumpMap'),
   map: createPlaceholderTexture('map'),
   normalMap: createPlaceholderTexture('normalMap'),
