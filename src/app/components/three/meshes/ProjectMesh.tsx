@@ -270,7 +270,7 @@ const ProjectMesh = (props: ProjectMeshProps) => {
     updateRotationAnimation(rotationMode, deltaRotation, clampedDelta)
 
     if (!texturesReady) return
-
+    // one-shot
     if (!materialReadyRef.current) {
       const variants = materialStore.getSelectedMaterials(materialIDs)
       const defaultMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = variants[defaultMaterialID]
