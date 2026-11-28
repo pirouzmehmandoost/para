@@ -7,7 +7,8 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import NotesIcon from '@mui/icons-material/Notes'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import type { MaterialRecord } from '../../../../types/material'
-import type { Transform3 } from '../../../../types/Transform3'
+import type { Transform3 } from '../../../../types/transform3'
+import type { Project } from '../../../../types/project'
 import useSelection from '@stores/selectionStore'
 import useMaterial from '@stores/materialStore'
 import ModalContainer from '../containers/ModalContainer'
@@ -15,7 +16,6 @@ import Panel from '../containers/Panel'
 import ActionButton from '../buttons/ActionButton'
 import AutoRotateButton from '../buttons/AutoRotateButton'
 import ManualRotateButtonGroup from '../buttons/ManualRotateButtonGroup'
-import type { Project } from '@/types/project'
 
 const reset = () => useSelection.getState().reset()
 const setRotation = useSelection.getState().setRotation

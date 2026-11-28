@@ -4,16 +4,17 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Euler, Object3D, Quaternion, Vector3 } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { easing as oldEasing } from 'maath'
-import carouselConfigs from '@configs/carouselConfigs'
-import useSelection from '@stores/selectionStore'
-import useTargetRegistry from '@stores/targetRegistryStore'
-import { getAABBCenterFast } from '@utils/positionUtils'
-import { setTransformData } from '@utils/validation'
-import type { Transform3 } from '../../../../types/Transform3'
-import type { RegistryEntry } from '@/lib/targetRegistry/TargetRegistry'
 import { quat, vec3, remapClamp } from 'math'
 import type { Vec3, Quat } from 'math'
 import { easing } from 'math/time'
+import type { Transform3 } from '../../../../types/transform3'
+import type { RegistryEntry } from '@/lib/targetRegistry/TargetRegistry'
+import carouselConfigs from '@configs/carouselConfigs'
+import { getAABBCenterFast } from '@utils/positionUtils'
+import { setTransformData } from '@utils/transforms'
+import { EPSILON_10e2, EPSILON_10e3 } from '@utils/validation'
+import useSelection from '@stores/selectionStore'
+import useTargetRegistry from '@stores/targetRegistryStore'
 
 const lookAtQuaternion: Quat = quat.create()
 const currentQuaternion: Quat = quat.create()
@@ -218,12 +219,10 @@ const Carousel = ({
       )
       oldEasing.damp3(camera.position, _scratchPositionRef.current, 1, clampedDelta)
       return
-    };
+    }
 
-    if (targetIndexRef.current >= positions.length || targetIndexRef.current < 0) {
-      targetIndexRef.current = 0
-    };
-
+    if (targetIndexRef.current >= positions.length || targetIndexRef.current < 0) targetIndexRef.current = 0
+    
     dwellRemainingRef.current -= clampedDelta
 
     let nextPosition: Vector3 = positions[0]
@@ -261,21 +260,16 @@ const Carousel = ({
       }
     }
 
-    // old logic
-    // if (currentEntry?.target?.isObject3D) {
-    //   getAABBCenterFast(currentEntry.target, _scratchCenterRef.current)
-    //   registry.refreshPosition(targetIndexRef.current, _scratchCenterRef.current)
-    //   nextPosition = _scratchCenterRef.current
-    // }
-
-    //new logic
     if (currentEntry?.target?.isObject3D) {
+      // calculate transform deltas
       const target = currentEntry.target
       const targetChanged = lastSampleTargetRef.current !== target
       const positionChanged = lastSamplePositionRef.current.distanceTo(target.position) > 1
-      const rotationChanged = lastSampleQuaternionRef.current.angleTo(target.quaternion) > 1
-      const scaleChanged = lastSampleScaleRef.current.distanceTo(target.scale) > 10e-2
-
+      const rotationChanged = lastSampleQuaternionRef.current.angleTo(target.quaternion) > EPSILON_10e2
+      const scaleChanged = lastSampleScaleRef.current.distanceTo(target.scale) > EPSILON_10e3
+      // If any delta is beyond its threshold, update registry and scratch center position
+      // As far as I've tested it's not necessary to throttle calling getAABBCenterFast,
+      // but I have not finished testing.
       if (targetChanged || positionChanged || rotationChanged || scaleChanged) {
         getAABBCenterFast(target, _scratchCenterRef.current)
         registry.refreshPosition(targetIndexRef.current, _scratchCenterRef.current)
@@ -283,8 +277,7 @@ const Carousel = ({
         lastSamplePositionRef.current.copy(target.position)
         lastSampleQuaternionRef.current.copy(target.quaternion)
         lastSampleScaleRef.current.copy(target.scale)
-      };
-
+      }
       nextPosition = _scratchCenterRef.current
     }
     else {

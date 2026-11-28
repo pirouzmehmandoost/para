@@ -1,4 +1,4 @@
-import type { Transform3 } from '../../types/Transform3'
+import type { Transform3 } from '../../types/transform3'
 
 interface TerrainGridProps {
   TERRAIN_MATERIAL_ID: string

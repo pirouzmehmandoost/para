@@ -1,7 +1,12 @@
-import { Euler, Vector3 } from 'three'
-import type { Transform3 } from '../../types/Transform3'
+import type { TextureType } from '../../types/material'
 
-export function isNumberArray(value: unknown): value is number[] {
+export const EPSILON_10e2: number = 10e-2 // 0.1
+export const EPSILON_10e3: number = 10e-3 // 0.01
+export const EPSILON_3e3: number = 3e-3 // 0.003
+export const EPSILON_10e4: number = 10e-4 // 0.001
+export const EPSILON_1e7: number = 1e-7 // 0.0000001 
+
+export function validateNumberArray(value: unknown): value is number[] {
   if (!Array.isArray(value) || value.length !== 3) return false
   for (let i = 0; i < 3; i++) {
     const item = value[i]
@@ -15,70 +20,54 @@ export function isNumberArray(value: unknown): value is number[] {
   return true
 }
 
-// setTransformData defends against writing NaN and Infinity into values of target,
-// It does not guard against passing a target with those values.
-// Any that are NaN and Infinity may be overwritten, pending all conditions on value evaluate to true.
-export function setTransformData(
-  target: Vector3 | Euler,
-  value: Vector3 | Euler | Transform3 | [x: number, y: number, z: number]
-) {
-  if (!value || !target) return
-  else if (
-    isNumberArray(value) && value.length === 3 &&
-    (value[0] !== target.x || value[1] !== target.y || value[2] !== target.z)
-  ) {
-    target.set(value[0], value[1], value[2])
+// Returns true if a string is a valid texture map type.
+// Compared against all known texture map types for all Materials.
+export function validateTextureMapType(mapType: string): mapType is TextureType {
+  switch (mapType) {
+    case 'alphaMap':
+    case 'anisotropyMap':
+    case 'aoMap':
+    case 'bumpMap':
+    case 'clearcoatMap':
+    case 'clearcoatNormalMap':
+    case 'clearcoatRoughnessMap':
+    case 'diffuseRoughnessMap':
+    case 'displacementMap':
+    case 'emissiveMap':
+    case 'envMap':
+    case 'iridescenceMap':
+    case 'iridescenceThicknessMap':
+    case 'lightMap':
+    case 'map':
+    case 'metalnessMap':
+    case 'normalMap':
+    case 'roughnessMap':
+    case 'sheenColorMap':
+    case 'sheenRoughnessMap':
+    case 'specularColorMap':
+    case 'specularIntensityMap':
+    case 'thicknessMap':
+    case 'transmissionMap':
+      return true
   }
-  else if (
-    (
-      value instanceof Euler ||
-      value instanceof Vector3
-    ) &&
-    (
-      (
-        !Number.isNaN(value.x) && !(value.x === Infinity || value.x === -Infinity) &&
-        !Number.isNaN(value.y) && !(value.y === Infinity || value.y === -Infinity) &&
-        !Number.isNaN(value.z) && !(value.z === Infinity || value.z === -Infinity)
-      ) &&
-      (
-        value.x !== target.x ||
-        value.y !== target.y ||
-        value.z !== target.z
-      )
-    )
-  ) {
-    target.set(value.x, value.y, value.z)
-  }
-  else if (
-    ('x' in value && typeof (value as Transform3).x === 'number' && !Number.isNaN(value.x) && !(value.x === Infinity || value.x === -Infinity)) &&
-    ('y' in value && typeof (value as Transform3).y === 'number' && !Number.isNaN(value.y) && !(value.y === Infinity || value.y === -Infinity)) &&
-    ('z' in value && typeof (value as Transform3).z === 'number' && !Number.isNaN(value.z) && !(value.z === Infinity || value.z === -Infinity)) &&
-    (value.x !== target.x || value.y !== target.y || value.z !== target.z)
-  ) {
-    target.set(value.x, value.y, value.z)
-  }
+  return false
 }
 
-export function validateTransformData(
-  value: Vector3 | Euler | Transform3 | number[]
-) {
-  if (!!!value) return false
-  else if (isNumberArray(value) && value.length === 3) return true
-  else if (
-    value instanceof Euler || value instanceof Vector3 ||
-    (
-      'x' in value && typeof (value as Transform3).x === 'number' &&
-      'y' in value && typeof (value as Transform3).y === 'number' &&
-      'z' in value && typeof (value as Transform3).z === 'number'
-    )
-  ) {
-    if (
-      !Number.isNaN(value.x) && !(value.x === Infinity || value.x === -Infinity) &&
-      !Number.isNaN(value.y) && !(value.y === Infinity || value.y === -Infinity) &&
-      !Number.isNaN(value.z) && !(value.z === Infinity || value.z === -Infinity)
+// Returns true if a number is a valid integer between 0 and 255.
+// Used to validate color channel values before modifying elements of a Uint8Array.
+export const validate8BitChannelValue = (value: number): boolean =>
+  (Number.isInteger(value) && (value >= 0 && value <= 255))
 
-    ) return true
-    else return false
+// Returns true for integer values 512, 1024, 2048, or 4096.
+export const validateTextureResolution = (value: number): boolean => {
+  if (!Number.isInteger(value)) return false
+  switch(value) {
+    case 512:
+    case 1024:
+    case 2048:
+    case 4096:
+      return true
+    default:
+      return false
   }
-  else return false
 }

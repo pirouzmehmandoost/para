@@ -39,8 +39,10 @@ yarn-error.log*
 .vscode
 
 # media
+*.exr
 *.glb
 *.gltf
+*.hdr
 *.ktx2
 *.mp4
 *.mind

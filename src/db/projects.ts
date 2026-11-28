@@ -3,19 +3,9 @@ import { db } from './db'
 import { projectsTable } from './schema'
 import type { Project } from '../types/project'
 import { cacheLife, cacheTag } from 'next/cache'
-
+import { toBlobUrl } from '@utils/stringUtils'
 
 type ProjectRow = typeof projectsTable.$inferSelect
-
-function toBlobUrl(pathname: string): string {
-  const base = process.env.PARA_PUBLIC_BLOB_STORE_BASE_URL
-
-  if (!base) {
-    throw new Error('PARA_PUBLIC_BLOB_STORE_BASE_URL is not set.')
-  }
-
-  return `${base.replace(/\/$/, '')}/${pathname.replace(/^\//, '')}`
-}
 
 function toProject(row: ProjectRow): Project {
   return {
@@ -31,7 +21,7 @@ function toProject(row: ProjectRow): Project {
     },
     sceneData: {
       nodeName: row.nodeName,
-      url: toBlobUrl(row.url),
+      url: toBlobUrl(process.env.PARA_PUBLIC_BLOB_STORE_BASE_URL, row.url),
       defaultMaterialID: row.defaultMaterialID,
       materialIDs: [...row.materialIDs],
       position: {

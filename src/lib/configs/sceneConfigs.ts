@@ -7,7 +7,7 @@ interface SceneConfigs {
 }
 
 const sceneConfigs: SceneConfigs = {
-  ENVIRONMENT_HDR_URL: '/para_ground_glare_fog.hdr',
+  ENVIRONMENT_HDR_URL: 'https://5aihfmsahakbuihc.public.blob.vercel-storage.com/images/environments/para_ground_glare_fog.hdr', //'/para_ground_glare_fog.hdr',
   ENVIRONMENT_INTENSITY: 0.45,
   BACKGROUND_COLOR: '#d4d4d4', //'#bcbcbc',
   FOG_NEAR: 180,

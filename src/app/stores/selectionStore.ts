@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Transform3 } from '../../types/Transform3'
+import type { Transform3 } from '../../types/transform3'
 
 type SelectionValues = {
   focusedSlug: string | null

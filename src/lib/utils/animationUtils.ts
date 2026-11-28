@@ -1,12 +1,10 @@
-import { Euler, Mesh, Group, PerspectiveCamera, Vector3 } from 'three'
+import { DoubleSide, Euler, Mesh, Group, MeshPhysicalMaterial, PerspectiveCamera, Vector3 } from 'three'
 import { spring3 } from 'math/time'
 import type { Spring } from 'math/time'
 import type { Vec3 } from 'math'
-import type { Transform3 } from '../../types/Transform3'
-
-export const EPSILON_1e7: number = 1e-7
-export const EPSILON_3e3: number = 3e-3
-export const EPSILON_10e4: number = 10e-4
+import type { Transform3 } from '../../types/transform3'
+import { easing } from 'maath'
+import { EPSILON_10e4 } from './validation'
 
 const scaleSprings = new WeakMap<Mesh | Group, Spring<Vec3>>()
 const scaleGoal: Vec3 = [0, 0, 0]
@@ -30,23 +28,18 @@ export const eulerDistance = (current: Euler | Transform3, target: Euler | Trans
     Math.abs(angleDelta(current.z, target.z))
 }
 
-export const wrap = (value: number, min: number, max: number): number => {
-  const range: number = max - min
-  return ((((value - min) % range) + range) % range) + min
-}
-
 export const fitToPerspectiveCameraFrustum = (
   camera: PerspectiveCamera,
   sizeVector: Vector3,
   scaleVector: Vector3,
   target: Mesh | Group,
   targetScale: number,
-  isCallerAnEffect: boolean = false,
+  isCallerReactEffect: boolean = false,
   frameDelta: number = 0.08,
   zOffset?: number,
   smoothTime: number = 0.3,
 ): void => {
-  
+
   const cameraDistanceZ: number = typeof zOffset === 'number' ? zOffset : 1
   const maxBoundingBoxDimension: number = Math.max(sizeVector.x, (sizeVector.y > 0 ? sizeVector.y : 1))
   const verticalFOVinRadians: number = (camera.fov * Math.PI) / 180
@@ -55,7 +48,7 @@ export const fitToPerspectiveCameraFrustum = (
   const targetSize: number = Math.min(visibleHeight, visibleWidth)
   const scaleFactor: number = targetScale * targetSize / (maxBoundingBoxDimension > 0 ? maxBoundingBoxDimension : 1)
 
-  if (isCallerAnEffect) {
+  if (isCallerReactEffect) {
     scaleVector.set(scaleFactor, scaleFactor, scaleFactor)
     target.scale.set(scaleFactor, scaleFactor, scaleFactor)
     return
@@ -71,5 +64,49 @@ export const fitToPerspectiveCameraFrustum = (
     scaleGoal[2] = scaleFactor
     spring3.damp(state, scaleGoal, smoothTime, frameDelta)
     target.scale.set(state.value[0], state.value[1], state.value[2])
+  }
+}
+
+export function easeMaterialProperties(
+  current: MeshPhysicalMaterial,
+  target: MeshPhysicalMaterial,
+  frameDelta: number
+) {
+  if (!target || !current) return
+
+  if (Math.abs(current.bumpScale - target.bumpScale) > EPSILON_10e4) easing.damp(current, "bumpScale", target.bumpScale, 0.3, frameDelta)
+
+  if (Math.abs(current.clearcoat - target.clearcoat) > EPSILON_10e4) easing.damp(current, "clearcoat", target.clearcoat, 0.3, frameDelta)
+
+  if (Math.abs(current.clearcoatRoughness - target.clearcoatRoughness) > EPSILON_10e4) easing.damp(current, "clearcoatRoughness", target.clearcoatRoughness, 0.3, frameDelta)
+
+  if (!current.color.equals(target.color)) easing.dampC(current.color, target.color, 0.3, frameDelta)
+
+  if (Math.abs(current.ior - target.ior) > EPSILON_10e4) easing.damp(current, "ior", target.ior, 0.3, frameDelta)
+
+  if (Math.abs(current.roughness - target.roughness) > EPSILON_10e4) easing.damp(current, "roughness", target.roughness, 0.3, frameDelta)
+}
+
+export function updateMaterialCacheParameters(
+  material: MeshPhysicalMaterial,
+  target: MeshPhysicalMaterial
+): void {
+  if (!target || !material) return
+
+  if (material.side !== target.side) {
+    material.side = target.side ?? DoubleSide
+    material.needsUpdate = true
+  }
+  if (material?.bumpMap?.uuid && material.bumpMap.uuid !== target.bumpMap?.uuid) {
+    material.bumpMap = target?.bumpMap
+    material.needsUpdate = true
+  }
+  if (material?.map?.uuid && material.map.uuid !== target.map?.uuid) {
+    material.map = target?.map
+    material.needsUpdate = true
+  }
+  if (material?.roughnessMap?.uuid && material.roughnessMap.uuid !== target.roughnessMap?.uuid) {
+    material.roughnessMap = target.roughnessMap
+    material.needsUpdate = true
   }
 }

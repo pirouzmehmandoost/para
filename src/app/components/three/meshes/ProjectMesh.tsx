@@ -6,28 +6,36 @@ import { useFrame, useThree } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { easing } from 'maath'
-import useMaterial, { defaultPhysicalMaterialProperties, type MaterialStoreState } from '@/app/stores/materialStore'
-import useSelection from '@stores/selectionStore'
-import { eulerDistance, EPSILON_3e3, EPSILON_10e4, fitToPerspectiveCameraFrustum, wrap } from '@utils/animationUtils'
+import type { Transform3 } from '../../../../types/transform3'
+import { EPSILON_3e3 } from '@utils/validation'
+import { eulerDistance, fitToPerspectiveCameraFrustum, easeMaterialProperties } from '@utils/animationUtils'
 import carouselConfigs from '@configs/carouselConfigs'
-import type { Transform3 } from '../../../../types/Transform3'
+import { defaultPhysicalMaterialProperties } from '@configs/materialConfigs'
+import type { MaterialStoreState } from '@stores/materialStore'
+import useMaterial from '@stores/materialStore'
+import useSelection from '@stores/selectionStore'
 
 const { OFFSET_POSITION } = carouselConfigs
 const cameraDistanceZ: number = (OFFSET_POSITION as Transform3).z
 const FOCUS_Z_OFFSET = 20
 
-const PositionAnimationModes: Record<string, string> = {
+const POSITION_CONTROL_MODE: Record<string, string> = {
   ENABLED: 'ENABLED',
   DISABLED: 'DISABLED'
 }
 
-const RotationAnimationModes: Record<string, string> = {
+const ROTATION_CONTROL_MODE: Record<string, string> = {
   IDLE: 'IDLE',
   AUTO: 'AUTO',
   MANUAL: 'MANUAL'
 }
 
-interface Props {
+const wrap = (value: number, min: number, max: number): number => {
+  const range: number = max - min
+  return ((((value - min) % range) + range) % range) + min
+}
+
+interface ProjectMeshProps {
   defaultMaterialID: string
   materialIDs: string[]
   nodeName: string
@@ -41,7 +49,7 @@ interface Props {
   slug: string
 }
 
-const ProjectMesh = (props: Props) => {
+const ProjectMesh = (props: ProjectMeshProps) => {
   const {
     defaultMaterialID = 'matte_black',
     materialIDs = ['matte_black'],
@@ -82,14 +90,15 @@ const ProjectMesh = (props: Props) => {
   const materialReadyRef = useRef<boolean>(false)
 
   useEffect(() => {
-    if (meshRef.current && typeof onMeshReady === 'function' && geometry) onMeshReady(meshRef.current)
-  }, [onMeshReady, geometry])
+    if (meshRef.current &&
+      typeof onMeshReady === 'function' &&
+      geometry
+    ) onMeshReady(meshRef.current)
+  }, [geometry, onMeshReady])
 
   useEffect(() => {
     const material: MeshPhysicalMaterial = animateMaterialRef.current
-
     if (meshRef.current) meshRef.current.material = animateMaterialRef.current
-
     return () => material.dispose()
   }, [])
 
@@ -109,7 +118,18 @@ const ProjectMesh = (props: Props) => {
       if (meshRef.current?.geometry && meshRef.current.geometry.boundingBox) {
         meshRef.current.geometry.computeBoundingBox()
         meshRef.current.geometry.boundingBox.getSize(_scratchSizeRef.current)
-        if (camera instanceof PerspectiveCamera) fitToPerspectiveCameraFrustum(camera, _scratchSizeRef.current, scaleRef.current, meshRef.current, scale, true, 0.08, cameraDistanceZ)
+        if (camera instanceof PerspectiveCamera) {
+          fitToPerspectiveCameraFrustum(
+            camera,
+            _scratchSizeRef.current,
+            scaleRef.current,
+            meshRef.current,
+            scale,
+            true,
+            0.08,
+            cameraDistanceZ
+          )
+        }
       }
     }
   }, [camera, geometry, scale])
@@ -118,51 +138,69 @@ const ProjectMesh = (props: Props) => {
     rotationMode: string,
     deltaRotation: Transform3,
     frameDelta: number
-  ) {
-    if (meshRef.current) {
-      const hasRotationModeChanged: boolean = rotationMode !== rotationModeRef.current
+  ): void {
+    if (!meshRef.current) return
 
-      if (hasRotationModeChanged) {
-        animateRotationRef.current.copy(meshRef.current.rotation)
-        rotationModeRef.current = rotationMode
-      }
+    const hasRotationModeChanged: boolean = rotationMode !== rotationModeRef.current
 
-      const refToUpdate: Euler = rotationMode === RotationAnimationModes.IDLE ? defaultRotationRef.current : animateRotationRef.current
-      const smoothTime: number = rotationMode === RotationAnimationModes.IDLE ? 1.5 : 1
+    if (hasRotationModeChanged) {
+      animateRotationRef.current.copy(meshRef.current.rotation)
+      rotationModeRef.current = rotationMode
+    }
 
-      if (rotationMode === RotationAnimationModes.AUTO) {
+    const target: Euler = rotationMode === ROTATION_CONTROL_MODE.IDLE ? defaultRotationRef.current : animateRotationRef.current
+    const smoothTime: number = rotationMode === ROTATION_CONTROL_MODE.IDLE ? 1.5 : 1
+
+    switch (rotationMode) {
+      case ROTATION_CONTROL_MODE.AUTO: {
         const y: number = animateRotationRef.current.y + frameDelta * rotationSpeed
         const wY: number = wrap(y, 0, (Math.PI * 2))
         animateRotationRef.current.set(defaultRotationRef.current.x, wY, defaultRotationRef.current.z)
+        break
       }
-      else if (rotationMode === RotationAnimationModes.MANUAL) {
+      case ROTATION_CONTROL_MODE.MANUAL: {
         const { x = 0, y = 0, z = 0 } = deltaRotation
         animateRotationRef.current.set(defaultRotationRef.current.x + x, defaultRotationRef.current.y + y, defaultRotationRef.current.z + z)
+        break
       }
-      else if (rotationMode === RotationAnimationModes.IDLE) {
+      case ROTATION_CONTROL_MODE.IDLE:
+      default:
         animateRotationRef.current.set(defaultRotationRef.current.x, defaultRotationRef.current.y, defaultRotationRef.current.z)
-      }
-
-      if (eulerDistance(meshRef.current.rotation, refToUpdate) > EPSILON_3e3) {
-        easing.dampE(meshRef.current.rotation, refToUpdate, smoothTime, frameDelta)
-      }
-
-      rotationModeRef.current = rotationMode
     }
+
+    if (eulerDistance(meshRef.current.rotation, target) > EPSILON_3e3) {
+      easing.dampE(meshRef.current.rotation, target, smoothTime, frameDelta)
+    }
+
+    rotationModeRef.current = rotationMode
   }
 
-  function updatePositionAnimation(positionMode: string, xOffset = 0, yOffset = 0, zOffset = 0, frameDelta: number) {
+  function updatePositionAnimation(
+    positionMode: string,
+    xOffset: number = 0,
+    yOffset: number = 0,
+    zOffset: number = 0,
+    frameDelta: number
+  ): void {
     if (!meshRef.current) return
 
-    if (positionMode !== positionModeRef.current) {
-      positionModeRef.current = positionMode
-    }
+    if (positionMode !== positionModeRef.current) positionModeRef.current = positionMode
 
-    if (positionMode === PositionAnimationModes.ENABLED) {
-      animatePositionRef.current.set(defaultPositionRef.current.x + xOffset, defaultPositionRef.current.y + yOffset, defaultPositionRef.current.z + zOffset)
-    }
-    else if (positionMode === PositionAnimationModes.DISABLED) {
-      animatePositionRef.current.set(defaultPositionRef.current.x, defaultPositionRef.current.y, defaultPositionRef.current.z)
+    switch (positionMode) {
+      case POSITION_CONTROL_MODE.ENABLED:
+        animatePositionRef.current.set(
+          defaultPositionRef.current.x + xOffset,
+          defaultPositionRef.current.y + yOffset,
+          defaultPositionRef.current.z + zOffset
+        )
+        break
+      case POSITION_CONTROL_MODE.DISABLED:
+        animatePositionRef.current.set(
+          defaultPositionRef.current.x,
+          defaultPositionRef.current.y,
+          defaultPositionRef.current.z
+        )
+      default:
     }
 
     if (meshRef.current.position.distanceTo(animatePositionRef.current) > EPSILON_3e3) {
@@ -170,29 +208,12 @@ const ProjectMesh = (props: Props) => {
     }
   }
 
-  function easeMaterialProperties(materialToUpdate: MeshPhysicalMaterial, frameDelta: number) {
-    if (materialToUpdate) {
-      if (Math.abs(animateMaterialRef.current.bumpScale - materialToUpdate.bumpScale) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "bumpScale", materialToUpdate.bumpScale, 0.3, frameDelta)
-
-      if (Math.abs(animateMaterialRef.current.clearcoat - materialToUpdate.clearcoat) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "clearcoat", materialToUpdate.clearcoat, 0.3, frameDelta)
-
-      if (Math.abs(animateMaterialRef.current.clearcoatRoughness - materialToUpdate.clearcoatRoughness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "clearcoatRoughness", materialToUpdate.clearcoatRoughness, 0.3, frameDelta)
-
-      if (!animateMaterialRef.current.color.equals(materialToUpdate.color)) easing.dampC(animateMaterialRef.current.color, materialToUpdate.color, 0.3, frameDelta)
-
-      if (Math.abs(animateMaterialRef.current.ior - materialToUpdate.ior) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "ior", materialToUpdate.ior, 0.3, frameDelta)
-
-      if (Math.abs(animateMaterialRef.current.roughness - materialToUpdate.roughness) > EPSILON_10e4) easing.damp(animateMaterialRef.current, "roughness", materialToUpdate.roughness, 0.3, frameDelta)
-    }
-  }
-
-  function updateMaterialCacheParameters(materialToUpdate: MeshPhysicalMaterial) {
+  function updateMaterialCacheParameters(materialToUpdate: MeshPhysicalMaterial): void {
     if (materialToUpdate) {
       if (animateMaterialRef.current.side !== materialToUpdate.side) {
         animateMaterialRef.current.side = materialToUpdate.side ?? DoubleSide
         animateMaterialRef.current.needsUpdate = true
       }
-
       // NOTE: Currently these 3 texture map slots never non-null for any material in materialStore, needsUpdate is set to true regardless.
       // If the two materials have different textures then assign and set needsUpdate.
       if (
@@ -202,7 +223,6 @@ const ProjectMesh = (props: Props) => {
         animateMaterialRef.current.bumpMap = materialToUpdate?.bumpMap
         animateMaterialRef.current.needsUpdate = true
       }
-
       if (
         animateMaterialRef.current?.map &&
         animateMaterialRef.current.map.uuid !== materialToUpdate.map?.uuid
@@ -210,7 +230,6 @@ const ProjectMesh = (props: Props) => {
         animateMaterialRef.current.map = materialToUpdate?.map
         animateMaterialRef.current.needsUpdate = true
       }
-
       if (
         animateMaterialRef.current?.roughnessMap &&
         animateMaterialRef.current.roughnessMap.uuid !== materialToUpdate.roughnessMap?.uuid
@@ -219,59 +238,65 @@ const ProjectMesh = (props: Props) => {
         animateMaterialRef.current.needsUpdate = true
       }
     }
-  };
+  }
 
   useFrame(({ camera: cam }, delta) => {
-    if (meshRef.current && nodeName?.length) {
+    if (!meshRef.current || !nodeName?.length) return
 
-      const clampedDelta: number = Math.min(delta, 0.08)
-      const materialStore: MaterialStoreState = useMaterial.getState()
-      const texturesReady: boolean = materialStore.texturesInitialized?.length > 0
-      const { focusedSlug, autoRotationActive, focusedMaterialID, deltaRotation } = useSelection.getState()
-      const selectedAndFocused: boolean = focusedSlug !== null && focusedSlug === slug
-      const selectedMaterialID: string = selectedAndFocused && focusedMaterialID?.length ? focusedMaterialID : defaultMaterialID
+    const clampedDelta: number = Math.min(delta, 0.08)
+    const materialStore: MaterialStoreState = useMaterial.getState()
+    const texturesReady: boolean = materialStore.texturesInitialized?.length > 0
+    const { focusedSlug, autoRotationActive, focusedMaterialID, deltaRotation } = useSelection.getState()
+    const selectedAndFocused: boolean = focusedSlug !== null && focusedSlug === slug
+    const selectedMaterialID: string = selectedAndFocused && focusedMaterialID?.length ? focusedMaterialID : defaultMaterialID
+    const shouldAnimateMaterial: boolean = materialIDs.length > 1
+    const positionMode: string = selectedAndFocused ? POSITION_CONTROL_MODE.ENABLED : POSITION_CONTROL_MODE.DISABLED
+    const rotationMode: string = !selectedAndFocused ? ROTATION_CONTROL_MODE.IDLE : autoRotationActive ? ROTATION_CONTROL_MODE.AUTO : ROTATION_CONTROL_MODE.MANUAL
 
-      const shouldAnimateMaterial: boolean = materialIDs.length > 1
-      const positionMode: string = selectedAndFocused ? PositionAnimationModes.ENABLED : PositionAnimationModes.DISABLED
-      const rotationMode: string = !selectedAndFocused ? RotationAnimationModes.IDLE : autoRotationActive ? RotationAnimationModes.AUTO : RotationAnimationModes.MANUAL
+    if (cam instanceof PerspectiveCamera) {
+      fitToPerspectiveCameraFrustum(
+        cam,
+        _scratchSizeRef.current,
+        scaleRef.current,
+        meshRef.current,
+        scale,
+        false,
+        clampedDelta,
+        cameraDistanceZ
+      )
+    }
 
-      if (cam instanceof PerspectiveCamera) fitToPerspectiveCameraFrustum(cam, _scratchSizeRef.current, scaleRef.current, meshRef.current, scale, false, clampedDelta, cameraDistanceZ)
+    updatePositionAnimation(positionMode, 0, 0, FOCUS_Z_OFFSET, clampedDelta)
+    updateRotationAnimation(rotationMode, deltaRotation, clampedDelta)
 
-      updatePositionAnimation(positionMode, 0, 0, FOCUS_Z_OFFSET, clampedDelta)
-      updateRotationAnimation(rotationMode, deltaRotation, clampedDelta)
+    if (!texturesReady) return
+    // one-shot
+    if (!materialReadyRef.current) {
+      const variants = materialStore.getSelectedMaterials(materialIDs)
+      const defaultMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = variants[defaultMaterialID]
 
-      if (texturesReady) {
-        // one-shot
-        if (!materialReadyRef.current) {
-          const variants = materialStore.getSelectedMaterials(materialIDs)
-          const defaultMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = variants[defaultMaterialID]
-
-          if (defaultMaterial !== null && defaultMaterial instanceof MeshPhysicalMaterial) {
-            animateMaterialRef.current.copy(defaultMaterial)
-            animateMaterialRef.current.needsUpdate = true
-            targetMaterialIDRef.current = defaultMaterialID
-            targetMaterialRef.current = defaultMaterial
-            materialReadyRef.current = true
-          }
-
-          return
-        }
-
-        if (selectedMaterialID !== targetMaterialIDRef.current) {
-          const variants = materialStore.getSelectedMaterials(materialIDs)
-          const targetMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = variants[selectedMaterialID]
-
-          if (targetMaterial !== null && targetMaterial instanceof MeshPhysicalMaterial) {
-            targetMaterialIDRef.current = selectedMaterialID
-            targetMaterialRef.current = targetMaterial
-          }
-        }
-
-        if (shouldAnimateMaterial && targetMaterialRef.current) {
-          easeMaterialProperties(targetMaterialRef.current, clampedDelta)
-          updateMaterialCacheParameters(targetMaterialRef.current)
-        }
+      if (defaultMaterial !== null && defaultMaterial instanceof MeshPhysicalMaterial) {
+        animateMaterialRef.current.copy(defaultMaterial)
+        animateMaterialRef.current.needsUpdate = true
+        targetMaterialIDRef.current = defaultMaterialID
+        targetMaterialRef.current = defaultMaterial
+        materialReadyRef.current = true
       }
+      return
+    }
+
+    if (selectedMaterialID !== targetMaterialIDRef.current) {
+      const variants = materialStore.getSelectedMaterials(materialIDs)
+      const targetMaterial: MeshPhysicalMaterial | MeshStandardMaterial | null = variants[selectedMaterialID]
+
+      if (targetMaterial !== null && targetMaterial instanceof MeshPhysicalMaterial) {
+        targetMaterialIDRef.current = selectedMaterialID
+        targetMaterialRef.current = targetMaterial
+      }
+    }
+    if (shouldAnimateMaterial && targetMaterialRef.current) {
+      easeMaterialProperties(animateMaterialRef.current, targetMaterialRef.current, clampedDelta)
+      updateMaterialCacheParameters(targetMaterialRef.current)
     }
   })
 
@@ -282,10 +307,9 @@ const ProjectMesh = (props: Props) => {
         castShadow
         receiveShadow
         geometry={geometry}
-        // material={animateMaterialRef.current}
         name={nodeName}
         onClick={onClick}
-        rotation={[rx, ry, rz]}
+      // rotation={[rx, ry, rz]}
       />
     )
   )
